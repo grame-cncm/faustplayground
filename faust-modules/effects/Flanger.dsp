@@ -40,6 +40,6 @@ FlangerDemo = flanger_stereo_demo with {
 
 drywet(x,y) 	= (1-c)*x + c*y
 				with {
-					c = hslider("[3] Flanger Intensity [unit:%][acc:1 0 -10 10 0 10]",50,0,100,0.01)*(0.01):smooth(0.999);
+					c = hslider("[3] Flanger Intensity [unit:%][acc:1 0 -10 0 10]", 10,0,100,0.01)*(0.01):smooth(0.999);
 					};
 

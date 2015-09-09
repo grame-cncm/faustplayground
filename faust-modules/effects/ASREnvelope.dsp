@@ -25,8 +25,8 @@ process = *(asr(a,s,r,t)):_
 with{
 	a = hslider("[2]Envelope Attack[unit:s][acc:0 1 -10 10 0 1][style:knob]", 0.1, 0.01, 2, 0.01) : smooth(0.999);
 	s = 100;
-	r = hslider("[3]Envelope Release[unit:s][style:knob][acc:0 1 -10 10 0 0]", 0.1, 0.01, 5, 0.01) : smooth(0.999);
+	r = hslider("[3]Envelope Release[unit:s][style:knob][acc:0 1 -10 0 10]", 0, 0.01, 5, 0.01) : smooth(0.999);
 	//g = checkbox("[1]ON/OFF");
-	t = hslider("[1]ON/OFF[acc:1 0 -12 5 0 0]", 0, 0, 1, 1);
+	t = hslider("[1]ON/OFF[acc:1 0 -12 0 5]", 0, 0, 1, 1);
 	//t = (g>0)|(sl>0);
 	};

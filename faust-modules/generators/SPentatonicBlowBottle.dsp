@@ -34,9 +34,9 @@ blow(n)=
 N = 15;
 
 position(n) = abs(hand - n) < 0.5;
-hand = hslider("[1]Instrument Hand[acc:0 1 -10 10 0 8]", 8, 0, N, 1) : smooth(0.999) : min(24) : max(0) :int: automat(bps, 15, 0.0)
+hand = hslider("[1]Instrument Hand[acc:0 1 -10 0 10]", 8, 0, N, 1) : smooth(0.999) : min(24) : max(0) :int: automat(bps, 15, 0.0)
 		with{
-		bps = hslider("[2]Speed[style:knob][acc:0 1 -10 10 0 480]", 480, 180, 720, 1):smooth(0.999) : min(720) : max(180) : int;
+		bps = hslider("[2]Speed[style:knob][acc:0 1 -10 0 10]", 480, 180, 720, 1):smooth(0.999) : min(720) : max(180) : int;
 		};
 envelopeAttack = 0.01;
 vibratoFreq = 5;
@@ -97,7 +97,7 @@ trigger(n) = position(n): trig
 	upfront(x) 	= (x-x') > 0;
 	decay(n,x)	= x - (x>0.0)/n;
 	release(n)	= + ~ decay(n);
-	noteDuration = hslider("[3]Note Duration[unit:s][style:knob][acc:2 1 -10 10 0 0.166]", 0.166, 0.1, 0.2, 0.01)*44100 : min(8820) : max(4410):int;
+	noteDuration = hslider("[3]Note Duration[unit:s][style:knob][acc:2 1 -10 0 10]", 0.166, 0.1, 0.2, 0.01)*44100 : min(8820) : max(4410):int;
 	trig = upfront : release(noteDuration) : >(0.0);
 	};
 

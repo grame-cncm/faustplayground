@@ -59,7 +59,7 @@ envelopeRelease = 2;
 //==================== SIGNAL PROCESSING ================
 
 crybb = crybaby(wah) with {
-   wah = hslider("Wah Wah[acc:0 1 -15 10 0 0.5]",0.5,0,1,0.01) : automat(360, 15, 0.0);
+   wah = hslider("Wah Wah[acc:0 1 -15 0 10]", 0.5,0,1,0.01) : automat(360, 15, 0.0);
 };
 
 

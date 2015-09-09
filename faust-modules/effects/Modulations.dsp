@@ -24,7 +24,7 @@ import("instrument.lib");
 NLFM = _ : nonLinearModulator(nonlinearity,env,freq,typeMod,freqMod,order) : _;
 process = NLFM;
 
-gate = hslider("[1]ON/OFF (ASR Envelope)[acc:2 0 -10 10 0 1]",0,0,1,1);
+gate = hslider("[1]ON/OFF (ASR Envelope)[acc:2 0 -10 0 10]", 1,0,1,1);
 		
 
 ASR =(asr(a,s,r,t))

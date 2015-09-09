@@ -21,6 +21,6 @@ import("music.lib");
 
 
 smooth(c)		= *(1-c) : +~*(c);
-freq 			= hslider("Frequency [unit:Hz] [acc:0 1 -10 10 0 300]", 300, 70, 2400, 0.01):smooth(0.999);
+freq 			= hslider("Frequency [unit:Hz] [acc:0 1 -10 0 10]", 300, 70, 2400, 0.01):smooth(0.999);
 process 		= vgroup("Oscillator", osc(freq));
 

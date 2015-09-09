@@ -34,11 +34,11 @@ process = (((select-1)*-1) <:
 freq = hslider("[1]Frequency[unit:Hz][tooltip:Tone frequency]",440,180,780,1);
 gain = 0.5; 
 gate = 0;
-select = hslider("[0]Play[tooltip:0=Bow; 1=Strike] [acc:2 1 -10 10 0 0]",0,0,1,1); 
+select = hslider("[0]Play[tooltip:0=Bow; 1=Strike] [acc:2 1 -10 0 10]", 0,0,1,1); 
 baseGain = 0.5;
 typeModulation = 3; 
 nonLinearity = hslider("[2]Modulation[acc:0 1 -10 10 0 0.02][tooltip:Nonlinearity factor (value between 0 and 1)]",0,0,0.1,0.001):smooth(0.999);
-frequencyMod = hslider("[3]Modulation Frequency[unit:Hz][acc:0 0 -10 10 0 220]",220,150,500,0.1):smooth(0.999);
+frequencyMod = hslider("[3]Modulation Frequency[unit:Hz][acc:0 0 -10 0 10]", 220,150,500,0.1):smooth(0.999);
 nonLinAttack = 0.1;
 
 //==================== MODAL PARAMETERS ================

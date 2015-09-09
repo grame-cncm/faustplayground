@@ -35,9 +35,9 @@ N = 10;
 
 gain = 1;
 gate(n) = position(n) : upfront;
-hand = hslider("[1]Instrument Hand[acc:1 0 -10 10 0 5]", 0, 0, N, 1):smooth(0.999):min(N):max(0):int:automat(B, 15, 0.0);
-B = hslider("[3]Speed[style:knob][acc:0 1 -10 10 0 360]", 360, 120, 720, 60): smooth(0.99) : min(720) : max(120) : int;
-hight = hslider("[2]Hight[acc:0 1 -10 10 0 4]", 4, 0.5, 8, 0.1);//:smooth(0.999);
+hand = hslider("[1]Instrument Hand[acc:1 0 -10 0 10]", 5, 0, N, 1):smooth(0.999):min(N):max(0):int:automat(B, 15, 0.0);
+B = hslider("[3]Speed[style:knob][acc:0 1 -10 0 10]", 360, 120, 720, 60): smooth(0.99) : min(720) : max(120) : int;
+hight = hslider("[2]Hight[acc:0 1 -10 0 10]", 4, 0.5, 8, 0.1);//:smooth(0.999);
 octave(d) = freq(d)*(hight);
 position(n) = abs(hand - n) < 0.5;
 upfront(x) = x>x';
@@ -106,17 +106,17 @@ bandPassFilter(x,f) = bandPass(f*modes(preset,x),radius);
 resonance(x,f,g) = + : + (excitation(preset,x,g)*select) : delayLine(x,f) : *(basegains(preset,x)) : bandPassFilter(x,f);
 
 echo = +~(@(22050)*(feedback));
-//feedback = hslider("Echo Intensity (Feedback)[acc:1 1 -5 12 0 0.1]", 0.1, 0.05, 0.65, 0.01):smooth(0.999):min(0.05):max(0.65);
+//feedback = hslider("Echo Intensity (Feedback)[acc:1 1 -5 0 12]", 0.1, 0.05, 0.65, 0.01):smooth(0.999):min(0.05):max(0.65);
 feedback = 0.8;
 drywet(x,y) 	= (1-c)*x + c*y
 				with {
-					c = hslider("[4]Echo Intensity[style:knob][unit:%][acc:1 1 -8 10 0 20]",60,0,99,0.01)*(0.01):smooth(0.999):min(0.99):max(0.001);
+					c = hslider("[4]Echo Intensity[style:knob][unit:%][acc:1 1 -8 0 10]", 20,0,99,0.01)*(0.01):smooth(0.999):min(0.99):max(0.001);
 					};
 					
 //instrReverb from instrument.lib
 instrReverbChime = zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+       
 	with{
-       roomSize = hslider("h:[5]Reverb/Reverberation Room Size (InstrReverb)[style:knob][acc:1 1 -10 12 0 0.2]",0.72,0.1,1.7,0.01):min(1.7):max(0.1);
+       roomSize = hslider("h:[5]Reverb/Reverberation Room Size (InstrReverb)[style:knob][acc:1 1 -10 0 12]", 0.2,0.1,1.7,0.01):min(1.7):max(0.1);
        rdel = 20;
        f1 = 200;
        f2 = 6000;

@@ -33,12 +33,12 @@ process = flute  <:instrReverbFlute;
 
 //==================== GUI SPECIFICATION ================
 
-freq = hslider("[1]Frequency[acc:1 1 -10 10 0 440]",440,247,1200,1):smooth(0.999);
-pressure = hslider("[2]Pressure[style:knob][acc:1 0 -10 10 0 0.96]", 0.96, 0.2, 0.99, 0.01):smooth(0.999):min(0.99):max(0.2);
-breathAmp = hslider("[3]Breath Noise[style:knob][acc:2 0 -10 10 0 0.02]", 0.02, 0.01, 0.2, 0.01):smooth(0.999):min(0.2):max(0.01);
+freq = hslider("[1]Frequency[acc:1 1 -10 0 10]", 440,247,1200,1):smooth(0.999);
+pressure = hslider("[2]Pressure[style:knob][acc:1 0 -10 0 10]", 0.96, 0.2, 0.99, 0.01):smooth(0.999):min(0.99):max(0.2);
+breathAmp = hslider("[3]Breath Noise[style:knob][acc:2 0 -10 0 10]", 0.02, 0.01, 0.2, 0.01):smooth(0.999):min(0.2):max(0.01);
 
 gate = hslider("[0]ON/OFF (ASR Envelope),0,0,1,1");
-vibratoFreq = hslider("[4]Vibrato Freq (Vibrato Envelope)[style:knob][unit:Hz][acc:0 1 -10 10 0 4]",4,0.5,8,0.1);
+vibratoFreq = hslider("[4]Vibrato Freq (Vibrato Envelope)[style:knob][unit:Hz][acc:0 1 -10 0 10]", 4,0.5,8,0.1);
 env1Attack = 0.1;//hslider("h:Parameters/Press_Env_Attack[unit:s][style:knob][acc:1 0 -10 10 0 0.05][tooltip:Pressure envelope attack duration]",0.05,0.05,0.2,0.01);
 
 
@@ -118,8 +118,8 @@ flow = env1 + breath*breathAmp + vibrato;
 instrReverbFlute = _,_ <: *(reverbGain),*(reverbGain),*(1 - reverbGain),*(1 - reverbGain) : 
 zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
        with{
-       reverbGain = hslider("h:[5]Reverb/[1]Reverberation Volume (InstrReverb)[style:knob][acc:1 1 -30 13 0 0.2]",0.2,0.05,1,0.01) : smooth(0.999):min(1):max(0.05);
-       roomSize = hslider("h:[5]Reverb/[2]Reverberation Room Size (InstrReverb)[style:knob][acc:1 1 -30 13 0 0.72]",0.72,0.05,1.7,0.01):min(1.7):max(0.05);
+       reverbGain = hslider("h:[5]Reverb/[1]Reverberation Volume (InstrReverb)[style:knob][acc:1 1 -30 0 13]", 0.2,0.05,1,0.01) : smooth(0.999):min(1):max(0.05);
+       roomSize = hslider("h:[5]Reverb/[2]Reverberation Room Size (InstrReverb)[style:knob][acc:1 1 -30 0 13]", 0.72,0.05,1.7,0.01):min(1.7):max(0.05);
        rdel = 20;
        f1 = 200;
        f2 = 6000;

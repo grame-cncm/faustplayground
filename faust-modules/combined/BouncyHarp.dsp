@@ -38,14 +38,14 @@ capture = _<:capt,_ : select2(B)
 //==================== GUI SPECIFICATION ================
 
 N = 15;
-hand = hslider("[1]Instrument Hand (Loop mode: hand>0 = recording, 0 = playback)[acc:1 0 -8 11 0 0]", 0, 0, N, 1);// => gate
+hand = hslider("[1]Instrument Hand (Loop mode: hand>0 = recording, 0 = playback)[acc:1 0 -8 0 11]", 0, 0, N, 1);// => gate
 gain = 1;
 byPass = checkbox("[7]Loop Mode ON/OFF (max 20s)") : reverse;//In loop capture mode : hand>0 = recording, 0 = stop recording/playback (Y axis upward)
 reverse = select2(_, 1, 0);
-pickangle = 0.9 * hslider("[3]Dry/Soft Strings[acc:2 1 -10 10 0 0.45]",0.45,0,0.9,0.1);
+pickangle = 0.9 * hslider("[3]Dry/Soft Strings[acc:2 1 -10 0 10]", 0.45,0,0.9,0.1);
 
-beta = hslider("[4]Picking Position [acc:2 1 -10 10 0 0.13]", 0.13, 0.02, 0.5, 0.01);
-t60 = hslider("[5]Resonance (InstrReverb)[acc:1 1 -10 10 0 5]", 5, 0.5, 10, 0.01);  // -60db decay time (sec)
+beta = hslider("[4]Picking Position [acc:2 1 -10 0 10]", 0.13, 0.02, 0.5, 0.01);
+t60 = hslider("[5]Resonance (InstrReverb)[acc:1 1 -10 0 10]", 5, 0.5, 10, 0.01);  // -60db decay time (sec)
 
 B = 0.5;
 L = -10 : db2linear;
@@ -58,7 +58,7 @@ freq(3) = 160;
 freq(4) = 175;
 
 freq(d)	 = freq(d-5)*(2);
-octave(d) = freq(d) * hslider("[2]Hight[acc:0 0 -10 10 0 3]", 3, 1, 6, 0.1) : smooth(0.999);	
+octave(d) = freq(d) * hslider("[2]Hight[acc:0 0 -10 0 10]", 3, 1, 6, 0.1) : smooth(0.999);	
 	
 
 //==================== SIGNAL PROCESSING ================
@@ -105,7 +105,7 @@ instrReverbHarp = _,_ <: *(reverbGain),*(reverbGain),*(1 - reverbGain),*(1 - rev
 zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
        with{
        reverbGain = hslider("v:[8]Reverb/ Reverberation Volume (InstrReverb)[acc:1 1 -10 20 0 0.5] ",0.5,0.1,1,0.01) : smooth(0.999);
-       roomSize = hslider("v:[8]Reverb/ÒReverberation Room Size (InstrReverb)[acc:1 1 -10 25 0 0.72]",0.72,0.01,2,0.01);
+       roomSize = hslider("v:[8]Reverb/ÒReverberation Room Size (InstrReverb)[acc:1 1 -10 0 25]", 0.72,0.01,2,0.01);
        rdel = 20;
        f1 = 200;
        f2 = 6000;

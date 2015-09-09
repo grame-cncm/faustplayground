@@ -32,7 +32,7 @@ White = w * hslider("White Noise Volume[acc:1 0 -10 10 0 0.5][style:knob]", 0.3,
 
 Pink = (w : p) * (2) * hslider("Pink Noise Volume[acc:1 0 -10 10 0 0.5][tooltip:0=Mute, 1=White Noise, 2=Pink Noise][style:knob]", 0.5, 0, 2, 0.01);
 
-NoiseType = hslider("Noise Type[acc:0 0 -10 10 0 1]",0,0,2,1);
+NoiseType = hslider("Noise Type[acc:0 0 -10 0 10]", 1,0,2,1);
 
 Ntype(n) = abs(NoiseType - n) < 0.5;
 

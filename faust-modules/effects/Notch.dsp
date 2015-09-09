@@ -14,8 +14,8 @@ import("music.lib");
 */
 
 G = -3;
-F = hslider("Frequency[scale:log][acc:0 1 -10 15 0 440]", 440, 80, 10000, 1):min(10000):max(80);
-Q = hslider("Q - Filter Bandwidth[scale:log][acc:2 0 -10 10 0 20]", 20, 0.01, 50, 0.01):min(50):max(0.01);
+F = hslider("Frequency[scale:log][acc:0 1 -10 0 15]", 440, 80, 10000, 1):min(10000):max(80);
+Q = hslider("Q - Filter Bandwidth[scale:log][acc:2 0 -10 0 10]", 20, 0.01, 50, 0.01):min(50):max(0.01);
 
 process(x) = notch(x,F,G,Q);
 

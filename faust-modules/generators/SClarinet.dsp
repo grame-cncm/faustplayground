@@ -46,13 +46,13 @@ process = vgroup("CLARINET",
 //==================== GUI SPECIFICATION ================
 
 
-freq = hslider("h:[2]Instrument/Frequency[unit:Hz][tooltip:Tone frequency][acc:1 1 -14 10 0 440]",440,110,1300,0.01):smooth(0.999);
+freq = hslider("h:[2]Instrument/Frequency[unit:Hz][tooltip:Tone frequency][acc:1 1 -14 0 10]", 440,110,1300,0.01):smooth(0.999);
 gain = 1;
 gate = hslider("[1]ON/OFF",0,0,1,1);
 
-reedStiffness = hslider("h:[3]Parameters/Instrument Stiffness[style:knob][acc:0 1 -12 12 0 0.25]",0.25,0.01,1,0.01);
-noiseGain = hslider("h:[3]Parameters/Breath Noise[style:knob][acc:0 1 -10 12 0 0.02]",0.02,0,0.12,0.01);
-pressure = hslider("h:[3]Parameters/ Pressure[style:knob][acc:1 0 -10 10 0 0.8]",0.8,0.25,1,0.01);
+reedStiffness = hslider("h:[3]Parameters/Instrument Stiffness[style:knob][acc:0 1 -12 0 12]", 0.25,0.01,1,0.01);
+noiseGain = hslider("h:[3]Parameters/Breath Noise[style:knob][acc:0 1 -10 0 12]", 0.02,0,0.12,0.01);
+pressure = hslider("h:[3]Parameters/ Pressure[style:knob][acc:1 0 -10 0 10]", 0.8,0.25,1,0.01);
 
 vibratoFreq = 5;
 vibratoGain = 0.1;

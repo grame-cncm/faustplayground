@@ -43,9 +43,9 @@ process = hgroup("harp", h : harpe(C,N,K) :> *(l),*(l))
 	with {
 		N = 21; // number of strings
 		K = 48; // Midi key of first string
-		h = hslider("[1]Instrument Hand[acc:0 1 -10 10 0 11]", 1, 0, N, 1) : int: automat(bps, 15, 0.0)
+		h = hslider("[1]Instrument Hand[acc:0 1 -10 0 10]", 11, 0, N, 1) : int: automat(bps, 15, 0.0)
 			with{
-			bps = hslider("h:[2]Parameters/[1]Speed[style:knob][acc:0 1 -12 10 0 480]", 480, 180, 720, 1):smooth(0.999) : min(720) : max(180) : int;
+			bps = hslider("h:[2]Parameters/[1]Speed[style:knob][acc:0 1 -12 0 10]", 480, 180, 720, 1):smooth(0.999) : min(720) : max(180) : int;
 			};
 		l = 0.9;
 		C = 0.5;	
@@ -66,7 +66,7 @@ harpe(C,N,b) = 	_ <: par(i, N, position(i+1)
 							: pan((i+0.5)/N) )
 				 	:> _,_
 	with {
-		att  = hslider("h:[2]Parameters/[2]Resonance[style:knob][acc:2 1 -12 10 0 5]", 5, 0.1, 10, 0.01):min(10):max(0.1); 
+		att  = hslider("h:[2]Parameters/[2]Resonance[style:knob][acc:2 1 -12 0 10]", 5, 0.1, 10, 0.01):min(10):max(0.1); 
 		lvl  = 1;
 		pan(p) = _ <: *(sqrt(1-p)), *(sqrt(p));
 		position(a,x) = abs(x - a) < 0.5;

@@ -45,13 +45,13 @@ process = vgroup("CLARINET",
 	
 //==================== GUI SPECIFICATION ================
 
-freq = hslider("h:[2]Instrument/Frequency[unit:Hz][tooltip:Tone frequency][acc:1 1 -14 12 0 440]",440,110,1300,0.01):smooth(0.999);
+freq = hslider("h:[2]Instrument/Frequency[unit:Hz][tooltip:Tone frequency][acc:1 1 -14 0 12]", 440,110,1300,0.01):smooth(0.999);
 gain = 1;
 gate = hslider("[1]ON/OFF (ASR Envelope)",0,0,1,1);
 
-reedStiffness = hslider("h:[3]Parameters/Instrument Stiffness[style:knob][acc:0 1 -12 12 0 0.25]",0.25,0.01,1,0.01);
-noiseGain = hslider("h:[3]Parameters/Breath Noise[style:knob][acc:0 1 -12 12 0 0.02]",0.02,0,0.12,0.01);
-pressure = hslider("h:[3]Parameters/ Pressure[style:knob][acc:1 0 -5 10 0 0.8]",0.8,0.65,1,0.01);
+reedStiffness = hslider("h:[3]Parameters/Instrument Stiffness[style:knob][acc:0 1 -12 0 12]", 0.25,0.01,1,0.01);
+noiseGain = hslider("h:[3]Parameters/Breath Noise[style:knob][acc:0 1 -12 0 12]", 0.02,0,0.12,0.01);
+pressure = hslider("h:[3]Parameters/ Pressure[style:knob][acc:1 0 -5 0 10]", 0.8,0.65,1,0.01);
 
 vibratoFreq = 5;
 vibratoGain = 0.1;
@@ -96,8 +96,8 @@ breathPressure = breath + breath*vibrato;
 instrReverbCla = _,_ <: *(reverbGain),*(reverbGain),*(1 - reverbGain),*(1 - reverbGain) : 
 zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
        with{
-       reverbGain = hslider("h:[4]Reverb/ Reverberation Volume (InstrReverb)[style:knob][acc:1 1 -15 15 0 0.137]",0.137,0.05,1,0.01) :smooth(0.999):min(1):max(0.05);
-       roomSize = hslider("h:[4]Reverb/Reverberation Room Size (InstrReverb)[style:knob][acc: 1 1 -15 15 0 0.45]",0.45,0.05,2,0.01):min(2):max(0.05);   
+       reverbGain = hslider("h:[4]Reverb/ Reverberation Volume (InstrReverb)[style:knob][acc:1 1 -15 0 15]", 0.137,0.05,1,0.01) :smooth(0.999):min(1):max(0.05);
+       roomSize = hslider("h:[4]Reverb/Reverberation Room Size (InstrReverb)[style:knob][acc:1 1 -15 0 15]", 0.45,0.05,2,0.01):min(2):max(0.05);   
        rdel = 20;
        f1 = 200;
        f2 = 6000;

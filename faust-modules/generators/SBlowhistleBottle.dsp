@@ -36,18 +36,18 @@ blow(n)= par(i, 2,
 			voice(0,n) = 0*n;
 			voice(1,n) = 1*(resonbp(freq(n)*8,Q,gain):echo);
 			resonGain(0) = 1;
-			resonGain(1) =(hslider("v:[1]Instrument/Whistle Volume[acc:2 0 -10 10 0 0.07]", 0, 0, 0.2, 0.001))^2:smooth(0.999);
+			resonGain(1) =(hslider("v:[1]Instrument/Whistle Volume[acc:2 0 -10 0 10]", 0.07, 0, 0.2, 0.001))^2:smooth(0.999);
 
 			echo = _:+~(@(delayEcho):*(feedback));
 			delayEcho = 44100;
-			feedback = hslider("h:[2]Echo/Echo Intensity [style:knob][acc:2 0 -10 10 0 0.48]", 0.48, 0.2, 0.98, 0.01):smooth(0.999):min(0.98):max(0.2);
+			feedback = hslider("h:[2]Echo/Echo Intensity [style:knob][acc:2 0 -10 0 10]", 0.48, 0.2, 0.98, 0.01):smooth(0.999):min(0.98):max(0.2);
 			};
 
 //==================== GUI SPECIFICATION ================
 N = 10;
 Q = 30;
 position(n) = abs(hand - n) < 0.5;
-hand = hslider("v:[1]Instrument/Instrument Hand[acc:0 1 -10 10 0 5]", 0, 0, N, 1):int:automat(360, 15, 0.0);
+hand = hslider("v:[1]Instrument/Instrument Hand[acc:0 1 -10 0 10]", 5, 0, N, 1):int:automat(360, 15, 0.0);
 envelopeAttack = 0.01;
 vibratoFreq = 5;
 vibratoGain = 0.1;

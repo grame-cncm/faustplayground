@@ -33,16 +33,16 @@ process =
 //==================== GUI SPECIFICATION ================
 
 vol = 0.8;
-freq = hslider("[1]Frequency[unit:Hz][acc:0 1 -10 10 0 440]",440,180,780,1);
+freq = hslider("[1]Frequency[unit:Hz][acc:0 1 -10 0 10]", 440,180,780,1);
 gain = 0.5; 
 gate = 0;
-select = hslider("[0]Play[tooltip:0=Bow; 1=Strike][acc:2 1 -10 10 0 0]",0,0,1,1); 
+select = hslider("[0]Play[tooltip:0=Bow; 1=Strike][acc:2 1 -10 0 10]", 0,0,1,1); 
 integrationConstant = 0.01;
 baseGain = 0.5;
 typeModulation = 3; 
 
 nonLinearity = hslider("[2]Modulation[acc:2 0 -10 15 0 0.02][tooltip:Nonlinearity factor (value between 0 and 1)]",0,0,0.1,0.001);
-frequencyMod = hslider("[3]Modulation Frequency[3][unit:Hz][acc:2 0 -10 15 0 220]",220,150,500,0.1);
+frequencyMod = hslider("[3]Modulation Frequency[3][unit:Hz][acc:2 0 -10 0 15]", 220,150,500,0.1);
 nonLinAttack = 0.1;
 //==================== MODAL PARAMETERS ================
 
@@ -163,7 +163,7 @@ instrReverbAccel = _,_ <: *(reverbGain),*(reverbGain),*(1 - reverbGain),*(1 - re
 zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
        with{
        reverbGain = hslider("v:[4]Reverb/[1]Reverberation Volume (InstrReverb)[acc:1 1 -10 10 0 0.2] ",0.2,0.02,1,0.01) : smooth(0.999):min(1):max(0.02);
-       roomSize = hslider("v:[4]Reverb/[2]Reverberation Room Size (InstrReverb)[acc:1 1 -10 10 0 0.2]",0.2,0.02,1.3,0.01) : min(1.3) :  max(0.02);
+       roomSize = hslider("v:[4]Reverb/[2]Reverberation Room Size (InstrReverb)[acc:1 1 -10 0 10]", 0.2,0.02,1.3,0.01) : min(1.3) :  max(0.02);
        rdel = 20;
        f1 = 200;
        f2 = 6000;

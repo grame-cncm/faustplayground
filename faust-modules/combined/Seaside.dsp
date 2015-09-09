@@ -22,7 +22,7 @@ with{
 	freq = 200;
 	Lowf = freq - Q;
 	Highf = freq + Q;
-	Q = hslider("[1]Q - Filter Bandwidth (Bandpass)[style:knob][unit:Hz][acc:0 1 -10 10 0 30]",30,10,150,0.0001):smooth(0.999);	
+	Q = hslider("[1]Q - Filter Bandwidth (Bandpass)[style:knob][unit:Hz][acc:0 1 -10 0 10]", 30,10,150,0.0001):smooth(0.999);	
 	};
 
 // ----------------------- Pink Noise --------------------------------
@@ -48,7 +48,7 @@ instrReverbSea = _,_ <: *(reverbGain),*(reverbGain),*(1 - reverbGain),*(1 - reve
 zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
        with{
        reverbGain = hslider("[2]Reverberation Volume (InstrReverb)[acc:1 1 -10 10 0 0.1] ",0.1,0.05,1,0.01) : smooth(0.999) : min(1) : max(0.05);
-       roomSize = hslider("[3]Reverberation Room Size (InstrReverb)[acc:1 1 -10 10 0 0.1]",0.1,0.05,2,0.01) : min(2) : max(0.05);
+       roomSize = hslider("[3]Reverberation Room Size (InstrReverb)[acc:1 1 -10 0 10]", 0.1,0.05,2,0.01) : min(2) : max(0.05);
        rdel = 20;
        f1 = 200;
        f2 = 6000;
