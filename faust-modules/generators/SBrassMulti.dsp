@@ -16,11 +16,11 @@ import("instrument.lib");
 
 process = vgroup("Brass Instrument", par(i, 3, brass(i)) :>_);
 
-brass(n) = (borePressure <: deltaPressure(pressure(n)),_ : 
+brass(n) = (borePressure <: deltaPressure(pressure(n)),_ :
 	  (lipFilter(freq(n)) <: *(mouthPressure(pressure(n))),(1-_)),_ : _, * :> + :
 	  dcblocker) ~ (boreDelay(freq(n)))
-	  *(gain(n)): lowpass((n+1),((n+1)*1500));  
-	       
+	  *(gain(n)): lowpass((n+1),((n+1)*1500));
+
 //==================== GUI SPECIFICATION ================
 
 gate = checkbox(" Play");
@@ -29,9 +29,9 @@ freq(0) = hslider("h:Instrument/v:Frequencies/Frequency 1 [unit:Hz][acc:1 0 -10 
 freq(1) = hslider("h:Instrument/v:Frequencies/Frequency 2 [unit:Hz][acc:0 0 -10 0 10]", 440,380,550,0.01):smooth(0.999);
 freq(2) = hslider("h:Instrument/v:Frequencies/Frequency 3 [unit:Hz][acc:2 1 -10 0 12]", 587,550,700,0.01):smooth(0.999);
 
-gain(0) = hslider("h:Instrument/v:Gain/Volume 1 [style:knob][acc:1 1 -10 12 0 0.5][tooltip:Gain (value between 0 and 1)]",0.75,0,1,0.01); 
-gain(1) = hslider("h:Instrument/v:Gain/Volume 2 [style:knob][acc:0 1 -10 12 0 0.5][tooltip:Gain (value between 0 and 1)]",0.5,0,1,0.01); 
-gain(2) = hslider("h:Instrument/v:Gain/Volume 3 [style:knob][acc:2 0 -10 10 0 0.5][tooltip:Gain (value between 0 and 1)]",0.25,0,0.5,0.01); 
+gain(0) = hslider("h:Instrument/v:Gain/Volume 1 [style:knob][acc:1 1 -10 0 12][tooltip:Gain (value between 0 and 1)]",0.5,0,1,0.01);
+gain(1) = hslider("h:Instrument/v:Gain/Volume 2 [style:knob][acc:0 1 -10 0 12][tooltip:Gain (value between 0 and 1)]",0.5,0,1,0.01);
+gain(2) = hslider("h:Instrument/v:Gain/Volume 3 [style:knob][acc:2 0 -10 0 10][tooltip:Gain (value between 0 and 1)]",0.5,0,0.5,0.01); 
 
 
 pressure(0) = 0.37;
@@ -46,7 +46,7 @@ vibratoFreq = 6;
 vibratoGain = 0.05;
 vibratoBegin = 0.05;
 vibratoAttack = 0.5;
-vibratoRelease = 0.1;          
+vibratoRelease = 0.1;
 
 
 envelopeAttack = 0.01;

@@ -4,7 +4,7 @@ declare version "1.0";
 
 import("music.lib");
 
-/* ============ DESCRIPTION =============: 
+/* ============ DESCRIPTION =============:
 
 - White Noise and Pink Noise generator.
 - Head = silence.
@@ -28,9 +28,9 @@ p	= f : (+ ~ g) with {
 rand  = +(12345)~*(1103515245);
 w   = rand/2147483647.0;
 
-White = w * hslider("White Noise Volume[acc:1 0 -10 10 0 0.5][style:knob]", 0.3, 0, 2, 0.01);
+White = w * hslider("White Noise Volume[acc:1 0 -10 0 10][style:knob]", 0.5, 0, 2, 0.01);
 
-Pink = (w : p) * (2) * hslider("Pink Noise Volume[acc:1 0 -10 10 0 0.5][tooltip:0=Mute, 1=White Noise, 2=Pink Noise][style:knob]", 0.5, 0, 2, 0.01);
+Pink = (w : p) * (2) * hslider("Pink Noise Volume[acc:1 0 -10 0 10][tooltip:0=Mute, 1=White Noise, 2=Pink Noise][style:knob]", 0.5, 0, 2, 0.01);
 
 NoiseType = hslider("Noise Type[acc:0 0 -10 0 10]", 1,0,2,1);
 
@@ -41,4 +41,3 @@ Noise(1) = Pink;
 Noise(2) = White;
 
 process = par(i, 3, Noise(i) * Ntype(i)) :>_;
-

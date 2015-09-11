@@ -30,16 +30,16 @@ nOise = environment{
 	white   = random/2147483647.0;
 
 //pink noise filter:
-	p	= f : (+ ~ g) 
+	p	= f : (+ ~ g)
 		with {
 		f(x)	= 0.04957526213389*x - 0.06305581334498*x' + 0.01483220320740*x'';
 		g(x)	= 1.80116083982126*x - 0.80257737639225*x';
 		};
 
 //pink noise generator:
-	pink = (white : p); 
+	pink = (white : p);
 	};
-	
+
 //----------------- FILTERS -------------------//
 
 //gain = 1 - (Q * 0.1);
@@ -48,7 +48,7 @@ freq(0) = hslider("[1]Frequency 0[unit:Hz][acc:2 1 -10 0 10]", 110, 50, 220, 0.0
 freq(1) = hslider("[2]Frequency 1[unit:Hz][acc:2 1 -10 0 10]", 400, 220, 660, 0.01):smooth(0.999);
 freq(2) = hslider("[3]Frequency 2[unit:Hz][acc:2 1 -10 0 10]", 820, 660, 1100, 0.01):smooth(0.999);
 
-gain(n) = hslider("[5]Volume %n[style:knob][acc:%n 0 -10 20 0 0.2]", 0, 0, 2, 0.001):smooth(0.999);
+gain(n) = hslider("[5]Volume %n[style:knob][acc:%n 0 -10 0 20]", 0.2, 0, 2, 0.001):smooth(0.999);
 
 hight(f,n) = freq(f)* (n+1);
 level = 20;
@@ -69,7 +69,7 @@ vibratoFreq = vfreq; //hslider("Vibrato Frequency[unit:Hz][acc:0 0 -10 0 12]", 5
 
 //--------------------------- Random Frequency ---------------------------
 
-vfreq = pulsawhistle.gate : randfreq : smooth(0.99) : lowpass (1, 3000); 
+vfreq = pulsawhistle.gate : randfreq : smooth(0.99) : lowpass (1, 3000);
 randfreq(g) = noise : sampleAndhold(sahgate(g))*(10)
 with{
 sampleAndhold(t) = select2(t) ~_;
@@ -90,7 +90,7 @@ speed = 0.5;
 proba = 0.9; //hslider ("h:Pulse/Probability[unit:%][style:knob][acc:1 1 -10 0 10]", 88,75,100,1) *(0.01):lowpass(1,1);
 
 phasor_bin (init) =  (+(float(speed)/float(SR)) : fmod(_,1.0)) ~ *(init);
-pulsar = _<:(((_)<(ratio_env)):@(100))*((proba)>((_),(noise:abs):latch)); 
+pulsar = _<:(((_)<(ratio_env)):@(100))*((proba)>((_),(noise:abs):latch));
 
 };
 
@@ -98,13 +98,13 @@ pulsar = _<:(((_)<(ratio_env)):@(100))*((proba)>((_),(noise:abs):latch));
 
 vibratoEnv(n) = (envVibrato(b,a,s,r,t(n)))
 	with{
-		b = 0.25; 
+		b = 0.25;
 		a = 0.1;
 		s = 100;
 		r = 0.8;
-		t(n) = hslider("[4]Envelope ON/OFF %n[acc:%n 0 -12 2 0 1]", 0, 0, 1, 1);
+		t(n) = hslider("[4]Envelope ON/OFF %n[acc:%n 0 -12 0 2]", 1, 0, 1, 1);
 		};
-		
+
 //------------------------ Freeverb ------------------------------------
 
 frEEvErb = environment{
@@ -211,10 +211,3 @@ stereoReverb(fb1, fb2, damp, spread)
 fxctrl(g,w,Fx) =  _,_ <: (*(g),*(g) : Fx : *(w),*(w)), *(1-w), *(1-w) +> _,_;
 
 };
-
-
-
-
-
-	
-

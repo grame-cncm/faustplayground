@@ -11,4 +11,4 @@ declare author "GRAME";
 
 import("filter.lib");
 
-process = par(i,2,*(hslider("Volume[acc:1 0 -10 10 0 0.75] ", 0.75, 0, 1, 0.01):smooth(0.999)));
+process = par(i,2,*(hslider("Volume[acc:1 0 -10 0 10]", 0.75, 0, 1, 0.01):smooth(0.999)));

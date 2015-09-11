@@ -6,7 +6,7 @@ declare version "1.0";
 import("math.lib");
 import("music.lib");
 import("filter.lib");
-import("effect.lib"); 
+import("effect.lib");
 
 /* ========== DESCRIPTION =============
 
@@ -60,7 +60,7 @@ envSize = hslider("h:[2]Envelope/Note Duration[style:knob][unit:s][acc:0 0 -10 0
 
 //--------------------------- Random Frequency ---------------------------
 
-freq = randfreq : smooth(0.99) : lowpass (1, 3000); 
+freq = randfreq : smooth(0.99) : lowpass (1, 3000);
 randfreq(g) = noise : sampleAndhold(sahgate(g))*(700)+(100)
 with{
 sampleAndhold(t) = select2(t) ~_;
@@ -79,10 +79,10 @@ drywet(x,y) 	= (1-c)*x + c*y
 
 //--------------------------- InstrReverb -------------------------------
 
-instrReverbSynth = _,_ <: *(reverbGain),*(reverbGain),*(1 - reverbGain),*(1 - reverbGain) : 
+instrReverbSynth = _,_ <: *(reverbGain),*(reverbGain),*(1 - reverbGain),*(1 - reverbGain) :
 zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
        with{
-       reverbGain = hslider("v:[4]Effects/[2]Reverberation Volume (InstrReverb)[acc:1 1 -10 10 0 0.1] ",0.1,0.05,1,0.01) : smooth(0.999):min(1):max(0.05);
+       reverbGain = hslider("v:[4]Effects/[2]Reverberation Volume (InstrReverb)[acc:1 1 -10 0 10]",0.1,0.05,1,0.01) : smooth(0.999):min(1):max(0.05);
        roomSize = hslider("v:[4]Effects/[3]Reverberation Room Size(InstrReverb) [acc:1 1 -10 0 10]", 0.1,0.05,1,0.01):min(2):max(0.05);
        rdel = 20;
        f1 = 200;

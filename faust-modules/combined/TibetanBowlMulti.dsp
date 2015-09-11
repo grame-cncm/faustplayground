@@ -24,24 +24,24 @@ import("instrument.lib");
 
 process =
 		(((select-1)*-1) <:
-		//nModes resonances with nModes feedbacks for bow table look-up 
-		par(i,nModes,(resonance(i)~_))):>+://~par(i,nModes,_) :> + : 
+		//nModes resonances with nModes feedbacks for bow table look-up
+		par(i,nModes,(resonance(i)~_))):>+://~par(i,nModes,_) :> + :
 		//Signal Scaling and stereo
 		NLFM : stereo : instrReverbAccel:
 		*(vol),*(vol);
-		
+
 //==================== GUI SPECIFICATION ================
 
 vol = 0.8;
 freq = hslider("[1]Frequency[unit:Hz][acc:0 1 -10 0 10]", 440,180,780,1);
-gain = 0.5; 
+gain = 0.5;
 gate = 0;
-select = hslider("[0]Play[tooltip:0=Bow; 1=Strike][acc:2 1 -10 0 10]", 0,0,1,1); 
+select = hslider("[0]Play[tooltip:0=Bow; 1=Strike][acc:2 1 -10 0 10]", 0,0,1,1);
 integrationConstant = 0.01;
 baseGain = 0.5;
-typeModulation = 3; 
+typeModulation = 3;
 
-nonLinearity = hslider("[2]Modulation[acc:2 0 -10 15 0 0.02][tooltip:Nonlinearity factor (value between 0 and 1)]",0,0,0.1,0.001);
+nonLinearity = hslider("[2]Modulation[acc:2 0 -10 0 15][tooltip:Nonlinearity factor (value between 0 and 1)]",0.02,0,0.1,0.001);
 frequencyMod = hslider("[3]Modulation Frequency[3][unit:Hz][acc:2 0 -10 0 15]", 220,150,500,0.1);
 nonLinAttack = 0.1;
 //==================== MODAL PARAMETERS ================
@@ -53,7 +53,7 @@ nMode(0) = 12;
 modes(0,0) = 0.996108344;
 basegains(0,0) = 0.999925960128219;
 excitation(0,0) = 11.900357 / 10;
-    
+
 modes(0,1) = 1.0038916562;
 basegains(0,1) = 0.999925960128219;
 excitation(0,1) = 11.900357 / 10;
@@ -65,35 +65,35 @@ excitation(0,2) = 10.914886 / 10;
 modes(0,3) = 2.99329767;
 basegains(0,3) = 0.999982774366897;
 excitation(0,3) = 10.914886 / 10;
-    
+
 modes(0,4) = 5.704452;
 basegains(0,4) = 1.0;
 excitation(0,4) = 42.995041 / 10;
-    
+
 modes(0,5) = 5.704452;
 basegains(0,5) = 1.0;
 excitation(0,5) = 42.995041 / 10;
-    
+
 modes(0,6) = 8.9982;
 basegains(0,6) = 1.0;
 excitation(0,6) = 40.063034 / 10;
-    
+
 modes(0,7) = 9.01549726;
 basegains(0,7) = 1.0;
 excitation(0,7) = 40.063034 / 10;
-    
+
 modes(0,8) = 12.83303;
 basegains(0,8) = 0.999965497558225;
 excitation(0,8) = 7.063034 / 10;
-   
+
 modes(0,9) = 12.807382;
 basegains(0,9) = 0.999965497558225;
 excitation(0,9) = 7.063034 / 10;
-    
+
 modes(0,10) = 17.2808219;
 basegains(0,10) = 0.9999999999999999999965497558225;
 excitation(0,10) = 57.063034 / 10;
-    
+
 modes(0,11) = 21.97602739726;
 basegains(0,11) = 0.999999999999999965497558225;
 excitation(0,11) = 57.063034 / 10;
@@ -104,9 +104,9 @@ excitation(0,11) = 57.063034 / 10;
 //nonlinearities are created by the nonlinear passive allpass ladder filter declared in filter.lib
 
 //nonlinear filter order
-nlfOrder = 6; 
+nlfOrder = 6;
 
-//nonLinearModultor is declared in instrument.lib, it adapts allpassnn from filter.lib 
+//nonLinearModultor is declared in instrument.lib, it adapts allpassnn from filter.lib
 //for using it with waveguide instruments
 NLFM =  nonLinearModulator((nonLinearity : smooth(0.999)),1,freq,
 typeModulation,(frequencyMod : smooth(0.999)),nlfOrder);
@@ -159,10 +159,10 @@ resonance(x) = + : + (excitation(preset,x)*select) : delayLine(x) : *(basegains(
 
 //----------------------- Reverb (ajout accelerometre 05/2015) ----------------
 
-instrReverbAccel = _,_ <: *(reverbGain),*(reverbGain),*(1 - reverbGain),*(1 - reverbGain) : 
+instrReverbAccel = _,_ <: *(reverbGain),*(reverbGain),*(1 - reverbGain),*(1 - reverbGain) :
 zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
        with{
-       reverbGain = hslider("v:[4]Reverb/[1]Reverberation Volume (InstrReverb)[acc:1 1 -10 10 0 0.2] ",0.2,0.02,1,0.01) : smooth(0.999):min(1):max(0.02);
+       reverbGain = hslider("v:[4]Reverb/[1]Reverberation Volume (InstrReverb)[acc:1 1 -10 0 10]",0.2,0.02,1,0.01) : smooth(0.999):min(1):max(0.02);
        roomSize = hslider("v:[4]Reverb/[2]Reverberation Room Size (InstrReverb)[acc:1 1 -10 0 10]", 0.2,0.02,1.3,0.01) : min(1.3) :  max(0.02);
        rdel = 20;
        f1 = 200;
@@ -171,4 +171,3 @@ zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
        t60m = roomSize*2;
        fsmax = 48000;
        };
-       

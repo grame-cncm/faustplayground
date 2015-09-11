@@ -12,5 +12,5 @@ declare name "High Pass Filter";
 process = _:highpass(2,fc):_
 
 with{
-	fc = hslider("Cut-off Frequency[acc:2 0 -10 10 0 1300][scale:log]", 1300, 10, 20000, 0.01):smooth(0.999):min(20000):max(10);
+	fc = hslider("Cut-off Frequency[acc:2 0 -10 0 10][scale:log]", 1300, 10, 20000, 0.01):smooth(0.999):min(20000):max(10);
 	};

@@ -4,7 +4,7 @@ declare author "Romain Michon (rmichon@ccrma.stanford.edu)";
 declare copyright "Romain Michon";
 declare version "1.0";
 declare licence "STK-4.3"; // Synthesis Tool Kit 4.3 (MIT style license);
-declare description "A simple flute based on Smith algorythm: https://ccrma.stanford.edu/~jos/pasp/Flutes_Recorders_Pipe_Organs.html"; 
+declare description "A simple flute based on Smith algorythm: https://ccrma.stanford.edu/~jos/pasp/Flutes_Recorders_Pipe_Organs.html";
 
 //Modifications GRAME July 2015
 
@@ -39,7 +39,7 @@ breathAmp = hslider("[3]Breath Noise[style:knob][acc:2 0 -10 0 10]", 0.02, 0.01,
 
 gate = hslider("[0]ON/OFF (ASR Envelope)",0,0,1,1);
 vibratoFreq = hslider("[4]Vibrato Freq (Vibrato Envelope)[style:knob][unit:Hz][acc:0 1 -10 0 10]", 4,0.5,8,0.1);
-env1Attack = 0.1;//hslider("h:Parameters/Press_Env_Attack[unit:s][style:knob][acc:1 0 -10 10 0 0.05][tooltip:Pressure envelope attack duration]",0.05,0.05,0.2,0.01);
+env1Attack = 0.1;//hslider("h:Parameters/Press_Env_Attack[unit:s][style:knob][acc:1 0 -10 0 10][tooltip:Pressure envelope attack duration]",0.05,0.05,0.2,0.01);
 
 
 
@@ -67,12 +67,12 @@ env1Release = 0.5;
 //nonlinearities are created by the nonlinear passive allpass ladder filter declared in filter.lib
 
 //nonlinear filter order
-nlfOrder = 6; 
+nlfOrder = 6;
 
 //attack - sustain - release envelope for nonlinearity (declared in instrument.lib)
 envelopeMod = asr(nonLinAttack,100,0.1,gate);
 
-//nonLinearModultor is declared in instrument.lib, it adapts allpassnn from filter.lib 
+//nonLinearModultor is declared in instrument.lib, it adapts allpassnn from filter.lib
 //for using it with waveguide instruments
 NLFM =  nonLinearModulator((nonLinearity : smooth(0.999)),envelopeMod,freq,
      typeModulation,(frequencyMod : smooth(0.999)),nlfOrder);
@@ -99,13 +99,13 @@ reflexionFilter = lowpass(1,2000);
 //----------------------- Algorithm implementation ----------------------------
 
 //Pressure envelope
-env1 = adsr(env1Attack,env1Decay,90,env1Release,(gate | pressureEnvelope))*pressure*1.1; 
+env1 = adsr(env1Attack,env1Decay,90,env1Release,(gate | pressureEnvelope))*pressure*1.1;
 
 //Global envelope
 env2 = asr(env2Attack,100,env2Release,gate)*0.5;
 
 //Vibrato Envelope
-vibratoEnvelope = envVibrato(vibratoBegin,vibratoAttack,100,vibratoRelease,gate)*vibratoGain; 
+vibratoEnvelope = envVibrato(vibratoBegin,vibratoAttack,100,vibratoRelease,gate)*vibratoGain;
 
 vibrato = osc(vibratoFreq)*vibratoEnvelope;
 

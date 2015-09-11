@@ -1,11 +1,11 @@
 declare name "Modulations";
 declare author "ER";
-import("math.lib"); 
-import("maxmsp.lib"); 
-import("music.lib"); 
-import("oscillator.lib"); 
-import("reduce.lib"); 
-import("filter.lib"); 
+import("math.lib");
+import("maxmsp.lib");
+import("music.lib");
+import("oscillator.lib");
+import("reduce.lib");
+import("filter.lib");
 import("effect.lib");
 
 import("music.lib");
@@ -30,8 +30,8 @@ process = vgroup("Modulations",oscil <: seq(i, 3, NLFM(i)), NLFM3 :> lowpass(1,2
 
 NLFM(n) = _ : nonLinearModulator((nonlinearity:smooth(0.999)),env(n),freq,typeMod(n),freqMod,nlfOrder) : _;
 NLFM3 = _ : nonLinearModulator((nonlinearity:smooth(0.999)),env(3),freq,typeMod(3),freqMod,nlfOrder) : _;
-oscil = osci(freq);	
-	
+oscil = osci(freq);
+
 //======================== GUI SPECIFICATIONS =====================
 
 freq = hslider("h:Instrument/ Frequency [unit:Hz][acc:1 1 -10 0 15]", 330, 100, 1200, 0.1):smooth(0.999);
@@ -46,7 +46,7 @@ gate(2) = hslider("v:Modulations/Play Modulation 2 (ASR Envelope)[tooltip:noteOn
 gate(3) = hslider("v:Modulations/Play Modulation 3 (ASR Envelope)[tooltip:noteOn = 1, noteOff = 0][acc:1 0 -10 0 10]", 0,0,1,1);
 
 //------------------------ NLFM PARAMETERS ------------------------
-nlfOrder = 6; 
+nlfOrder = 6;
 nonlinearity = 0.8;
 typeMod(n) = n;
 
@@ -59,10 +59,10 @@ t(n) = gate(n);
 
 //----------------------- INSTRREVERB -------------------------------
 
-instrReverbMod = _,_ <: *(reverbGain),*(reverbGain),*(1 - reverbGain),*(1 - reverbGain) : 
+instrReverbMod = _,_ <: *(reverbGain),*(reverbGain),*(1 - reverbGain),*(1 - reverbGain) :
 zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
        with{
-       reverbGain = hslider("v:Reverb/Reverberation Volume(InstrReverb)[acc:1 1 -10 10 0 0.25] ",0.1,0.05,1,0.01) : smooth(0.999):min(1):max(0.05);
+       reverbGain = hslider("v:Reverb/Reverberation Volume(InstrReverb)[acc:1 1 -10 0 10]",0.25,0.05,1,0.01) : smooth(0.999):min(1):max(0.05);
        roomSize = hslider("v:Reverb/Reverberation Room Size(InstrReverb)[acc:1 1 -10 0 10]", 0.5,0.05,2,0.01):min(2):max(0.05);
        rdel = 20;
        f1 = 200;
