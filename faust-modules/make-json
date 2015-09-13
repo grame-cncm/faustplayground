@@ -1,0 +1,31 @@
+#!/bin/bash
+# echo "{"
+# sep1=""
+# for d in *; do
+# 	echo $sep1
+# 	echo "$d:"
+# 	sep2="["
+# 	for f in "$d/*.dsp"; do
+# 		echo $sep2 "$f"
+# 		sep2=","
+# 	done
+# 	echo "]"
+# 	sep1=","
+# done
+# echo "}"
+
+echo "{"
+s=""
+for d in *; do
+	echo $s
+	echo -n '"'$d'"' ": ["
+	w=''
+	for f in $d/*.dsp; do
+		echo -n $w '"'$f'"'
+		w=','
+	done
+	echo -n "]"
+	s=','
+done
+echo
+echo "}"
