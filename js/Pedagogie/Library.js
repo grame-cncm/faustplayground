@@ -92,13 +92,14 @@ function viewLibraryList(selector){
 	var getrequest = new XMLHttpRequest();
 
 	getrequest.onreadystatechange = function() {
+		console.log("enter onreadystatechange");
 		if(getrequest.readyState == 4 && getrequest.status == 200) {
 
 			window.libraryContent = getrequest.responseText;
 
 			var data = JSON.parse(window.libraryContent);
 
-			var sections = ["generateurs", "effets", "instruments"];
+			var sections = ["instruments", "effets", "exemples"];
 
 			for(var i=0; i<3; i++){
 				var section = sections[i];

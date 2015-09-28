@@ -1,7 +1,7 @@
 /*				TOOLTIPS.JS
 	Add tooltips for the pedagogical version of the playground
-		
-	DEPENDENCIES : 
+
+	DEPENDENCIES :
 		- SceneClass.js
 		- ModuleClass.js
 */
@@ -62,10 +62,10 @@ function sceneHasInstrumentAndEffect(){
 	if(modules.length<2)
 		return false
 	else{
-		
+
 		var hasInstrument = false;
 		var hasEffect = false;
-				
+
 		for (var i = 0; i < modules.length; i++) {
 			if(modules[i].getInputNode())
 				hasEffect = true;
@@ -73,19 +73,19 @@ function sceneHasInstrumentAndEffect(){
 				hasInstrument = true;
 		}
 	}
-	
+
 	return hasInstrument && hasEffect;
 }
 
 function isInstrumentConnected(){
-				
+
 	var modules = window.scenes[window.currentScene].getModules();
-				
+
 	for (var i = 0; i < modules.length; i++) {
 		if(!modules[i].getInputNode() && modules[i].getOutputConnections() && modules[i].getOutputConnections().length > 0)
 			return true;
 	}
-	
+
 	return false;
 }
 
@@ -95,18 +95,18 @@ function toolTipForLibrary(type){
 
 	var image = document.createElement('span');
 	image.className= "number";
-	
+
 	var subtitle;
-			
+
 	if(type == "instruments"){
-					
 		image.textContent = "1";
 		subtitle = document.createTextNode( "     Glisse l'instrument de ton choix dans la scene");
-	}
-	else{
-				
-		image.textContent = "2";	
+	} else if (type == "effets") {
+		image.textContent = "2";
 		subtitle = document.createTextNode( "     Glisse l'effet de ton choix dans la scene");
+	} else if (type == "exemples") {
+		image.textContent = "3";
+		subtitle = document.createTextNode( "     Ou glisse un exemple tout fait");		
 	}
 
 	tooltip.appendChild(image);
@@ -119,16 +119,16 @@ function toolTipForConnections(){
 	var currentScene = window.scenes[window.currentScene];
 
 	if(window.tooltips){
-		
+
 		var connectedNode = currentScene.getAudioOutput();
-		
+
 		while(connectedNode){
-	
+
 // 			Node is an effect
 			if(connectedNode.getInputNode()){
 
 //	 		Node is connected
-				if(connectedNode.getInputConnections() && connectedNode.getInputConnections().length > 0)		
+				if(connectedNode.getInputConnections() && connectedNode.getInputConnections().length > 0)
 					connectedNode = connectedNode.getInputConnections()[0].source;
 //	 		Node is not connected and there is everything on the scene
 				else if(sceneHasInstrumentAndEffect()){
@@ -136,7 +136,7 @@ function toolTipForConnections(){
 						changeSceneToolTip(3);
 					else
 						changeSceneToolTip(4);
-				
+
 					connectedNode = null;
 				}
 // 			Node is not connected and there are no instruments on the scene
@@ -153,7 +153,3 @@ function toolTipForConnections(){
 		}
 	}
 }
-
-
-
-
