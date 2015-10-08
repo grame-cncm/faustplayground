@@ -44,8 +44,8 @@ pulsaring = environment{
 gate = phasor_bin(1) :-(0.001):pulsar;
 ratio_env = (0.5);
 fade = (0.5); // min > 0 pour eviter division par 0
-speed = hslider ("[2]Occurrence Speed (Granulator)[unit:Hz][style:knob][acc:0 1 -10 0 10]", 4,0.001,10,0.0001):lowpass(1,1);
-proba = hslider ("[3]Probability(Granulator)[unit:%][style:knob][acc:0 1 -10 0 10]", 88,75,100,1) *(0.01):lowpass(1,1);
+speed = hslider ("[2]Occurrence Speed (Granulator)[unit:Hz][style:knob][acc:0 0 -10 0 10]", 4,0.001,10,0.0001):lowpass(1,1);
+proba = hslider ("[3]Probability(Granulator)[unit:%][style:knob][acc:0 0 -10 0 10]", 88,75,100,1) *(0.01):lowpass(1,1);
 
 phasor_bin (init) =  (+(float(speed)/float(SR)) : fmod(_,1.0)) ~ *(init);
 pulsar = _<:(((_)<(ratio_env)):@(100))*((proba)>((_),(noise:abs):latch)); 

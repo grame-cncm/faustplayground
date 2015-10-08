@@ -25,13 +25,13 @@ NLFeks(n) = filtered_excitation(n,P(octave(n)),octave(n)) : stringloop(octave(n)
 //==================== GUI SPECIFICATION ================
 
 N = 15;
-hand = hslider("[1]Instrument Hand [acc:1 0 -8 0 11]", 0, 0, N, 1);// => gate
+hand = hslider("[1]Instrument Hand [acc:1 1 -8 0 11]", 0, 0, N, 1);// => gate
 gain = 1;
 reverse = select2(_, 1, 0);
-pickangle = 0.9 * hslider("[3]Dry/Soft Strings[acc:2 1 -10 0 10]", 0.45,0,0.9,0.1);
+pickangle = 0.9 * hslider("[3]Dry/Soft Strings[acc:2 0 -10 0 10]", 0.45,0,0.9,0.1);
 
-beta = hslider("[4]Picking Position [acc:2 1 -10 0 10]", 0.13, 0.02, 0.5, 0.01);
-t60 = hslider("[5]Resonance (InstrReverb)[acc:1 1 -10 0 10]", 5, 0.5, 10, 0.01);  // -60db decay time (sec)
+beta = hslider("[4]Picking Position [acc:2 0 -10 0 10]", 0.13, 0.02, 0.5, 0.01);
+t60 = hslider("[5]Resonance (InstrReverb)[acc:1 0 -10 0 10]", 5, 0.5, 10, 0.01);  // -60db decay time (sec)
 
 B = 0.5;
 L = -10 : db2linear;
@@ -45,7 +45,7 @@ freq(3) = 160;
 freq(4) = 175;
 
 freq(d)	 = freq(d-5)*(2);
-octave(d) = freq(d) * hslider("Hight[acc:2 1 -10 0 10]", 3, 1, 6, 0.1) : smooth(0.999);	
+octave(d) = freq(d) * hslider("Hight[acc:2 0 -10 0 10]", 3, 1, 6, 0.1) : smooth(0.999);	
 	
 
 //==================== SIGNAL PROCESSING ================

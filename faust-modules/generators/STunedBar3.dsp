@@ -38,9 +38,9 @@ gain = 0.8;
 gate(d,n) = position(d,n) : upfront;
 position(d,n) = abs(hand(d) - n) < 0.5;
 upfront(x) = x>x';
-hand(0) = vslider("Instrument Hand 0 [acc:1 0 -10 0 14]", 0, 0, 5, 1):int:automat(120, 15, 0.0);
-hand(1) = vslider("Instrument Hand 1 [acc:1 0 -10 0 14]", 2, 0, 5, 1):int:automat(240, 15, 0.0);
-hand(2) = vslider("Instrument Hand 2 [acc:1 0 -10 0 10]", 4, 0, 5, 1):int:automat(480, 15, 0.0);
+hand(0) = vslider("Instrument Hand 0 [acc:1 1 -10 0 14]", 0, 0, 5, 1):int:automat(120, 15, 0.0);
+hand(1) = vslider("Instrument Hand 1 [acc:1 1 -10 0 14]", 2, 0, 5, 1):int:automat(240, 15, 0.0);
+hand(2) = vslider("Instrument Hand 2 [acc:1 1 -10 0 10]", 4, 0, 5, 1):int:automat(480, 15, 0.0);
 
 
 select = 1;

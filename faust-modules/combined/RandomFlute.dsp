@@ -26,7 +26,7 @@ process = flute : echo <: instrReverbFlute;
 //==================== GUI SPECIFICATION ================
 
 pressure = 1;
-breathAmp = hslider("h:[3]Parameters/Breath Noise[style:knob][acc:0 1 -10 0 10]", 0.02, 0.01, 0.05, 0.0001):smooth(0.999):min(0.05):max(0.01);
+breathAmp = hslider("h:[3]Parameters/Breath Noise[style:knob][acc:0 0 -10 0 10]", 0.02, 0.01, 0.05, 0.0001):smooth(0.999):min(0.05):max(0.01);
 
 gate = pulsaflute.gate;
 vibratoFreq = 5;
@@ -56,8 +56,8 @@ pulsaflute = environment{
 gate = phasor_bin(1) :-(0.001):pulsar;
 ratio_env = (0.5);
 fade = (0.5); // min > 0 pour eviter division par 0
-speed = hslider ("h:[1]Pulse/[1]Speed (Granulator)[unit:Hz][style:knob][acc:0 1 -10 0 10]", 3,1,6,0.0001):lowpass(1,1);
-proba = hslider ("h:[1]Pulse/[2]Probability (Granulator)[unit:%][style:knob][acc:0 1 -10 0 10]", 88,60,100,1) *(0.01):lowpass(1,1);
+speed = hslider ("h:[1]Pulse/[1]Speed (Granulator)[unit:Hz][style:knob][acc:0 0 -10 0 10]", 3,1,6,0.0001):lowpass(1,1);
+proba = hslider ("h:[1]Pulse/[2]Probability (Granulator)[unit:%][style:knob][acc:0 0 -10 0 10]", 88,60,100,1) *(0.01):lowpass(1,1);
 
 phasor_bin (init) =  (+(float(speed)/float(SR)) : fmod(_,1.0)) ~ *(init);
 pulsar = _<:(((_)<(ratio_env)):@(100))*((proba)>((_),(noise:abs):latch));
@@ -137,7 +137,7 @@ flow = env1 + breath*breathAmp + vibrato;
 
 instrReverbFlute = zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
        with{
-       roomSize = hslider("h:Reverb/Reverberation Room Size [style:knob][acc:1 1 -10 0 10]", 0.2,0.01,1.7,0.01);
+       roomSize = hslider("h:Reverb/Reverberation Room Size [style:knob][acc:1 0 -10 0 10]", 0.2,0.01,1.7,0.01);
        rdel = 20;
        f1 = 200;
        f2 = 6000;

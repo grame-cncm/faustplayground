@@ -31,11 +31,11 @@ process	= vgroup("RANDOM SYNTH", hand <: sum(i, 3, partial(i))
 
 //=========================== PARAMETERS ================================
 
-gain = hslider("v:[1]Instrument/[2]General Volume[acc:2 1 -10 0 10]", 0.5, 0.4, 1, 0.01):smooth(0.999):min(1):max(0);
+gain = hslider("v:[1]Instrument/[2]General Volume[acc:2 0 -10 0 10]", 0.5, 0.4, 1, 0.01):smooth(0.999):min(1):max(0);
 // variable speed trigger:
-hand = hslider("v:[1]Instrument/[1]Instrument Hand[acc:1 0 -10 0 10]", 10, 0, 20, 1) : automat(bps, 15, 0.0) : smooth(0.999) : min(20) : max(0) : int
+hand = hslider("v:[1]Instrument/[1]Instrument Hand[acc:1 1 -10 0 10]", 10, 0, 20, 1) : automat(bps, 15, 0.0) : smooth(0.999) : min(20) : max(0) : int
 with{
-bps = hslider("v:[1]Instrument/[3]Speed[acc:0 1 -10 0 10]", 480, 180, 780, 1) : smooth(0.999) : min(780) : max(180) : int;
+bps = hslider("v:[1]Instrument/[3]Speed[acc:0 0 -10 0 10]", 480, 180, 780, 1) : smooth(0.999) : min(780) : max(180) : int;
 };
 
 // relative amplitudes of the different partials
@@ -55,7 +55,7 @@ with{
 upfront(x) = abs(x-x')>0.5;
 release(n) = + ~decay(n);
 decay(n,x) = x - (x>0.0)/n;
-envSize = hslider("h:[2]Envelope/Note Duration[style:knob][unit:s][acc:0 0 -10 0 10]", 0.3, 0.1, 0.6, 0.01) * (44100) : smooth(0.99):min(26460):max(4410):int;
+envSize = hslider("h:[2]Envelope/Note Duration[style:knob][unit:s][acc:0 1 -10 0 10]", 0.3, 0.1, 0.6, 0.01) * (44100) : smooth(0.99):min(26460):max(4410):int;
 };
 
 //--------------------------- Random Frequency ---------------------------
@@ -74,5 +74,5 @@ counter(g) = (+(1):*(1-g))~_;
 
 drywet(x,y) 	= (1-c)*x + c*y
 				with {
-					c = hslider("v:[4]Effects/[1]Echo Intensity[unit:%][acc:0 1 -10 0 8]", 0,0,100,0.01)*(0.01):smooth(0.999):min(1):max(0);
+					c = hslider("v:[4]Effects/[1]Echo Intensity[unit:%][acc:0 0 -10 0 8]", 0,0,100,0.01)*(0.01):smooth(0.999):min(1):max(0);
 					};

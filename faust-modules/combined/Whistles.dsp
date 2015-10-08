@@ -44,9 +44,9 @@ nOise = environment{
 
 //gain = 1 - (Q * 0.1);
 
-freq(0) = hslider("[1]Frequency 0[unit:Hz][acc:2 1 -10 0 10]", 110, 50, 220, 0.01):smooth(0.999);
-freq(1) = hslider("[2]Frequency 1[unit:Hz][acc:2 1 -10 0 10]", 400, 220, 660, 0.01):smooth(0.999);
-freq(2) = hslider("[3]Frequency 2[unit:Hz][acc:2 1 -10 0 10]", 820, 660, 1100, 0.01):smooth(0.999);
+freq(0) = hslider("[1]Frequency 0[unit:Hz][acc:2 0 -10 0 10]", 110, 50, 220, 0.01):smooth(0.999);
+freq(1) = hslider("[2]Frequency 1[unit:Hz][acc:2 0 -10 0 10]", 400, 220, 660, 0.01):smooth(0.999);
+freq(2) = hslider("[3]Frequency 2[unit:Hz][acc:2 0 -10 0 10]", 820, 660, 1100, 0.01):smooth(0.999);
 
 gain(n) = hslider("[5]Volume %n[style:knob][acc:%n 0 -10 0 20]", 0.2, 0, 2, 0.001):smooth(0.999);
 
@@ -64,8 +64,8 @@ Reson(f,n) = resonbp(hight(f,n),Q,1) : lowpass(1,3000);
 //----------------- VIBRATO --------------------//
 
 vibrato = vibratoGain * osc(vibratoFreq) + (1-vibratoGain);
-vibratoGain = 0.17;//hslider("Vibrato Volume[style:knob][acc:1 0 -10 0 10]", 0.1, 0.05, 0.5, 0.01) : smooth(0.999);
-vibratoFreq = vfreq; //hslider("Vibrato Frequency[unit:Hz][acc:0 0 -10 0 12]", 5, 0, 10, 0.001) : smooth(0.999);
+vibratoGain = 0.17;//hslider("Vibrato Volume[style:knob][acc:1 1 -10 0 10]", 0.1, 0.05, 0.5, 0.01) : smooth(0.999);
+vibratoFreq = vfreq; //hslider("Vibrato Frequency[unit:Hz][acc:0 1 -10 0 12]", 5, 0, 10, 0.001) : smooth(0.999);
 
 //--------------------------- Random Frequency ---------------------------
 
@@ -87,7 +87,7 @@ gate = phasor_bin(1) :-(0.001):pulsar;
 ratio_env = (0.5);
 fade = (0.5); // min > 0 pour eviter division par 0
 speed = 0.5;
-proba = 0.9; //hslider ("h:Pulse/Probability[unit:%][style:knob][acc:1 1 -10 0 10]", 88,75,100,1) *(0.01):lowpass(1,1);
+proba = 0.9; //hslider ("h:Pulse/Probability[unit:%][style:knob][acc:1 0 -10 0 10]", 88,75,100,1) *(0.01):lowpass(1,1);
 
 phasor_bin (init) =  (+(float(speed)/float(SR)) : fmod(_,1.0)) ~ *(init);
 pulsar = _<:(((_)<(ratio_env)):@(100))*((proba)>((_),(noise:abs):latch));
@@ -169,8 +169,8 @@ allpasstuningL4 = 225;
 //dampSlider      = hslider("Damp",0.5, 0, 1, 0.025)*scaledamp;
 
 dampSlider 		= 0.7*scaledamp;
-roomsizeSlider  = hslider("[7]Reverberation Room Size (Freeverb)[style:knob][acc:1 1 -10 0 13]", 0.5, 0.1, 0.9, 0.025) : smooth(0.999) : min(0.9) :max(0.1) *scaleroom + offsetroom;
-wetSlider       = hslider("[6]Reverberation Intensity (Freeverb)[style:knob][acc:1 1 -10 0 15]", 0.3333, 0.1, 0.9, 0.025) : smooth(0.999) : min(0.9) :max(0.1);
+roomsizeSlider  = hslider("[7]Reverberation Room Size (Freeverb)[style:knob][acc:1 0 -10 0 13]", 0.5, 0.1, 0.9, 0.025) : smooth(0.999) : min(0.9) :max(0.1) *scaleroom + offsetroom;
+wetSlider       = hslider("[6]Reverberation Intensity (Freeverb)[style:knob][acc:1 0 -10 0 15]", 0.3333, 0.1, 0.9, 0.025) : smooth(0.999) : min(0.9) :max(0.1);
 combfeed        = roomsizeSlider;
 
 

@@ -23,7 +23,7 @@ process = flute;
 //==================== GUI SPECIFICATION ================
 
 pressure = 1;
-breathAmp = hslider("h:[3]Parameters/Breath Noise[style:knob][acc:0 1 -10 0 10]", 0.02, 0.01, 0.05, 0.0001):smooth(0.999):min(0.05):max(0.01);
+breathAmp = hslider("h:[3]Parameters/Breath Noise[style:knob][acc:0 0 -10 0 10]", 0.02, 0.01, 0.05, 0.0001):smooth(0.999):min(0.05):max(0.01);
 
 gate = pulsaflute.gate;
 vibratoFreq = 5;
@@ -47,8 +47,8 @@ pulsaflute = environment{
 gate = phasor_bin(1) :-(0.001):pulsar;
 ratio_env = (0.5);
 fade = (0.5); 
-speed = hslider ("h:[1]Pulse/[1]Speed (Granulator)[unit:Hz][style:knob][acc:0 1 -10 0 10]", 3,1,6,0.0001):lowpass(1,1);
-proba = hslider ("h:[1]Pulse/[2]Probability (Granulator)[unit:%][style:knob][acc:0 1 -10 0 10]", 88,60,100,1) *(0.01):lowpass(1,1);
+speed = hslider ("h:[1]Pulse/[1]Speed (Granulator)[unit:Hz][style:knob][acc:0 0 -10 0 10]", 3,1,6,0.0001):lowpass(1,1);
+proba = hslider ("h:[1]Pulse/[2]Probability (Granulator)[unit:%][style:knob][acc:0 0 -10 0 10]", 88,60,100,1) *(0.01):lowpass(1,1);
 
 phasor_bin (init) =  (+(float(speed)/float(SR)) : fmod(_,1.0)) ~ *(init);
 pulsar = _<:(((_)<(ratio_env)):@(100))*((proba)>((_),(noise:abs):latch)); 

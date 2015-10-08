@@ -35,7 +35,7 @@ phaser2Demo = phaser2_stereo_demo with {
    Notches = 4; // Compile-time parameter: 2 is typical for analog phaser stomp-boxes
 
    // FIXME: Add tooltips
-   speed  = ctl_group(hslider("[1]Speed[acc:0 1 -10 0 10] [unit:Hz] [style:knob]", 3, 0, 10, 0.001));
+   speed  = ctl_group(hslider("[1]Speed[acc:0 0 -10 0 10] [unit:Hz] [style:knob]", 3, 0, 10, 0.001));
    depth  = 1;
    fb     = 0.8;
 
@@ -49,5 +49,5 @@ phaser2Demo = phaser2_stereo_demo with {
 
 drywet(x,y) 	= (1-c)*x + c*y
 				with {
-					c = hslider("[2]Phaser Intensity[style:knob][unit:%][acc:1 0 -10 0 10]", 10,0,100,0.01)*(0.01):smooth(0.999);
+					c = hslider("[2]Phaser Intensity[style:knob][unit:%][acc:1 1 -10 0 10]", 10,0,100,0.01)*(0.01):smooth(0.999);
 					};

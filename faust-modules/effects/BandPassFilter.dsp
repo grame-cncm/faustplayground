@@ -20,9 +20,9 @@ import("filter.lib");
 process = _:bandpass(1, Lowf, Highf):_
 
 with{
-	freq = hslider("[1]Center Frequency[unit:Hz][style:log][acc:1 1 -10 0 10]", 200, 50, 10000, 0.01):smooth(0.999);
+	freq = hslider("[1]Center Frequency[unit:Hz][style:log][acc:1 0 -10 0 10]", 200, 50, 10000, 0.01):smooth(0.999);
 	Lowf = freq - Q;
 	Highf = freq + Q;
-	Q = hslider("Q - Filter Bandwidth[style:knob][unit:Hz][acc:0 1 -10 0 10]", 20,2,200,0.0001)*(0.5):smooth(0.999);	
+	Q = hslider("Q - Filter Bandwidth[style:knob][unit:Hz][acc:0 0 -10 0 10]", 20,2,200,0.0001)*(0.5):smooth(0.999);	
 	};
 	

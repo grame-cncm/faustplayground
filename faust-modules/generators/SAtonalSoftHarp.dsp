@@ -26,9 +26,9 @@ NFLeks(n) = filtered_excitation(n,P(freq(n)),freq(n)) : stringloop(freq(n));
 
 //==================== GUI SPECIFICATION ================
 N = 20;
-hand = hslider("h:[1]/Instrument Hand[acc:0 1 -10 0 10]", 10, 0, N, 1) : automat(bps, 15, 0.0)// => gate
+hand = hslider("h:[1]/Instrument Hand[acc:0 0 -10 0 10]", 10, 0, N, 1) : automat(bps, 15, 0.0)// => gate
 with{
-bps = hslider("h:[1]/Speed[style:knob][acc:0 1 -10 0 10]", 480, 180, 720, 1):smooth(0.999) : min(720) : max(180) : int;
+bps = hslider("h:[1]/Speed[style:knob][acc:0 0 -10 0 10]", 480, 180, 720, 1):smooth(0.999) : min(720) : max(180) : int;
 };
 gain = 1;
 
@@ -37,7 +37,7 @@ pickangle  = 0.9;
 beta = 0.5;
 
 // String decay time in seconds:
-t60 = hslider("h:[2]Reverberation/ Resonance[unit:s][acc:2 1 -10 0 10]", 5, 0.5, 10, 0.01):min(10):max(0.5);  // -60db decay time (sec)
+t60 = hslider("h:[2]Reverberation/ Resonance[unit:s][acc:2 0 -10 0 10]", 5, 0.5, 10, 0.01):min(10):max(0.5);  // -60db decay time (sec)
 
 B = 0;
 L = -10 : db2linear;

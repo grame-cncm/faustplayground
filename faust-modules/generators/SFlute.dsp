@@ -33,13 +33,13 @@ process = flute;
 
 //==================== GUI SPECIFICATION ================
 
-freq = hslider("[1]Frequency[acc:1 1 -10 0 10]", 440,247,1200,1):smooth(0.999);
-pressure = hslider("[2]Pressure[style:knob][acc:1 0 -10 0 10]", 0.96, 0.2, 0.99, 0.01):smooth(0.999):min(0.99):max(0.2);
+freq = hslider("[1]Frequency[acc:1 0 -10 0 10]", 440,247,1200,1):smooth(0.999);
+pressure = hslider("[2]Pressure[style:knob][acc:1 1 -10 0 10]", 0.96, 0.2, 0.99, 0.01):smooth(0.999):min(0.99):max(0.2);
 breathAmp = hslider("[3]Breath Noise[style:knob][acc:2 0 -10 0 10]", 0.02, 0.01, 0.2, 0.01):smooth(0.999):min(0.2):max(0.01);
 
 gate = hslider("[0]ON/OFF (ASR Envelope)",0,0,1,1);
-vibratoFreq = hslider("[4]Vibrato Freq (Vibrato Envelope)[style:knob][unit:Hz][acc:0 1 -10 0 10]", 4,0.5,8,0.1);
-env1Attack = 0.1;//hslider("h:Parameters/Press_Env_Attack[unit:s][style:knob][acc:1 0 -10 0 10][tooltip:Pressure envelope attack duration]",0.05,0.05,0.2,0.01);
+vibratoFreq = hslider("[4]Vibrato Freq (Vibrato Envelope)[style:knob][unit:Hz][acc:0 0 -10 0 10]", 4,0.5,8,0.1);
+env1Attack = 0.1;//hslider("h:Parameters/Press_Env_Attack[unit:s][style:knob][acc:1 1 -10 0 10][tooltip:Pressure envelope attack duration]",0.05,0.05,0.2,0.01);
 
 
 

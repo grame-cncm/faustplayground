@@ -49,7 +49,7 @@ blow(n)= par(i, 2,
 N = 10;
 Q = 30;
 position(n) = abs(hand - n) < 0.5;
-hand = hslider("v:[1]Instrument/Instrument Hand[acc:0 1 -10 0 10]", 5, 0, N, 1):int:automat(360, 15, 0.0);
+hand = hslider("v:[1]Instrument/Instrument Hand[acc:0 0 -10 0 10]", 5, 0, N, 1):int:automat(360, 15, 0.0);
 envelopeAttack = 0.01;
 vibratoFreq = 5;
 vibratoGain = 0.1;
@@ -118,8 +118,8 @@ trigger(n) = position(n): trig
 instrReverblow = _,_ <: *(reverbGain),*(reverbGain),*(1 - reverbGain),*(1 - reverbGain) : 
 zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
        with{
-       reverbGain = hslider("h:[3]Reverb/ Reverberation Volume (InstrReverb)[style:knob][acc:1 1 -10 0 10]", 0.237,0.137,1,0.01) : smooth(0.999);
-       roomSize = hslider("h:[3]Reverb/Reverberation Room Size (InstrReverb)[style:knob][acc:1 1 -10 0 10]", 0.72,0.4,2,0.01);
+       reverbGain = hslider("h:[3]Reverb/ Reverberation Volume (InstrReverb)[style:knob][acc:1 0 -10 0 10]", 0.237,0.137,1,0.01) : smooth(0.999);
+       roomSize = hslider("h:[3]Reverb/Reverberation Room Size (InstrReverb)[style:knob][acc:1 0 -10 0 10]", 0.72,0.4,2,0.01);
        rdel = 20;
        f1 = 200;
        f2 = 6000;

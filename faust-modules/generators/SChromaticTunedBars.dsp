@@ -30,8 +30,8 @@ N = 24;
 gain = 0.8;
 
 gate(n) = position(n) : upfront;
-hand = hslider("[1]Instrument Hand[acc:0 1 -10 0 10]", 12, 0, N, 1):smooth(0.999):min(N):max(0):int:automat(B, 15, 0.0);
-B = hslider("[2]Speed[style:knob][acc:0 1 -10 0 10]", 480, 180, 720, 60): smooth(0.99) : min(720) : max(180) : int;
+hand = hslider("[1]Instrument Hand[acc:0 0 -10 0 10]", 12, 0, N, 1):smooth(0.999):min(N):max(0):int:automat(B, 15, 0.0);
+B = hslider("[2]Speed[style:knob][acc:0 0 -10 0 10]", 480, 180, 720, 60): smooth(0.99) : min(720) : max(180) : int;
 position(n) = abs(hand - n) < 0.5;
 upfront(x) = x>x';
 
