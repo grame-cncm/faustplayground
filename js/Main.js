@@ -1,6 +1,6 @@
 /*				MAIN.JS
 	Entry point of the Program
-	
+
 	Create the scenes
 	Navigate between scenes
 	Activate Physical input/output
@@ -13,13 +13,13 @@
 		- Playground.js
 		- Pedagogie.js
 		- SceneClass.js
-		
+
 		- ModuleClass.js
 		- Connect.js
 		- libfaust.js
 		- webaudio-asm-wrapper.js
 		- Pedagogie/Tooltips.js
-		
+
 */
 
 "use strict";
@@ -30,7 +30,7 @@ var idX = 0;
 
 window.addEventListener('load', init, false);
 
-/******************************************************************** 
+/********************************************************************
 **************************  INITIALISATION **************************
 ********************************************************************/
 
@@ -41,7 +41,7 @@ function init() {
     } catch(e) {
       alert('The Web Audio API is apparently not supported in this browser.');
     }
-    
+
 	createAllScenes();
 	showFirstScene();
 }
@@ -52,9 +52,9 @@ function showFirstScene(){
 
 function createAllScenes(){
 	window.scenes = [];
-	
+
 	if(window.isPedagogie){
-	
+
 		window.scenes[0] = createScene("Accueil", function(){}, function(){});
 		initWelcomeScene(window.scenes[0]);
 		window.scenes[1] = createScene("Pedagogie", onloadPedagogieScene, onunloadPedagogieScene);
@@ -66,27 +66,27 @@ function createAllScenes(){
 		window.scenes[0] = createScene("Normal", onloadNormalScene, onunloadNormalScene);
 		initNormalScene(window.scenes[0]);
 	}
-	
+
 	window.currentScene = 0;
 }
 
-/******************************************************************** 
+/********************************************************************
 **********************  NAVIGATION BETWEEN SCENES *******************
 ********************************************************************/
 
 function nextScene(){
 
 	var index = window.currentScene;
-	
+
 	window.scenes[index].hideScene();
 	window.scenes[index].unloadScene();
-	
+
 
 	window.currentScene = index+1;
-	
+
 	console.log("WINDOW CURRENT SCENE");
 	console.log(window.scenes[index+1].getSceneContainer());
-	
+
 	window.scenes[index+1].showScene();
 	window.scenes[index+1].loadScene();
 }
@@ -94,17 +94,17 @@ function nextScene(){
 function previousScene(){
 
 	var index = window.currentScene;
-	
+
 	window.scenes[index].hideScene();
 	window.scenes[index].unloadScene();
-	
+
 	window.scenes[index-1].showScene();
 	window.scenes[index-1].loadScene();
-		
+
 	window.currentScene = index-1;
 }
 
-/******************************************************************** 
+/********************************************************************
 **********************  ACTIVATE PHYSICAL IN/OUTPUT *****************
 ********************************************************************/
 
@@ -113,9 +113,9 @@ function activateAudioInput(){
 	if (!navigator.getUserMedia) {
 		navigator.getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
     }
-        
+
 	if (navigator.getUserMedia) {
-	
+
     	navigator.getUserMedia({audio:true}, getDevice, function(e) {
         alert('Error getting audio input');
     	});
@@ -129,7 +129,7 @@ function getDevice(device) {
 // Create an AudioNode from the stream.
     var src = document.getElementById("input");
 	src.audioNode = audioContext.createMediaStreamSource(device);
-        
+
     var i=document.createElement("div");
 	i.className="node node-output";
 	i.addEventListener( "mousedown", startDraggingConnector, true );
@@ -140,16 +140,16 @@ function getDevice(device) {
 }
 
 function activateAudioOutput(sceneOutput){
-	
+
 	var out = document.createElement("div");
 	out.id = "audioOutput";
 	out.audioNode = window.audioContext.destination;
 	document.body.appendChild(out);
-	
+
 	connectModules(sceneOutput, out);
 }
 
-/******************************************************************** 
+/********************************************************************
 ****************  CREATE FAUST FACTORIES AND MODULES ****************
 ********************************************************************/
 
@@ -164,25 +164,25 @@ function compileFaust(name, sourcecode, x, y, callback){
 	var currentScene = 	window.scenes[window.currentScene];
 
 // To Avoid click during compilation
-	if(currentScene)
-		currentScene.muteScene();
+	if(currentScene) currentScene.muteScene();
 
-	var args = ["-I", "http://faust.grame.fr/faustcode/"];		 
+	//var args = ["-I", "http://faust.grame.fr/faustcode/"];
+	//var args = ["-I", "http://10.0.1.2/faustcode/"];
+	var args = ["-I", "http://" + location.hostname + "/faustcode/"];		 
 	var factory = faust.createDSPFactory(sourcecode, args);
     callback(factory);
 
-	if(currentScene)
-		currentScene.unmuteScene();
+	if(currentScene) currentScene.unmuteScene();
 
 }
 
 function createFaustModule(factory){
-	
+
 	if (!factory) {
-    	alert(faust.getErrorMessage());    
+    	alert(faust.getErrorMessage());
         return null;
 	}
-        
+
 	var faustModule;
 
 // can't it be just window.scenes[window.currentScene] ???
@@ -192,14 +192,14 @@ function createFaustModule(factory){
  		faustModule = createModule(idX++, window.x, window.y, window.name, document.getElementById("modules"), window.scenes[0].removeModule);
 
  	faustModule.setSource(window.source);
- 	faustModule.createDSP(factory); 	
+ 	faustModule.createDSP(factory);
 	faustModule.createFaustInterface();
  	faustModule.addInputOutputNodes();
- 		
+
  	window.scenes[window.currentScene].addModule(faustModule);
 }
 
-/******************************************************************** 
+/********************************************************************
 ***********************  HANDLE DRAG AND DROP ***********************
 ********************************************************************/
 
@@ -210,7 +210,7 @@ function setGeneralDragAndDrop(){
  	window.ondragend = function () { this.className = ''; return false; };
 
 	window.ondrop = function (e) {
-	
+
 		uploadFile(e);
 		return true;
 	};
@@ -230,11 +230,11 @@ function preventDefaultAction(e) {
     e.preventDefault();
 }
 
-function terminateUpload(){	
-	
+function terminateUpload(){
+
 	var uploadTitle = document.getElementById("upload");
-	uploadTitle.textContent = ""; 
-			
+	uploadTitle.textContent = "";
+
 	if(isTooltipEnabled() && sceneHasInstrumentAndEffect())
 		toolTipForConnections();
 }
@@ -244,41 +244,41 @@ function uploadFile(e){
 
 	if (!e)
     	e = window.event;
-    	
+
     var alreadyInNode = false;
-    	
+
 	var modules = window.scenes[window.currentScene].getModules();
 
 	for(var i=0; i<modules.length; i++){
     	if(modules[i].isPointInNode(e.clientX, e.clientY))
     		alreadyInNode = true;
     }
-    
+
 	if(!alreadyInNode){
-	
+
 		var x = e.clientX;
 		var y = e.clientY;
-	
+
 		uploadOn(null, x, y, e);
 	}
 }
 
 //-- Upload content dropped on the page and create a Faust DSP with it
 function uploadOn(module, x, y, e) {
-	
+
   	preventDefaultAction(e);
-  	
+
     var uploadTitle = document.getElementById("upload");
-    
+
     uploadTitle.textContent = "CHARGEMENT EN COURS ...";
-     
-// CASE 1 : THE DROPPED OBJECT IS A URL TO SOME FAUST CODE   
+
+// CASE 1 : THE DROPPED OBJECT IS A URL TO SOME FAUST CODE
     if(e.dataTransfer.getData('URL') && e.dataTransfer.getData('URL').split(':').shift() != "file"){
     	var url = e.dataTransfer.getData('URL');
-		
+
 		var filename = url.toString().split( '/' ).pop();
 		filename = filename.toString().split('.').shift();
-		
+
         var xmlhttp = new XMLHttpRequest();
 
 	    xmlhttp.onreadystatechange=function(){
@@ -291,34 +291,34 @@ function uploadOn(module, x, y, e) {
 				else
 					module.update(filename, dsp_code);
         	}
-        	
+
         	terminateUpload();
     	}
-    	
+
 		xmlhttp.open("GET", url, false );
 // 	Avoid error "mal formé" on firefox
 		xmlhttp.overrideMimeType('text/html');
-    	xmlhttp.send(); 
+    	xmlhttp.send();
     }
     else if(e.dataTransfer.getData('URL').split(':').shift() != "file"){
 
 		var dsp_code = e.dataTransfer.getData('text');
-	
+
 // CASE 2 : THE DROPPED OBJECT IS SOME FAUST CODE
 		if(dsp_code){
 	    	dsp_code ="process = vgroup(\"" + "TEXT" + "\",environment{" + dsp_code + "}.process);";
-		
+
 			if(!module)
 				compileFaust("TEXT", dsp_code, x, y, createFaustModule);
 			else
 				module.update("TEXT", dsp_code);
-				
-			terminateUpload();	
+
+			terminateUpload();
 		}
-// CASE 3 : THE DROPPED OBJECT IS A FILE CONTAINING SOME FAUST CODE		
-	    else{ 
+// CASE 3 : THE DROPPED OBJECT IS A FILE CONTAINING SOME FAUST CODE
+	    else{
 			var files = e.target.files || e.dataTransfer.files;
-		
+
         	var file = files[0];
 
 			if (location.host.indexOf("sitepointstatic") >= 0) return
@@ -327,16 +327,16 @@ function uploadOn(module, x, y, e) {
 			if (request.upload) {
 
         		var reader = new FileReader();
-					
+
 			    var ext = file.name.toString().split('.').pop();
 
 				var filename = file.name.toString().split('.').shift();
-				
+
 				var type;
 
     	    	if (ext == "dsp"){
     	    		type = "dsp";
-        	    	reader.readAsText(file);  
+        	    	reader.readAsText(file);
         	    }
         	    else if(ext == "json"){
         	    	type = "json";
@@ -344,7 +344,7 @@ function uploadOn(module, x, y, e) {
         	    }
         	    else
 					terminateUpload();
-        	    	
+
 	    		reader.onloadend = function(e) {
 	    	    	dsp_code ="process = vgroup(\"" + filename + "\",environment{" + reader.result + "}.process);";
 
@@ -354,7 +354,7 @@ function uploadOn(module, x, y, e) {
 						module.update(filename, dsp_code);
 					else if(type == "json")
 						window.scenes[window.currentScene].recallScene(reader.result);
-						
+
 					terminateUpload();
 	    		};
 			}
@@ -366,7 +366,3 @@ function uploadOn(module, x, y, e) {
 		window.alert("THIS OBJECT IS NOT FAUST COMPILABLE");
 	}
 }
-
-
-
-
