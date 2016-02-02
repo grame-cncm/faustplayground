@@ -105,7 +105,8 @@ class ModuleClass implements IModule {
         this.fInterfaceContainer = document.createElement("div");
         this.fInterfaceContainer.className = "content";
         this.fModuleContainer.appendChild(this.fInterfaceContainer);
-        this.fModuleContainer.addEventListener("mousedown", this.dragCallback, true);
+        var self=this
+        this.fModuleContainer.addEventListener("mousedown", function () { self.dragCallback(event,self) }, true);
 
         var fCloseButton = document.createElement("a");
         fCloseButton.href = "#";
@@ -140,16 +141,16 @@ class ModuleClass implements IModule {
     };
     /***************  PRIVATE METHODS  ******************************/
 
-	dragCallback(event){
+    dragCallback(event, module: ModuleClass) {
 
         var drag: Drag = new Drag();
 		console.log("drag Callback");
         if (event.type == "mousedown")
-            drag.startDraggingModule(event, this);
-		else if(event.type == "mouseup")	
-			drag.stopDraggingModule(event, this);
-		else if(event.type == "mousemove")	
-			drag.whileDraggingModule(event, this);
+            drag.startDraggingModule(event, module);
+        else if (event.type == "mouseup")
+            drag.stopDraggingModule(event, module);
+        else if (event.type == "mousemove")
+            drag.whileDraggingModule(event, module);
 	};
 	
 	dragCnxCallback(event){
@@ -461,9 +462,9 @@ class ModuleClass implements IModule {
 	    	this.addCnxListener(this.fOutputNode, "mousedown");
         };
 	
-/****************** ADD/REMOVE ACTION LISTENERS **********************/
-	addListener (type){
-		document.addEventListener(type, this.dragCallback, true);
+        /****************** ADD/REMOVE ACTION LISTENERS **********************/
+        addListener(type, module: ModuleClass) {
+            document.addEventListener(type, function () { module.dragCallback(event, module) }, true);
         };
 	removeListener (div, type){
 		div.removeEventListener(type, this.dragCallback, true);

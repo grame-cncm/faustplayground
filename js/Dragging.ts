@@ -69,9 +69,9 @@ class Drag {
   	    // Update element's z-index.
 	    moduleContainer.style.zIndex = String(++this.zIndex);
 
-  	    // Capture mousemove and mouseup events on the page.
-  	    module.addListener("mousemove");
-	    module.addListener("mouseup");
+        // Capture mousemove and mouseup events on the page.
+        module.addListener("mousemove", module);
+        module.addListener("mouseup", module);
 
         event.preventDefault();
     }

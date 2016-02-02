@@ -48,8 +48,8 @@ var Drag = (function () {
         // Update element's z-index.
         moduleContainer.style.zIndex = String(++this.zIndex);
         // Capture mousemove and mouseup events on the page.
-        module.addListener("mousemove");
-        module.addListener("mouseup");
+        module.addListener("mousemove", module);
+        module.addListener("mouseup", module);
         event.preventDefault();
     };
     Drag.prototype.whileDraggingModule = function (event, module) {
