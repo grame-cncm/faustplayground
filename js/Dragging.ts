@@ -1,6 +1,6 @@
 /*				DRAGGING.JS
 	Handles Graphical Drag of Modules and Connections
-	This is a historical file from Chris Wilson, modified for Faust Module needs.
+	This is a historical file from Chris Wilson, modified for Faust ModuleClass needs.
 	
 	--> Things could probably be easier...
 	
@@ -17,6 +17,8 @@
 /***********************************************************************************/
 /****** Node Dragging - these are used for dragging the audio modules interface*****/
 /***********************************************************************************/
+
+
 class Drag {
 
     zIndex: number=0;
@@ -26,7 +28,7 @@ class Drag {
     elementStartLeft: number;
     elementStartTop: number;
     originIsInput: any;
-    connectorShape: any;
+    connectorShape: ConnectorShape;
     elemNode: any;
 
     startDraggingModule(event, module) {
@@ -34,11 +36,11 @@ class Drag {
  	    var el = event.target;
   	    var x, y;
   	
-    //   Avoid dragging Module when it's a Connector that needs dragging
+    //   Avoid dragging ModuleClass when it's a Connector that needs dragging
 	    if (el.tagName == "SELECT" || el.classList.contains("node-button"))
 		    return;
 
-    //   Avoid dragging Module when it's a UI element that needs dragging
+    //   Avoid dragging ModuleClass when it's a UI element that needs dragging
 	    if (el.nodeType == 3) // if it's a text node
 		    el = el.parentNode;
 	    if (el.classList.contains("module-title"))
@@ -173,29 +175,29 @@ class Drag {
 	    // Create a connector visual line
 	    var svgns = "http://www.w3.org/2000/svg";
 
-	    var shape = document.createElementNS(svgns, "line");
+        var shape: SVGElement = <SVGElement>document.createElementNS(svgns, "line");
 	    shape.setAttributeNS(null, "x1", String(x));
         shape.setAttributeNS(null, "y1", String(y));
         shape.setAttributeNS(null, "x2", String(x));
         shape.setAttributeNS(null, "y2", String(y));
         shape.setAttributeNS(null, "stroke", "black");
-	    shape.setAttributeNS(null, "stroke-width", "5");
-	    this.connectorShape=shape;
+        shape.setAttributeNS(null, "stroke-width", "5");
+        this.connectorShape = <ConnectorShape>shape;
 
         document.getElementById("svgCanvas").appendChild(shape);
     }
 
-    stopDraggingConnection(sourceModule, destination){
+    stopDraggingConnection(sourceModule: ModuleClass, destination: ModuleClass) {
 
 
-	    if (sourceModule.getInterfaceContainer().lastLit) {
-		    sourceModule.getInterfaceContainer().lastLit.className = sourceModule.getInterfaceContainer().lastLit.unlitClassname;
-		    sourceModule.getInterfaceContainer().lastLit = null;
-	    }
+	    //if (sourceModule.getInterfaceContainer().lastLit) {
+		   // sourceModule.getInterfaceContainer().lastLit.className = sourceModule.getInterfaceContainer().lastLit.unlitClassname;
+		   // sourceModule.getInterfaceContainer().lastLit = null;
+	    //}
 
-	    sourceModule.getInterfaceContainer().className = sourceModule.getInterfaceContainer().unlitClassname;
+	    //sourceModule.getInterfaceContainer().className = sourceModule.getInterfaceContainer().unlitClassname;
 
-
+        var x,y
         if (destination) {	
 
 		    // Get the position of the originating connector with respect to the page.
@@ -222,8 +224,8 @@ class Drag {
 
             this.connectorShape.setAttributeNS(null, "x2", x);
 	        this.connectorShape.setAttributeNS(null, "y2", y);
-	
-		    var src, dst;
+
+            var src: ModuleClass, dst: ModuleClass;
 	
 		    // If connecting from output to input
 		    if (this.originIsInput) {
@@ -238,8 +240,8 @@ class Drag {
 
 	    // Make sure the connector line points go from src->dest (x1->x2)
 				    var shape = this.connectorShape;
-				    var x = shape.getAttributeNS(null, "x2");
-				    var y = shape.getAttributeNS(null, "y2");
+				    x = shape.getAttributeNS(null, "x2");
+				    y = shape.getAttributeNS(null, "y2");
 			        shape.setAttributeNS(null, "x2", shape.getAttributeNS(null, "x1"));
 	    		    shape.setAttributeNS(null, "y2", shape.getAttributeNS(null, "y1"));
 				    shape.setAttributeNS(null, "x1", x);
@@ -257,8 +259,8 @@ class Drag {
             if (src && dst) {
                 var connect: Connect = new Connect();
 			    connect.connectModules(src, dst);
-			
-			    var connector = new Object();
+
+                var connector: Connector = new Connector();
 
 			    connect.saveConnection(src, dst, connector, this.connectorShape);
 
@@ -268,12 +270,12 @@ class Drag {
 			    this.connectorShape.inputConnection = connector;
 			    this.connectorShape.destination = dst;
 			    this.connectorShape.source = src;
-			    this.connectorShape.onclick = connect.deleteConnection;
+			    this.connectorShape.onclick = connect.deleteConnection(this);
 
 			    this.connectorShape = null;
                 ;
-			    if(App.isTooltipEnabled)
-				    toolTipForConnections();
+                if (App.isTooltipEnabled)
+                    Tooltips.toolTipForConnections(src.sceneParent);
 
 			    return;
 		    }
@@ -347,7 +349,7 @@ class Drag {
 	    event.stopPropagation();
     }
 
-    stopDraggingConnector(module: Module, event) {
+    stopDraggingConnector(module: ModuleClass, event) {
 
   	    // Stop capturing mousemove and mouseup events.
         module.removeCnxListener(event.target, "mousemove");

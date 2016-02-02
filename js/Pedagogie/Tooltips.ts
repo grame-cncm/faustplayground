@@ -8,7 +8,7 @@
 
 class Tooltips{
 /*************** ALL TOOLTIP CHOICES ***************************/
-    changeSceneToolTip(toolTipNumber){
+    static changeSceneToolTip(toolTipNumber){
 
 	    var subtitle;
 
@@ -45,7 +45,7 @@ class Tooltips{
         App.isTooltipEnabled = true;
     }
     
-    disableTooltips() {
+    static disableTooltips() {
         App.isTooltipEnabled = false;
     }
 
@@ -75,11 +75,11 @@ class Tooltips{
 	    }
 
 	    return hasInstrument && hasEffect;
-    }
+    };
 
-    function isInstrumentConnected(){
+    static isInstrumentConnected(scene:Scene){
 
-	    var modules = window.scenes[window.currentScene].getModules();
+	    var modules = scene.getModules();
 
 	    for (var i = 0; i < modules.length; i++) {
 		    if(!modules[i].getInputNode() && modules[i].getOutputConnections() && modules[i].getOutputConnections().length > 0)
@@ -89,7 +89,7 @@ class Tooltips{
 	    return false;
     }
 
-    function toolTipForLibrary(type){
+    toolTipForLibrary(type){
 
 	    var tooltip = document.createElement("div");
 
@@ -114,11 +114,11 @@ class Tooltips{
 	    return tooltip;
     }
 
-    function toolTipForConnections(){
+    static toolTipForConnections(scene: Scene){
 
-	    var currentScene = window.scenes[window.currentScene];
+	    var currentScene = scene;
 
-	    if(window.tooltips){
+        if (App.isTooltipEnabled) {
 
 		    var connectedNode = currentScene.getAudioOutput();
 
@@ -130,24 +130,24 @@ class Tooltips{
     //	 		Node is connected
 				    if(connectedNode.getInputConnections() && connectedNode.getInputConnections().length > 0)
 					    connectedNode = connectedNode.getInputConnections()[0].source;
-    //	 		Node is not connected and there is everything on the scene
-				    else if(sceneHasInstrumentAndEffect()){
-					    if(!isInstrumentConnected())
-						    changeSceneToolTip(3);
+                    //	 		Node is not connected and there is everything on the scene
+                    else if (this.sceneHasInstrumentAndEffect(scene)) {
+					    if(!this.isInstrumentConnected(scene))
+						    this.changeSceneToolTip(3);
 					    else
-						    changeSceneToolTip(4);
+						    this.changeSceneToolTip(4);
 
 					    connectedNode = null;
 				    }
     // 			Node is not connected and there are no instruments on the scene
 				    else{
-					    changeSceneToolTip(6);
+					    this.changeSceneToolTip(6);
 					    connectedNode = null;
 				    }
 			    }
     //	 		Node is an instrument
 			    else{
-				    changeSceneToolTip(5);
+				    this.changeSceneToolTip(5);
 				    connectedNode = null;
 			    }
 		    }

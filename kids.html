@@ -1,4 +1,4 @@
-<?xml version="1.0" standalone="no"?>
+﻿<?xml version="1.0" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" >
 <html class="no-js" lang="en">
@@ -44,16 +44,14 @@
 	<script src="js/libfaust.js"></script>
 	<script src="js/webaudio-asm-wrapper.js"></script>
 
-	<script>
-	if (window != window.top)
-		document.write("<style>header {display:none}</style>")
-	</script>
+	<script type = "text/typescript">
+    if (window != window.top)
+        document.write("<style>header {display:none}</style>")
+        window.baseImg = "img/";
+        Tooltips.enableTooltips();
+        window.isPedagogie = true;
+    </script>
 </head>
 <body>
 </body>
-	<script>
-		window.baseImg = "img/";
-		enableTooltips();
-		window.isPedagogie = true;
-	</script>
 </html>

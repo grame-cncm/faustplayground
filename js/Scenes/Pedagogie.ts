@@ -15,7 +15,7 @@
 "use strict";
 class ScenePedagogieView {
 // Add visual elements to Pedagogical Playground Scene
-    static initPedagogieScene(scene){
+    static initPedagogieScene(scene:Scene){
 
 		    var container = scene.getSceneContainer();
 	
@@ -58,8 +58,8 @@ class ScenePedagogieView {
 
 		    var equText = document.createElement("a");
 		    equText.id = "cfe";
-		    equText.textContent = "FINALISE TON APPLICATION";
-		    equButton.onclick = function(){nextScene();};
+            equText.textContent = "FINALISE TON APPLICATION";
+            equButton.onclick = function () { scene.parent.nextScene(); };
 		    equButton.appendChild(equText);
 	
 		    var subText = document.createElement("div");
@@ -110,25 +110,25 @@ class ScenePedagogieView {
 	    scene.integrateOutput(function(){
 
             if (App.isTooltipEnabled)
-			    changeSceneToolTip(1);
+                Tooltips.changeSceneToolTip(1);
 			
 		    scene.getAudioOutput().setInputOutputNodes(node, null);
 			
-		    initLibrary(container);
+		    this.initLibrary(container);
 
-		    activateAudioOutput(destDiv);
+            scene.parent.activateAudioOutput(destDiv);
 		    scene.hideScene();	
 	    });
     }
 
     // Load And UnLoad Pedagogical Playground Scene
-    static onloadPedagogieScene(scene){
-	
-	    document.getElementById("PatchName").textContent = "Scène de   " + document.getElementById("nameTag").value;
+    static onloadPedagogieScene(scene: Scene) {
+        var nameInput: HTMLTextAreaElement = <HTMLTextAreaElement>document.getElementById("nameTag")
+        document.getElementById("PatchName").textContent = "Scène de   " + nameInput.value;
 	    document.getElementById("PatchName").style.cssText = "color:white";
-	    document.body.style.background = "url('"+ App.baseImg + "body-bkg.gif') 0 0 repeat";
-	    setGeneralDragAndDrop();
-	    changeSceneToolTip(1);
+        document.body.style.background = "url('" + App.baseImg + "body-bkg.gif') 0 0 repeat";
+        scene.parent.setGeneralDragAndDrop(scene.parent);
+	    Tooltips.changeSceneToolTip(1);
 	    scene.unmuteScene();
 	
 	

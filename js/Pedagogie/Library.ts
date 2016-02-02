@@ -26,215 +26,225 @@
 */
 
 //--- Init graphical elements of library
-function initLibrary(parent){
 
-	var libraryDiv = document.createElement('div');
-	libraryDiv.id = "library";
-
-	parent.appendChild(libraryDiv);
-
-	var libraryTitle = document.createElement('span');
-	libraryTitle.id = "libraryTitle";
-	libraryTitle.className = "title";
-	libraryTitle.textContent="Bibliothèque Faust";
-	libraryDiv.appendChild(libraryTitle);
-
-	var imageNode = document.createElement('img');
-	imageNode.id = "arrow";
-	imageNode.src= window.baseImg + "open.png";
-	imageNode.state = "closed";
-
-	libraryDiv.appendChild(imageNode);
-
-	libraryDiv.onmouseover = changeLibraryState;
-	libraryDiv.onmouseout = changeLibraryState;
+interface IImageNode extends HTMLImageElement {
+    state: string;
+    section: string;
 }
 
-/***************  OPEN/CLOSE LIBRARY DIV  ***************************/
-function changeLibraryState(event){
+class Library{
+    imageNode: IImageNode;
 
-	var libDiv = document.getElementById("library");
+    initLibrary(parent){
 
-	var boudingRect = libDiv.getBoundingClientRect();
+	    var libraryDiv = document.createElement('div');
+	    libraryDiv.id = "library";
 
-	var img = document.getElementById("arrow");
+	    parent.appendChild(libraryDiv);
 
-	if(event.type == "mouseover" && img.state == "closed"){
-		img.src = window.baseImg + "close.png";
-		img.state = "opened";
+	    var libraryTitle = document.createElement('span');
+	    libraryTitle.id = "libraryTitle";
+	    libraryTitle.className = "title";
+	    libraryTitle.textContent="Bibliothèque Faust";
+	    libraryDiv.appendChild(libraryTitle);
 
-		viewLibraryList(img);
-	}
-	else if(event.type == "mouseout" && (event.clientX > boudingRect.right || event.clientX < boudingRect.left || event.clientY < boudingRect.top || event.clientY > boudingRect.bottom)){
+        this.imageNode = <IImageNode> document.createElement('img');
+	    this.imageNode.id = "arrow";
+	    this.imageNode.src= App.baseImg + "open.png";
+	    this.imageNode.state = "closed";
 
-		img.src = window.baseImg + "open.png";
-		img.state = "closed";
+	    libraryDiv.appendChild(this.imageNode);
 
-		deleteLibraryList(img);
-	}
-}
+	    libraryDiv.onmouseover = this.changeLibraryState;
+	    libraryDiv.onmouseout = this.changeLibraryState;
+    }
 
-//--- Load Library Content
-function viewLibraryList(selector){
+    /***************  OPEN/CLOSE LIBRARY DIV  ***************************/
+    changeLibraryState(event){
 
-	document.getElementById("libraryTitle").style.cssText = " writing-mode:lr-tb; -webkit-transform:rotate(0deg); -moz-transform:rotate(0deg); -o-transform: rotate(0deg); display:block; position: relative; top:3%; left:5px; font-family: 'Droid Serif', Georgia, serif;  font-size:20px; z-index:3; margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px;";
-	document.getElementById("library").style.cssText = "width:250px;";
-	document.getElementById("arrow").style.cssText = "display: block; position: absolute; left:200px; top:2%; z-index:3;";
+	    var libDiv = document.getElementById("library");
 
-	var spaceDiv = document.createElement("div");
-	spaceDiv.className = "space";
+	    var boudingRect = libDiv.getBoundingClientRect();
 
-	document.getElementById("library").appendChild(spaceDiv);
+        var img = this.imageNode;
 
-	//var url = "http://faust.grame.fr/www/pedagogie/index.json";
-	var url = "faust-modules/index.json"
+	    if(event.type == "mouseover" && img.state == "closed"){
+		    img.src = App.baseImg + "close.png";
+		    img.state = "opened";
 
-	var getrequest = new XMLHttpRequest();
+		    this.viewLibraryList(img);
+	    }
+	    else if(event.type == "mouseout" && (event.clientX > boudingRect.right || event.clientX < boudingRect.left || event.clientY < boudingRect.top || event.clientY > boudingRect.bottom)){
 
-	getrequest.onreadystatechange = function() {
-		console.log("enter onreadystatechange");
-		if(getrequest.readyState == 4 && getrequest.status == 200) {
+		    img.src = App.baseImg + "open.png";
+		    img.state = "closed";
 
-			window.libraryContent = getrequest.responseText;
+		    this.deleteLibraryList(img);
+	    }
+    }
 
-			var data = JSON.parse(window.libraryContent);
+    //--- Load Library Content
+    viewLibraryList(selector){
 
-			var sections = ["instruments", "effets", "exemples"];
+	    document.getElementById("libraryTitle").style.cssText = " writing-mode:lr-tb; -webkit-transform:rotate(0deg); -moz-transform:rotate(0deg); -o-transform: rotate(0deg); display:block; position: relative; top:3%; left:5px; font-family: 'Droid Serif', Georgia, serif;  font-size:20px; z-index:3; margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px;";
+	    document.getElementById("library").style.cssText = "width:250px;";
+	    document.getElementById("arrow").style.cssText = "display: block; position: absolute; left:200px; top:2%; z-index:3;";
 
-			for(var i=0; i<3; i++){
-				var section = sections[i];
+	    var spaceDiv = document.createElement("div");
+	    spaceDiv.className = "space";
 
-				var div=document.createElement("ul");
-				div.className = "ulElem";
-				selector.parentNode.appendChild(div);
+	    document.getElementById("library").appendChild(spaceDiv);
 
-				if(isTooltipEnabled()){
-					var tooltip = toolTipForLibrary(section);
-					div.appendChild(tooltip);
-				}
+	    //var url = "http://faust.grame.fr/www/pedagogie/index.json";
+	    var url = "faust-modules/index.json"
 
-				var sel1=document.createElement("li");
-				sel1.id = "generalSection";
-				sel1.className="sections";
+	    var getrequest = new XMLHttpRequest();
 
+	    getrequest.onreadystatechange = function() {
+		    console.log("enter onreadystatechange");
+		    if(getrequest.readyState == 4 && getrequest.status == 200) {
 
-				div.appendChild(document.createElement("br"));
+			    App.libraryContent = getrequest.responseText;
 
+			    var data = JSON.parse(App.libraryContent);
 
-				var imageNode = document.createElement('img');
-				imageNode.src= window.baseImg + "triangleOpen.png";
-				imageNode.state = "opened";
-				imageNode.section = section;
-				imageNode.onclick = changeSectionState;
+			    var sections = ["instruments", "effets", "exemples"];
 
-				sel1.appendChild(imageNode);
-				sel1.appendChild(document.createTextNode("  "+section));
+			    for(var i=0; i<3; i++){
+				    var section = sections[i];
 
-				div.appendChild(sel1);
-				div.appendChild(document.createElement("br"));
+				    var div=document.createElement("ul");
+				    div.className = "ulElem";
+				    selector.parentNode.appendChild(div);
 
-				viewFolderContent(imageNode);
-        	}
-    	}
-	}
-	getrequest.open("GET", url, true);
-	getrequest.send(null);
-}
+                    if (App.isTooltipEnabled) {
+					    var tooltip = this.toolTipForLibrary(section);
+					    div.appendChild(tooltip);
+				    }
 
-//--- Unload Library Content
-function deleteLibraryList(selector){
-
-	var libraryDiv = selector.parentNode;
-
-	for(var i=libraryDiv.childNodes.length-1; i>=0; i--){
-
-		if(libraryDiv.childNodes[i] != selector && libraryDiv.childNodes[i] != document.getElementById("libraryTitle"))
-			libraryDiv.removeChild(libraryDiv.childNodes[i]);
-	}
-
-	document.getElementById("libraryTitle").style.cssText =  " writing-mode:tb-rl; -webkit-transform:rotate(270deg); -moz-transform:rotate(270deg); -o-transform: rotate(270deg); display:block; position: relative; top:50%; right:250%; width:300px; font-family: 'Droid Serif', Georgia, serif;  font-size:20px; z-index:3; margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px;";
-	document.getElementById("library").style.cssText = "width:50px;";
-	document.getElementById("arrow").style.cssText = "display: block; margin-left: auto; margin-right: auto;";
-}
-
-//-------- CLOSE LIB ON LINK DRAGGING OUT OF LIB
-function onLinkDrag(event){
-
-	if(event.x > document.getElementById("library").getBoundingClientRect().width){
-		var img = document.getElementById("arrow");
-		img.src = window.baseImg + "open.png";
-		img.state = "closed";
-
-		deleteLibraryList(img);
-	}
-}
-
-function onclickPrevent(event){
-	event.preventDefault();
-}
+				    var sel1=document.createElement("li");
+				    sel1.id = "generalSection";
+				    sel1.className="sections";
 
 
- /***************  OPEN/CLOSE SECTION OF LIBRARY  ***************************/
-function changeSectionState(event){
-
-	if(event.target.state == "closed"){
-		event.target.src = window.baseImg + "triangleOpen.png";
-		event.target.state = "opened";
-
-		viewFolderContent(event.target);
-	}
-	else{
-		event.target.src = window.baseImg + "triangleClose.png";
-		event.target.state = "closed";
-
-		deleteFolderContent(event.target);
-	}
-}
-
-function viewFolderContent(selector){
-
-	var data = JSON.parse(window.libraryContent);
-
-	var selFolder = selector.section;
-
-    var section = data[selFolder];
-
-    var sublist=document.createElement("ul");
-	sublist.className="subsections";
-	selector.parentNode.appendChild(sublist);
-
-	for (subsection in section) {
-
-		var liElement = document.createElement("li");
-		sublist.appendChild(liElement);
-
-		var filename = section[subsection].toString().split( '/' ).pop();
-		filename = filename.toString().split('.').shift();
-
-		var link = document.createElement("a");
-		link.className="link";
-		// var linkAdd = "http://faust.grame.fr/www/pedagogie/" + selFolder + "/" + filename + ".dsp";
-		var linkAdd = section[subsection];
-		link.setAttribute("href", linkAdd);
-		link.textContent = filename;
-		link.onclick = onclickPrevent;
-		link.ondrag = onLinkDrag;
-		liElement.appendChild(link);
-	}
-
-}
-
-function deleteFolderContent(selector){
-
-	var liElement = selector.parentNode;
-
-	for(var i=0; i<liElement.childNodes.length; i++){
-
-		if(liElement.childNodes[i].className=="subsections"){
-			liElement.removeChild(liElement.childNodes[i]);
-			break;
-		}
-	}
+				    div.appendChild(document.createElement("br"));
 
 
+                    var imageNode: IImageNode = <IImageNode> document.createElement('img');
+				    imageNode.src= App.baseImg + "triangleOpen.png";
+				    imageNode.state = "opened";
+				    imageNode.section = section;
+				    imageNode.onclick = this.changeSectionState;
+
+				    sel1.appendChild(imageNode);
+				    sel1.appendChild(document.createTextNode("  "+section));
+
+				    div.appendChild(sel1);
+				    div.appendChild(document.createElement("br"));
+
+				    this.viewFolderContent(imageNode);
+        	    }
+    	    }
+	    }
+	    getrequest.open("GET", url, true);
+	    getrequest.send(null);
+    }
+
+    //--- Unload Library Content
+    deleteLibraryList(selector){
+
+	    var libraryDiv = selector.parentNode;
+
+	    for(var i=libraryDiv.childNodes.length-1; i>=0; i--){
+
+		    if(libraryDiv.childNodes[i] != selector && libraryDiv.childNodes[i] != document.getElementById("libraryTitle"))
+			    libraryDiv.removeChild(libraryDiv.childNodes[i]);
+	    }
+
+	    document.getElementById("libraryTitle").style.cssText =  " writing-mode:tb-rl; -webkit-transform:rotate(270deg); -moz-transform:rotate(270deg); -o-transform: rotate(270deg); display:block; position: relative; top:50%; right:250%; width:300px; font-family: 'Droid Serif', Georgia, serif;  font-size:20px; z-index:3; margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px;";
+	    document.getElementById("library").style.cssText = "width:50px;";
+	    document.getElementById("arrow").style.cssText = "display: block; margin-left: auto; margin-right: auto;";
+    }
+
+    //-------- CLOSE LIB ON LINK DRAGGING OUT OF LIB
+    onLinkDrag(event){
+
+        if (event.x > document.getElementById("library").getBoundingClientRect().width) {
+            var img = this.imageNode;
+		    img.src = App.baseImg + "open.png";
+		    img.state = "closed";
+
+		    this.deleteLibraryList(img);
+	    }
+    }
+
+    onclickPrevent(event){
+	    event.preventDefault();
+    }
+
+
+     /***************  OPEN/CLOSE SECTION OF LIBRARY  ***************************/
+    changeSectionState(event){
+
+	    if(event.target.state == "closed"){
+		    event.target.src = App.baseImg + "triangleOpen.png";
+		    event.target.state = "opened";
+
+		    this.viewFolderContent(event.target);
+	    }
+	    else{
+		    event.target.src = App.baseImg + "triangleClose.png";
+		    event.target.state = "closed";
+
+		    this.deleteFolderContent(event.target);
+	    }
+    }
+
+    viewFolderContent(selector){
+
+	    var data = JSON.parse(App.libraryContent);
+
+	    var selFolder = selector.section;
+
+        var section = data[selFolder];
+
+        var sublist=document.createElement("ul");
+	    sublist.className="subsections";
+	    selector.parentNode.appendChild(sublist);
+
+	    for (var subsection in section) {
+
+		    var liElement = document.createElement("li");
+		    sublist.appendChild(liElement);
+
+		    var filename = section[subsection].toString().split( '/' ).pop();
+		    filename = filename.toString().split('.').shift();
+
+            var link: HTMLAnchorElement = document.createElement("a");
+		    link.className="link";
+		    // var linkAdd = "http://faust.grame.fr/www/pedagogie/" + selFolder + "/" + filename + ".dsp";
+		    var linkAdd = section[subsection];
+		    link.setAttribute("href", linkAdd);
+		    link.textContent = filename;
+		    link.onclick = this.onclickPrevent;
+		    link.ondrag = this.onLinkDrag;
+		    liElement.appendChild(link);
+	    }
+
+    }
+
+    deleteFolderContent(selector){
+
+	    var liElement = selector.parentNode;
+
+	    for(var i=0; i<liElement.childNodes.length; i++){
+
+		    if(liElement.childNodes[i].className=="subsections"){
+			    liElement.removeChild(liElement.childNodes[i]);
+			    break;
+		    }
+	    }
+
+
+    }
 }

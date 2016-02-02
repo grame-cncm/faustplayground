@@ -45,7 +45,7 @@ var SceneAccueilView = (function () {
         startButton.id = "startButton";
         startButton.className = "orangeButton";
         startButton.textContent = "Démarrer";
-        startButton.onclick = function (event) { startButton.style.visibility = "hidden"; nextScene(); };
+        startButton.onclick = function (event) { startButton.style.visibility = "hidden"; scene.nextScene(); };
         startButton.style.visibility = "hidden";
         container.appendChild(startButton);
         //--------- REACT TO KEY PRESSED IN NAME AREA
@@ -65,7 +65,7 @@ var SceneAccueilView = (function () {
                 e.preventDefault(); // sometimes useful
                 if (nameTag.value != "") {
                     startButton.style.visibility = "hidden";
-                    nextScene();
+                    scene.nextScene();
                 }
             }
             else if (nameTag.value != "") {

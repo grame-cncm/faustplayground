@@ -15,7 +15,7 @@
 ******************* INIT/LOAD/UNLOAD EXPORT SCENE ******************
 ********************************************************************/
 class SceneExportView{
-    static onloadExportScene(scene)
+    onloadExportScene(scene)
     {
     // 	window.scenes[1].saveScene();
 
@@ -30,7 +30,7 @@ class SceneExportView{
         this.initExportScene(scene, appName);
     }
 
-    static initExportScene(scene, name)
+    initExportScene(scene:Scene, name)
     {
 	    var container = scene.getSceneContainer();
 
@@ -62,24 +62,25 @@ class SceneExportView{
 
     // -- Once you have been to the finish scene, you probably don't need tooltips anymore.
 	    if (App.isTooltipEnabled) {
-		    changeSceneToolTip(0);
-		    disableTooltips();
+		    Tooltips.changeSceneToolTip(0);
+		    Tooltips.disableTooltips();
 	    }
     //--------- PREVIOUS SCENE BUTTON
 	    var backImg = document.createElement("img");
 	    backImg.id = "backImg";
-	    backImg.src = App.baseImg + "BACK.png";
-	    backImg.onclick = function(){ previousScene()};
+        backImg.src = App.baseImg + "BACK.png";
+        backImg.onclick = function () { scene.parent.previousScene() };
 	    container.appendChild(backImg);
 
-    //-------- GET FAUST EQUIVALENT & LAUNCH EXPORT
-	    var faustSource = getFaustEquivalent(window.scenes[1], name)
+        //-------- GET FAUST EQUIVALENT & LAUNCH EXPORT
+        var equivalentFaust: EquivalentFaust = new EquivalentFaust();
+        var faustSource = equivalentFaust.getFaustEquivalent(scene.parent.scenes[1], name)
 	
 	    if (faustSource)
-		    getAndroidApp(name, faustSource);
+		   this.getAndroidApp(name, faustSource);
     }
 
-    static onunloadExportScene(scene)
+    onunloadExportScene(scene)
     {
     //--- clean graphical elements
 	    var children = scene.getSceneContainer().childNodes;
@@ -93,7 +94,7 @@ class SceneExportView{
     ********************************************************************/
 
     //--- Create QrCode once precompile request has finished
-    static terminateAndroidMenu(sha)
+    terminateAndroidMenu(sha)
     {
 	    if (document.getElementById("androidImg"))
 		    document.getElementById("androidButton").removeChild(document.getElementById("androidImg"));
@@ -102,31 +103,34 @@ class SceneExportView{
 
 	    if (document.getElementById("androidButton")) {
 	
-		    var qrcodeDiv = getQrCode(url, sha, "android", "android", "binary.apk", 170);
+		    var qrcodeDiv = ExportLib.getQrCode(url, sha, "android", "android", "binary.apk", 170);
 		    qrcodeDiv.id = "qrcode";
 	
 		    document.getElementById("androidButton").appendChild(qrcodeDiv);
-		    qrcodeDiv.onclick = getAndroidApp;
+		    //qrcodeDiv.onclick = this.getAndroidApp();
 	    }
     }
 
-    static exportAndroidCallback(sha)
+    exportAndroidCallback(sha)
     {
-	    sendPrecompileRequest("http://faustservice.grame.fr", sha, "android", "android", terminateAndroidMenu);
+        var exportLib: ExportLib = new ExportLib();
+	    exportLib.sendPrecompileRequest("http://faustservice.grame.fr", sha, "android", "android", this.terminateAndroidMenu);
     }
 
-    function getAndroidApp(name, source)
+    getAndroidApp(name, source): HTMLElement
     {
-	    getSHAKey("http://faustservice.grame.fr", name, source, exportAndroidCallback);
+
+        ExportLib.getSHAKey("http://faustservice.grame.fr", name, source, this.exportAndroidCallback);
+        return //new MouseEvent("click");
     }
 
     /******************************************************************** 
     ************************* PLUS UTILISÉ...  *************************
     ******************** Des tentatives graphiques  ********************
     ********************************************************************/
-
+    /*
     // Plus utilisé (c'était pour faire des flèches en svg)
-    function drawArrow(svgCanvas, x1, y1, x2, y2)
+    drawArrow(svgCanvas, x1, y1, x2, y2)
     {
 	    // Create a connector visual line
 	    var svgns = "http://www.w3.org/2000/svg";
@@ -242,5 +246,5 @@ class SceneExportView{
 	    var shaKey = getSHAKey("http://faustservice.grame.fr", faustDiv.getName(), faustDiv.getSource(), exportWebCallback);
     }
 
-
+    */
 }

@@ -12,11 +12,12 @@
 "use strict";
 var ScenePlaygroundView = (function () {
     function ScenePlaygroundView() {
+        /********************************************************************
+        **************************  INITIALIZATION **************************
+        ********************************************************************/
+        this.expor = new Export();
     }
-    /********************************************************************
-    **************************  INITIALIZATION **************************
-    ********************************************************************/
-    ScenePlaygroundView.initNormalScene = function (scene) {
+    ScenePlaygroundView.prototype.initNormalScene = function (scene) {
         var container = scene.getSceneContainer();
         var svgCanvas = document.createElementNS("http://www.w3.org/2000/svg", "svg");
         svgCanvas.id = "svgCanvas";
@@ -48,14 +49,14 @@ var ScenePlaygroundView = (function () {
         container.appendChild(destDiv);
         var fwurl = document.createElement("input");
         fwurl.id = "faustweburl";
-        fwurl.onkeyup = onEnterKey;
+        fwurl.onkeyup = this.onEnterKey;
         fwurl.value = "http://faustservice.grame.fr";
         destDiv.appendChild(fwurl);
         var subfooter = document.createElement('div');
         destDiv.appendChild(subfooter);
         var refButton = document.createElement("div");
         refButton.id = "refreshButton";
-        refButton.onclick = uploadTargets;
+        refButton.onclick = this.expor.uploadTargets;
         refButton.innerHTML = '<svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="50.000000pt" height="50.000000pt" viewBox="0 0 50.000000 50.000000" preserveAspectRatio="xMidYMid meet"><g transform="translate(0.000000,50.000000) scale(0.100000,-0.100000)" fill="#000000" stroke="none"> <path d="M186 309 c-37 -29 -37 -89 0 -118 28 -22 69 -27 93 -12 23 15 3 30 -33 24 -29 -4 -37 -1 -51 21 -16 24 -16 28 -1 51 18 27 63 34 84 13 17 -17 15 -31 -3 -24 -20 7 -19 1 6 -28 l22 -25 18 24 c20 25 25 40 9 30 -5 -3 -16 7 -24 23 -25 47 -75 56 -120 21z"/></g></svg>';
         subfooter.appendChild(refButton);
         var selectDiv = document.createElement("div");
@@ -64,7 +65,7 @@ var ScenePlaygroundView = (function () {
         var selectPlatform = document.createElement("select");
         selectPlatform.id = "platforms";
         selectPlatform.className = "platforms";
-        selectPlatform.onchange = updateArchitectures;
+        selectPlatform.onchange = this.expor.updateArchitectures(this.expor);
         selectDiv.appendChild(selectPlatform);
         var selectArch = document.createElement("select");
         selectArch.id = "architectures";
@@ -74,7 +75,7 @@ var ScenePlaygroundView = (function () {
         equButton.id = "exportButton";
         equButton.type = "submit";
         equButton.className = "grayButton";
-        equButton.onclick = exportPatch;
+        equButton.onclick = this.expor.exportPatch;
         equButton.value = "Export";
         subfooter.appendChild(equButton);
         var linkWilson = document.createElement("div");
@@ -112,33 +113,35 @@ var ScenePlaygroundView = (function () {
         nodeimg.className = "node-button";
         //nodeimg.value = "&nbsp;";
         node.appendChild(nodeimg);
+        var input;
         scene.integrateSceneInBody();
+        var playgroundView = this;
         scene.integrateInput(function () {
             scene.integrateOutput(function () {
                 scene.getAudioOutput().setInputOutputNodes(node, null);
-                scene.getAudioInput().setInputOutputNodes(null, input);
-                onloadNormalScene(scene);
-                uploadTargets();
+                scene.getAudioInput().setInputOutputNodes(null, input); //
+                playgroundView.onloadNormalScene(scene);
+                playgroundView.expor.uploadTargets();
             });
         });
     };
+    ScenePlaygroundView.prototype.onEnterKey = function (e) {
+        if (!e) {
+            e = window.event;
+        }
+        if (e.keyCode == 13) {
+            e.preventDefault();
+            this.expor.uploadTargets();
+        }
+    };
+    // On Load And UnLoad Playground Scene
+    ScenePlaygroundView.prototype.onloadNormalScene = function (scene) {
+        scene.parent.setGeneralDragAndDrop(scene.parent);
+        scene.unmuteScene();
+    };
+    ScenePlaygroundView.prototype.onunloadNormalScene = function (scene) {
+        scene.muteScene();
+    };
     return ScenePlaygroundView;
 })();
-function onEnterKey(e) {
-    if (!e) {
-        var e = window.event;
-    }
-    if (e.keyCode == 13) {
-        e.preventDefault();
-        uploadTargets();
-    }
-}
-// On Load And UnLoad Playground Scene
-function onloadNormalScene(scene) {
-    setGeneralDragAndDrop();
-    scene.unmuteScene();
-}
-function onunloadNormalScene(scene) {
-    scene.muteScene();
-}
 //# sourceMappingURL=Playground.js.map

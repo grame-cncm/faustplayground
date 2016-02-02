@@ -30,8 +30,18 @@ interface IfEdit extends HTMLImageElement {
 interface IinterfaceElement extends HTMLElement {
     label: any;
 }
-class Module {
-    patchID: number;
+interface IModule {
+    id: number;
+    x: number;
+    y: number;
+    name: string;
+    sceneParent: Scene;
+    htmlElementModuleContainer: HTMLElement;
+    removeModuleCallBack: (m: ModuleClass) => void;
+
+}
+class ModuleClass implements IModule {
+    patchID: string;
     fModuleContainer: HTMLElement;
     sceneParent: Scene;
     fDSP: any;
@@ -42,17 +52,25 @@ class Module {
     fTempName:string;
     fParams: any[];
     fInputNode:any;
-    fOutputNode:any;
-    fOutputConnections: any[] = null;
-    fInputConnections: any[] = null;
+    fOutputNode: any;
+    fOutputConnections: Connector[] = null;
+    fInputConnections: Connector[] = null;
     fInterfaceContainer: HTMLElement;
     fEditImg: IfEdit;
     fTitle: HTMLElement;
     x: number;
-    y: number
-    
+    y: number;
+    course: ModuleClass[];
+    recursiveFlag: boolean;
+    moduleInputs: any[];
+    sourceCode: any;
+    id: number;
+    name: string;
+    htmlElementModuleContainer: HTMLElement;
+    removeModuleCallBack: (m: ModuleClass) => void;
 
-    constructor(id: number, x: number, y: number, name: string,sceneParent:Scene, htmlElementModuleContainer: HTMLElement, removeModuleCallBack: (m: Module)=>void) {
+
+    constructor(id: number, x: number, y: number, name: string, sceneParent: Scene, htmlElementModuleContainer: HTMLElement, removeModuleCallBack: (m: ModuleClass) => void) {
 
         this.createModule(id, x, y, name, htmlElementModuleContainer, removeModuleCallBack);
         this.sceneParent = sceneParent;
@@ -66,7 +84,7 @@ class Module {
     createModule(ID, x, y, name, parent, callback) {
 	
         // ---- Capturing module instance
-        var that: Module=this;
+        var that: ModuleClass=this;
 	
         // ----- Delete Callback was added to make sure 
         // ----- the module is well deleted from the scene containing it
@@ -111,7 +129,7 @@ class Module {
         //---- Redirect drop to main.js
         this.fModuleContainer.ondrop = function (e) {
 
-            that.sceneParent.parent.uploadOn(that, 0, 0, e);
+            that.sceneParent.parent.uploadOn(that.sceneParent.parent,that, 0, 0, e);
             return true;
         };
         this.fName = name;
@@ -224,7 +242,7 @@ class Module {
 	
 		//that = this;
 
-        this.fDSP = faust.createDSPInstance(factory, this.sceneParent.parent.audioContext, 1024);	
+        this.fDSP = faust.createDSPInstance(factory, App.audioContext, 1024);	
         };
 
 //--- Update DSP in module 
@@ -236,7 +254,7 @@ class Module {
 		var saveOutCnx = new Array().concat(this.fOutputConnections);
 		var saveInCnx = new Array().concat(this.fInputConnections);
 			
-        // Delete old Module 
+        // Delete old ModuleClass 
         var connect: Connect = new Connect();
 		connect.disconnectModule(this);
 	
@@ -292,7 +310,7 @@ class Module {
 		this.fEditImg.area = textArea;
         };
 
-//---- Update Module with new name/code source
+//---- Update ModuleClass with new name/code source
 	update(name, code){
 	
 	
@@ -319,9 +337,9 @@ class Module {
 // Fill fInterfaceContainer with the DSP's Interface (--> see FaustInterface.js)
 	createFaustInterface(){
 
-		this.fTitle.textContent = this.fName;
-
-        parse_ui(JSON.parse(this.fDSP.json()).ui, this); 
+        this.fTitle.textContent = this.fName;
+        var faustInterface: FaustInterface = new FaustInterface()
+        faustInterface.parse_ui(JSON.parse(this.fDSP.json()).ui, this); 
         };
         deleteFaustInterface() {
 

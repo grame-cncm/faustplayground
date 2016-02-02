@@ -17,14 +17,16 @@ class Scene {
     //-- Graphical Scene container
     fSceneContainer: HTMLDivElement;
     //-- Audio Input/Output
-    fAudioOutput: Module;
-    fAudioInput: Module;
+    fAudioOutput: ModuleClass;
+    fAudioInput: ModuleClass;
     //-- Modules contained in the scene
-    fModuleList: Module[];
+    fModuleList: ModuleClass[]=[];
 
     onload(s: Scene) { }
     onunload(s: Scene) { }
-    audioInput() { }
+    audioInput(): Object {
+        return null;
+    }
     getSceneContainer(): HTMLDivElement { return this.fSceneContainer; }
 
 
@@ -65,8 +67,8 @@ class Scene {
     }
     /******************** HANDLE MODULES IN SCENE ************************/
     getModules() { return this.fModuleList; };
-    addModule(module: Module) { this.fModuleList.push(module); };
-    removeModule(module: Module) { this.fModuleList.splice(this.fModuleList.indexOf(module), 1); };
+    addModule(module: ModuleClass) { this.fModuleList.push(module); };
+    removeModule(module: ModuleClass) { this.fModuleList.splice(this.fModuleList.indexOf(module), 1); };
 	
     cleanModules () {
         for (var i = this.fModuleList.length - 1; i >= 0; i--) {
@@ -88,7 +90,7 @@ class Scene {
     /*************** ACTIONS ON AUDIO IN/OUTPUT ***************************/
     integrateInput(afterWork) {
 
-        this.fAudioInput = new Module(App.idX++, 0, 0, "input", this.fSceneContainer, this.removeModule);
+        this.fAudioInput = new ModuleClass(App.idX++, 0, 0, "input",this, this.fSceneContainer, this.removeModule);
         this.fAudioInput.hideModule();
 
         this.parent.compileFaust("input", "process=_,_;", 0, 0, this.integrateAudioInput);
@@ -96,25 +98,25 @@ class Scene {
     };
     integrateOutput(afterWork) {
 
-        this.fAudioOutput = new Module(App.idX++, 0, 0, "output", this.fSceneContainer, this.removeModule);
+        this.fAudioOutput = new ModuleClass(App.idX++, 0, 0, "output",this, this.fSceneContainer, this.removeModule);
         this.fAudioOutput.hideModule();
         this.parent.compileFaust("output", "process=_,_;", 0, 0, this.integrateAudioOutput);
 
         afterWork();
     };
 
-    integrateAudioOutput(factory) {
-        if (this.fAudioOutput) {
-            this.fAudioOutput.setSource("process=_,_;");
-            this.fAudioOutput.createDSP(factory);
-            this.parent.activateAudioOutput(document.getElementById("sceneOutput"));
+    integrateAudioOutput(factory,scene:Scene) {
+        if (scene.fAudioOutput) {
+            scene.fAudioOutput.setSource("process=_,_;");
+            scene.fAudioOutput.createDSP(factory);
+            scene.parent.activateAudioOutput(document.getElementById("sceneOutput"));
         }
     };
-    integrateAudioInput(factory) {
-        if (this.fAudioInput) {
-            this.fAudioInput.setSource("process=_,_;");
-            this.fAudioInput.createDSP(factory);
-            this.parent.activateAudioInput();
+    integrateAudioInput(factory, scene: Scene) {
+        if (scene.fAudioInput) {
+            scene.fAudioInput.setSource("process=_,_;");
+            scene.fAudioInput.createDSP(factory);
+            scene.parent.activateAudioInput();
         }
     };
 	
@@ -126,10 +128,10 @@ class Scene {
     saveScene() {
 
         for (var i = 0; i < this.fModuleList.length; i++) {
-            this.fModuleList[i].patchID = i + 1;
+            this.fModuleList[i].patchID = String(i + 1);
         }
 
-        this.fAudioOutput.patchID = 0;
+        this.fAudioOutput.patchID = String(0);
 
         var json = '{';
 
@@ -240,7 +242,7 @@ class Scene {
             return null;
         }
 
-        var faustModule = new Module(App.idX++, this.parent.tempModuleX, this.parent.tempModuleY, window.name, document.getElementById("modules"), this.removeModule);
+        var faustModule = new ModuleClass(App.idX++, this.parent.tempModuleX, this.parent.tempModuleY, window.name,this, document.getElementById("modules"), this.removeModule);
         faustModule.setSource(this.parent.tempModuleSourceCode);
         faustModule.createDSP(factory);
 

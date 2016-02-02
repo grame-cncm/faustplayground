@@ -55,8 +55,8 @@ class SceneAccueilView{
 		    var startButton = document.createElement("div");
 		    startButton.id= "startButton";
 		    startButton.className= "orangeButton";
-		    startButton.textContent = "Démarrer";
-		    startButton.onclick = function(event){ startButton.style.visibility = "hidden"; nextScene();}
+            startButton.textContent = "Démarrer";
+            startButton.onclick = function (event) { startButton.style.visibility = "hidden"; scene.nextScene(); }
 		    startButton.style.visibility = "hidden";
 	
 		    container.appendChild(startButton);
@@ -71,8 +71,8 @@ class SceneAccueilView{
 	
     //  Hide/Show Button when text area is edited
 		    nameTag.addEventListener("keyup", function(e) {
-	   		    if (!e) { 
-   				    var e = window.event; 
+                if (!e) {
+                    var e = <KeyboardEvent>window.event; 
    			    }
 		
 	        // Enter is pressed
@@ -81,7 +81,7 @@ class SceneAccueilView{
 		
 				    if(nameTag.value != ""){
 					    startButton.style.visibility = "hidden";
-					    nextScene();
+					    scene.nextScene();
 				    }
 			    }
 			    else if(nameTag.value != ""){

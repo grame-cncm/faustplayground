@@ -26,29 +26,15 @@ window.addEventListener('load', init, false);
 function init() {
     var app = new App();
     try {
-        app.audioContext = new AudioContext();
+        App.audioContext = new AudioContext();
     }
     catch (e) {
         alert('The Web Audio API is apparently not supported in this browser.');
     }
+    //app.isPedagogie = window.isPedagogie;
     app.createAllScenes();
     app.showFirstScene();
 }
-/********************************************************************
-**************************  CLASS  *********************************
-********************************************************************/
-//interface Navigator {
-//    getUserMedia(
-//        options: { video?: boolean; audio?: boolean; },
-//        success: (stream: any) => void,
-//        error?: (error: string) => void
-//    ): void;
-//    webkitGetUserMedia(
-//        options: { video?: boolean; audio?: boolean; },
-//        successCallback: (stream: any) => void,
-//        errorCallback: (error: Error) => void)
-//        : any;
-//}
 var App = (function () {
     function App() {
     }
@@ -58,15 +44,18 @@ var App = (function () {
     App.prototype.createAllScenes = function () {
         this.scenes = [];
         if (this.isPedagogie) {
-            this.scenes[0] = new Scene("Accueil");
+            this.scenes[0] = new Scene("Accueil", this);
             SceneAccueilView.initWelcomeScene(this.scenes[0]);
-            this.scenes[1] = new Scene("Pedagogie", ScenePedagogieView.onloadPedagogieScene, ScenePedagogieView.onunloadPedagogieScene);
+            this.scenes[1] = new Scene("Pedagogie", this, ScenePedagogieView.onloadPedagogieScene, ScenePedagogieView.onunloadPedagogieScene);
             ScenePedagogieView.initPedagogieScene(this.scenes[1]);
-            this.scenes[2] = new Scene("Export", SceneExportView.onloadExportScene, SceneExportView.onunloadExportScene);
+            var sceneExportView = new SceneExportView();
+            this.scenes[2] = new Scene("Export", this, sceneExportView.onloadExportScene, sceneExportView.onunloadExportScene);
         }
         else {
-            this.scenes[0] = new Scene("Normal", onloadNormalScene, onunloadNormalScene);
-            ScenePlaygroundView.initNormalScene(this.scenes[0]);
+            var scenePlaygroundView = new ScenePlaygroundView();
+            this.scenes[0] = new Scene("Normal", this, scenePlaygroundView.onloadNormalScene, scenePlaygroundView.onunloadNormalScene);
+            App.scene = this.scenes[0];
+            scenePlaygroundView.initNormalScene(this.scenes[0]);
         }
         App.currentScene = 0;
     };
@@ -77,6 +66,7 @@ var App = (function () {
         var index = App.currentScene;
         this.scenes[index].hideScene();
         this.scenes[index].unloadScene();
+        App.scene = this.scenes[index + 1];
         App.currentScene = index + 1;
         console.log("WINDOW CURRENT SCENE");
         console.log(this.scenes[index + 1].getSceneContainer());
@@ -89,18 +79,19 @@ var App = (function () {
         this.scenes[index].unloadScene();
         this.scenes[index - 1].showScene();
         this.scenes[index - 1].loadScene();
+        App.scene = this.scenes[index - 1];
         App.currentScene = index - 1;
     };
     /********************************************************************
     **********************  ACTIVATE PHYSICAL IN/OUTPUT *****************
     ********************************************************************/
     App.prototype.activateAudioInput = function () {
-        var navigator = navigator;
-        if (!navigator.getUserMedia) {
-            navigator.getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+        var navigatorLoc = navigator;
+        if (!navigatorLoc.getUserMedia) {
+            navigatorLoc.getUserMedia = navigatorLoc.webkitGetUserMedia || navigatorLoc.mozGetUserMedia;
         }
-        if (navigator.getUserMedia) {
-            navigator.getUserMedia({ audio: true }, this.getDevice, function (e) {
+        if (navigatorLoc.getUserMedia) {
+            navigatorLoc.getUserMedia({ audio: true }, this.getDevice, function (e) {
                 alert('Error getting audio input');
             });
         }
@@ -108,34 +99,37 @@ var App = (function () {
             alert('Audio input API not available');
         }
     };
-    App.prototype.getDevice = function (device) {
+    App.prototype.getDevice = function (device, app) {
         // Create an AudioNode from the stream.
-        this.src = document.getElementById("input");
-        src.audioNode = audioContext.createMediaStreamSource(device);
+        App.src = document.getElementById("input");
+        App.src.audioNode = App.audioContext.createMediaStreamSource(device);
+        var drag = new Drag();
         var i = document.createElement("div");
         i.className = "node node-output";
-        i.addEventListener("mousedown", startDraggingConnector, true);
+        i.addEventListener("mousedown", drag.startDraggingConnector, true);
         i.innerHTML = "<span class='node-button'>&nbsp;</span>";
-        src.appendChild(i);
-        connectModules(src, window.scenes[window.currentScene].audioInput());
+        App.src.appendChild(i);
+        var connect = new Connect();
+        connect.connectModules(App.src, App.scene.audioInput());
     };
     App.prototype.activateAudioOutput = function (sceneOutput) {
-        var out = document.createElement("div");
-        out.id = "audioOutput";
-        out.audioNode = window.audioContext.destination;
-        document.body.appendChild(out);
-        connectModules(sceneOutput, out);
+        App.out = document.createElement("div");
+        App.out.id = "audioOutput";
+        App.out.audioNode = App.audioContext.destination;
+        document.body.appendChild(App.out);
+        var connect = new Connect();
+        connect.connectModules(sceneOutput, App.out);
     };
     /********************************************************************
     ****************  CREATE FAUST FACTORIES AND MODULES ****************
     ********************************************************************/
     App.prototype.compileFaust = function (name, sourcecode, x, y, callback) {
         //  Temporarily Saving parameters of compilation
-        window.name = name;
-        window.source = sourcecode;
-        window.x = x;
-        window.y = y;
-        var currentScene = window.scenes[window.currentScene];
+        this.tempModuleName = name;
+        this.tempModuleSourceCode = sourcecode;
+        this.tempModuleX = x;
+        this.tempModuleY = y;
+        var currentScene = this.scenes[App.currentScene];
         // To Avoid click during compilation
         if (currentScene)
             currentScene.muteScene();
@@ -143,7 +137,7 @@ var App = (function () {
         //var args = ["-I", "http://10.0.1.2/faustcode/"];
         var args = ["-I", "http://" + location.hostname + "/faustcode/"];
         var factory = faust.createDSPFactory(sourcecode, args);
-        callback(factory);
+        callback(factory, App.scene);
         if (currentScene)
             currentScene.unmuteScene();
     };
@@ -154,25 +148,25 @@ var App = (function () {
         }
         var faustModule;
         // can't it be just window.scenes[window.currentScene] ???
-        if (isTooltipEnabled())
-            faustModule = createModule(idX++, window.x, window.y, window.name, document.getElementById("modules"), window.scenes[1].removeModule);
-        else
-            faustModule = createModule(idX++, window.x, window.y, window.name, document.getElementById("modules"), window.scenes[0].removeModule);
-        faustModule.setSource(window.source);
+        //if (App.isTooltipEnabled)
+        faustModule = new ModuleClass(App.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, this.scenes[App.currentScene], document.getElementById("modules"), this.scenes[App.currentScene].removeModule);
+        //else
+        //    faustModule = new ModuleClass(this.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), this.scenes[0].removeModule);
+        faustModule.setSource(this.tempModuleSourceCode);
         faustModule.createDSP(factory);
         faustModule.createFaustInterface();
         faustModule.addInputOutputNodes();
-        window.scenes[window.currentScene].addModule(faustModule);
+        this.scenes[App.currentScene].addModule(faustModule);
     };
     /********************************************************************
     ***********************  HANDLE DRAG AND DROP ***********************
     ********************************************************************/
     //-- Init drag and drop reactions
-    App.prototype.setGeneralDragAndDrop = function () {
+    App.prototype.setGeneralDragAndDrop = function (app) {
         window.ondragover = function () { this.className = 'hover'; return false; };
         window.ondragend = function () { this.className = ''; return false; };
         window.ondrop = function (e) {
-            uploadFile(e);
+            app.uploadFile(e);
             return true;
         };
     };
@@ -189,15 +183,15 @@ var App = (function () {
     App.prototype.terminateUpload = function () {
         var uploadTitle = document.getElementById("upload");
         uploadTitle.textContent = "";
-        if (isTooltipEnabled() && sceneHasInstrumentAndEffect())
-            toolTipForConnections();
+        if (App.isTooltipEnabled && Tooltips.sceneHasInstrumentAndEffect(this.scenes[App.currentScene]))
+            Tooltips.toolTipForConnections(this.scenes[App.currentScene]);
     };
     //-- Finds out if the drop was on an existing module or creating a new one
     App.prototype.uploadFile = function (e) {
         if (!e)
             e = window.event;
         var alreadyInNode = false;
-        var modules = window.scenes[window.currentScene].getModules();
+        var modules = this.scenes[App.currentScene].getModules();
         for (var i = 0; i < modules.length; i++) {
             if (modules[i].isPointInNode(e.clientX, e.clientY))
                 alreadyInNode = true;
@@ -205,12 +199,12 @@ var App = (function () {
         if (!alreadyInNode) {
             var x = e.clientX;
             var y = e.clientY;
-            uploadOn(null, x, y, e);
+            this.uploadOn(this, null, x, y, e);
         }
     };
     //-- Upload content dropped on the page and create a Faust DSP with it
-    App.prototype.uploadOn = function (module, x, y, e) {
-        preventDefaultAction(e);
+    App.prototype.uploadOn = function (app, module, x, y, e) {
+        this.preventDefaultAction(e);
         var uploadTitle = document.getElementById("upload");
         uploadTitle.textContent = "CHARGEMENT EN COURS ...";
         // CASE 1 : THE DROPPED OBJECT IS A URL TO SOME FAUST CODE
@@ -223,11 +217,11 @@ var App = (function () {
                 if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
                     var dsp_code = "process = vgroup(\"" + filename + "\",environment{" + xmlhttp.responseText + "}.process);";
                     if (module == null)
-                        compileFaust(filename, dsp_code, x, y, createFaustModule);
+                        this.compileFaust(filename, dsp_code, x, y, this.createFaustModule);
                     else
                         module.update(filename, dsp_code);
                 }
-                terminateUpload();
+                this.terminateUpload();
             };
             xmlhttp.open("GET", url, false);
             // 	Avoid error "mal formé" on firefox
@@ -240,10 +234,10 @@ var App = (function () {
             if (dsp_code) {
                 dsp_code = "process = vgroup(\"" + "TEXT" + "\",environment{" + dsp_code + "}.process);";
                 if (!module)
-                    compileFaust("TEXT", dsp_code, x, y, createFaustModule);
+                    this.compileFaust("TEXT", dsp_code, x, y, this.createFaustModule);
                 else
                     module.update("TEXT", dsp_code);
-                terminateUpload();
+                this.terminateUpload();
             }
             else {
                 var files = e.target.files || e.dataTransfer.files;
@@ -265,22 +259,22 @@ var App = (function () {
                         reader.readAsText(file);
                     }
                     else
-                        terminateUpload();
+                        this.terminateUpload();
                     reader.onloadend = function (e) {
                         dsp_code = "process = vgroup(\"" + filename + "\",environment{" + reader.result + "}.process);";
                         if (!module && type == "dsp")
-                            compileFaust(filename, dsp_code, x, y, createFaustModule);
+                            app.compileFaust(filename, dsp_code, x, y, app.createFaustModule);
                         else if (type == "dsp")
                             module.update(filename, dsp_code);
                         else if (type == "json")
-                            window.scenes[window.currentScene].recallScene(reader.result);
-                        terminateUpload();
+                            app.scenes[App.currentScene].recallScene(reader.result);
+                        app.terminateUpload();
                     };
                 }
             }
         }
         else {
-            terminateUpload();
+            this.terminateUpload();
             window.alert("THIS OBJECT IS NOT FAUST COMPILABLE");
         }
     };

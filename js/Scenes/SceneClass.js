@@ -8,7 +8,10 @@
 */
 "use strict";
 var Scene = (function () {
-    function Scene(identifiant, onload, onunload) {
+    function Scene(identifiant, parent, onload, onunload) {
+        //-- Modules contained in the scene
+        this.fModuleList = [];
+        this.parent = parent;
         this.fSceneContainer = document.createElement("div");
         this.fSceneContainer.id = identifiant;
         if (onload) {
@@ -20,6 +23,9 @@ var Scene = (function () {
     }
     Scene.prototype.onload = function (s) { };
     Scene.prototype.onunload = function (s) { };
+    Scene.prototype.audioInput = function () {
+        return null;
+    };
     Scene.prototype.getSceneContainer = function () { return this.fSceneContainer; };
     /************************* SHOW/HIDE SCENE ***************************/
     Scene.prototype.showScene = function () { this.fSceneContainer.style.visibility = "visible"; };
@@ -33,204 +39,205 @@ var Scene = (function () {
         this.onunload(this);
     };
     ;
+    /*********************** MUTE/UNMUTE SCENE ***************************/
+    Scene.prototype.muteScene = function () {
+        var out = document.getElementById("audioOutput");
+        var connect = new Connect();
+        connect.disconnectModules(this.fAudioOutput, out);
+    };
+    ;
+    Scene.prototype.unmuteScene = function () {
+        var out = document.getElementById("audioOutput");
+        var connect = new Connect();
+        connect.connectModules(this.fAudioOutput, out);
+    };
+    /******************** HANDLE MODULES IN SCENE ************************/
+    Scene.prototype.getModules = function () { return this.fModuleList; };
+    ;
+    Scene.prototype.addModule = function (module) { this.fModuleList.push(module); };
+    ;
+    Scene.prototype.removeModule = function (module) { this.fModuleList.splice(this.fModuleList.indexOf(module), 1); };
+    ;
+    Scene.prototype.cleanModules = function () {
+        for (var i = this.fModuleList.length - 1; i >= 0; i--) {
+            this.fModuleList[i].deleteModule();
+            this.removeModule(this.fModuleList[i]);
+        }
+    };
+    ;
+    /*******************************  PUBLIC METHODS  **********************************/
+    Scene.prototype.deleteScene = function () {
+        this.cleanModules();
+        this.hideScene();
+        this.muteScene();
+    };
+    ;
+    Scene.prototype.integrateSceneInBody = function () {
+        document.body.appendChild(this.fSceneContainer);
+    };
+    ;
+    /*************** ACTIONS ON AUDIO IN/OUTPUT ***************************/
+    Scene.prototype.integrateInput = function (afterWork) {
+        this.fAudioInput = new ModuleClass(App.idX++, 0, 0, "input", this, this.fSceneContainer, this.removeModule);
+        this.fAudioInput.hideModule();
+        this.parent.compileFaust("input", "process=_,_;", 0, 0, this.integrateAudioInput);
+        afterWork();
+    };
+    ;
+    Scene.prototype.integrateOutput = function (afterWork) {
+        this.fAudioOutput = new ModuleClass(App.idX++, 0, 0, "output", this, this.fSceneContainer, this.removeModule);
+        this.fAudioOutput.hideModule();
+        this.parent.compileFaust("output", "process=_,_;", 0, 0, this.integrateAudioOutput);
+        afterWork();
+    };
+    ;
+    Scene.prototype.integrateAudioOutput = function (factory, scene) {
+        if (scene.fAudioOutput) {
+            scene.fAudioOutput.setSource("process=_,_;");
+            scene.fAudioOutput.createDSP(factory);
+            scene.parent.activateAudioOutput(document.getElementById("sceneOutput"));
+        }
+    };
+    ;
+    Scene.prototype.integrateAudioInput = function (factory, scene) {
+        if (scene.fAudioInput) {
+            scene.fAudioInput.setSource("process=_,_;");
+            scene.fAudioInput.createDSP(factory);
+            scene.parent.activateAudioInput();
+        }
+    };
+    ;
+    Scene.prototype.getAudioOutput = function () { return this.fAudioOutput; };
+    ;
+    Scene.prototype.getAudioInput = function () { return this.fAudioInput; };
+    ;
+    /*********************** SAVE/RECALL SCENE ***************************/
+    Scene.prototype.saveScene = function () {
+        for (var i = 0; i < this.fModuleList.length; i++) {
+            this.fModuleList[i].patchID = String(i + 1);
+        }
+        this.fAudioOutput.patchID = String(0);
+        var json = '{';
+        for (var i = 0; i < this.fModuleList.length; i++) {
+            if (i != 0)
+                json += ',';
+            json += '"' + this.fModuleList[i].patchID.toString() + '":[';
+            json += '{"x":"' + this.fModuleList[i].getModuleContainer().getBoundingClientRect().left + '"},';
+            json += '{"y\":"' + this.fModuleList[i].getModuleContainer().getBoundingClientRect().top + '"},';
+            json += '{"name\":"' + this.fModuleList[i].getName() + '"},';
+            json += '{"code":' + JSON.stringify(this.fModuleList[i].getSource()) + '},';
+            var inputs = this.fModuleList[i].getInputConnections();
+            if (inputs) {
+                json += '{"inputs":[';
+                for (var j = 0; j < inputs.length; j++) {
+                    if (j != 0)
+                        json += ',';
+                    json += '{"src":"' + inputs[j].source.patchID.toString() + '"}';
+                }
+                json += ']},';
+            }
+            var outputs = this.fModuleList[i].getOutputConnections();
+            if (outputs) {
+                json += '{"outputs":[';
+                for (var j = 0; j < outputs.length; j++) {
+                    if (j != 0)
+                        json += ',';
+                    json += '{"dst":"' + outputs[j].destination.patchID.toString() + '"}';
+                }
+                json += ']},';
+            }
+            var params = this.fModuleList[i].getDSP().controls();
+            if (params) {
+                json += '{"params":[';
+                for (var j = 0; j < params.length; j++) {
+                    if (j != 0)
+                        json += ',';
+                    json += '{"path":"' + params[j] + '"},';
+                    json += '{"value":"' + this.fModuleList[i].getDSP().getValue(params[j]) + '"}';
+                }
+                json += ']}';
+            }
+            json += ']';
+        }
+        json += '}';
+        // 	console.log(json);
+        return json;
+    };
+    ;
+    Scene.prototype.recallScene = function (json) {
+        this.parent.currentNumberDSP = this.fModuleList.length;
+        var data = JSON.parse(json);
+        var sel;
+        for (sel in data) {
+            var dataCopy = data[sel];
+            var newsel;
+            var name, code, x, y;
+            for (newsel in dataCopy) {
+                var mainData = dataCopy[newsel];
+                if (mainData["name"])
+                    name = mainData["name"];
+                else if (mainData["code"])
+                    code = mainData["code"];
+                else if (mainData["x"])
+                    x = mainData["x"];
+                else if (mainData["y"])
+                    y = mainData["y"];
+                else if (mainData["inputs"])
+                    this.parent.inputs = mainData["inputs"];
+                else if (mainData["outputs"])
+                    this.parent.outputs = mainData["outputs"];
+                else if (mainData["params"])
+                    this.parent.params = mainData["params"];
+            }
+            this.parent.compileFaust(name, code, x, y, this.createModuleAndConnectIt);
+        }
+    };
+    ;
+    Scene.prototype.createModuleAndConnectIt = function (factory) {
+        //---- This is very similar to "createFaustModule" from Main.js
+        //---- But as we need to set Params before calling "createFaustInterface", it is copied
+        //---- There probably is a better way to do this !!
+        if (!factory) {
+            alert(faust.getErrorMessage());
+            return null;
+        }
+        var faustModule = new ModuleClass(App.idX++, this.parent.tempModuleX, this.parent.tempModuleY, window.name, this, document.getElementById("modules"), this.removeModule);
+        faustModule.setSource(this.parent.tempModuleSourceCode);
+        faustModule.createDSP(factory);
+        if (this.parent.params) {
+            for (var i = 0; i < this.parent.params.length; i++) {
+                //console.log("WINDOW.PARAMS");
+                //console.log(this.parent.params.length);
+                if (this.parent.params[i] && this.parent.params[i + 1]) {
+                    faustModule.addParam(this.parent.params[i]["path"], this.parent.params[i + 1]["value"]);
+                    i + 1;
+                }
+            }
+        }
+        faustModule.recallParams();
+        faustModule.createFaustInterface();
+        faustModule.addInputOutputNodes();
+        this.addModule(faustModule);
+        // WARNING!!!!! Not right in an asynchroneous call of this.parent.compileFaust
+        if (this.parent.inputs) {
+            for (var i = 0; i < this.parent.inputs.length; i++) {
+                var src = this.getModules()[this.parent.inputs[i]["src"] - 1 + this.parent.currentNumberDSP];
+                if (src)
+                    var connect = new Connect();
+                connect.createConnection(src, src.getOutputNode(), faustModule, faustModule.getInputNode());
+            }
+        }
+        if (this.parent.outputs) {
+            for (var i = 0; i < this.parent.outputs.length; i++) {
+                var dst = this.getModules()[this.parent.outputs[i]["dst"] + this.parent.currentNumberDSP - 1];
+                var connect = new Connect();
+                if (this.parent.outputs[i]["dst"] == 0)
+                    connect.createConnection(faustModule, faustModule.getOutputNode(), this.fAudioOutput, this.fAudioOutput.getInputNode());
+                else if (dst)
+                    connect.createConnection(faustModule, faustModule.getOutputNode(), dst, dst.getInputNode());
+            }
+        }
+    };
     return Scene;
 })();
-var createScene = function (identifiant, onload, onunload) {
-    var that;
-    /*******************************  PUBLIC METHODS  **********************************/
-    return {
-        deleteScene: function () {
-            that.cleanModules();
-            that.hideScene();
-            that.muteScene();
-        },
-        integrateSceneInBody: function () {
-            that = this;
-            document.body.appendChild(fSceneContainer);
-        },
-        /*************** ACTIONS ON AUDIO IN/OUTPUT ***************************/
-        integrateInput: function (afterWork) {
-            fAudioInput = createModule(idX++, 0, 0, "input", fSceneContainer, that.removeModule);
-            fAudioInput.hideModule();
-            compileFaust("input", "process=_,_;", 0, 0, that.integrateAudioInput);
-            afterWork();
-        },
-        integrateOutput: function (afterWork) {
-            fAudioOutput = createModule(idX++, 0, 0, "output", fSceneContainer, that.removeModule);
-            fAudioOutput.hideModule();
-            compileFaust("output", "process=_,_;", 0, 0, that.integrateAudioOutput);
-            afterWork();
-        },
-        integrateAudioOutput: function (factory) {
-            if (fAudioOutput) {
-                fAudioOutput.setSource("process=_,_;");
-                fAudioOutput.createDSP(factory);
-                activateAudioOutput(document.getElementById("sceneOutput"));
-            }
-        },
-        integrateAudioInput: function (factory) {
-            if (fAudioInput) {
-                fAudioInput.setSource("process=_,_;");
-                fAudioInput.createDSP(factory);
-                activateAudioInput();
-            }
-        },
-        getAudioOutput: function () { return fAudioOutput; },
-        getAudioInput: function () { return fAudioInput; },
-        /************************* SHOW/HIDE SCENE ***************************/
-        showScene: function () { fSceneContainer.style.visibility = "visible"; },
-        hideScene: function () { fSceneContainer.style.visibility = "hidden"; },
-        /*********************** MUTE/UNMUTE SCENE ***************************/
-        muteScene: function () {
-            var out = document.getElementById("audioOutput");
-            disconnectModules(fAudioOutput, out);
-        },
-        unmuteScene: function () {
-            var out = document.getElementById("audioOutput");
-            connectModules(fAudioOutput, out);
-        },
-        /******************** HANDLE MODULES IN SCENE ************************/
-        getModules: function () { return fModuleList; },
-        addModule: function (module) { fModuleList.push(module); },
-        removeModule: function (module) { fModuleList.splice(fModuleList.indexOf(module), 1); },
-        cleanModules: function () {
-            for (var i = fModuleList.length - 1; i >= 0; i--) {
-                fModuleList[i].deleteModule();
-                that.removeModule(fModuleList[i]);
-            }
-        },
-        /*********************** LOAD/UNLOAD SCENE ***************************/
-        loadScene: function () {
-            onload(this);
-        },
-        unloadScene: function () {
-            onunload(this);
-        },
-        /*********************** SAVE/RECALL SCENE ***************************/
-        saveScene: function () {
-            for (var i = 0; i < fModuleList.length; i++) {
-                fModuleList[i].patchID = i + 1;
-            }
-            fAudioOutput.patchID = 0;
-            var json = '{';
-            for (var i = 0; i < fModuleList.length; i++) {
-                if (i != 0)
-                    json += ',';
-                json += '"' + fModuleList[i].patchID.toString() + '":[';
-                json += '{"x":"' + fModuleList[i].getModuleContainer().getBoundingClientRect().left + '"},';
-                json += '{"y\":"' + fModuleList[i].getModuleContainer().getBoundingClientRect().top + '"},';
-                json += '{"name\":"' + fModuleList[i].getName() + '"},';
-                json += '{"code":' + JSON.stringify(fModuleList[i].getSource()) + '},';
-                var inputs = fModuleList[i].getInputConnections();
-                if (inputs) {
-                    json += '{"inputs":[';
-                    for (var j = 0; j < inputs.length; j++) {
-                        if (j != 0)
-                            json += ',';
-                        json += '{"src":"' + inputs[j].source.patchID.toString() + '"}';
-                    }
-                    json += ']},';
-                }
-                var outputs = fModuleList[i].getOutputConnections();
-                if (outputs) {
-                    json += '{"outputs":[';
-                    for (var j = 0; j < outputs.length; j++) {
-                        if (j != 0)
-                            json += ',';
-                        json += '{"dst":"' + outputs[j].destination.patchID.toString() + '"}';
-                    }
-                    json += ']},';
-                }
-                var params = fModuleList[i].getDSP().controls();
-                if (params) {
-                    json += '{"params":[';
-                    for (var j = 0; j < params.length; j++) {
-                        if (j != 0)
-                            json += ',';
-                        json += '{"path":"' + params[j] + '"},';
-                        json += '{"value":"' + fModuleList[i].getDSP().getValue(params[j]) + '"}';
-                    }
-                    json += ']}';
-                }
-                json += ']';
-            }
-            json += '}';
-            // 	console.log(json);
-            return json;
-        },
-        recallScene: function (json) {
-            window.currentNumberDSP = fModuleList.length;
-            var data = JSON.parse(json);
-            var sel;
-            for (sel in data) {
-                var dataCopy = data[sel];
-                var newsel;
-                var name, code, x, y;
-                for (newsel in dataCopy) {
-                    var mainData = dataCopy[newsel];
-                    if (mainData["name"])
-                        name = mainData["name"];
-                    else if (mainData["code"])
-                        code = mainData["code"];
-                    else if (mainData["x"])
-                        x = mainData["x"];
-                    else if (mainData["y"])
-                        y = mainData["y"];
-                    else if (mainData["inputs"])
-                        window.inputs = mainData["inputs"];
-                    else if (mainData["outputs"])
-                        window.outputs = mainData["outputs"];
-                    else if (mainData["params"])
-                        window.params = mainData["params"];
-                }
-                compileFaust(name, code, x, y, that.createModuleAndConnectIt);
-            }
-        },
-        createModuleAndConnectIt: function (factory) {
-            //---- This is very similar to "createFaustModule" from Main.js
-            //---- But as we need to set Params before calling "createFaustInterface", it is copied
-            //---- There probably is a better way to do this !!
-            if (!factory) {
-                alert(faust.getErrorMessage());
-                return null;
-            }
-            var faustModule = createModule(idX++, window.x, window.y, window.name, document.getElementById("modules"), that.removeModule);
-            faustModule.setSource(window.source);
-            faustModule.createDSP(factory);
-            if (window.params) {
-                for (var i = 0; i < window.params.length; i++) {
-                    console.log("WINDOW.PARAMS");
-                    console.log(window.params.length);
-                    if (window.params[i] && window.params[i + 1]) {
-                        faustModule.addParam(window.params[i]["path"], window.params[i + 1]["value"]);
-                        i + 1;
-                    }
-                }
-            }
-            faustModule.recallParams();
-            faustModule.createFaustInterface();
-            faustModule.addInputOutputNodes();
-            that.addModule(faustModule);
-            // WARNING!!!!! Not right in an asynchroneous call of compileFaust
-            if (window.inputs) {
-                for (var i = 0; i < window.inputs.length; i++) {
-                    var src = that.getModules()[window.inputs[i]["src"] - 1 + window.currentNumberDSP];
-                    if (src)
-                        createConnection(src, src.getOutputNode(), faustModule, faustModule.getInputNode());
-                }
-            }
-            if (window.outputs) {
-                for (var i = 0; i < window.outputs.length; i++) {
-                    var dst = that.getModules()[window.outputs[i]["dst"] + window.currentNumberDSP - 1];
-                    if (window.outputs[i]["dst"] == 0)
-                        createConnection(faustModule, faustModule.getOutputNode(), fAudioOutput, fAudioOutput.getInputNode());
-                    else if (dst)
-                        createConnection(faustModule, faustModule.getOutputNode(), dst, dst.getInputNode());
-                }
-            }
-        },
-        /*********************** SElF EXPLANATORY ***************************/
-        getSceneContainer: function () { return fSceneContainer; }
-    };
-};
 //# sourceMappingURL=SceneClass.js.map

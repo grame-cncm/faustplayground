@@ -12,116 +12,131 @@
 *********************  HANDLE FAUST WEB TARGETS *********************
 ********************************************************************/
 
+
+
+class Export{
+
+
 //------ Handle Combo Boxes
-function addItem(id, itemText)
-{
-	var e2 = document.getElementById(id);
-	var o = document.createElement('option');
-	o.text = itemText;
-	e2.options.add(o);
-}
-			
-function clearComboBox(id)
-{
-	while (document.getElementById(id).childNodes.length>0) {
-		document.getElementById(id).removeChild(document.getElementById(id).childNodes[0]);
-	}
-}
+    addItem(id, itemText)
+    {
+        var platformsSelect = <HTMLSelectElement> document.getElementById(id);
+	    var option = document.createElement('option');
+	    option.text = itemText;
+        platformsSelect.options.add(option);
+    }
 
-//------ Update Architectures with Plateform change
-function updateArchitectures()
-{
-	clearComboBox('architectures');
-		
-	var data = JSON.parse(window.jsonText);
-			
-	var e = document.getElementById('platforms');//get the combobox
-	var selPlatform = e.options[e.selectedIndex].value;
-											
-    var dataCopy = data[selPlatform];
-	var iterator = 0;
-							
-	for (data in dataCopy) {
-				
-		if(iterator < dataCopy.length){
-			var mainData = dataCopy[data];
-        						
-	   		addItem('architectures', mainData);
-	   		iterator = iterator + 1;
-	   	}	
-	}
-}
+    clearComboBox(id): boolean
+    {
+        if (!document.getElementById(id) == undefined) {
+            while (document.getElementById(id).childNodes.length > 0) {
+                document.getElementById(id).removeChild(document.getElementById(id).childNodes[0]);
+            }
+            return true
+        } else {
+            return false
+        }
+    }
 
-function uploadTargets()
-{
-	clearComboBox('platforms');
-	clearComboBox('architectures');
+    //------ Update Architectures with Plateform change
+    updateArchitectures(self: Export):any
+    {
+        if (!self.clearComboBox('architectures')) {
+            return
+        } else {
 
-	window.exportURL = document.getElementById("faustweburl").value;
-	
-	getTargets(window.exportURL, function(json){
-			window.jsonText = json;
+
+            var data = JSON.parse(App.jsonText);
+
+            var platformsSelect = <HTMLSelectElement>document.getElementById('platforms');//get the combobox
+            var selPlatform = platformsSelect.options[platformsSelect.selectedIndex].value;
+
+            var dataCopy = data[selPlatform];
+            var iterator = 0;
+
+            for (data in dataCopy) {
+
+                if (iterator < dataCopy.length) {
+                    var mainData = dataCopy[data];
+
+                    this.addItem('architectures', mainData);
+                    iterator = iterator + 1;
+                }
+            }
+        }
+    }
+
+    uploadTargets()
+    {
+	    this.clearComboBox('platforms');
+	    this.clearComboBox('architectures');
+        var input: HTMLInputElement = <HTMLInputElement>document.getElementById("faustweburl")
+        App.exportURL = input.value;
+        var self = this;
+        ExportLib.getTargets(App.exportURL, function (json) {
+			    App.jsonText = json;
 				    		
-			var data = JSON.parse(window.jsonText);
+			    var data = JSON.parse(App.jsonText);
 
-			for (var event in data) {
-				addItem('platforms', event);
-        	}
-        	
-        	updateArchitectures();
-	}, function(json){
-		alert('Impossible to get FaustWeb targets');
-	});
-}		
+			    for (var event in data) {
+                    self.addItem('platforms', event);
+        	    }
 
-/******************************************************************** 
-*********************  HANDLE POST TO FAUST WEB  ********************
-********************************************************************/
+                self.updateArchitectures(self);
+	    }, function(json){
+		    alert('Impossible to get FaustWeb targets');
+	    });
+    }		
 
-function exportPatch(event)
-{
-	var sceneName = document.getElementById("PatchName").innerHTML;
-	var faustCode = getFaustEquivalent(window.scenes[window.currentScene], sceneName);
-	getSHAKey(document.getElementById("faustweburl").value, sceneName, faustCode, exportFaustCode);
-}
+    /******************************************************************** 
+    *********************  HANDLE POST TO FAUST WEB  ********************
+    ********************************************************************/
 
-/******************************************************************** 
-**************  CALLBACK ONCE SHA KEY WAS CALCULATED  ***************
-********************************************************************/
+    exportPatch(event)
+    {
+        var sceneName = document.getElementById("PatchName").innerHTML;
+        var equivalentFaust: EquivalentFaust = new EquivalentFaust();
+        var faustCode = equivalentFaust.getFaustEquivalent(App.scene, sceneName);
+        ExportLib.getSHAKey((<HTMLInputElement>document.getElementById("faustweburl")).value, sceneName, faustCode, this.exportFaustCode);
+    }
 
-function exportFaustCode(shaKey)
-{
-	var xhr = new XMLHttpRequest();
-				
-	var e = document.getElementById("platforms");//get the combobox
-	var selPlatform = e.options[e.selectedIndex].value;
+    /******************************************************************** 
+    **************  CALLBACK ONCE SHA KEY WAS CALCULATED  ***************
+    ********************************************************************/
+
+    exportFaustCode(shaKey)
+    {
+	    var xhr = new XMLHttpRequest();
+
+        var platformsSelect = <HTMLSelectElement> document.getElementById("platforms");//get the combobox
+        var selPlatform = platformsSelect.options[platformsSelect.selectedIndex].value;
 			    
-	e = document.getElementById("architectures");//get the combobox
-	var selArch = e.options[e.selectedIndex].value;
-			    
- 	var serverUrl = document.getElementById("faustweburl").value;
+        var architecturesSelect = <HTMLSelectElement>document.getElementById("architectures");//get the combobox
+        var selArch = architecturesSelect.options[architecturesSelect.selectedIndex].value;
+
+        var serverUrl = (<HTMLInputElement> document.getElementById("faustweburl")).value;
  		
-	var appType = "binary.zip";
+	    var appType = "binary.zip";
 	
-	if (selArch == "android")
-		appType = "binary.apk";
+	    if (selArch == "android")
+		    appType = "binary.apk";
 	
-	// 	Delete existing content if existing
-	var qrcodeSpan = document.getElementById('qrcodeDiv');
-	if (qrcodeSpan)
-		qrcodeSpan.parentNode.removeChild(qrcodeSpan);
+	    // 	Delete existing content if existing
+	    var qrcodeSpan = document.getElementById('qrcodeDiv');
+	    if (qrcodeSpan)
+		    qrcodeSpan.parentNode.removeChild(qrcodeSpan);
 			
-	var qrDiv = document.createElement('div');
-	qrDiv.id = "qrcodeDiv";
-	document.getElementById("sceneOutput").appendChild(qrDiv);
+	    var qrDiv = document.createElement('div');
+	    qrDiv.id = "qrcodeDiv";
+	    document.getElementById("sceneOutput").appendChild(qrDiv);
 	
-	var link = document.createElement('a');
-	link.href = serverUrl + "/" + shaKey +"/"+ selPlatform + "/" + selArch + "/"+appType;
-	qrDiv.appendChild(link);
+	    var link = document.createElement('a');
+	    link.href = serverUrl + "/" + shaKey +"/"+ selPlatform + "/" + selArch + "/"+appType;
+	    qrDiv.appendChild(link);
 
-	var myWhiteDiv = getQrCode(serverUrl, shaKey, selPlatform, selArch, appType, 120);
-	link.appendChild(myWhiteDiv);
+	    var myWhiteDiv = ExportLib.getQrCode(serverUrl, shaKey, selPlatform, selArch, appType, 120);
+	    link.appendChild(myWhiteDiv);
+    }
 }
-
 
 

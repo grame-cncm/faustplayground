@@ -1,6 +1,6 @@
 /*				CONNECT.JS
 	Handles Audio/Graphical Connection/Deconnection of modules
-	This is a historical file from Chris Wilson, modified for Faust Module needs.	
+	This is a historical file from Chris Wilson, modified for Faust ModuleClass needs.	
 
 	DEPENDENCIES :
 		- ModuleClass.js
@@ -14,13 +14,25 @@
 /******* WEB AUDIO CONNECTION/DECONNECTION*********/
 /**************************************************/
 
+class ConnectorShape extends SVGElement {
+    inputConnection: Connector;
+    destination: ModuleClass;
+    source: ModuleClass;
 
+
+}
+class Connector {
+    line: ConnectorShape;
+    source: ModuleClass;
+    destination: ModuleClass;
+
+}
 class Connect{
 // Connect Nodes in Web Audio Graph
     connectModules( src, dst ) {
 
     // Searching for src/dst DSP if existing
-	    if(dst.getDSP)
+	    if(dst!=null&&dst.getDSP)
 		    dst = dst.getDSP();
 			
 	    if(src.getDSP)
@@ -30,9 +42,9 @@ class Connect{
 	    // AudioBufferSourceNodes may not have an audio node yet.
 	    if (src.audioNode ){
 		
-		    if(dst.audioNode)
+		    if(dst!=null&&dst.audioNode)
 			    src.audioNode.connect(dst.audioNode);
-		    else if(dst.getProcessor)
+            else if (dst != null && dst.getProcessor)
 			    src.audioNode.connect(dst.getProcessor());
 			
     // 		src.connect(dst.getProcessor().audioNode);
@@ -46,7 +58,7 @@ class Connect{
 
 	    }
 
-	    if (dst.onConnectInput)
+	    if (dst!=null&&dst.onConnectInput)
 		    dst.onConnectInput();
     }
 
@@ -79,7 +91,7 @@ class Connect{
     /**************************************************/
 
     //----- Add connection to src and dst connections structures
-    saveConnection(src, dst, connector, connectorShape){
+    saveConnection(src: ModuleClass, dst: ModuleClass, connector: Connector, connectorShape: ConnectorShape) {
 
 	    connector.line = connectorShape;
 	    connector.destination = dst;
@@ -98,9 +110,10 @@ class Connect{
 
 
 
-    deleteConnection() {
+    deleteConnection(drag: Drag):any {
 
-	    this.breakSingleInputConnection( this.source, this.destination, this.inputConnection );
+        this.breakSingleInputConnection(drag.connectorShape.source, drag.connectorShape.destination, drag.connectorShape.inputConnection);
+        return true;
     }
 
     breakSingleInputConnection( src, dst, connector ) {
