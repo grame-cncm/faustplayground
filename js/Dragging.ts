@@ -31,7 +31,7 @@ class Drag {
     connectorShape: ConnectorShape;
     elemNode: any;
 
-    startDraggingModule(event, module) {
+    startDraggingModule(event, module: ModuleClass) {
 
  	    var el = event.target;
   	    var x, y;
@@ -67,7 +67,7 @@ class Drag {
             if (isNaN(this.elementStartTop)) this.elementStartTop = 0;
 
   	    // Update element's z-index.
-	    moduleContainer.style.zIndex = ++this.zIndex;
+	    moduleContainer.style.zIndex = String(++this.zIndex);
 
   	    // Capture mousemove and mouseup events on the page.
   	    module.addListener("mousemove");

@@ -97,10 +97,10 @@ class ModuleClass implements IModule {
         this.fModuleContainer.style.left = "" + x + "px";
         this.fModuleContainer.style.top = "" + y + "px";
 
-        var fTitle = document.createElement("h6");
-        fTitle.className = "module-title";
-        fTitle.textContent = "";
-        this.fModuleContainer.appendChild(fTitle);
+        this.fTitle = document.createElement("h6");
+        this.fTitle.className = "module-title";
+        this.fTitle.textContent = "";
+        this.fModuleContainer.appendChild(this.fTitle);
 
         this.fInterfaceContainer = document.createElement("div");
         this.fInterfaceContainer.className = "content";

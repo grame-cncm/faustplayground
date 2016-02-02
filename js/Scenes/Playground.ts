@@ -76,7 +76,8 @@ class ScenePlaygroundView{
         var selectPlatform = document.createElement("select");
         selectPlatform.id = "platforms";
         selectPlatform.className = "platforms";
-        selectPlatform.onchange = this.expor.updateArchitectures(this.expor);
+        var self = this;
+        selectPlatform.addEventListener("change", function () { self.expor.updateArchitectures(self.expor) });
         selectDiv.appendChild(selectPlatform);
 
         var selectArch = document.createElement("select");

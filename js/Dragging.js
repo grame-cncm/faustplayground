@@ -46,7 +46,7 @@ var Drag = (function () {
         if (isNaN(this.elementStartTop))
             this.elementStartTop = 0;
         // Update element's z-index.
-        moduleContainer.style.zIndex = ++this.zIndex;
+        moduleContainer.style.zIndex = String(++this.zIndex);
         // Capture mousemove and mouseup events on the page.
         module.addListener("mousemove");
         module.addListener("mouseup");

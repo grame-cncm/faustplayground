@@ -20,7 +20,7 @@ var Export = (function () {
         platformsSelect.options.add(option);
     };
     Export.prototype.clearComboBox = function (id) {
-        if (!document.getElementById(id) == undefined) {
+        if (document.getElementById(id) != undefined) {
             while (document.getElementById(id).childNodes.length > 0) {
                 document.getElementById(id).removeChild(document.getElementById(id).childNodes[0]);
             }

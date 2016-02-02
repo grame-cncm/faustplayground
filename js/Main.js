@@ -133,15 +133,15 @@ var App = (function () {
         // To Avoid click during compilation
         if (currentScene)
             currentScene.muteScene();
-        //var args = ["-I", "http://faust.grame.fr/faustcode/"];
+        var args = ["-I", "http://faust.grame.fr/faustcode/"];
         //var args = ["-I", "http://10.0.1.2/faustcode/"];
-        var args = ["-I", "http://" + location.hostname + "/faustcode/"];
+        //var args = ["-I", "http://" + location.hostname + "/faustcode/"];
         var factory = faust.createDSPFactory(sourcecode, args);
-        callback(factory, App.scene);
+        callback(factory, App.scene, this);
         if (currentScene)
             currentScene.unmuteScene();
     };
-    App.prototype.createFaustModule = function (factory) {
+    App.prototype.createFaustModule = function (factory, scene, app) {
         if (!factory) {
             alert(faust.getErrorMessage());
             return null;
@@ -149,14 +149,14 @@ var App = (function () {
         var faustModule;
         // can't it be just window.scenes[window.currentScene] ???
         //if (App.isTooltipEnabled)
-        faustModule = new ModuleClass(App.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, this.scenes[App.currentScene], document.getElementById("modules"), this.scenes[App.currentScene].removeModule);
+        faustModule = new ModuleClass(App.idX++, app.tempModuleX, app.tempModuleY, app.tempModuleName, scene, document.getElementById("modules"), scene.removeModule);
         //else
         //    faustModule = new ModuleClass(this.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), this.scenes[0].removeModule);
-        faustModule.setSource(this.tempModuleSourceCode);
+        faustModule.setSource(app.tempModuleSourceCode);
         faustModule.createDSP(factory);
         faustModule.createFaustInterface();
         faustModule.addInputOutputNodes();
-        this.scenes[App.currentScene].addModule(faustModule);
+        scene.addModule(faustModule);
     };
     /********************************************************************
     ***********************  HANDLE DRAG AND DROP ***********************

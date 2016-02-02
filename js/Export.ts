@@ -28,7 +28,7 @@ class Export{
 
     clearComboBox(id): boolean
     {
-        if (!document.getElementById(id) == undefined) {
+        if (document.getElementById(id) != undefined) {
             while (document.getElementById(id).childNodes.length > 0) {
                 document.getElementById(id).removeChild(document.getElementById(id).childNodes[0]);
             }
