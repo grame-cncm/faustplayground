@@ -5,6 +5,10 @@
 		- ExportLib.js
 		- qrcode.js
 */
+/// <reference path="ExportLib.ts"/>
+/// <reference path="EquivalentFaust.ts"/>
+/// <reference path="main.ts"/>
+
 
 "use strict";
 

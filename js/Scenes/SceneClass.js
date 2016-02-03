@@ -6,6 +6,11 @@
         - Main.js
         - Connect.js
 */
+/// <reference path="../Connect.ts"/>
+/// <reference path="../Modules/ModuleClass.ts"/>
+/// <reference path="../Connect.ts"/>
+/// <reference path="../webaudio-asm-wrapper.d.ts"/>
+/// <reference path="../main.ts"/>
 "use strict";
 var Scene = (function () {
     function Scene(identifiant, parent, onload, onunload) {
@@ -34,18 +39,15 @@ var Scene = (function () {
     Scene.prototype.loadScene = function () {
         this.onload(this);
     };
-    ;
     Scene.prototype.unloadScene = function () {
         this.onunload(this);
     };
-    ;
     /*********************** MUTE/UNMUTE SCENE ***************************/
     Scene.prototype.muteScene = function () {
         var out = document.getElementById("audioOutput");
         var connect = new Connect();
         connect.disconnectModules(this.fAudioOutput, out);
     };
-    ;
     Scene.prototype.unmuteScene = function () {
         var out = document.getElementById("audioOutput");
         var connect = new Connect();
@@ -53,29 +55,23 @@ var Scene = (function () {
     };
     /******************** HANDLE MODULES IN SCENE ************************/
     Scene.prototype.getModules = function () { return this.fModuleList; };
-    ;
     Scene.prototype.addModule = function (module) { this.fModuleList.push(module); };
-    ;
     Scene.prototype.removeModule = function (module) { this.fModuleList.splice(this.fModuleList.indexOf(module), 1); };
-    ;
     Scene.prototype.cleanModules = function () {
         for (var i = this.fModuleList.length - 1; i >= 0; i--) {
             this.fModuleList[i].deleteModule();
             this.removeModule(this.fModuleList[i]);
         }
     };
-    ;
     /*******************************  PUBLIC METHODS  **********************************/
     Scene.prototype.deleteScene = function () {
         this.cleanModules();
         this.hideScene();
         this.muteScene();
     };
-    ;
     Scene.prototype.integrateSceneInBody = function () {
         document.body.appendChild(this.fSceneContainer);
     };
-    ;
     /*************** ACTIONS ON AUDIO IN/OUTPUT ***************************/
     Scene.prototype.integrateInput = function (afterWork) {
         this.fAudioInput = new ModuleClass(App.idX++, 0, 0, "input", this, this.fSceneContainer, this.removeModule);
@@ -83,14 +79,12 @@ var Scene = (function () {
         this.parent.compileFaust("input", "process=_,_;", 0, 0, this.integrateAudioInput);
         afterWork();
     };
-    ;
     Scene.prototype.integrateOutput = function (afterWork) {
         this.fAudioOutput = new ModuleClass(App.idX++, 0, 0, "output", this, this.fSceneContainer, this.removeModule);
         this.fAudioOutput.hideModule();
         this.parent.compileFaust("output", "process=_,_;", 0, 0, this.integrateAudioOutput);
         afterWork();
     };
-    ;
     Scene.prototype.integrateAudioOutput = function (factory, scene) {
         if (scene.fAudioOutput) {
             scene.fAudioOutput.setSource("process=_,_;");
@@ -98,7 +92,6 @@ var Scene = (function () {
             scene.parent.activateAudioOutput(document.getElementById("sceneOutput"));
         }
     };
-    ;
     Scene.prototype.integrateAudioInput = function (factory, scene) {
         if (scene.fAudioInput) {
             scene.fAudioInput.setSource("process=_,_;");
@@ -106,11 +99,8 @@ var Scene = (function () {
             scene.parent.activateAudioInput();
         }
     };
-    ;
     Scene.prototype.getAudioOutput = function () { return this.fAudioOutput; };
-    ;
     Scene.prototype.getAudioInput = function () { return this.fAudioInput; };
-    ;
     /*********************** SAVE/RECALL SCENE ***************************/
     Scene.prototype.saveScene = function () {
         for (var i = 0; i < this.fModuleList.length; i++) {
@@ -163,7 +153,6 @@ var Scene = (function () {
         // 	console.log(json);
         return json;
     };
-    ;
     Scene.prototype.recallScene = function (json) {
         this.parent.currentNumberDSP = this.fModuleList.length;
         var data = JSON.parse(json);
@@ -192,7 +181,6 @@ var Scene = (function () {
             this.parent.compileFaust(name, code, x, y, this.createModuleAndConnectIt);
         }
     };
-    ;
     Scene.prototype.createModuleAndConnectIt = function (factory) {
         //---- This is very similar to "createFaustModule" from Main.js
         //---- But as we need to set Params before calling "createFaustInterface", it is copied
@@ -240,4 +228,3 @@ var Scene = (function () {
     };
     return Scene;
 })();
-//# sourceMappingURL=SceneClass.js.map

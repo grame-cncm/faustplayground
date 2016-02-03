@@ -17,6 +17,11 @@
         - Main.js
         - webaudio-asm-wrapper.js
 */
+/// <reference path="../Scenes/SceneClass.ts"/>
+/// <reference path="../Dragging.ts"/>
+/// <reference path="../Connect.ts"/>
+/// <reference path="../Modules/FaustInterface.ts"/>
+/// <reference path="../main.ts"/>
 "use strict";
 var ModuleClass = (function () {
     function ModuleClass(id, x, y, name, sceneParent, htmlElementModuleContainer, removeModuleCallBack) {
@@ -48,9 +53,9 @@ var ModuleClass = (function () {
         this.fInterfaceContainer.className = "content";
         this.fModuleContainer.appendChild(this.fInterfaceContainer);
         var self = this;
-        this.eventHandler = function (event) { self.dragCallback(event, self); };
+        this.eventDraggingHandler = function (event) { self.dragCallback(event, self); };
         //var eventHandler = function (event) { self.dragCallback(event, self) }
-        this.fModuleContainer.addEventListener("mousedown", self.eventHandler, true);
+        this.fModuleContainer.addEventListener("mousedown", self.eventDraggingHandler, true);
         var fCloseButton = document.createElement("a");
         fCloseButton.href = "#";
         fCloseButton.className = "close";
@@ -74,7 +79,6 @@ var ModuleClass = (function () {
         //------ FIELDS OF THE MODULE
         ;
     };
-    ;
     /***************  PRIVATE METHODS  ******************************/
     ModuleClass.prototype.dragCallback = function (event, module) {
         console.log("drag Callback");
@@ -85,18 +89,16 @@ var ModuleClass = (function () {
         else if (event.type == "mousemove")
             module.drag.whileDraggingModule(event, module);
     };
-    ;
-    ModuleClass.prototype.dragCnxCallback = function (event) {
+    ModuleClass.prototype.dragCnxCallback = function (event, module) {
         var drag = new Drag();
         console.log("drag Cnx Callback");
         if (event.type == "mousedown")
-            drag.startDraggingConnector(this, event);
+            drag.startDraggingConnector(module, event);
         else if (event.type == "mouseup")
-            drag.stopDraggingConnector(this, event);
+            drag.stopDraggingConnector(module, event);
         else if (event.type == "mousemove")
-            drag.whileDraggingConnector(this, event);
+            drag.whileDraggingConnector(module, event);
     };
-    ;
     /*******************************  PUBLIC METHODS  **********************************/
     ModuleClass.prototype.deleteModule = function () {
         var connect = new Connect();
@@ -111,18 +113,14 @@ var ModuleClass = (function () {
     /*************** ACTIONS ON IN/OUTPUT NODES ***************************/
     // ------ Returns Graphical input and output Node
     ModuleClass.prototype.getOutputNode = function () { return this.fOutputNode; };
-    ;
     ModuleClass.prototype.getInputNode = function () { return this.fInputNode; };
-    ;
     // ------ Returns Connection Array OR null if there are none
     ModuleClass.prototype.getInputConnections = function () {
         return this.fInputConnections;
     };
-    ;
     ModuleClass.prototype.getOutputConnections = function () {
         return this.fOutputConnections;
     };
-    ;
     //-- The Creation of array is only done when a new connection is added 
     //-- (to be able to return null when there are none)	
     ModuleClass.prototype.addOutputConnection = function (connector) {
@@ -130,45 +128,34 @@ var ModuleClass = (function () {
             this.fOutputConnections = new Array();
         this.fOutputConnections.push(connector);
     };
-    ;
     ModuleClass.prototype.addInputConnection = function (connector) {
         if (!this.fInputConnections)
             this.fInputConnections = new Array();
         this.fInputConnections.push(connector);
     };
-    ;
     ModuleClass.prototype.removeOutputConnection = function (connector) {
         this.fOutputConnections.splice(this.fOutputConnections.indexOf(connector), 1);
     };
-    ;
     ModuleClass.prototype.removeInputConnection = function (connector) {
         this.fInputConnections.splice(this.fInputConnections.indexOf(connector), 1);
     };
-    ;
     /********************* SHOW/HIDE MODULE IN SCENE **********************/
     ModuleClass.prototype.showModule = function () { this.fModuleContainer.style.visibility = "visible"; };
-    ;
     ModuleClass.prototype.hideModule = function () { this.fModuleContainer.style.visibility = "hidden"; };
-    ;
     /********************** GET/SET SOURCE/NAME/DSP ***********************/
     ModuleClass.prototype.setSource = function (code) {
         this.fSource = code;
     };
-    ;
     ModuleClass.prototype.getSource = function () { return this.fSource; };
-    ;
     ModuleClass.prototype.getName = function () { return this.fName; };
-    ;
     ModuleClass.prototype.getDSP = function () {
         return this.fDSP;
     };
-    ;
     //--- Create and Update are called once a source code is compiled and the factory exists
     ModuleClass.prototype.createDSP = function (factory) {
         //that = this;
         this.fDSP = faust.createDSPInstance(factory, App.audioContext, 1024);
     };
-    ;
     //--- Update DSP in module 
     ModuleClass.prototype.updateDSP = function (factory) {
         var toDelete = this.fDSP;
@@ -201,13 +188,11 @@ var ModuleClass = (function () {
             }
         }
     };
-    ;
     ModuleClass.prototype.deleteDSP = function (todelete) {
         // 	TO DO SAFELY --> FOR NOW CRASHES SOMETIMES
         // 		if(todelete)
         // 		    faust.deleteDSPInstance(todelete);
     };
-    ;
     /******************** EDIT SOURCE & RECOMPILE *************************/
     ModuleClass.prototype.edit = function () {
         this.saveParams();
@@ -221,14 +206,12 @@ var ModuleClass = (function () {
         this.fEditImg.onclick = this.recompileSource;
         this.fEditImg.area = textArea;
     };
-    ;
     //---- Update ModuleClass with new name/code source
     ModuleClass.prototype.update = function (name, code) {
         this.fTempName = name;
         this.fTempSource = code;
         this.sceneParent.parent.compileFaust(name, code, this.x, this.y, this.updateDSP);
     };
-    ;
     //---- React to recompilation triggered by click on icon
     ModuleClass.prototype.recompileSource = function (event) {
         var dsp_code = event.target.area.value;
@@ -237,7 +220,6 @@ var ModuleClass = (function () {
         this.fEditImg.src = App.baseImg + "edit.png";
         this.fEditImg.onclick = this.edit;
     };
-    ;
     /***************** CREATE/DELETE the DSP Interface ********************/
     // Fill fInterfaceContainer with the DSP's Interface (--> see FaustInterface.js)
     ModuleClass.prototype.createFaustInterface = function () {
@@ -245,20 +227,16 @@ var ModuleClass = (function () {
         var faustInterface = new FaustInterface();
         faustInterface.parse_ui(JSON.parse(this.fDSP.json()).ui, this);
     };
-    ;
     ModuleClass.prototype.deleteFaustInterface = function () {
         while (this.fInterfaceContainer.childNodes.length != 0)
             this.fInterfaceContainer.removeChild(this.fInterfaceContainer.childNodes[0]);
     };
-    ;
     ModuleClass.prototype.getModuleContainer = function () {
         return this.fModuleContainer;
     };
-    ;
     ModuleClass.prototype.getInterfaceContainer = function () {
         return this.fInterfaceContainer;
     };
-    ;
     //---- Generic callback for Faust Interface
     //---- Called every time an element of the UI changes value
     ModuleClass.prototype.interfaceCallback = function (event) {
@@ -283,7 +261,6 @@ var ModuleClass = (function () {
         // 	Search for DSP then update the value of its parameter.
         this.fDSP.setValue(text, val);
     };
-    ;
     // Save graphical parameters of a Faust Node
     ModuleClass.prototype.saveParams = function () {
         var interfaceElements = this.fInterfaceContainer.childNodes;
@@ -295,24 +272,19 @@ var ModuleClass = (function () {
             }
         }
     };
-    ;
     ModuleClass.prototype.recallParams = function () {
         for (var key in this.fParams)
             this.fDSP.setValue(key, this.fParams[key]);
     };
-    ;
     ModuleClass.prototype.getParams = function () {
         return this.fParams;
     };
-    ;
     ModuleClass.prototype.setParams = function (parameters) {
         this.fParams = parameters;
     };
-    ;
     ModuleClass.prototype.addParam = function (path, value) {
         this.fParams[path] = value;
     };
-    ;
     /******************* GET/SET INPUT/OUTPUT NODES **********************/
     ModuleClass.prototype.addInputOutputNodes = function () {
         if (this.fDSP.getNumInputs() > 0) {
@@ -330,14 +302,12 @@ var ModuleClass = (function () {
             this.fModuleContainer.appendChild(this.fOutputNode);
         }
     };
-    ;
     ModuleClass.prototype.deleteInputOutputNodes = function () {
         if (this.fInputNode)
             this.fModuleContainer.removeChild(this.fInputNode);
         if (this.fOutputNode)
             this.fModuleContainer.removeChild(this.fOutputNode);
     };
-    ;
     // Added for physical Input and Output which are create outside of ModuleClass (--> see Playground.js or Pedagogie.js)
     ModuleClass.prototype.setInputOutputNodes = function (input, output) {
         this.fInputNode = input;
@@ -347,49 +317,41 @@ var ModuleClass = (function () {
         if (this.fOutputNode)
             this.addCnxListener(this.fOutputNode, "mousedown");
     };
-    ;
     /****************** ADD/REMOVE ACTION LISTENERS **********************/
     ModuleClass.prototype.addListener = function (type, module) {
         var self = module;
-        document.addEventListener(type, module.eventHandler, true);
+        document.addEventListener(type, module.eventDraggingHandler, true);
     };
-    ;
     ModuleClass.prototype.removeListener = function (div, type) {
         var module = this;
-        div.removeEventListener(type, module.eventHandler, true);
+        div.removeEventListener(type, module.eventDraggingHandler, true);
     };
-    ;
     ModuleClass.prototype.addCnxListener = function (div, type) {
+        var self = this;
+        this.eventConnectorHandler = function (event) { self.dragCnxCallback(event, self); };
         if (type == "mousedown")
-            div.addEventListener(type, this.dragCnxCallback, true);
+            div.addEventListener(type, this.eventConnectorHandler, true);
         else
-            document.addEventListener(type, this.dragCnxCallback, true);
+            document.addEventListener(type, this.eventConnectorHandler, true);
     };
-    ;
     ModuleClass.prototype.removeCnxListener = function (div, type) {
-        document.removeEventListener(type, this.dragCnxCallback, true);
+        document.removeEventListener(type, this.eventConnectorHandler, true);
     };
-    ;
     /**********************************************************************/
     ModuleClass.prototype.isPointInOutput = function (x, y) {
         if (this.fOutputNode && this.fOutputNode.getBoundingClientRect().left < x && x < this.fOutputNode.getBoundingClientRect().right && this.fOutputNode.getBoundingClientRect().top < y && y < this.fOutputNode.getBoundingClientRect().bottom)
             return true;
         return false;
     };
-    ;
     ModuleClass.prototype.isPointInInput = function (x, y) {
         if (this.fInputNode && this.fInputNode.getBoundingClientRect().left <= x && x <= this.fInputNode.getBoundingClientRect().right && this.fInputNode.getBoundingClientRect().top <= y && y <= this.fInputNode.getBoundingClientRect().bottom)
             return true;
         return false;
     };
-    ;
     ModuleClass.prototype.isPointInNode = function (x, y) {
         if (this.fModuleContainer && this.fModuleContainer.getBoundingClientRect().left < x && x < this.fModuleContainer.getBoundingClientRect().right && this.fModuleContainer.getBoundingClientRect().top < y && y < this.fModuleContainer.getBoundingClientRect().bottom)
             return true;
         return false;
     };
-    ;
     return ModuleClass;
 })();
-;
-//# sourceMappingURL=ModuleClass.js.map

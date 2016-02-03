@@ -108,4 +108,3 @@ var FaustInterface = (function () {
     };
     return FaustInterface;
 })();
-//# sourceMappingURL=FaustInterface.js.map

@@ -6,6 +6,11 @@
 		- Main.js
 		- Connect.js
 */
+/// <reference path="../Connect.ts"/>
+/// <reference path="../Modules/ModuleClass.ts"/>
+/// <reference path="../Connect.ts"/>
+/// <reference path="../webaudio-asm-wrapper.d.ts"/>
+/// <reference path="../main.ts"/>
 
 
 "use strict";
@@ -50,42 +55,42 @@ class Scene {
     /*********************** LOAD/UNLOAD SCENE ***************************/
     loadScene() {
         this.onload(this);
-    };
+    }
     unloadScene() {
         this.onunload(this)
-    };
+    }
     /*********************** MUTE/UNMUTE SCENE ***************************/
     muteScene() {
         var out = document.getElementById("audioOutput");
         var connect: Connect = new Connect();
         connect.disconnectModules(this.fAudioOutput, out);
-    };
+    }
     unmuteScene (){
         var out = document.getElementById("audioOutput");
         var connect: Connect = new Connect();
         connect.connectModules(this.fAudioOutput, out);
     }
     /******************** HANDLE MODULES IN SCENE ************************/
-    getModules() { return this.fModuleList; };
-    addModule(module: ModuleClass) { this.fModuleList.push(module); };
-    removeModule(module: ModuleClass) { this.fModuleList.splice(this.fModuleList.indexOf(module), 1); };
+    getModules() { return this.fModuleList; }
+    addModule(module: ModuleClass) { this.fModuleList.push(module); }
+    removeModule(module: ModuleClass) { this.fModuleList.splice(this.fModuleList.indexOf(module), 1); }
 	
     cleanModules () {
         for (var i = this.fModuleList.length - 1; i >= 0; i--) {
             this.fModuleList[i].deleteModule();
             this.removeModule(this.fModuleList[i]);
         }
-    };
+    }
     /*******************************  PUBLIC METHODS  **********************************/
     deleteScene() {
         this.cleanModules();
         this.hideScene();
         this.muteScene();
-    };
+    }
     
     integrateSceneInBody() {
         document.body.appendChild(this.fSceneContainer);
-    };
+    }
 
     /*************** ACTIONS ON AUDIO IN/OUTPUT ***************************/
     integrateInput(afterWork) {
@@ -95,7 +100,7 @@ class Scene {
 
         this.parent.compileFaust("input", "process=_,_;", 0, 0, this.integrateAudioInput);
         afterWork();
-    };
+    }
     integrateOutput(afterWork) {
 
         this.fAudioOutput = new ModuleClass(App.idX++, 0, 0, "output",this, this.fSceneContainer, this.removeModule);
@@ -103,7 +108,7 @@ class Scene {
         this.parent.compileFaust("output", "process=_,_;", 0, 0, this.integrateAudioOutput);
 
         afterWork();
-    };
+    }
 
     integrateAudioOutput(factory,scene:Scene) {
         if (scene.fAudioOutput) {
@@ -111,17 +116,17 @@ class Scene {
             scene.fAudioOutput.createDSP(factory);
             scene.parent.activateAudioOutput(document.getElementById("sceneOutput"));
         }
-    };
+    }
     integrateAudioInput(factory, scene: Scene) {
         if (scene.fAudioInput) {
             scene.fAudioInput.setSource("process=_,_;");
             scene.fAudioInput.createDSP(factory);
             scene.parent.activateAudioInput();
         }
-    };
+    }
 	
-    getAudioOutput() { return this.fAudioOutput; };
-    getAudioInput() { return this.fAudioInput; };
+    getAudioOutput() { return this.fAudioOutput; }
+    getAudioInput() { return this.fAudioInput; }
      
 
     /*********************** SAVE/RECALL SCENE ***************************/
@@ -196,7 +201,7 @@ class Scene {
         
         // 	console.log(json);
         return json;
-    };
+    }
     
     recallScene(json) {
 
@@ -230,7 +235,7 @@ class Scene {
             }
             this.parent.compileFaust(name, code, x, y, this.createModuleAndConnectIt);
         }
-    };
+    }
 	
     createModuleAndConnectIt(factory) {
 
@@ -283,6 +288,5 @@ class Scene {
             }
         }
     }
-    
 }
 

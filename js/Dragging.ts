@@ -10,6 +10,12 @@
 		
 */
 
+/// <reference path="Connect.ts"/>
+/// <reference path="Modules/ModuleClass.ts"/>
+/// <reference path="Pedagogie/Tooltips.ts"/>
+
+
+
 "use strict";
 
 
@@ -145,7 +151,7 @@ class Drag {
     /*** Connector Dragging - these are used for dragging the connectors between nodes***/
     /************************************************************************************/
 
-    startDraggingConnection(module, target){
+    startDraggingConnection(module:ModuleClass, target){
 
         // if this is the green or red button, use its parent.
         if (target.classList.contains("node-button"))
@@ -286,7 +292,7 @@ class Drag {
 	    this.connectorShape = null;
     }
 
-    startDraggingConnector(module, event: Event) {
+    startDraggingConnector(module: ModuleClass, event: Event) {
         this.startDraggingConnection(module, event.target);
 
   	    // Capture mousemove and mouseup events on the page.

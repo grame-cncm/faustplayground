@@ -21,6 +21,23 @@
 		- Pedagogie/Tooltips.js
 
 */
+/// <reference path="Scenes/SceneClass.ts"/>
+/// <reference path="Modules/ModuleClass.ts"/>
+/// <reference path="Connect.ts"/>
+/// <reference path="Dragging.ts"/>
+/// <reference path="webaudio-asm-wrapper.d.ts"/>
+/// <reference path="Modules/FaustInterface.ts"/>
+/// <reference path="Scenes/Accueil.ts"/>
+/// <reference path="Scenes/Finish.ts"/>
+/// <reference path="Scenes/Pedagogie.ts"/>
+/// <reference path="Scenes/Playground.ts"/>
+/// <reference path="Export.ts"/>
+/// <reference path="ExportLib.ts"/>
+/// <reference path="EquivalentFaust.ts"/>
+/// <reference path="Pedagogie/Tooltips.ts"/>
+/// <reference path="qrcode.d.ts"/>
+
+
 
 "use strict";
 

@@ -34,8 +34,8 @@ class ExportLib{
     // 				- @param : the sha key corresponding to source_code
     static getSHAKey(exportUrl, name, source_code, callback, errCallback?)
     {
-	    var filename = name+".dsp";
-	    var file = new File([source_code], filename);
+        var filename = name + ".dsp";
+        var file: File = new File([source_code], filename);
 	    var newRequest = new XMLHttpRequest();
 
 	    var params = new FormData();

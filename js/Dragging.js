@@ -9,6 +9,9 @@
         - ModuleClass.js
         
 */
+/// <reference path="Connect.ts"/>
+/// <reference path="Modules/ModuleClass.ts"/>
+/// <reference path="Pedagogie/Tooltips.ts"/>
 "use strict";
 /***********************************************************************************/
 /****** Node Dragging - these are used for dragging the audio modules interface*****/
@@ -282,4 +285,3 @@ var Drag = (function () {
     };
     return Drag;
 })();
-//# sourceMappingURL=Dragging.js.map

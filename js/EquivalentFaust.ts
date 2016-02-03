@@ -5,6 +5,10 @@
 	FIRST PART --> DERECURSIVIZE THE PATCH
 	SECOND PART --> CREATE THE FAUST EQUIVALENT FROM THE "DERECURSIVIZED" PATCH
 */
+/// <reference path="Scenes/SceneClass.ts"/>
+/// <reference path="Modules/ModuleClass.ts"/>
+/// <reference path="Connect.ts"/>
+/// <reference path="main.ts"/>
 
 
 "use strict";

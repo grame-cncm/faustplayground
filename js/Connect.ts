@@ -8,16 +8,46 @@
 		- Dragging.js
 		
 */
+
+/// <reference path="Modules/ModuleClass.ts"/>
+/// <reference path="Dragging.ts"/>
+/// <reference path="main.ts"/>
+
 "use strict";
 
 /**************************************************/
 /******* WEB AUDIO CONNECTION/DECONNECTION*********/
 /**************************************************/
 
-class ConnectorShape extends SVGElement {
+interface ConnectorShape extends SVGElement {
     inputConnection: Connector;
     destination: ModuleClass;
     source: ModuleClass;
+    //id: string;
+    //onclick: any;
+    //ondblclick: any;
+    //onfocusin: any;
+    //onfocusout: any;
+    //onload: any;
+    //onmousedown: any;
+    //onmousemove: any;
+    //onmouseout: any;
+    //onmouseover: any;
+    //onmouseup: any;
+    //ownerSVGElement: any;
+    //viewportElement: any;
+    //xmlbase: any;
+    //className: any;
+    //addEventListener: any;
+    //classList: any;
+    //clientHeight: any;
+    //clientLeft: any;
+    //clientTop: any;
+    //clientWidth: any;
+    //msContentZoomFactor: any;
+    //msRegionOverflow: any;
+    //onariarequest: any;
+
 
 
 }

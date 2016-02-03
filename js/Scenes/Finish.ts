@@ -7,6 +7,12 @@
 		- Scene.js
 		
 */
+/// <reference path="../Scenes/SceneClass.ts"/>
+/// <reference path="../Pedagogie/Tooltips.ts"/>
+/// <reference path="../EquivalentFaust.ts"/>
+/// <reference path="../ExportLib.ts"/>
+/// <reference path="../main.ts"/>
+
 
 
 "use strict";

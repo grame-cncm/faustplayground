@@ -5,6 +5,8 @@
         - SceneClass.js
         - ModuleClass.js
 */
+/// <reference path="../main.ts"/>
+/// <reference path="../Scenes/SceneClass.ts"/>
 var Tooltips = (function () {
     function Tooltips() {
     }
@@ -64,7 +66,6 @@ var Tooltips = (function () {
         }
         return hasInstrument && hasEffect;
     };
-    ;
     Tooltips.isInstrumentConnected = function (scene) {
         var modules = scene.getModules();
         for (var i = 0; i < modules.length; i++) {
@@ -125,4 +126,3 @@ var Tooltips = (function () {
     };
     return Tooltips;
 })();
-//# sourceMappingURL=Tooltips.js.map

@@ -5,6 +5,9 @@
         - ExportLib.js
         - qrcode.js
 */
+/// <reference path="ExportLib.ts"/>
+/// <reference path="EquivalentFaust.ts"/>
+/// <reference path="main.ts"/>
 "use strict";
 /********************************************************************
 *********************  HANDLE FAUST WEB TARGETS *********************
@@ -104,4 +107,3 @@ var Export = (function () {
     };
     return Export;
 })();
-//# sourceMappingURL=Export.js.map

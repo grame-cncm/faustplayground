@@ -24,6 +24,7 @@
     DEPENDENCIES :
         - faust.grame.fr/www/pedagogie/index.json
 */
+/// <reference path="../main.ts"/>
 var Library = (function () {
     function Library() {
     }

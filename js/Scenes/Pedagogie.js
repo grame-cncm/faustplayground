@@ -9,6 +9,9 @@
         - Connect.js
         - Main.js
 */
+/// <reference path="../Scenes/SceneClass.ts"/>
+/// <reference path="../Pedagogie/Tooltips.ts"/>
+/// <reference path="../main.ts"/>
 "use strict";
 var ScenePedagogieView = (function () {
     function ScenePedagogieView() {
@@ -113,4 +116,3 @@ var ScenePedagogieView = (function () {
     };
     return ScenePedagogieView;
 })();
-//# sourceMappingURL=Pedagogie.js.map

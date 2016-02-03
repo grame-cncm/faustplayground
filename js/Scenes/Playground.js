@@ -9,6 +9,8 @@
         - Main.js
         - Export.js
 */
+/// <reference path="../Scenes/SceneClass.ts"/>
+/// <reference path="../Export.ts"/>
 "use strict";
 var ScenePlaygroundView = (function () {
     function ScenePlaygroundView() {
@@ -145,4 +147,3 @@ var ScenePlaygroundView = (function () {
     };
     return ScenePlaygroundView;
 })();
-//# sourceMappingURL=Playground.js.map

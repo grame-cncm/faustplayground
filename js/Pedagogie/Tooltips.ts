@@ -5,6 +5,9 @@
 		- SceneClass.js
 		- ModuleClass.js
 */
+/// <reference path="../main.ts"/>
+/// <reference path="../Scenes/SceneClass.ts"/>
+
 
 class Tooltips{
 /*************** ALL TOOLTIP CHOICES ***************************/
@@ -75,7 +78,7 @@ class Tooltips{
 	    }
 
 	    return hasInstrument && hasEffect;
-    };
+    }
 
     static isInstrumentConnected(scene:Scene){
 

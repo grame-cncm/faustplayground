@@ -10,6 +10,9 @@
 		- Main.js
 */
 
+/// <reference path="../Scenes/SceneClass.ts"/>
+/// <reference path="../Pedagogie/Tooltips.ts"/>
+/// <reference path="../main.ts"/>
 
 
 "use strict";
@@ -19,7 +22,7 @@ class ScenePedagogieView {
 
 		    var container = scene.getSceneContainer();
 	
-		    var svgCanvas = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+		    var svgCanvas = <SVGElement>document.createElementNS("http://www.w3.org/2000/svg", "svg");
 		    svgCanvas.id="svgCanvas";
 		    //svgCanvas.version="1.1";
 		    container.appendChild(svgCanvas);

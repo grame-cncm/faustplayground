@@ -18,6 +18,13 @@
 		- webaudio-asm-wrapper.js
 */
 
+/// <reference path="../Scenes/SceneClass.ts"/>
+/// <reference path="../Dragging.ts"/>
+/// <reference path="../Connect.ts"/>
+/// <reference path="../Modules/FaustInterface.ts"/>
+/// <reference path="../main.ts"/>
+
+
 
 "use strict";
 
@@ -38,7 +45,9 @@ interface IModule {
     sceneParent: Scene;
     htmlElementModuleContainer: HTMLElement;
     removeModuleCallBack: (m: ModuleClass) => void;
-
+}
+interface HTMLInterfaceContainer extends HTMLDivElement {
+    unlitClassname: string;
 }
 class ModuleClass implements IModule {
     drag: Drag = new Drag()
@@ -56,7 +65,7 @@ class ModuleClass implements IModule {
     fOutputNode: any;
     fOutputConnections: Connector[] = null;
     fInputConnections: Connector[] = null;
-    fInterfaceContainer: HTMLElement;
+    fInterfaceContainer: HTMLInterfaceContainer;
     fEditImg: IfEdit;
     fTitle: HTMLElement;
     x: number;
@@ -69,7 +78,8 @@ class ModuleClass implements IModule {
     name: string;
     htmlElementModuleContainer: HTMLElement;
     removeModuleCallBack: (m: ModuleClass) => void;
-    eventHandler: (event: Event) => void; 
+    eventDraggingHandler: (event: Event) => void; 
+    eventConnectorHandler: (event: Event) => void; 
 
 
 
@@ -105,13 +115,13 @@ class ModuleClass implements IModule {
         this.fTitle.textContent = "";
         this.fModuleContainer.appendChild(this.fTitle);
 
-        this.fInterfaceContainer = document.createElement("div");
+        this.fInterfaceContainer = <HTMLInterfaceContainer> document.createElement("div");
         this.fInterfaceContainer.className = "content";
         this.fModuleContainer.appendChild(this.fInterfaceContainer);
         var self = this
-        this.eventHandler = function (event) { self.dragCallback(event, self) };
+        this.eventDraggingHandler = function (event) { self.dragCallback(event, self) };
         //var eventHandler = function (event) { self.dragCallback(event, self) }
-        this.fModuleContainer.addEventListener("mousedown", self.eventHandler, true);
+        this.fModuleContainer.addEventListener("mousedown", self.eventDraggingHandler, true);
 
         var fCloseButton = document.createElement("a");
         fCloseButton.href = "#";
@@ -143,7 +153,7 @@ class ModuleClass implements IModule {
         //------ FIELDS OF THE MODULE
         ;
 
-    };
+    }
     /***************  PRIVATE METHODS  ******************************/
 
     dragCallback(event, module: ModuleClass) {
@@ -155,19 +165,19 @@ class ModuleClass implements IModule {
             module.drag.stopDraggingModule(event, module);
         else if (event.type == "mousemove")
             module.drag.whileDraggingModule(event, module);
-	};
-	
-	dragCnxCallback(event){
+	}
+
+    dragCnxCallback(event, module: ModuleClass) {
         var drag: Drag = new Drag();
 		console.log("drag Cnx Callback");
 	
-		if(event.type == "mousedown")
-			drag.startDraggingConnector(this, event);
-		else if(event.type == "mouseup")
-			drag.stopDraggingConnector(this, event);
-		else if(event.type == "mousemove")	
-			drag.whileDraggingConnector(this, event);
-	};
+        if (event.type == "mousedown")
+            drag.startDraggingConnector(module, event);
+        else if (event.type == "mouseup")
+            drag.stopDraggingConnector(module, event);
+        else if (event.type == "mousemove")
+            drag.whileDraggingConnector(module, event);
+	}
 
 
 
@@ -191,173 +201,172 @@ class ModuleClass implements IModule {
 	
 /*************** ACTIONS ON IN/OUTPUT NODES ***************************/
 // ------ Returns Graphical input and output Node
-        getOutputNode(){return this.fOutputNode; };
-        getInputNode(){return this.fInputNode; };
+        getOutputNode(){return this.fOutputNode; }
+        getInputNode(){return this.fInputNode; }
 
 // ------ Returns Connection Array OR null if there are none
-	getInputConnections(){
-		return this.fInputConnections;
-        };
-	getOutputConnections(){
-		return this.fOutputConnections;
-        };
+	    getInputConnections(){
+		    return this.fInputConnections;
+        }
+	    getOutputConnections(){
+		    return this.fOutputConnections;
+        }
 
 //-- The Creation of array is only done when a new connection is added 
 //-- (to be able to return null when there are none)	
-	addOutputConnection(connector){
-		if(!this.fOutputConnections)
-		this.fOutputConnections = new Array();
+	    addOutputConnection(connector){
+		    if(!this.fOutputConnections)
+		        this.fOutputConnections = new Array();
 			
-		this.fOutputConnections.push(connector);
-        };
-	addInputConnection(connector){
+		    this.fOutputConnections.push(connector);
+        }
+	    addInputConnection(connector){
 	
-		if(!this.fInputConnections)
-			this.fInputConnections = new Array();
+		    if(!this.fInputConnections)
+			    this.fInputConnections = new Array();
 			
-		this.fInputConnections.push(connector);
-        };
+		    this.fInputConnections.push(connector);
+        }
 	
-	removeOutputConnection(connector){
-		this.fOutputConnections.splice(this.fOutputConnections.indexOf(connector), 1);
-        };
-	removeInputConnection(connector){
-			
-		this.fInputConnections.splice(this.fInputConnections.indexOf(connector), 1);
-        };
+	    removeOutputConnection(connector){
+		    this.fOutputConnections.splice(this.fOutputConnections.indexOf(connector), 1);
+        }
+	    removeInputConnection(connector){
+		    this.fInputConnections.splice(this.fInputConnections.indexOf(connector), 1);
+        }
 	
 /********************* SHOW/HIDE MODULE IN SCENE **********************/
-        showModule() { this.fModuleContainer.style.visibility = "visible"; };
-        hideModule() { this.fModuleContainer.style.visibility = "hidden"; };
+        showModule() { this.fModuleContainer.style.visibility = "visible"; }
+        hideModule() { this.fModuleContainer.style.visibility = "hidden"; }
 	
 /********************** GET/SET SOURCE/NAME/DSP ***********************/
-	setSource(code){
-    	this.fSource = code;
-        };
-        getSource() { return this.fSource; };
+	    setSource(code){
+    	    this.fSource = code;
+        }
+        getSource() { return this.fSource; }
 
-        getName() { return this.fName; };
+        getName() { return this.fName; }
 	
-	getDSP(){
-		return this.fDSP;
-        };
+	    getDSP(){
+		    return this.fDSP;
+        }
 	
 //--- Create and Update are called once a source code is compiled and the factory exists
-	createDSP(factory){
+	    createDSP(factory){
 	
-		//that = this;
+		    //that = this;
 
-        this.fDSP = faust.createDSPInstance(factory, App.audioContext, 1024);	
-        };
+            this.fDSP = faust.createDSPInstance(factory, App.audioContext, 1024);	
+        }
 
 //--- Update DSP in module 
-	updateDSP(factory){
+	    updateDSP(factory){
 	
-		var toDelete = this.fDSP;
+		    var toDelete = this.fDSP;
 	
-// 	Save Cnx
-		var saveOutCnx = new Array().concat(this.fOutputConnections);
-		var saveInCnx = new Array().concat(this.fInputConnections);
+    // 	Save Cnx
+		    var saveOutCnx = new Array().concat(this.fOutputConnections);
+		    var saveInCnx = new Array().concat(this.fInputConnections);
 			
-        // Delete old ModuleClass 
-        var connect: Connect = new Connect();
-		connect.disconnectModule(this);
+            // Delete old ModuleClass 
+            var connect: Connect = new Connect();
+		    connect.disconnectModule(this);
 	
-		this.deleteFaustInterface();
- 		this.deleteInputOutputNodes();	
+		    this.deleteFaustInterface();
+ 		    this.deleteInputOutputNodes();	
  		
-    // Create new one
+        // Create new one
 
-        this.createDSP(factory);
-	 	this.fName = this.fTempName;
-	 	this.fSource = this.fTempSource;
-		this.createFaustInterface();
-		this.addInputOutputNodes();
+            this.createDSP(factory);
+	 	    this.fName = this.fTempName;
+	 	    this.fSource = this.fTempSource;
+		    this.createFaustInterface();
+		    this.addInputOutputNodes();
 		
-		this.deleteDSP(toDelete);
+		    this.deleteDSP(toDelete);
 
-// Recall Cnx
-		if(saveOutCnx && this.getOutputNode()){
+    // Recall Cnx
+		    if(saveOutCnx && this.getOutputNode()){
 		
-			for(var i=0; i<saveOutCnx.length; i++){
-                if (saveOutCnx[i])
-                    connect.createConnection(this, this.getOutputNode(), saveOutCnx[i].destination, saveOutCnx[i].destination.getInputNode());
-			}
-		}
-		if(saveInCnx && this.getInputNode()){
-			for(var i=0; i<saveInCnx.length; i++){
-                if (saveInCnx[i])
-                    connect.createConnection(saveInCnx[i].source, saveInCnx[i].source.getOutputNode(), this, this.getInputNode());
-			}
-		}
-        };
+			    for(var i=0; i<saveOutCnx.length; i++){
+                    if (saveOutCnx[i])
+                        connect.createConnection(this, this.getOutputNode(), saveOutCnx[i].destination, saveOutCnx[i].destination.getInputNode());
+			    }
+		    }
+		    if(saveInCnx && this.getInputNode()){
+			    for(var i=0; i<saveInCnx.length; i++){
+                    if (saveInCnx[i])
+                        connect.createConnection(saveInCnx[i].source, saveInCnx[i].source.getOutputNode(), this, this.getInputNode());
+			    }
+		    }
+        }
 	
-	deleteDSP(todelete){
-	// 	TO DO SAFELY --> FOR NOW CRASHES SOMETIMES
-// 		if(todelete)
-// 		    faust.deleteDSPInstance(todelete);
-        };
+	    deleteDSP(todelete){
+	    // 	TO DO SAFELY --> FOR NOW CRASHES SOMETIMES
+    // 		if(todelete)
+    // 		    faust.deleteDSPInstance(todelete);
+        }
 /******************** EDIT SOURCE & RECOMPILE *************************/
-	edit(){
+	    edit(){
 
-		this.saveParams();
+		    this.saveParams();
 		
-		this.deleteFaustInterface();
+		    this.deleteFaustInterface();
 		
-		var textArea = document.createElement("textarea");
-		textArea.rows = 15;
-		textArea.cols = 60;
-		textArea.value = this.fSource;
-		this.fInterfaceContainer.appendChild(textArea);
+		    var textArea = document.createElement("textarea");
+		    textArea.rows = 15;
+		    textArea.cols = 60;
+		    textArea.value = this.fSource;
+		    this.fInterfaceContainer.appendChild(textArea);
 			
-        this.fEditImg.src = App.baseImg + "enter.png";
-        this.fEditImg.onclick = this.recompileSource;
-		this.fEditImg.area = textArea;
-        };
+            this.fEditImg.src = App.baseImg + "enter.png";
+            this.fEditImg.onclick = this.recompileSource;
+		    this.fEditImg.area = textArea;
+        }
 
 //---- Update ModuleClass with new name/code source
-	update(name, code){
+	    update(name, code){
 	
 	
-		this.fTempName = name;
-		this.fTempSource = code;
+		    this.fTempName = name;
+		    this.fTempSource = code;
 
-        this.sceneParent.parent.compileFaust(name, code, this.x, this.y, this.updateDSP);
-        };
+            this.sceneParent.parent.compileFaust(name, code, this.x, this.y, this.updateDSP);
+        }
 	
 //---- React to recompilation triggered by click on icon
-	recompileSource(event){
+	    recompileSource(event){
 	
-		var dsp_code = event.target.area.value;
+		    var dsp_code = event.target.area.value;
 
-		this.update(this.fTitle.textContent, dsp_code);
-		this.recallParams();
+		    this.update(this.fTitle.textContent, dsp_code);
+		    this.recallParams();
 	
-		this.fEditImg.src = App.baseImg + "edit.png";
-		this.fEditImg.onclick = this.edit;
-        };
+		    this.fEditImg.src = App.baseImg + "edit.png";
+		    this.fEditImg.onclick = this.edit;
+        }
 	
 /***************** CREATE/DELETE the DSP Interface ********************/
 
 // Fill fInterfaceContainer with the DSP's Interface (--> see FaustInterface.js)
-	createFaustInterface(){
+	    createFaustInterface(){
 
-        this.fTitle.textContent = this.fName;
-        var faustInterface: FaustInterface = new FaustInterface()
-        faustInterface.parse_ui(JSON.parse(this.fDSP.json()).ui, this); 
-        };
+            this.fTitle.textContent = this.fName;
+            var faustInterface: FaustInterface = new FaustInterface()
+            faustInterface.parse_ui(JSON.parse(this.fDSP.json()).ui, this); 
+        }
         deleteFaustInterface() {
 
             while (this.fInterfaceContainer.childNodes.length != 0)
                 this.fInterfaceContainer.removeChild(this.fInterfaceContainer.childNodes[0]);
-        };
+        }
 	
         getModuleContainer() {
             return this.fModuleContainer;
-        };
-        getInterfaceContainer() {
+        }
+        getInterfaceContainer(): HTMLInterfaceContainer {
             return this.fInterfaceContainer;
-        };
+        }
 
 //---- Generic callback for Faust Interface
 //---- Called every time an element of the UI changes value
@@ -391,7 +400,7 @@ class ModuleClass implements IModule {
 
 // 	Search for DSP then update the value of its parameter.
 		this.fDSP.setValue(text, val);
-        };
+    }
 	
 // Save graphical parameters of a Faust Node
 	saveParams (){
@@ -407,21 +416,21 @@ class ModuleClass implements IModule {
 				this.fParams[text] = this.fDSP.getValue(text);	
 			}
 		}
-        };
+    }
 	recallParams (){
 
 		for (var key in this.fParams)
             this.fDSP.setValue(key, this.fParams[key]);
-    };
+    }
     getParams() {
         return this.fParams;
-    };
+    }
 	setParams(parameters){
 		this.fParams = parameters;
-     };
+    }
 	addParam(path, value){
 		this.fParams[path] = value;
-    };
+    }
 		
 /******************* GET/SET INPUT/OUTPUT NODES **********************/
 	addInputOutputNodes  (){
@@ -445,7 +454,7 @@ class ModuleClass implements IModule {
 		
 			this.fModuleContainer.appendChild(this.fOutputNode);
 		}		
-        };
+    }
 	deleteInputOutputNodes (){
 	
 		if(this.fInputNode)
@@ -453,38 +462,40 @@ class ModuleClass implements IModule {
 	
 		if(this.fOutputNode)
 			this.fModuleContainer.removeChild(this.fOutputNode);	
-        };
+    }
 // Added for physical Input and Output which are create outside of ModuleClass (--> see Playground.js or Pedagogie.js)
-	setInputOutputNodes  (input, output){
+	    setInputOutputNodes  (input, output){
 		
-		this.fInputNode = input;
-        if (this.fInputNode)
-            this.addCnxListener(this.fInputNode, "mousedown");
+		    this.fInputNode = input;
+            if (this.fInputNode)
+                this.addCnxListener(this.fInputNode, "mousedown");
 	    	
-		this.fOutputNode = output;	
-		if(this.fOutputNode)
-	    	this.addCnxListener(this.fOutputNode, "mousedown");
-        };
+		    this.fOutputNode = output;	
+		    if(this.fOutputNode)
+	    	    this.addCnxListener(this.fOutputNode, "mousedown");
+        }
 	
         /****************** ADD/REMOVE ACTION LISTENERS **********************/
         addListener(type, module: ModuleClass) {
             var self = module
-            document.addEventListener(type, module.eventHandler, true);
-        };
+            document.addEventListener(type, module.eventDraggingHandler, true);
+        }
         removeListener(div, type) {
             var module = this;
-            div.removeEventListener(type, module.eventHandler, true);
+            div.removeEventListener(type, module.eventDraggingHandler, true);
 
-        };
-	addCnxListener (div, type){
-		if(type == "mousedown")
-			div.addEventListener(type, this.dragCnxCallback, true);
-		else
-			document.addEventListener(type, this.dragCnxCallback, true);
-        };
-	removeCnxListener (div, type){
-		document.removeEventListener(type, this.dragCnxCallback, true);
-        };
+        }
+        addCnxListener(div, type) {
+            var self = this;
+            this.eventConnectorHandler = function (event:Event) { self.dragCnxCallback(event,self) };
+		    if(type == "mousedown")
+                div.addEventListener(type, this.eventConnectorHandler, true);
+		    else
+                document.addEventListener(type, this.eventConnectorHandler, true);
+        }
+	    removeCnxListener (div, type){
+            document.removeEventListener(type, this.eventConnectorHandler, true);
+        }
 		
 /**********************************************************************/
 	isPointInOutput (x, y ){
@@ -493,14 +504,14 @@ class ModuleClass implements IModule {
 			return true;
 			
 		return false;
-        };
+    }
 	isPointInInput(x, y){			
 
 		if(this.fInputNode && this.fInputNode.getBoundingClientRect().left <= x && x <= this.fInputNode.getBoundingClientRect().right && this.fInputNode.getBoundingClientRect().top <= y && y <= this.fInputNode.getBoundingClientRect().bottom)
 			return true;
 			
 		return false;
-        };
+    }
 
 	isPointInNode (x, y ){
 	
@@ -508,6 +519,6 @@ class ModuleClass implements IModule {
 			return true;
 			
 		return false;
-        };
-};
+    }
+}
 

@@ -27,6 +27,9 @@
 
 //--- Init graphical elements of library
 
+/// <reference path="../main.ts"/>
+
+
 interface IImageNode extends HTMLImageElement {
     state: string;
     section: string;

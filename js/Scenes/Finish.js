@@ -7,6 +7,11 @@
         - Scene.js
         
 */
+/// <reference path="../Scenes/SceneClass.ts"/>
+/// <reference path="../Pedagogie/Tooltips.ts"/>
+/// <reference path="../EquivalentFaust.ts"/>
+/// <reference path="../ExportLib.ts"/>
+/// <reference path="../main.ts"/>
 "use strict";
 /********************************************************************
 ******************* INIT/LOAD/UNLOAD EXPORT SCENE ******************
@@ -93,4 +98,3 @@ var SceneExportView = (function () {
     };
     return SceneExportView;
 })();
-//# sourceMappingURL=Finish.js.map
