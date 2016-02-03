@@ -41,6 +41,7 @@ interface IModule {
 
 }
 class ModuleClass implements IModule {
+    drag: Drag = new Drag()
     patchID: string;
     fModuleContainer: HTMLElement;
     sceneParent: Scene;
@@ -68,6 +69,8 @@ class ModuleClass implements IModule {
     name: string;
     htmlElementModuleContainer: HTMLElement;
     removeModuleCallBack: (m: ModuleClass) => void;
+    eventHandler: (event: Event) => void; 
+
 
 
     constructor(id: number, x: number, y: number, name: string, sceneParent: Scene, htmlElementModuleContainer: HTMLElement, removeModuleCallBack: (m: ModuleClass) => void) {
@@ -105,8 +108,10 @@ class ModuleClass implements IModule {
         this.fInterfaceContainer = document.createElement("div");
         this.fInterfaceContainer.className = "content";
         this.fModuleContainer.appendChild(this.fInterfaceContainer);
-        var self=this
-        this.fModuleContainer.addEventListener("mousedown", function () { self.dragCallback(event,self) }, true);
+        var self = this
+        this.eventHandler = function (event) { self.dragCallback(event, self) };
+        //var eventHandler = function (event) { self.dragCallback(event, self) }
+        this.fModuleContainer.addEventListener("mousedown", self.eventHandler, true);
 
         var fCloseButton = document.createElement("a");
         fCloseButton.href = "#";
@@ -143,14 +148,13 @@ class ModuleClass implements IModule {
 
     dragCallback(event, module: ModuleClass) {
 
-        var drag: Drag = new Drag();
 		console.log("drag Callback");
         if (event.type == "mousedown")
-            drag.startDraggingModule(event, module);
+            module.drag.startDraggingModule(event, module);
         else if (event.type == "mouseup")
-            drag.stopDraggingModule(event, module);
+            module.drag.stopDraggingModule(event, module);
         else if (event.type == "mousemove")
-            drag.whileDraggingModule(event, module);
+            module.drag.whileDraggingModule(event, module);
 	};
 	
 	dragCnxCallback(event){
@@ -464,10 +468,13 @@ class ModuleClass implements IModule {
 	
         /****************** ADD/REMOVE ACTION LISTENERS **********************/
         addListener(type, module: ModuleClass) {
-            document.addEventListener(type, function () { module.dragCallback(event, module) }, true);
+            var self = module
+            document.addEventListener(type, module.eventHandler, true);
         };
-	removeListener (div, type){
-		div.removeEventListener(type, this.dragCallback, true);
+        removeListener(div, type) {
+            var module = this;
+            div.removeEventListener(type, module.eventHandler, true);
+
         };
 	addCnxListener (div, type){
 		if(type == "mousedown")

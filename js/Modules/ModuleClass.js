@@ -20,6 +20,7 @@
 "use strict";
 var ModuleClass = (function () {
     function ModuleClass(id, x, y, name, sceneParent, htmlElementModuleContainer, removeModuleCallBack) {
+        this.drag = new Drag();
         this.fOutputConnections = null;
         this.fInputConnections = null;
         this.createModule(id, x, y, name, htmlElementModuleContainer, removeModuleCallBack);
@@ -47,7 +48,9 @@ var ModuleClass = (function () {
         this.fInterfaceContainer.className = "content";
         this.fModuleContainer.appendChild(this.fInterfaceContainer);
         var self = this;
-        this.fModuleContainer.addEventListener("mousedown", function () { self.dragCallback(event, self); }, true);
+        this.eventHandler = function (event) { self.dragCallback(event, self); };
+        //var eventHandler = function (event) { self.dragCallback(event, self) }
+        this.fModuleContainer.addEventListener("mousedown", self.eventHandler, true);
         var fCloseButton = document.createElement("a");
         fCloseButton.href = "#";
         fCloseButton.className = "close";
@@ -74,14 +77,13 @@ var ModuleClass = (function () {
     ;
     /***************  PRIVATE METHODS  ******************************/
     ModuleClass.prototype.dragCallback = function (event, module) {
-        var drag = new Drag();
         console.log("drag Callback");
         if (event.type == "mousedown")
-            drag.startDraggingModule(event, module);
+            module.drag.startDraggingModule(event, module);
         else if (event.type == "mouseup")
-            drag.stopDraggingModule(event, module);
+            module.drag.stopDraggingModule(event, module);
         else if (event.type == "mousemove")
-            drag.whileDraggingModule(event, module);
+            module.drag.whileDraggingModule(event, module);
     };
     ;
     ModuleClass.prototype.dragCnxCallback = function (event) {
@@ -348,11 +350,13 @@ var ModuleClass = (function () {
     ;
     /****************** ADD/REMOVE ACTION LISTENERS **********************/
     ModuleClass.prototype.addListener = function (type, module) {
-        document.addEventListener(type, function () { module.dragCallback(event, module); }, true);
+        var self = module;
+        document.addEventListener(type, module.eventHandler, true);
     };
     ;
     ModuleClass.prototype.removeListener = function (div, type) {
-        div.removeEventListener(type, this.dragCallback, true);
+        var module = this;
+        div.removeEventListener(type, module.eventHandler, true);
     };
     ;
     ModuleClass.prototype.addCnxListener = function (div, type) {
