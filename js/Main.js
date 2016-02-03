@@ -148,9 +148,10 @@ var App = (function () {
         // To Avoid click during compilation
         if (currentScene)
             currentScene.muteScene();
-        var args = ["-I", "http://faust.grame.fr/faustcode/"];
+        //var args = ["-I", "http://faust.grame.fr/faustcode/"];
+        //var args = ["-I", "http://ifaust.grame.fr/faustcode/"];
         //var args = ["-I", "http://10.0.1.2/faustcode/"];
-        //var args = ["-I", "http://" + location.hostname + "/faustcode/"];
+        var args = ["-I", "http://" + location.hostname + "/faustcode/"];
         var factory = faust.createDSPFactory(sourcecode, args);
         callback(factory, App.scene, this);
         if (currentScene)
@@ -295,3 +296,4 @@ var App = (function () {
     };
     return App;
 })();
+//# sourceMappingURL=main.js.map

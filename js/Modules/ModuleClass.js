@@ -34,6 +34,7 @@ var ModuleClass = (function () {
         this.y = y;
     }
     ModuleClass.prototype.createModule = function (ID, x, y, name, parent, callback) {
+        this.eventConnectorHandler = function (event) { self.dragCnxCallback(event, self); };
         // ---- Capturing module instance
         var that = this;
         // ----- Delete Callback was added to make sure 
@@ -90,14 +91,13 @@ var ModuleClass = (function () {
             module.drag.whileDraggingModule(event, module);
     };
     ModuleClass.prototype.dragCnxCallback = function (event, module) {
-        var drag = new Drag();
         console.log("drag Cnx Callback");
         if (event.type == "mousedown")
-            drag.startDraggingConnector(module, event);
+            module.drag.startDraggingConnector(module, event);
         else if (event.type == "mouseup")
-            drag.stopDraggingConnector(module, event);
+            module.drag.stopDraggingConnector(module, event);
         else if (event.type == "mousemove")
-            drag.whileDraggingConnector(module, event);
+            module.drag.whileDraggingConnector(module, event);
     };
     /*******************************  PUBLIC METHODS  **********************************/
     ModuleClass.prototype.deleteModule = function () {
@@ -287,17 +287,18 @@ var ModuleClass = (function () {
     };
     /******************* GET/SET INPUT/OUTPUT NODES **********************/
     ModuleClass.prototype.addInputOutputNodes = function () {
+        var module = this;
         if (this.fDSP.getNumInputs() > 0) {
             this.fInputNode = document.createElement("div");
             this.fInputNode.className = "node node-input";
-            this.addCnxListener(this.fInputNode, "mousedown");
+            this.addCnxListener(this.fInputNode, "mousedown", module);
             this.fInputNode.innerHTML = "<span class='node-button'>&nbsp;</span>";
             this.fModuleContainer.appendChild(this.fInputNode);
         }
         if (this.fDSP.getNumOutputs() > 0) {
             this.fOutputNode = document.createElement("div");
             this.fOutputNode.className = "node node-output";
-            this.addCnxListener(this.fOutputNode, "mousedown");
+            this.addCnxListener(this.fOutputNode, "mousedown", module);
             this.fOutputNode.innerHTML = "<span class='node-button'>&nbsp;</span>";
             this.fModuleContainer.appendChild(this.fOutputNode);
         }
@@ -310,12 +311,13 @@ var ModuleClass = (function () {
     };
     // Added for physical Input and Output which are create outside of ModuleClass (--> see Playground.js or Pedagogie.js)
     ModuleClass.prototype.setInputOutputNodes = function (input, output) {
+        var module = this;
         this.fInputNode = input;
         if (this.fInputNode)
-            this.addCnxListener(this.fInputNode, "mousedown");
+            this.addCnxListener(this.fInputNode, "mousedown", module);
         this.fOutputNode = output;
         if (this.fOutputNode)
-            this.addCnxListener(this.fOutputNode, "mousedown");
+            this.addCnxListener(this.fOutputNode, "mousedown", module);
     };
     /****************** ADD/REMOVE ACTION LISTENERS **********************/
     ModuleClass.prototype.addListener = function (type, module) {
@@ -326,16 +328,15 @@ var ModuleClass = (function () {
         var module = this;
         div.removeEventListener(type, module.eventDraggingHandler, true);
     };
-    ModuleClass.prototype.addCnxListener = function (div, type) {
-        var self = this;
-        this.eventConnectorHandler = function (event) { self.dragCnxCallback(event, self); };
+    ModuleClass.prototype.addCnxListener = function (div, type, module) {
+        var self = module;
         if (type == "mousedown")
-            div.addEventListener(type, this.eventConnectorHandler, true);
+            div.addEventListener(type, self.eventConnectorHandler, true);
         else
-            document.addEventListener(type, this.eventConnectorHandler, true);
+            document.addEventListener(type, self.eventConnectorHandler, true);
     };
-    ModuleClass.prototype.removeCnxListener = function (div, type) {
-        document.removeEventListener(type, this.eventConnectorHandler, true);
+    ModuleClass.prototype.removeCnxListener = function (div, type, module) {
+        document.removeEventListener(type, module.eventConnectorHandler, true);
     };
     /**********************************************************************/
     ModuleClass.prototype.isPointInOutput = function (x, y) {
@@ -355,3 +356,4 @@ var ModuleClass = (function () {
     };
     return ModuleClass;
 })();
+//# sourceMappingURL=ModuleClass.js.map

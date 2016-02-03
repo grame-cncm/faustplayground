@@ -95,7 +95,8 @@ class ModuleClass implements IModule {
 
 
     createModule(ID, x, y, name, parent, callback) {
-	
+        this.eventConnectorHandler = function (event: Event) { self.dragCnxCallback(event, self) };
+
         // ---- Capturing module instance
         var that: ModuleClass=this;
 	
@@ -168,15 +169,15 @@ class ModuleClass implements IModule {
 	}
 
     dragCnxCallback(event, module: ModuleClass) {
-        var drag: Drag = new Drag();
+
 		console.log("drag Cnx Callback");
 	
         if (event.type == "mousedown")
-            drag.startDraggingConnector(module, event);
+            module.drag.startDraggingConnector(module, event);
         else if (event.type == "mouseup")
-            drag.stopDraggingConnector(module, event);
+            module.drag.stopDraggingConnector(module, event);
         else if (event.type == "mousemove")
-            drag.whileDraggingConnector(module, event);
+            module.drag.whileDraggingConnector(module, event);
 	}
 
 
@@ -434,12 +435,12 @@ class ModuleClass implements IModule {
 		
 /******************* GET/SET INPUT/OUTPUT NODES **********************/
 	addInputOutputNodes  (){
-		
+        var module = this;
 		if(this.fDSP.getNumInputs() > 0) {
 		
 			this.fInputNode=document.createElement("div");
 			this.fInputNode.className="node node-input";
-	    	this.addCnxListener(this.fInputNode, "mousedown");
+	    	this.addCnxListener(this.fInputNode, "mousedown",module);
 			this.fInputNode.innerHTML = "<span class='node-button'>&nbsp;</span>";
 		
 			this.fModuleContainer.appendChild(this.fInputNode);
@@ -449,14 +450,13 @@ class ModuleClass implements IModule {
 		
 			this.fOutputNode=document.createElement("div");
 			this.fOutputNode.className="node node-output";
-            this.addCnxListener(this.fOutputNode, "mousedown");
+            this.addCnxListener(this.fOutputNode, "mousedown",module);
 			this.fOutputNode.innerHTML = "<span class='node-button'>&nbsp;</span>";
 		
 			this.fModuleContainer.appendChild(this.fOutputNode);
 		}		
     }
 	deleteInputOutputNodes (){
-	
 		if(this.fInputNode)
 			this.fModuleContainer.removeChild(this.fInputNode);
 	
@@ -465,14 +465,14 @@ class ModuleClass implements IModule {
     }
 // Added for physical Input and Output which are create outside of ModuleClass (--> see Playground.js or Pedagogie.js)
 	    setInputOutputNodes  (input, output){
-		
+            var module = this;
 		    this.fInputNode = input;
             if (this.fInputNode)
-                this.addCnxListener(this.fInputNode, "mousedown");
+                this.addCnxListener(this.fInputNode, "mousedown",module);
 	    	
 		    this.fOutputNode = output;	
 		    if(this.fOutputNode)
-	    	    this.addCnxListener(this.fOutputNode, "mousedown");
+	    	    this.addCnxListener(this.fOutputNode, "mousedown",module);
         }
 	
         /****************** ADD/REMOVE ACTION LISTENERS **********************/
@@ -485,16 +485,15 @@ class ModuleClass implements IModule {
             div.removeEventListener(type, module.eventDraggingHandler, true);
 
         }
-        addCnxListener(div, type) {
-            var self = this;
-            this.eventConnectorHandler = function (event:Event) { self.dragCnxCallback(event,self) };
+        addCnxListener(div, type, module: ModuleClass) {
+            var self = module;
 		    if(type == "mousedown")
-                div.addEventListener(type, this.eventConnectorHandler, true);
+                div.addEventListener(type, self.eventConnectorHandler, true);
 		    else
-                document.addEventListener(type, this.eventConnectorHandler, true);
+                document.addEventListener(type, self.eventConnectorHandler, true);
         }
-	    removeCnxListener (div, type){
-            document.removeEventListener(type, this.eventConnectorHandler, true);
+        removeCnxListener(div, type, module: ModuleClass) {
+            document.removeEventListener(type, module.eventConnectorHandler, true);
         }
 		
 /**********************************************************************/

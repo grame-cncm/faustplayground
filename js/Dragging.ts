@@ -276,7 +276,7 @@ class Drag {
 			    this.connectorShape.inputConnection = connector;
 			    this.connectorShape.destination = dst;
 			    this.connectorShape.source = src;
-			    this.connectorShape.onclick = connect.deleteConnection(this);
+                this.connectorShape.onclick = function () { connect.deleteConnection(this) };
 
 			    this.connectorShape = null;
                 ;
@@ -295,9 +295,9 @@ class Drag {
     startDraggingConnector(module: ModuleClass, event: Event) {
         this.startDraggingConnection(module, event.target);
 
-  	    // Capture mousemove and mouseup events on the page.
-        module.addCnxListener(event.target, "mousemove");
-        module.addCnxListener(event.target, "mouseup");
+        // Capture mousemove and mouseup events on the page.
+        module.addCnxListener(event.target, "mousemove", module);
+        module.addCnxListener(event.target, "mouseup",module);
 
         event.preventDefault();
 	    event.stopPropagation();
@@ -358,8 +358,8 @@ class Drag {
     stopDraggingConnector(module: ModuleClass, event) {
 
   	    // Stop capturing mousemove and mouseup events.
-        module.removeCnxListener(event.target, "mousemove");
-        module.removeCnxListener(event.target, "mouseup");
+        module.removeCnxListener(event.target, "mousemove",module);
+        module.removeCnxListener(event.target, "mouseup",module);
 
 	    var arrivingNode;
 
@@ -376,8 +376,8 @@ class Drag {
             var outputModule = module.sceneParent.getAudioOutput();
 		    if((this.originIsInput && outputModule.isPointInOutput(event.clientX, event.clientY)) || outputModule.isPointInInput(event.clientX, event.clientY))
 			    arrivingNode = outputModule;	
-	    }
-	    this.stopDraggingConnection(module, arrivingNode);
+        }
+        module.drag.stopDraggingConnection(module, arrivingNode);
     }
 
 }

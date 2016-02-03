@@ -228,3 +228,4 @@ var Scene = (function () {
     };
     return Scene;
 })();
+//# sourceMappingURL=SceneClass.js.map
