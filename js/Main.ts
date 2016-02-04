@@ -362,7 +362,7 @@ class App {
     }
 
     //-- Upload content dropped on the page and create a Faust DSP with it
-    uploadOn(app:App,module, x, y, e) {
+    uploadOn(app:App,module:ModuleClass, x, y, e) {
 
         this.preventDefaultAction(e);
 
@@ -384,15 +384,15 @@ class App {
                     var dsp_code = "process = vgroup(\"" + filename + "\",environment{" + xmlhttp.responseText + "}.process);";
 
                     if (module == null)
-                        this.compileFaust(filename, dsp_code, x, y, this.createFaustModule);
+                        app.compileFaust(filename, dsp_code, x, y, app.createFaustModule);
                     else
                         module.update(filename, dsp_code);
                 }
 
-                this.terminateUpload();
+                app.terminateUpload();
             }
 
-            xmlhttp.open("GET", url, false);
+            xmlhttp.open("GET", url);
             // 	Avoid error "mal formé" on firefox
             xmlhttp.overrideMimeType('text/html');
             xmlhttp.send();
@@ -406,11 +406,11 @@ class App {
                 dsp_code = "process = vgroup(\"" + "TEXT" + "\",environment{" + dsp_code + "}.process);";
 
                 if (!module)
-                    this.compileFaust("TEXT", dsp_code, x, y, this.createFaustModule);
+                    app.compileFaust("TEXT", dsp_code, x, y, app.createFaustModule);
                 else
                     module.update("TEXT", dsp_code);
 
-                this.terminateUpload();
+                app.terminateUpload();
             }
             // CASE 3 : THE DROPPED OBJECT IS A FILE CONTAINING SOME FAUST CODE
             else {
@@ -459,7 +459,7 @@ class App {
         }
         // CASE 4 : ANY OTHER STRANGE THING
         else {
-            this.terminateUpload();
+            app.terminateUpload();
             window.alert("THIS OBJECT IS NOT FAUST COMPILABLE");
         }
     }
