@@ -239,7 +239,7 @@ var ModuleClass = (function () {
     };
     //---- Generic callback for Faust Interface
     //---- Called every time an element of the UI changes value
-    ModuleClass.prototype.interfaceCallback = function (event) {
+    ModuleClass.prototype.interfaceCallback = function (event, module) {
         var text = event.target.parentNode.label;
         var val = event.target.value;
         val = Number((event.target.value * event.target.parentNode.childNodes[0].getAttribute('step')) + Number(event.target.parentNode.childNodes[0].getAttribute('min'))).toFixed(event.target.parentNode.childNodes[0].getAttribute('precision'));
@@ -259,7 +259,7 @@ var ModuleClass = (function () {
         else
             App.buttonVal = 0;
         // 	Search for DSP then update the value of its parameter.
-        this.fDSP.setValue(text, val);
+        module.fDSP.setValue(text, val);
     };
     // Save graphical parameters of a Faust Node
     ModuleClass.prototype.saveParams = function () {

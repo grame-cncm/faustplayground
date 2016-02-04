@@ -20,14 +20,14 @@ class FaustInterface{
 
 
 
-    parse_ui(ui, node){
+    parse_ui(ui, module:ModuleClass){
         for (var i = 0; i < ui.length; i++)
-    	    this.parse_group(ui[i], node);
+            this.parse_group(ui[i], module);
     }
-    
-    parse_group(group, node){ 
+
+    parse_group(group, module: ModuleClass) { 
 	    if (group.items)
-    	    this.parse_items(group.items, node);
+    	    this.parse_items(group.items, module);
     }
     
     //function parse_items(items, node){
@@ -35,26 +35,26 @@ class FaustInterface{
     //    for (i = 0; i < items.length; i++)
     //    	parse_item(items[i], node);
     //}
-    
-    parse_item(item, node){
 
-	    var params = node.getParams();
+    parse_item(item, module: ModuleClass) {
+
+	    var params = module.getParams();
 
 	    if( params && params[item.address]){
 		    item.init = params[item.address];
 	    }
 	
 	    if (item.type === "vgroup" || item.type === "hgroup" || item.type === "tgroup")
-    	    this.parse_items(item.items, node);
+            this.parse_items(item.items, module);
 
         else if (item.type === "vslider" || item.type === "hslider")
-		    this.addFaustModuleSlider(node, item.address, item.label, item.init, item.min, item.max, item.step, "", node.interfaceCallback);
+            this.addFaustModuleSlider(module, item.address, item.label, item.init, item.min, item.max, item.step, "", module.interfaceCallback);
 		
         else if(item.type === "button")
-    	    this.addFaustButton(node, item.address, item.label, node.interfaceCallback);
+            this.addFaustButton(module, item.address, item.label, module.interfaceCallback);
     	
 	    else if(item.type === "checkbox")
-		    this.addFaustCheckBox(node, item.address, node.interfaceCallback);
+            this.addFaustCheckBox(module, item.address, module.interfaceCallback);
     }
 
     parse_items(items, node){
@@ -66,7 +66,7 @@ class FaustInterface{
     ********************* ADD GRAPHICAL ELEMENTS ************************
     ********************************************************************/
 
-    addFaustModuleSlider( node, groupName, label, ivalue, imin, imax, stepUnits, units, onUpdate ) {
+    addFaustModuleSlider(module: ModuleClass, groupName, label, ivalue, imin, imax, stepUnits, units, onUpdate) {
 
 	    var precision = stepUnits.toString().split('.').pop().length;
 
@@ -104,14 +104,14 @@ class FaustInterface{
 	    slider.max = String(high);
 	    slider.value = String((ivalue-imin)/stepUnits);
 	    slider.step = "1";
-	    slider.oninput = onUpdate;
+        slider.oninput = function (event) { onUpdate(event,module) };
 	    this.group.appendChild(slider);
 
-	    node.getInterfaceContainer().appendChild(this.group);
+	    module.getInterfaceContainer().appendChild(this.group);
 	    return slider;
     }
 
-    addFaustCheckBox( element, ivalue, onUpdate ) {
+    addFaustCheckBox(module: ModuleClass, ivalue, onUpdate) {
 	    var group = document.createElement("div");
 
 	    var checkbox = document.createElement("input");
@@ -128,11 +128,11 @@ class FaustInterface{
 	    group.appendChild(checkbox);
 	    group.appendChild(label);
 
-	    element.getInterfaceContainer().appendChild(group);
+	    module.getInterfaceContainer().appendChild(group);
 	    return checkbox;
     }
 
-    addFaustButton( element, groupName, label, onUpdate ) {
+    addFaustButton(module: ModuleClass, groupName, label, onUpdate) {
 
 	    var group = document.createElement("div");
 	    this.group.label = groupName;
@@ -145,7 +145,7 @@ class FaustInterface{
         button.appendChild(labelText);
 	                                    // Append the text to <button>
 	    group.appendChild(button);
-	    element.getInterfaceContainer().appendChild(group);
+	    module.getInterfaceContainer().appendChild(group);
 	
 	    return button;
     }

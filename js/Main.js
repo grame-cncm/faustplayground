@@ -119,11 +119,11 @@ var App = (function () {
         App.src = document.getElementById("input");
         App.src.audioNode = App.audioContext.createMediaStreamSource(device);
         var drag = new Drag();
-        var i = document.createElement("div");
-        i.className = "node node-output";
-        i.addEventListener("mousedown", drag.startDraggingConnector, true);
-        i.innerHTML = "<span class='node-button'>&nbsp;</span>";
-        App.src.appendChild(i);
+        var inputDiv = document.createElement("div");
+        inputDiv.className = "node node-output";
+        inputDiv.addEventListener("mousedown", function () { drag.startDraggingConnector; }, true);
+        inputDiv.innerHTML = "<span class='node-button'>&nbsp;</span>";
+        App.src.appendChild(inputDiv);
         var connect = new Connect();
         connect.connectModules(App.src, App.scene.audioInput());
     };

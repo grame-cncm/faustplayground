@@ -371,7 +371,7 @@ class ModuleClass implements IModule {
 
 //---- Generic callback for Faust Interface
 //---- Called every time an element of the UI changes value
-	interfaceCallback(event){
+	interfaceCallback(event,module:ModuleClass){
 	
 		var text = event.target.parentNode.label;
 
@@ -399,8 +399,8 @@ class ModuleClass implements IModule {
 		else
 			App.buttonVal = 0;
 
-// 	Search for DSP then update the value of its parameter.
-		this.fDSP.setValue(text, val);
+        // 	Search for DSP then update the value of its parameter.
+        module.fDSP.setValue(text, val);
     }
 	
 // Save graphical parameters of a Faust Node
