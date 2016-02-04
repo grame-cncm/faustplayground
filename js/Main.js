@@ -65,7 +65,7 @@ var App = (function () {
             this.scenes[1] = new Scene("Pedagogie", this, ScenePedagogieView.onloadPedagogieScene, ScenePedagogieView.onunloadPedagogieScene);
             ScenePedagogieView.initPedagogieScene(this.scenes[1]);
             var sceneExportView = new SceneExportView();
-            this.scenes[2] = new Scene("Export", this, sceneExportView.onloadExportScene, sceneExportView.onunloadExportScene);
+            this.scenes[2] = new Scene("Export", this, function (scene) { sceneExportView.onloadExportScene(scene, sceneExportView); }, sceneExportView.onunloadExportScene);
         }
         else {
             var scenePlaygroundView = new ScenePlaygroundView();

@@ -21,7 +21,7 @@
 ******************* INIT/LOAD/UNLOAD EXPORT SCENE ******************
 ********************************************************************/
 class SceneExportView{
-    onloadExportScene(scene)
+    onloadExportScene(scene, sceneView: SceneExportView)
     {
     // 	window.scenes[1].saveScene();
 
@@ -100,7 +100,7 @@ class SceneExportView{
     ********************************************************************/
 
     //--- Create QrCode once precompile request has finished
-    terminateAndroidMenu(sha)
+    static terminateAndroidMenu(sha)
     {
 	    if (document.getElementById("androidImg"))
 		    document.getElementById("androidButton").removeChild(document.getElementById("androidImg"));
@@ -120,7 +120,7 @@ class SceneExportView{
     exportAndroidCallback(sha)
     {
         var exportLib: ExportLib = new ExportLib();
-	    exportLib.sendPrecompileRequest("http://faustservice.grame.fr", sha, "android", "android", this.terminateAndroidMenu);
+        exportLib.sendPrecompileRequest("http://faustservice.grame.fr", sha, "android", "android", SceneExportView.terminateAndroidMenu);
     }
 
     getAndroidApp(name, source): HTMLElement

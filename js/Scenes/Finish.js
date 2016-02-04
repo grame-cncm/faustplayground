@@ -19,7 +19,7 @@
 var SceneExportView = (function () {
     function SceneExportView() {
     }
-    SceneExportView.prototype.onloadExportScene = function (scene) {
+    SceneExportView.prototype.onloadExportScene = function (scene, sceneView) {
         // 	window.scenes[1].saveScene();
         scene.integrateSceneInBody();
         document.body.style.background = "url('" + App.baseImg + "output-bkg.gif') 0 0 repeat";
@@ -78,7 +78,7 @@ var SceneExportView = (function () {
     ***********************  EXPORT DSP ANDROID ***********************
     ********************************************************************/
     //--- Create QrCode once precompile request has finished
-    SceneExportView.prototype.terminateAndroidMenu = function (sha) {
+    SceneExportView.terminateAndroidMenu = function (sha) {
         if (document.getElementById("androidImg"))
             document.getElementById("androidButton").removeChild(document.getElementById("androidImg"));
         var url = "http://faustservice.grame.fr";
@@ -90,7 +90,7 @@ var SceneExportView = (function () {
     };
     SceneExportView.prototype.exportAndroidCallback = function (sha) {
         var exportLib = new ExportLib();
-        exportLib.sendPrecompileRequest("http://faustservice.grame.fr", sha, "android", "android", this.terminateAndroidMenu);
+        exportLib.sendPrecompileRequest("http://faustservice.grame.fr", sha, "android", "android", SceneExportView.terminateAndroidMenu);
     };
     SceneExportView.prototype.getAndroidApp = function (name, source) {
         ExportLib.getSHAKey("http://faustservice.grame.fr", name, source, this.exportAndroidCallback);
