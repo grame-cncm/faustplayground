@@ -183,9 +183,10 @@ class EquivalentFaust {
 
             var outputNode = faustModuleList[i].getOutputNode();
 
-            if (outputNode && (!faustModuleList[i].getOutputConnections || !faustModuleList[i].getOutputConnections() || faustModuleList[i].getOutputConnections().length == 0))
+            if (outputNode && (!faustModuleList[i].getOutputConnections || !faustModuleList[i].getOutputConnections() || faustModuleList[i].getOutputConnections().length == 0)) {
                 var connect: Connect = new Connect();
-            connect.createConnection(faustModuleList[i], faustModuleList[i].getOutputNode(), output, output.getInputNode());
+                connect.createConnection(faustModuleList[i], faustModuleList[i].getOutputNode(), output, output.getInputNode());
+            }
         }
     }
 

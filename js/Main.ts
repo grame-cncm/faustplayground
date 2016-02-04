@@ -59,10 +59,11 @@ function init() {
     } catch(e) {
         alert('The Web Audio API is apparently not supported in this browser.');
     }
-    //app.isPedagogie = window.isPedagogie;
+    App.isPedagogie = App.isAppPedagogique();
 	app.createAllScenes();
 	app.showFirstScene();
 }
+
 
     /********************************************************************
     **************************  CLASS  *********************************
@@ -118,8 +119,8 @@ class App {
     static idX: number;
     scenes: Scene[];
     static scene: Scene;
-    isPedagogie: boolean;
-    static baseImg: string;
+    static isPedagogie: boolean;
+    static baseImg: string="img/";
     static isTooltipEnabled: boolean;
     static currentScene: number;
     static src: IHTMLDivElementSrc ;
@@ -140,16 +141,17 @@ class App {
     factory: Factory;
 
     showFirstScene() {
-        this.scenes[0].showScene();
+        App.scene.showScene();
     }
 
     createAllScenes() {
         this.scenes = [];
 
-        if (this.isPedagogie) {
+        if (App.isPedagogie) {
 
             this.scenes[0] = new Scene("Accueil",this);
             SceneAccueilView.initWelcomeScene(this.scenes[0]);
+            App.scene = this.scenes[0]
             this.scenes[1] = new Scene("Pedagogie",this, ScenePedagogieView.onloadPedagogieScene, ScenePedagogieView.onunloadPedagogieScene);
             ScenePedagogieView.initPedagogieScene(this.scenes[1]);
             var sceneExportView: SceneExportView = new SceneExportView();
@@ -462,6 +464,15 @@ class App {
             app.terminateUpload();
             window.alert("THIS OBJECT IS NOT FAUST COMPILABLE");
         }
+    }
+    //Check in Url if the app should be for kids
+    static isAppPedagogique(): boolean {
+        if (window.location.href.indexOf("kids.html") > -1) {
+            return true
+        } else {
+            return false
+        }
+
     }
 }
 

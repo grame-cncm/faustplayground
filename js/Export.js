@@ -73,11 +73,11 @@ var Export = (function () {
     /********************************************************************
     *********************  HANDLE POST TO FAUST WEB  ********************
     ********************************************************************/
-    Export.prototype.exportPatch = function (event) {
+    Export.prototype.exportPatch = function (event, expor) {
         var sceneName = document.getElementById("PatchName").innerHTML;
         var equivalentFaust = new EquivalentFaust();
         var faustCode = equivalentFaust.getFaustEquivalent(App.scene, sceneName);
-        ExportLib.getSHAKey(document.getElementById("faustweburl").value, sceneName, faustCode, this.exportFaustCode);
+        ExportLib.getSHAKey(document.getElementById("faustweburl").value, sceneName, faustCode, expor.exportFaustCode);
     };
     /********************************************************************
     **************  CALLBACK ONCE SHA KEY WAS CALCULATED  ***************

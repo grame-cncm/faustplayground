@@ -96,12 +96,12 @@ class Export{
     *********************  HANDLE POST TO FAUST WEB  ********************
     ********************************************************************/
 
-    exportPatch(event)
+    exportPatch(event, expor: Export)
     {
         var sceneName = document.getElementById("PatchName").innerHTML;
         var equivalentFaust: EquivalentFaust = new EquivalentFaust();
         var faustCode = equivalentFaust.getFaustEquivalent(App.scene, sceneName);
-        ExportLib.getSHAKey((<HTMLInputElement>document.getElementById("faustweburl")).value, sceneName, faustCode, this.exportFaustCode);
+        ExportLib.getSHAKey((<HTMLInputElement>document.getElementById("faustweburl")).value, sceneName, faustCode, expor.exportFaustCode);
     }
 
     /******************************************************************** 

@@ -120,9 +120,10 @@ var EquivalentFaust = (function () {
     EquivalentFaust.prototype.connectUnconnectedModules = function (faustModuleList, output) {
         for (var i in faustModuleList) {
             var outputNode = faustModuleList[i].getOutputNode();
-            if (outputNode && (!faustModuleList[i].getOutputConnections || !faustModuleList[i].getOutputConnections() || faustModuleList[i].getOutputConnections().length == 0))
+            if (outputNode && (!faustModuleList[i].getOutputConnections || !faustModuleList[i].getOutputConnections() || faustModuleList[i].getOutputConnections().length == 0)) {
                 var connect = new Connect();
-            connect.createConnection(faustModuleList[i], faustModuleList[i].getOutputNode(), output, output.getInputNode());
+                connect.createConnection(faustModuleList[i], faustModuleList[i].getOutputNode(), output, output.getInputNode());
+            }
         }
     };
     //Calculate Faust Equivalent of the Scene

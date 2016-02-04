@@ -92,7 +92,8 @@ class ScenePlaygroundView{
         equButton.id = "exportButton";
         equButton.type = "submit";
         equButton.className = "grayButton";
-        equButton.onclick = this.expor.exportPatch;
+        var sceneView: ScenePlaygroundView = this;
+        equButton.onclick = function (event) { sceneView.expor.exportPatch(event, sceneView.expor) };
         equButton.value = "Export";
         subfooter.appendChild(equButton);
 

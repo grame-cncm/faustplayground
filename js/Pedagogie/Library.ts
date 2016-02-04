@@ -56,38 +56,37 @@ class Library{
 	    this.imageNode.src= App.baseImg + "open.png";
 	    this.imageNode.state = "closed";
 
-	    libraryDiv.appendChild(this.imageNode);
-
-	    libraryDiv.onmouseover = this.changeLibraryState;
-	    libraryDiv.onmouseout = this.changeLibraryState;
+        libraryDiv.appendChild(this.imageNode);
+        var library: Library = this;
+        libraryDiv.onmouseover = function (event) { library.changeLibraryState(event, library) };
+        libraryDiv.onmouseout = function (event) { library.changeLibraryState(event, library) };
     }
 
     /***************  OPEN/CLOSE LIBRARY DIV  ***************************/
-    changeLibraryState(event){
+    changeLibraryState(event, library: Library) {
 
 	    var libDiv = document.getElementById("library");
 
 	    var boudingRect = libDiv.getBoundingClientRect();
 
-        var img = this.imageNode;
 
-	    if(event.type == "mouseover" && img.state == "closed"){
-		    img.src = App.baseImg + "close.png";
-		    img.state = "opened";
+        if (event.type == "mouseover" && library.imageNode.state == "closed") {
+            library.imageNode.src = App.baseImg + "close.png";
+            library.imageNode.state = "opened";
 
-		    this.viewLibraryList(img);
+            library.viewLibraryList(library);
 	    }
 	    else if(event.type == "mouseout" && (event.clientX > boudingRect.right || event.clientX < boudingRect.left || event.clientY < boudingRect.top || event.clientY > boudingRect.bottom)){
 
-		    img.src = App.baseImg + "open.png";
-		    img.state = "closed";
+            library.imageNode.src = App.baseImg + "open.png";
+            library.imageNode.state = "closed";
 
-		    this.deleteLibraryList(img);
+            library.deleteLibraryList(library);
 	    }
     }
 
     //--- Load Library Content
-    viewLibraryList(selector){
+    viewLibraryList(library: Library) {
 
 	    document.getElementById("libraryTitle").style.cssText = " writing-mode:lr-tb; -webkit-transform:rotate(0deg); -moz-transform:rotate(0deg); -o-transform: rotate(0deg); display:block; position: relative; top:3%; left:5px; font-family: 'Droid Serif', Georgia, serif;  font-size:20px; z-index:3; margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px;";
 	    document.getElementById("library").style.cssText = "width:250px;";
@@ -117,8 +116,8 @@ class Library{
 				    var section = sections[i];
 
 				    var div=document.createElement("ul");
-				    div.className = "ulElem";
-				    selector.parentNode.appendChild(div);
+                    div.className = "ulElem";
+                    document.getElementById("library").appendChild(div);
 
                     if (App.isTooltipEnabled) {
 					    var tooltip = this.toolTipForLibrary(section);
@@ -133,19 +132,19 @@ class Library{
 				    div.appendChild(document.createElement("br"));
 
 
-                    var imageNode: IImageNode = <IImageNode> document.createElement('img');
-				    imageNode.src= App.baseImg + "triangleOpen.png";
-				    imageNode.state = "opened";
-				    imageNode.section = section;
-				    imageNode.onclick = this.changeSectionState;
+                    library.imageNode= <IImageNode>document.createElement('img');
+                    library.imageNode.src= App.baseImg + "triangleOpen.png";
+                    library.imageNode.state = "opened";
+                    library.imageNode.section = section;
+                    library.imageNode.onclick = this.changeSectionState;
 
-				    sel1.appendChild(imageNode);
+                    sel1.appendChild(library.imageNode);
 				    sel1.appendChild(document.createTextNode("  "+section));
 
 				    div.appendChild(sel1);
 				    div.appendChild(document.createElement("br"));
 
-				    this.viewFolderContent(imageNode);
+                    library.viewFolderContent(library);
         	    }
     	    }
 	    }
@@ -154,13 +153,14 @@ class Library{
     }
 
     //--- Unload Library Content
-    deleteLibraryList(selector){
+    deleteLibraryList(library: Library) {
 
-	    var libraryDiv = selector.parentNode;
+        var libraryDiv = document.getElementById("library");
+        var arrow = document.getElementById("arrow");
 
 	    for(var i=libraryDiv.childNodes.length-1; i>=0; i--){
 
-		    if(libraryDiv.childNodes[i] != selector && libraryDiv.childNodes[i] != document.getElementById("libraryTitle"))
+            if (libraryDiv.childNodes[i] != arrow && libraryDiv.childNodes[i] != document.getElementById("libraryTitle"))
 			    libraryDiv.removeChild(libraryDiv.childNodes[i]);
 	    }
 
@@ -170,14 +170,14 @@ class Library{
     }
 
     //-------- CLOSE LIB ON LINK DRAGGING OUT OF LIB
-    onLinkDrag(event){
+    onLinkDrag(event, library: Library) {
 
         if (event.x > document.getElementById("library").getBoundingClientRect().width) {
-            var img = this.imageNode;
-		    img.src = App.baseImg + "open.png";
-		    img.state = "closed";
+            ;
+            library.imageNode.src = App.baseImg + "open.png";
+            library.imageNode.state = "closed";
 
-		    this.deleteLibraryList(img);
+            library.deleteLibraryList(library);
 	    }
     }
 
@@ -203,17 +203,17 @@ class Library{
 	    }
     }
 
-    viewFolderContent(selector){
+    viewFolderContent(library: Library) {
 
 	    var data = JSON.parse(App.libraryContent);
 
-	    var selFolder = selector.section;
+        var selFolder = library.imageNode.section;
 
         var section = data[selFolder];
 
         var sublist=document.createElement("ul");
-	    sublist.className="subsections";
-	    selector.parentNode.appendChild(sublist);
+        sublist.className = "subsections";
+        library.imageNode.parentNode.appendChild(sublist);
 
 	    for (var subsection in section) {
 
@@ -229,8 +229,8 @@ class Library{
 		    var linkAdd = section[subsection];
 		    link.setAttribute("href", linkAdd);
 		    link.textContent = filename;
-		    link.onclick = this.onclickPrevent;
-		    link.ondrag = this.onLinkDrag;
+            link.onclick = this.onclickPrevent;
+            link.ondrag = function (event) { library.onLinkDrag(event, library) };
 		    liElement.appendChild(link);
 	    }
 

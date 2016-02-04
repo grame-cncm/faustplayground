@@ -20,104 +20,104 @@ class ScenePedagogieView {
 // Add visual elements to Pedagogical Playground Scene
     static initPedagogieScene(scene:Scene){
 
-		    var container = scene.getSceneContainer();
+		var container = scene.getSceneContainer();
 	
-		    var svgCanvas = <SVGElement>document.createElementNS("http://www.w3.org/2000/svg", "svg");
-		    svgCanvas.id="svgCanvas";
-		    //svgCanvas.version="1.1";
-		    container.appendChild(svgCanvas);
+		var svgCanvas = <SVGElement>document.createElementNS("http://www.w3.org/2000/svg", "svg");
+		svgCanvas.id="svgCanvas";
+		//svgCanvas.version="1.1";
+		container.appendChild(svgCanvas);
 
-    //--------- HEADER	
-		    var head = document.createElement("header");
-		    head.id = "header";
-		    container.appendChild(head);
+//--------- HEADER	
+		var head = document.createElement("header");
+		head.id = "header";
+		container.appendChild(head);
 		
-		    var myScene = document.createElement("div");
-		    myScene.id = "PatchName";
-		    myScene.className = "sceneTitle";
-		    myScene.textContent = "Scène de " + "";
-		    head.appendChild(myScene);
+		var myScene = document.createElement("div");
+		myScene.id = "PatchName";
+		myScene.className = "sceneTitle";
+		myScene.textContent = "Scène de " + "";
+		head.appendChild(myScene);
 
-		    var uploadDiv = document.createElement("div");
-		    uploadDiv.id = "upload";
-		    uploadDiv.className = "uploading";
-		    head.appendChild(uploadDiv);
+		var uploadDiv = document.createElement("div");
+		uploadDiv.id = "upload";
+		uploadDiv.className = "uploading";
+		head.appendChild(uploadDiv);
 	
-    //--------- MODULES
-		    var moduleContainer = document.createElement("section");
-		    moduleContainer.id = "modules";
-		    moduleContainer.className = "container";
-		    container.appendChild(moduleContainer);
+//--------- MODULES
+		var moduleContainer = document.createElement("section");
+		moduleContainer.id = "modules";
+		moduleContainer.className = "container";
+		container.appendChild(moduleContainer);
 	
-    //--------- FOOTER
-		    var footer = document.createElement("div");
-		    footer.id = "footer";
-		    container.appendChild(footer);
+//--------- FOOTER
+		var footer = document.createElement("div");
+		footer.id = "footer";
+		container.appendChild(footer);
 	
-		    var equButton = document.createElement("div");
-		    equButton.id = "exportButton";
-		    equButton.className = "grayButton";
-		    footer.appendChild(equButton);
+		var equButton = document.createElement("div");
+		equButton.id = "exportButton";
+		equButton.className = "grayButton";
+		footer.appendChild(equButton);
 
-		    var equText = document.createElement("a");
-		    equText.id = "cfe";
-            equText.textContent = "FINALISE TON APPLICATION";
-            equButton.onclick = function () { scene.parent.nextScene(); };
-		    equButton.appendChild(equText);
+		var equText = document.createElement("a");
+		equText.id = "cfe";
+        equText.textContent = "FINALISE TON APPLICATION";
+        equButton.onclick = function () { scene.parent.nextScene(); };
+		equButton.appendChild(equText);
 	
-		    var subText = document.createElement("div");
-		    subText.id = "subtitleButton";		
-		    subText.textContent = "pour l'emmener avec toi";
-		    equButton.appendChild(subText);
+		var subText = document.createElement("div");
+		subText.id = "subtitleButton";		
+		subText.textContent = "pour l'emmener avec toi";
+		equButton.appendChild(subText);
 
-		    var linkWilson = document.createElement("div");
-		    linkWilson.className = "link";
-		    linkWilson.style.right = "10px";
-		    linkWilson.textContent = "Extension of the WebAudio Playground by ";
-		    footer.appendChild(linkWilson);
+		var linkWilson = document.createElement("div");
+		linkWilson.className = "link";
+		linkWilson.style.right = "10px";
+		linkWilson.textContent = "Extension of the WebAudio Playground by ";
+		footer.appendChild(linkWilson);
 
-		    var alink = document.createElement("a");
-		    alink.href = "https://github.com/cwilso/WebAudio";
-		    alink.textContent = "Chris Wilson";
-		    linkWilson.appendChild(alink);
+		var alink = document.createElement("a");
+		alink.href = "https://github.com/cwilso/WebAudio";
+		alink.textContent = "Chris Wilson";
+		linkWilson.appendChild(alink);
 	
-		    var imageLogo = document.createElement('img');
-            imageLogo.className = "logoGrame";
-            imageLogo.src = App.baseImg + "grame.png";
-		    footer.appendChild(imageLogo);
+		var imageLogo = document.createElement('img');
+        imageLogo.className = "logoGrame";
+        imageLogo.src = App.baseImg + "grame.png";
+		footer.appendChild(imageLogo);
 	
-    //------------ INPUT/OUTPUT
+//------------ INPUT/OUTPUT
 	
-		    var destDiv = document.createElement("div");
-		    destDiv.id = "sceneOutput";
-		    destDiv.className = "destination";
-		    container.appendChild(destDiv);
+		var destDiv = document.createElement("div");
+		destDiv.id = "sceneOutput";
+		destDiv.className = "destination";
+		container.appendChild(destDiv);
 	
-		    var outText = document.createElement("span");
-		    outText.className = "text";
-		    outText.textContent = "SORTIE AUDIO";
-		    destDiv.appendChild(outText);
+		var outText = document.createElement("span");
+		outText.className = "text";
+		outText.textContent = "SORTIE AUDIO";
+		destDiv.appendChild(outText);
 	
-		    var node = document.createElement("div");
-		    node.className = "node node-input";
-		    destDiv.appendChild(node);
+		var node = document.createElement("div");
+		node.className = "node node-input";
+		destDiv.appendChild(node);
 	
-		    var nodeimg = document.createElement("span");
-		    nodeimg.className = "node-button";
-		    //nodeimg.value = "&nbsp;";
-		    node.appendChild(nodeimg);
+		var nodeimg = document.createElement("span");
+		nodeimg.className = "node-button";
+		//nodeimg.value = "&nbsp;";
+		node.appendChild(nodeimg);
 
-    //Integrate Output
+//Integrate Output
 	    scene.integrateSceneInBody();
-	
-	    scene.integrateOutput(function(){
+
+        scene.integrateOutput(function (sceneView: ScenePedagogieView) {
 
             if (App.isTooltipEnabled)
                 Tooltips.changeSceneToolTip(1);
 			
-		    scene.getAudioOutput().setInputOutputNodes(node, null);
-			
-		    this.initLibrary(container);
+            scene.getAudioOutput().setInputOutputNodes(node, null);
+            var library: Library = new Library;
+            library.initLibrary(container);
 
             scene.parent.activateAudioOutput(destDiv);
 		    scene.hideScene();	

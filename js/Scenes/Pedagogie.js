@@ -89,11 +89,12 @@ var ScenePedagogieView = (function () {
         node.appendChild(nodeimg);
         //Integrate Output
         scene.integrateSceneInBody();
-        scene.integrateOutput(function () {
+        scene.integrateOutput(function (sceneView) {
             if (App.isTooltipEnabled)
                 Tooltips.changeSceneToolTip(1);
             scene.getAudioOutput().setInputOutputNodes(node, null);
-            this.initLibrary(container);
+            var library = new Library;
+            library.initLibrary(container);
             scene.parent.activateAudioOutput(destDiv);
             scene.hideScene();
         });

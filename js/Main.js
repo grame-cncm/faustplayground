@@ -46,7 +46,7 @@ function init() {
     catch (e) {
         alert('The Web Audio API is apparently not supported in this browser.');
     }
-    //app.isPedagogie = window.isPedagogie;
+    App.isPedagogie = App.isAppPedagogique();
     app.createAllScenes();
     app.showFirstScene();
 }
@@ -54,13 +54,14 @@ var App = (function () {
     function App() {
     }
     App.prototype.showFirstScene = function () {
-        this.scenes[0].showScene();
+        App.scene.showScene();
     };
     App.prototype.createAllScenes = function () {
         this.scenes = [];
-        if (this.isPedagogie) {
+        if (App.isPedagogie) {
             this.scenes[0] = new Scene("Accueil", this);
             SceneAccueilView.initWelcomeScene(this.scenes[0]);
+            App.scene = this.scenes[0];
             this.scenes[1] = new Scene("Pedagogie", this, ScenePedagogieView.onloadPedagogieScene, ScenePedagogieView.onunloadPedagogieScene);
             ScenePedagogieView.initPedagogieScene(this.scenes[1]);
             var sceneExportView = new SceneExportView();
@@ -294,6 +295,16 @@ var App = (function () {
             window.alert("THIS OBJECT IS NOT FAUST COMPILABLE");
         }
     };
+    //Check in Url if the app should be for kids
+    App.isAppPedagogique = function () {
+        if (window.location.href.indexOf("kids.html") > -1) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    };
+    App.baseImg = "img/";
     return App;
 })();
 //# sourceMappingURL=main.js.map

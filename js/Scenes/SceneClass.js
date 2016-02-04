@@ -86,6 +86,9 @@ var Scene = (function () {
         afterWork();
     };
     Scene.prototype.integrateAudioOutput = function (factory, scene) {
+        if (App.isPedagogie) {
+            scene = scene.parent.scenes[1];
+        }
         if (scene.fAudioOutput) {
             scene.fAudioOutput.setSource("process=_,_;");
             scene.fAudioOutput.createDSP(factory);
