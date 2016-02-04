@@ -68,7 +68,8 @@ var Connect = (function () {
     /**************************************************/
     //----- Add connection to src and dst connections structures
     Connect.prototype.saveConnection = function (src, dst, connector, connectorShape) {
-        connector.line = connectorShape;
+        this.connector = connector;
+        connector.connectorShape = connectorShape;
         connector.destination = dst;
         connector.source = src;
     };
@@ -81,7 +82,7 @@ var Connect = (function () {
         drag.stopDraggingConnection(src, dst);
     };
     Connect.prototype.deleteConnection = function (drag) {
-        this.breakSingleInputConnection(drag.connectorShape.source, drag.connectorShape.destination, drag.connectorShape.inputConnection);
+        this.breakSingleInputConnection(this.connector.connectorShape.source, drag.connectorShape.destination, drag.connectorShape.inputConnection);
         return true;
     };
     Connect.prototype.breakSingleInputConnection = function (src, dst, connector) {
@@ -92,9 +93,9 @@ var Connect = (function () {
         // delete connection from dst .inputConnections,
         if (dst.getInputConnections)
             dst.removeInputConnection(connector);
-        // and delete the line
-        if (connector.line)
-            connector.line.parentNode.removeChild(connector.line);
+        // and delete the connectorShape
+        if (connector.connectorShape)
+            connector.connectorShape.parentNode.removeChild(connector.connectorShape);
     };
     // Disconnect a node from all its connections
     Connect.prototype.disconnectModule = function (nodeElement) {

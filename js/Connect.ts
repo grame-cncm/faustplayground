@@ -23,6 +23,7 @@ interface ConnectorShape extends SVGElement {
     inputConnection: Connector;
     destination: ModuleClass;
     source: ModuleClass;
+    drag: Drag;
     //id: string;
     //onclick: any;
     //ondblclick: any;
@@ -52,12 +53,13 @@ interface ConnectorShape extends SVGElement {
 
 }
 class Connector {
-    line: ConnectorShape;
+    connectorShape: ConnectorShape;
     source: ModuleClass;
     destination: ModuleClass;
 
 }
 class Connect{
+    connector: Connector;
 // Connect Nodes in Web Audio Graph
     connectModules( src, dst ) {
 
@@ -122,8 +124,8 @@ class Connect{
 
     //----- Add connection to src and dst connections structures
     saveConnection(src: ModuleClass, dst: ModuleClass, connector: Connector, connectorShape: ConnectorShape) {
-
-	    connector.line = connectorShape;
+        this.connector = connector;
+	    connector.connectorShape = connectorShape;
 	    connector.destination = dst;
 	    connector.source = src;
     }
@@ -142,7 +144,7 @@ class Connect{
 
     deleteConnection(drag: Drag):any {
 
-        this.breakSingleInputConnection(drag.connectorShape.source, drag.connectorShape.destination, drag.connectorShape.inputConnection);
+        this.breakSingleInputConnection(this.connector.connectorShape.source, drag.connectorShape.destination, drag.connectorShape.inputConnection);
         return true;
     }
 
@@ -158,9 +160,9 @@ class Connect{
 	    if(dst.getInputConnections)
 		    dst.removeInputConnection(connector);
 		
-	    // and delete the line
-	    if(connector.line)
-		    connector.line.parentNode.removeChild( connector.line );
+	    // and delete the connectorShape
+	    if(connector.connectorShape)
+		    connector.connectorShape.parentNode.removeChild( connector.connectorShape );
     }
 
     // Disconnect a node from all its connections

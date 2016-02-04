@@ -82,7 +82,7 @@ class Drag {
         event.preventDefault();
     }
 
-    whileDraggingModule(event, module) {
+    whileDraggingModule(event, module:ModuleClass) {
 	    var x, y;
 	
 	    var moduleContainer = module.getModuleContainer();
@@ -110,9 +110,9 @@ class Drag {
 		    }
 		
 		    for (c=0; c<module.getInputConnections().length; c++) {
-		
-			    module.getInputConnections()[c].line.setAttributeNS(null, "x1", x);
-			    module.getInputConnections()[c].line.setAttributeNS(null, "y1", y);
+
+                module.getInputConnections()[c].connectorShape.setAttributeNS(null, "x1", x);
+                module.getInputConnections()[c].connectorShape.setAttributeNS(null, "y1", y);
 		    }
 	    }
 
@@ -131,9 +131,9 @@ class Drag {
 		
 		    for (c=0; c<module.getOutputConnections().length; c++) {
 
-			    if(module.getOutputConnections()[c].line){
-				    module.getOutputConnections()[c].line.setAttributeNS(null, "x2", x);
-				    module.getOutputConnections()[c].line.setAttributeNS(null, "y2", y);
+                if (module.getOutputConnections()[c].connectorShape) {
+                    module.getOutputConnections()[c].connectorShape.setAttributeNS(null, "x2", x);
+                    module.getOutputConnections()[c].connectorShape.setAttributeNS(null, "y2", y);
 			    }
 		    }
 	    }
@@ -267,18 +267,19 @@ class Drag {
 			    connect.connectModules(src, dst);
 
                 var connector: Connector = new Connector();
-
-			    connect.saveConnection(src, dst, connector, this.connectorShape);
+                
 
 			    dst.addInputConnection(connector);
 			    src.addOutputConnection(connector);
 			
 			    this.connectorShape.inputConnection = connector;
 			    this.connectorShape.destination = dst;
-			    this.connectorShape.source = src;
-                this.connectorShape.onclick = function () { connect.deleteConnection(this) };
+                this.connectorShape.source = src;
+                var drag: Drag = this
+                connect.saveConnection(src, dst, connector, this.connectorShape);
+                this.connectorShape.onclick = function () { connect.deleteConnection(drag) };
 
-			    this.connectorShape = null;
+			    //this.connectorShape = null;
                 ;
                 if (App.isTooltipEnabled)
                     Tooltips.toolTipForConnections(src.sceneParent);
