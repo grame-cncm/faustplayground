@@ -44,7 +44,7 @@ interface IModule {
     name: string;
     sceneParent: Scene;
     htmlElementModuleContainer: HTMLElement;
-    removeModuleCallBack: (m: ModuleClass) => void;
+    removeModuleCallBack: (module: ModuleClass, scene: Scene) => void;
 }
 interface HTMLInterfaceContainer extends HTMLDivElement {
     unlitClassname: string;
@@ -77,15 +77,15 @@ class ModuleClass implements IModule {
     id: number;
     name: string;
     htmlElementModuleContainer: HTMLElement;
-    removeModuleCallBack: (m: ModuleClass) => void;
+    removeModuleCallBack: (module: ModuleClass,scene:Scene) => void;
     eventDraggingHandler: (event: Event) => void; 
     eventConnectorHandler: (event: Event) => void; 
 
 
 
-    constructor(id: number, x: number, y: number, name: string, sceneParent: Scene, htmlElementModuleContainer: HTMLElement, removeModuleCallBack: (m: ModuleClass) => void) {
-
-        this.createModule(id, x, y, name, htmlElementModuleContainer, removeModuleCallBack);
+    constructor(id: number, x: number, y: number, name: string, sceneParent: Scene, htmlElementModuleContainer: HTMLElement, removeModuleCallBack: (m: ModuleClass, scene: Scene) => void) {
+        var module: ModuleClass = this;
+        this.createModule(id, x, y, name, htmlElementModuleContainer, function () { removeModuleCallBack(module, sceneParent) });
         this.sceneParent = sceneParent;
         this.x = x;
         this.y = y;

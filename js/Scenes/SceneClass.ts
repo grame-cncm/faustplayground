@@ -73,12 +73,12 @@ class Scene {
     /******************** HANDLE MODULES IN SCENE ************************/
     getModules() { return this.fModuleList; }
     addModule(module: ModuleClass) { this.fModuleList.push(module); }
-    removeModule(module: ModuleClass) { this.fModuleList.splice(this.fModuleList.indexOf(module), 1); }
+    removeModule(module: ModuleClass, scene: Scene) { scene.fModuleList.splice(scene.fModuleList.indexOf(module), 1); }
 	
     cleanModules () {
         for (var i = this.fModuleList.length - 1; i >= 0; i--) {
             this.fModuleList[i].deleteModule();
-            this.removeModule(this.fModuleList[i]);
+            this.removeModule(this.fModuleList[i],this);
         }
     }
     /*******************************  PUBLIC METHODS  **********************************/
@@ -95,7 +95,7 @@ class Scene {
     /*************** ACTIONS ON AUDIO IN/OUTPUT ***************************/
     integrateInput(afterWork) {
 
-        this.fAudioInput = new ModuleClass(App.idX++, 0, 0, "input",this, this.fSceneContainer, this.removeModule);
+        this.fAudioInput = new ModuleClass(App.idX++, 0, 0, "input", this, this.fSceneContainer, function () { this.removeModule() });
         this.fAudioInput.hideModule();
 
         this.parent.compileFaust("input", "process=_,_;", 0, 0, this.integrateAudioInput);
@@ -103,7 +103,7 @@ class Scene {
     }
     integrateOutput(afterWork) {
 
-        this.fAudioOutput = new ModuleClass(App.idX++, 0, 0, "output",this, this.fSceneContainer, this.removeModule);
+        this.fAudioOutput = new ModuleClass(App.idX++, 0, 0, "output", this, this.fSceneContainer, function () { this.removeModule });
         this.fAudioOutput.hideModule();
         this.parent.compileFaust("output", "process=_,_;", 0, 0, this.integrateAudioOutput);
 

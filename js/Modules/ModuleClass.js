@@ -28,7 +28,8 @@ var ModuleClass = (function () {
         this.drag = new Drag();
         this.fOutputConnections = null;
         this.fInputConnections = null;
-        this.createModule(id, x, y, name, htmlElementModuleContainer, removeModuleCallBack);
+        var module = this;
+        this.createModule(id, x, y, name, htmlElementModuleContainer, function () { removeModuleCallBack(module, sceneParent); });
         this.sceneParent = sceneParent;
         this.x = x;
         this.y = y;
