@@ -26,6 +26,7 @@
 var ModuleClass = (function () {
     function ModuleClass(id, x, y, name, sceneParent, htmlElementModuleContainer, removeModuleCallBack) {
         this.drag = new Drag();
+        this.fParams = [];
         this.fOutputConnections = null;
         this.fInputConnections = null;
         var module = this;
@@ -35,6 +36,7 @@ var ModuleClass = (function () {
         this.y = y;
     }
     ModuleClass.prototype.createModule = function (ID, x, y, name, parent, callback) {
+        var self = this;
         this.eventConnectorHandler = function (event) { self.dragCnxCallback(event, self); };
         // ---- Capturing module instance
         var that = this;
@@ -54,7 +56,6 @@ var ModuleClass = (function () {
         this.fInterfaceContainer = document.createElement("div");
         this.fInterfaceContainer.className = "content";
         this.fModuleContainer.appendChild(this.fInterfaceContainer);
-        var self = this;
         this.eventDraggingHandler = function (event) { self.dragCallback(event, self); };
         //var eventHandler = function (event) { self.dragCallback(event, self) }
         this.fModuleContainer.addEventListener("mousedown", self.eventDraggingHandler, true);
@@ -67,7 +68,7 @@ var ModuleClass = (function () {
         fFooter.id = "moduleFooter";
         this.fEditImg = document.createElement("img");
         this.fEditImg.src = App.baseImg + "edit.png";
-        this.fEditImg.onclick = function () { that.edit(); };
+        this.fEditImg.onclick = function () { that.edit(self); };
         fFooter.appendChild(this.fEditImg);
         this.fModuleContainer.appendChild(fFooter);
         // add the node into the soundfield
@@ -158,34 +159,34 @@ var ModuleClass = (function () {
         this.fDSP = faust.createDSPInstance(factory, App.audioContext, 1024);
     };
     //--- Update DSP in module 
-    ModuleClass.prototype.updateDSP = function (factory) {
-        var toDelete = this.fDSP;
+    ModuleClass.prototype.updateDSP = function (factory, module) {
+        var toDelete = module.fDSP;
         // 	Save Cnx
-        var saveOutCnx = new Array().concat(this.fOutputConnections);
-        var saveInCnx = new Array().concat(this.fInputConnections);
+        var saveOutCnx = new Array().concat(module.fOutputConnections);
+        var saveInCnx = new Array().concat(module.fInputConnections);
         // Delete old ModuleClass 
         var connect = new Connect();
-        connect.disconnectModule(this);
-        this.deleteFaustInterface();
-        this.deleteInputOutputNodes();
+        connect.disconnectModule(module);
+        module.deleteFaustInterface();
+        module.deleteInputOutputNodes();
         // Create new one
-        this.createDSP(factory);
-        this.fName = this.fTempName;
-        this.fSource = this.fTempSource;
-        this.createFaustInterface();
-        this.addInputOutputNodes();
-        this.deleteDSP(toDelete);
+        module.createDSP(factory);
+        module.fName = module.fTempName;
+        module.fSource = module.fTempSource;
+        module.createFaustInterface();
+        module.addInputOutputNodes();
+        module.deleteDSP(toDelete);
         // Recall Cnx
-        if (saveOutCnx && this.getOutputNode()) {
+        if (saveOutCnx && module.getOutputNode()) {
             for (var i = 0; i < saveOutCnx.length; i++) {
                 if (saveOutCnx[i])
-                    connect.createConnection(this, this.getOutputNode(), saveOutCnx[i].destination, saveOutCnx[i].destination.getInputNode());
+                    connect.createConnection(module, module.getOutputNode(), saveOutCnx[i].destination, saveOutCnx[i].destination.getInputNode());
             }
         }
-        if (saveInCnx && this.getInputNode()) {
+        if (saveInCnx && module.getInputNode()) {
             for (var i = 0; i < saveInCnx.length; i++) {
                 if (saveInCnx[i])
-                    connect.createConnection(saveInCnx[i].source, saveInCnx[i].source.getOutputNode(), this, this.getInputNode());
+                    connect.createConnection(saveInCnx[i].source, saveInCnx[i].source.getOutputNode(), module, module.getInputNode());
             }
         }
     };
@@ -195,31 +196,32 @@ var ModuleClass = (function () {
         // 		    faust.deleteDSPInstance(todelete);
     };
     /******************** EDIT SOURCE & RECOMPILE *************************/
-    ModuleClass.prototype.edit = function () {
-        this.saveParams();
-        this.deleteFaustInterface();
+    ModuleClass.prototype.edit = function (module) {
+        module.saveParams();
+        module.deleteFaustInterface();
         var textArea = document.createElement("textarea");
         textArea.rows = 15;
         textArea.cols = 60;
         textArea.value = this.fSource;
-        this.fInterfaceContainer.appendChild(textArea);
-        this.fEditImg.src = App.baseImg + "enter.png";
-        this.fEditImg.onclick = this.recompileSource;
-        this.fEditImg.area = textArea;
+        module.fInterfaceContainer.appendChild(textArea);
+        module.fEditImg.src = App.baseImg + "enter.png";
+        module.fEditImg.onclick = function (event) { module.recompileSource(event, module); };
+        module.fEditImg.area = textArea;
     };
     //---- Update ModuleClass with new name/code source
     ModuleClass.prototype.update = function (name, code) {
         this.fTempName = name;
         this.fTempSource = code;
-        this.sceneParent.parent.compileFaust(name, code, this.x, this.y, this.updateDSP);
+        var module = this;
+        this.sceneParent.parent.compileFaust(name, code, this.x, this.y, function (factory) { module.updateDSP(factory, module); });
     };
     //---- React to recompilation triggered by click on icon
-    ModuleClass.prototype.recompileSource = function (event) {
+    ModuleClass.prototype.recompileSource = function (event, module) {
         var dsp_code = event.target.area.value;
-        this.update(this.fTitle.textContent, dsp_code);
-        this.recallParams();
-        this.fEditImg.src = App.baseImg + "edit.png";
-        this.fEditImg.onclick = this.edit;
+        module.update(this.fTitle.textContent, dsp_code);
+        module.recallParams();
+        module.fEditImg.src = App.baseImg + "edit.png";
+        module.fEditImg.onclick = function () { module.edit(module); };
     };
     /***************** CREATE/DELETE the DSP Interface ********************/
     // Fill fInterfaceContainer with the DSP's Interface (--> see FaustInterface.js)

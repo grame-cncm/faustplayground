@@ -60,7 +60,7 @@ class ModuleClass implements IModule {
     fSource:string;
     fTempSource:string;
     fTempName:string;
-    fParams: any[];
+    fParams: any[]=[];
     fInputNode:any;
     fOutputNode: any;
     fOutputConnections: Connector[] = null;
@@ -95,6 +95,7 @@ class ModuleClass implements IModule {
 
 
     createModule(ID, x, y, name, parent, callback) {
+        var self = this
         this.eventConnectorHandler = function (event: Event) { self.dragCnxCallback(event, self) };
 
         // ---- Capturing module instance
@@ -119,7 +120,6 @@ class ModuleClass implements IModule {
         this.fInterfaceContainer = <HTMLInterfaceContainer> document.createElement("div");
         this.fInterfaceContainer.className = "content";
         this.fModuleContainer.appendChild(this.fInterfaceContainer);
-        var self = this
         this.eventDraggingHandler = function (event) { self.dragCallback(event, self) };
         //var eventHandler = function (event) { self.dragCallback(event, self) }
         this.fModuleContainer.addEventListener("mousedown", self.eventDraggingHandler, true);
@@ -135,7 +135,8 @@ class ModuleClass implements IModule {
 
         this.fEditImg = <IfEdit>document.createElement("img");
         this.fEditImg.src = App.baseImg + "edit.png";
-        this.fEditImg.onclick = function () { that.edit(); };
+
+        this.fEditImg.onclick = function () { that.edit(self); };
 
         fFooter.appendChild(this.fEditImg);
         this.fModuleContainer.appendChild(fFooter);
@@ -253,51 +254,51 @@ class ModuleClass implements IModule {
         }
 	
 //--- Create and Update are called once a source code is compiled and the factory exists
-	    createDSP(factory){
+	    createDSP(factory:Factory){
 	
 		    //that = this;
 
             this.fDSP = faust.createDSPInstance(factory, App.audioContext, 1024);	
         }
 
-//--- Update DSP in module 
-	    updateDSP(factory){
-	
-		    var toDelete = this.fDSP;
+        //--- Update DSP in module 
+        updateDSP(factory:Factory, module: ModuleClass) {
+
+            var toDelete = module.fDSP;
 	
     // 	Save Cnx
-		    var saveOutCnx = new Array().concat(this.fOutputConnections);
-		    var saveInCnx = new Array().concat(this.fInputConnections);
+		    var saveOutCnx = new Array().concat(module.fOutputConnections);
+		    var saveInCnx = new Array().concat(module.fInputConnections);
 			
             // Delete old ModuleClass 
             var connect: Connect = new Connect();
-		    connect.disconnectModule(this);
+		    connect.disconnectModule(module);
 	
-		    this.deleteFaustInterface();
- 		    this.deleteInputOutputNodes();	
+		    module.deleteFaustInterface();
+ 		    module.deleteInputOutputNodes();	
  		
         // Create new one
 
-            this.createDSP(factory);
-	 	    this.fName = this.fTempName;
-	 	    this.fSource = this.fTempSource;
-		    this.createFaustInterface();
-		    this.addInputOutputNodes();
+            module.createDSP(factory);
+	 	    module.fName = module.fTempName;
+	 	    module.fSource = module.fTempSource;
+		    module.createFaustInterface();
+		    module.addInputOutputNodes();
 		
-		    this.deleteDSP(toDelete);
+		    module.deleteDSP(toDelete);
 
     // Recall Cnx
-		    if(saveOutCnx && this.getOutputNode()){
+		    if(saveOutCnx && module.getOutputNode()){
 		
 			    for(var i=0; i<saveOutCnx.length; i++){
                     if (saveOutCnx[i])
-                        connect.createConnection(this, this.getOutputNode(), saveOutCnx[i].destination, saveOutCnx[i].destination.getInputNode());
+                        connect.createConnection(module, module.getOutputNode(), saveOutCnx[i].destination, saveOutCnx[i].destination.getInputNode());
 			    }
 		    }
-		    if(saveInCnx && this.getInputNode()){
+		    if(saveInCnx && module.getInputNode()){
 			    for(var i=0; i<saveInCnx.length; i++){
                     if (saveInCnx[i])
-                        connect.createConnection(saveInCnx[i].source, saveInCnx[i].source.getOutputNode(), this, this.getInputNode());
+                        connect.createConnection(saveInCnx[i].source, saveInCnx[i].source.getOutputNode(), module, module.getInputNode());
 			    }
 		    }
         }
@@ -307,22 +308,22 @@ class ModuleClass implements IModule {
     // 		if(todelete)
     // 		    faust.deleteDSPInstance(todelete);
         }
-/******************** EDIT SOURCE & RECOMPILE *************************/
-	    edit(){
+        /******************** EDIT SOURCE & RECOMPILE *************************/
+        edit(module: ModuleClass) {
 
-		    this.saveParams();
+            module.saveParams();
 		
-		    this.deleteFaustInterface();
+            module.deleteFaustInterface();
 		
 		    var textArea = document.createElement("textarea");
 		    textArea.rows = 15;
 		    textArea.cols = 60;
 		    textArea.value = this.fSource;
-		    this.fInterfaceContainer.appendChild(textArea);
+            module.fInterfaceContainer.appendChild(textArea);
 			
-            this.fEditImg.src = App.baseImg + "enter.png";
-            this.fEditImg.onclick = this.recompileSource;
-		    this.fEditImg.area = textArea;
+            module.fEditImg.src = App.baseImg + "enter.png";
+            module.fEditImg.onclick = function (event) { module.recompileSource(event, module) };
+            module.fEditImg.area = textArea;
         }
 
 //---- Update ModuleClass with new name/code source
@@ -330,21 +331,21 @@ class ModuleClass implements IModule {
 	
 	
 		    this.fTempName = name;
-		    this.fTempSource = code;
-
-            this.sceneParent.parent.compileFaust(name, code, this.x, this.y, this.updateDSP);
+            this.fTempSource = code;
+            var module: ModuleClass = this;
+            this.sceneParent.parent.compileFaust(name, code, this.x, this.y, function (factory) { module.updateDSP(factory, module) });
         }
 	
-//---- React to recompilation triggered by click on icon
-	    recompileSource(event){
+        //---- React to recompilation triggered by click on icon
+        recompileSource(event, module: ModuleClass) {
 	
 		    var dsp_code = event.target.area.value;
 
-		    this.update(this.fTitle.textContent, dsp_code);
-		    this.recallParams();
+		    module.update(this.fTitle.textContent, dsp_code);
+		    module.recallParams();
 	
-		    this.fEditImg.src = App.baseImg + "edit.png";
-		    this.fEditImg.onclick = this.edit;
+            module.fEditImg.src = App.baseImg + "edit.png";
+            module.fEditImg.onclick = function () { module.edit(module) };
         }
 	
 /***************** CREATE/DELETE the DSP Interface ********************/

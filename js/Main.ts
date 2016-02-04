@@ -107,6 +107,10 @@ interface IHTMLDivElementSrc extends HTMLDivElement {
 interface IHTMLDivElementOut extends HTMLDivElement{
     audioNode: AudioDestinationNode;
 }
+interface Factory {
+    factoryName: string;
+    shaKe: string;
+}
 class App {
 
     //************* Fields
@@ -133,6 +137,7 @@ class App {
     static recursiveMap: ModuleRecursive[];
     static jsonText: string;
     static exportURL: string;
+    factory: Factory;
 
     showFirstScene() {
         this.scenes[0].showScene();
@@ -262,14 +267,14 @@ class App {
         //var args = ["-I", "http://ifaust.grame.fr/faustcode/"];
         //var args = ["-I", "http://10.0.1.2/faustcode/"];
         var args = ["-I", "http://" + location.hostname + "/faustcode/"];
-        var factory = faust.createDSPFactory(sourcecode, args);
-        callback(factory, App.scene, this);
+        this.factory = faust.createDSPFactory(sourcecode, args);
+        callback(this.factory, App.scene, this);
 
         if (currentScene) currentScene.unmuteScene();
 
     }
 
-    createFaustModule(factory,scene:Scene,app:App) {
+    createFaustModule(factory: Factory, scene: Scene, app: App) {
 
         if (!factory) {
             alert(faust.getErrorMessage());

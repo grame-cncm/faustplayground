@@ -110,14 +110,14 @@ class Scene {
         afterWork();
     }
 
-    integrateAudioOutput(factory,scene:Scene) {
+    integrateAudioOutput(factory: Factory, scene: Scene) {
         if (scene.fAudioOutput) {
             scene.fAudioOutput.setSource("process=_,_;");
             scene.fAudioOutput.createDSP(factory);
             scene.parent.activateAudioOutput(document.getElementById("sceneOutput"));
         }
     }
-    integrateAudioInput(factory, scene: Scene) {
+    integrateAudioInput(factory: Factory, scene: Scene) {
         if (scene.fAudioInput) {
             scene.fAudioInput.setSource("process=_,_;");
             scene.fAudioInput.createDSP(factory);
@@ -237,7 +237,7 @@ class Scene {
         }
     }
 	
-    createModuleAndConnectIt(factory) {
+    createModuleAndConnectIt(factory:Factory) {
 
         //---- This is very similar to "createFaustModule" from Main.js
         //---- But as we need to set Params before calling "createFaustInterface", it is copied
