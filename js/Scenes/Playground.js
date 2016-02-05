@@ -123,7 +123,7 @@ var ScenePlaygroundView = (function () {
         scene.integrateInput(function () {
             scene.integrateOutput(function () {
                 scene.getAudioOutput().setInputOutputNodes(node, null);
-                scene.getAudioInput().setInputOutputNodes(null, input); //
+                //scene.getAudioInput().setInputOutputNodes(null, input);//
                 playgroundView.onloadNormalScene(scene);
                 playgroundView.expor.uploadTargets();
             });

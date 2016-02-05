@@ -206,7 +206,7 @@ class App {
     **********************  ACTIVATE PHYSICAL IN/OUTPUT *****************
     ********************************************************************/
 
-    activateAudioInput() {
+    activateAudioInput(app:App) {
 
         var navigatorLoc = <any>navigator;
         if (!navigatorLoc.getUserMedia) {
@@ -215,7 +215,7 @@ class App {
 
         if (navigatorLoc.getUserMedia) {
 
-            navigatorLoc.getUserMedia({ audio: true }, this.getDevice, function (e) {
+            navigatorLoc.getUserMedia({ audio: true }, function (mediaStream) { app.getDevice(mediaStream,app) }, function (e) {
                 alert('Error getting audio input');
             });
         } else {
@@ -232,20 +232,22 @@ class App {
         var inputDiv = document.createElement("div");
         inputDiv.className = "node node-output";
         inputDiv.addEventListener("mousedown", <any>function () { drag.startDraggingConnector }, true);
+        App.scene.getAudioInput().setInputOutputNodes(null, inputDiv);
+        //inputDiv.addEventListener("mousedown", <any>function () { drag.startDraggingConnector }, true);
         inputDiv.innerHTML = "<span class='node-button'>&nbsp;</span>";
         App.src.appendChild(inputDiv);
         var connect: Connect = new Connect();
-        connect.connectModules(App.src, App.scene.audioInput());
+        connect.connectModules(App.src, App.scene.fAudioInput);
     }
 
-    activateAudioOutput(sceneOutput) {
+    activateAudioOutput(sceneOutput: HTMLElement) {
 
         App.out = <IHTMLDivElementOut> document.createElement("div");
         App.out.id = "audioOutput";
         App.out.audioNode = App.audioContext.destination;
         document.body.appendChild(App.out);
         var connect: Connect = new Connect();
-        connect.connectModules(sceneOutput, App.out);
+        //connect.connectModules(sceneOutput, App.out);
     }
 
     /********************************************************************

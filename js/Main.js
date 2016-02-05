@@ -101,13 +101,13 @@ var App = (function () {
     /********************************************************************
     **********************  ACTIVATE PHYSICAL IN/OUTPUT *****************
     ********************************************************************/
-    App.prototype.activateAudioInput = function () {
+    App.prototype.activateAudioInput = function (app) {
         var navigatorLoc = navigator;
         if (!navigatorLoc.getUserMedia) {
             navigatorLoc.getUserMedia = navigatorLoc.webkitGetUserMedia || navigatorLoc.mozGetUserMedia;
         }
         if (navigatorLoc.getUserMedia) {
-            navigatorLoc.getUserMedia({ audio: true }, this.getDevice, function (e) {
+            navigatorLoc.getUserMedia({ audio: true }, function (mediaStream) { app.getDevice(mediaStream, app); }, function (e) {
                 alert('Error getting audio input');
             });
         }
@@ -123,10 +123,12 @@ var App = (function () {
         var inputDiv = document.createElement("div");
         inputDiv.className = "node node-output";
         inputDiv.addEventListener("mousedown", function () { drag.startDraggingConnector; }, true);
+        App.scene.getAudioInput().setInputOutputNodes(null, inputDiv);
+        //inputDiv.addEventListener("mousedown", <any>function () { drag.startDraggingConnector }, true);
         inputDiv.innerHTML = "<span class='node-button'>&nbsp;</span>";
         App.src.appendChild(inputDiv);
         var connect = new Connect();
-        connect.connectModules(App.src, App.scene.audioInput());
+        connect.connectModules(App.src, App.scene.fAudioInput);
     };
     App.prototype.activateAudioOutput = function (sceneOutput) {
         App.out = document.createElement("div");
@@ -134,7 +136,7 @@ var App = (function () {
         App.out.audioNode = App.audioContext.destination;
         document.body.appendChild(App.out);
         var connect = new Connect();
-        connect.connectModules(sceneOutput, App.out);
+        //connect.connectModules(sceneOutput, App.out);
     };
     /********************************************************************
     ****************  CREATE FAUST FACTORIES AND MODULES ****************

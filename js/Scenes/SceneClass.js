@@ -74,15 +74,17 @@ var Scene = (function () {
     };
     /*************** ACTIONS ON AUDIO IN/OUTPUT ***************************/
     Scene.prototype.integrateInput = function (afterWork) {
-        this.fAudioInput = new ModuleClass(App.idX++, 0, 0, "input", this, this.fSceneContainer, function () { this.removeModule(); });
+        this.fAudioInput = new ModuleClass(App.idX++, 0, 0, "input", this, this.fSceneContainer, this.removeModule);
         this.fAudioInput.hideModule();
-        this.parent.compileFaust("input", "process=_,_;", 0, 0, this.integrateAudioInput);
+        var scene = this;
+        this.parent.compileFaust("input", "process=_,_;", 0, 0, function callback(factory, scene) { scene.integrateAudioInput(factory, scene); });
         afterWork();
     };
     Scene.prototype.integrateOutput = function (afterWork) {
-        this.fAudioOutput = new ModuleClass(App.idX++, 0, 0, "output", this, this.fSceneContainer, function () { this.removeModule; });
+        var scene = this;
+        this.fAudioOutput = new ModuleClass(App.idX++, 0, 0, "output", this, this.fSceneContainer, this.removeModule);
         this.fAudioOutput.hideModule();
-        this.parent.compileFaust("output", "process=_,_;", 0, 0, this.integrateAudioOutput);
+        this.parent.compileFaust("output", "process=_,_;", 0, 0, function callback(factory, scene) { scene.integrateAudioOutput(factory, scene); });
         afterWork();
     };
     Scene.prototype.integrateAudioOutput = function (factory, scene) {
@@ -99,7 +101,7 @@ var Scene = (function () {
         if (scene.fAudioInput) {
             scene.fAudioInput.setSource("process=_,_;");
             scene.fAudioInput.createDSP(factory);
-            scene.parent.activateAudioInput();
+            scene.parent.activateAudioInput(scene.parent);
         }
     };
     Scene.prototype.getAudioOutput = function () { return this.fAudioOutput; };
