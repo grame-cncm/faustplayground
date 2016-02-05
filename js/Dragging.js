@@ -279,8 +279,13 @@ var Drag = (function () {
         }
         if (!arrivingNode) {
             var outputModule = module.sceneParent.getAudioOutput();
-            if ((this.originIsInput && outputModule.isPointInOutput(event.clientX, event.clientY)) || outputModule.isPointInInput(event.clientX, event.clientY))
+            var inputModule = module.sceneParent.getAudioInput();
+            if ((this.originIsInput && outputModule.isPointInOutput(event.clientX, event.clientY)) || outputModule.isPointInInput(event.clientX, event.clientY)) {
                 arrivingNode = outputModule;
+            }
+            else {
+                arrivingNode = inputModule;
+            }
         }
         module.drag.stopDraggingConnection(module, arrivingNode);
     };
