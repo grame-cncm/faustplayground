@@ -135,9 +135,9 @@ class EquivalentFaust {
     //*** Every Faust Expression is "Stereoized" before composition with other expressions to ensure composability
 
     // Computing a Module is computing its entries and merging them in the Module's own faust code.
-    computeModule(Module) {
+    computeModule(module: ModuleRecursive) {
 
-        var moduleInputs = Module.moduleInputs;
+        var moduleInputs = module.moduleInputs;
         var faustResult = "";
 	
         // Iterate on input Modules to compute them
@@ -158,16 +158,16 @@ class EquivalentFaust {
             }
 
             if (inputCode != "") {
-                if (Module.recursiveFlag)
+                if (module.recursiveFlag)
                     faustResult += "(" + inputCode + ":> ";
                 else
                     faustResult += inputCode + ":> ";
             }
         }
 
-        var ModuleCode = Module.sourceCode;
+        var ModuleCode = module.sourceCode;
 
-        if (Module.recursiveFlag)
+        if (module.recursiveFlag)
             faustResult += "stereoize(environment{" + ModuleCode + "}.process))~(_,_)";
         else
             faustResult += "stereoize(environment{" + ModuleCode + "}.process)";

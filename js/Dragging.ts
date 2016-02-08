@@ -105,8 +105,8 @@ class Drag {
 		    while (off) {
 		
 			    x+=off.offsetLeft;
-			    y+=off.offsetTop;
-			    off=off.offsetParent;
+                y += off.offsetTop;
+                off = <HTMLDivElement>off.offsetParent;
 		    }
 		
 		    for (c=0; c<module.getInputConnections().length; c++) {
@@ -126,7 +126,7 @@ class Drag {
 		    while (off) {
 			    x+=off.offsetLeft;
 			    y+=off.offsetTop;
-			    off=off.offsetParent;
+                off = <HTMLDivElement>off.offsetParent;
 		    }
 		
 		    for (c=0; c<module.getOutputConnections().length; c++) {
@@ -297,8 +297,8 @@ class Drag {
         this.startDraggingConnection(module, event.target);
 
         // Capture mousemove and mouseup events on the page.
-        module.addCnxListener(event.target, "mousemove", module);
-        module.addCnxListener(event.target, "mouseup",module);
+        module.addCnxListener(<HTMLElement>event.target, "mousemove", module);
+        module.addCnxListener(<HTMLElement>event.target, "mouseup",module);
 
         event.preventDefault();
 	    event.stopPropagation();

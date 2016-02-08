@@ -104,7 +104,9 @@ var Scene = (function () {
     Scene.prototype.getAudioOutput = function () { return this.fAudioOutput; };
     Scene.prototype.getAudioInput = function () { return this.fAudioInput; };
     /*********************** SAVE/RECALL SCENE ***************************/
-    //not used for now and not seriously typescripted
+    ///////////////////////////////////////////////////
+    //not used for now and not seriously typescripted//
+    ///////////////////////////////////////////////////
     Scene.prototype.saveScene = function () {
         for (var i = 0; i < this.fModuleList.length; i++) {
             this.fModuleList[i].patchID = String(i + 1);

@@ -87,8 +87,8 @@ var EquivalentFaust = (function () {
     //*** All trees are composed in parallel
     //*** Every Faust Expression is "Stereoized" before composition with other expressions to ensure composability
     // Computing a Module is computing its entries and merging them in the Module's own faust code.
-    EquivalentFaust.prototype.computeModule = function (Module) {
-        var moduleInputs = Module.moduleInputs;
+    EquivalentFaust.prototype.computeModule = function (module) {
+        var moduleInputs = module.moduleInputs;
         var faustResult = "";
         // Iterate on input Modules to compute them
         if (moduleInputs && moduleInputs.length != 0) {
@@ -103,14 +103,14 @@ var EquivalentFaust = (function () {
                 }
             }
             if (inputCode != "") {
-                if (Module.recursiveFlag)
+                if (module.recursiveFlag)
                     faustResult += "(" + inputCode + ":> ";
                 else
                     faustResult += inputCode + ":> ";
             }
         }
-        var ModuleCode = Module.sourceCode;
-        if (Module.recursiveFlag)
+        var ModuleCode = module.sourceCode;
+        if (module.recursiveFlag)
             faustResult += "stereoize(environment{" + ModuleCode + "}.process))~(_,_)";
         else
             faustResult += "stereoize(environment{" + ModuleCode + "}.process)";
