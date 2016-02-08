@@ -119,7 +119,7 @@ class ScenePedagogieView {
             var library: Library = new Library;
             library.initLibrary(container);
 
-            scene.parent.activateAudioOutput(destDiv);
+            scene.parent.activateAudioOutput(scene.fAudioOutput);
 		    scene.hideScene();	
 	    });
     }

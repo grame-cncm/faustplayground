@@ -42,13 +42,11 @@ var Scene = (function () {
     /*********************** MUTE/UNMUTE SCENE ***************************/
     Scene.prototype.muteScene = function () {
         var out = document.getElementById("audioOutput");
-        var connect = new Connect();
-        connect.disconnectModules(this.fAudioOutput, out);
+        out.audioNode.context.suspend();
     };
     Scene.prototype.unmuteScene = function () {
         var out = document.getElementById("audioOutput");
-        var connect = new Connect();
-        connect.connectModules(this.fAudioOutput, out);
+        out.audioNode.context.resume();
     };
     /******************** HANDLE MODULES IN SCENE ************************/
     Scene.prototype.getModules = function () { return this.fModuleList; };
@@ -91,7 +89,7 @@ var Scene = (function () {
         if (scene.fAudioOutput) {
             scene.fAudioOutput.setSource("process=_,_;");
             scene.fAudioOutput.createDSP(factory);
-            scene.parent.activateAudioOutput(document.getElementById("sceneOutput"));
+            scene.parent.activateAudioOutput(scene.fAudioOutput);
         }
     };
     Scene.prototype.integrateAudioInput = function (factory, scene) {

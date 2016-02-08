@@ -95,7 +95,7 @@ var ScenePedagogieView = (function () {
             scene.getAudioOutput().setInputOutputNodes(node, null);
             var library = new Library;
             library.initLibrary(container);
-            scene.parent.activateAudioOutput(destDiv);
+            scene.parent.activateAudioOutput(scene.fAudioOutput);
             scene.hideScene();
         });
     };

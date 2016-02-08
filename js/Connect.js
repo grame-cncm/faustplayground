@@ -20,46 +20,46 @@ var Connector = (function () {
 var Connect = (function () {
     function Connect() {
     }
+    Connect.prototype.connectInput = function (inputModule, divSrc) {
+        divSrc.audioNode.connect(inputModule.getDSP().getProcessor());
+    };
+    Connect.prototype.connectOutput = function (outputModule, divOut) {
+        outputModule.getDSP().getProcessor().connect(divOut.audioNode);
+    };
     // Connect Nodes in Web Audio Graph
-    Connect.prototype.connectModules = function (src, dst) {
-        // Searching for src/dst DSP if existing
-        if (dst != null && dst.getDSP)
-            dst = dst.getDSP();
-        if (src.getDSP)
-            src = src.getDSP();
-        // if the source has an audio node, connect them up.  
-        // AudioBufferSourceNodes may not have an audio node yet.
-        if (src.audioNode) {
-            if (dst != null && dst.audioNode)
-                src.audioNode.connect(dst.audioNode);
-            else if (dst != null && dst.getProcessor)
-                src.audioNode.connect(dst.getProcessor());
+    Connect.prototype.connectModules = function (source, destination) {
+        var sourceDSP;
+        var destinationDSP;
+        if (destination != null && destination.getDSP) {
+            destinationDSP = destination.getDSP();
         }
-        else if (src.getProcessor) {
-            if (dst.audioNode)
-                src.getProcessor().connect(dst.audioNode);
-            else
-                src.getProcessor().connect(dst.getProcessor());
+        if (source.getDSP) {
+            sourceDSP = source.getDSP();
         }
-        if (dst != null && dst.onConnectInput)
-            dst.onConnectInput();
+        if (sourceDSP.getProcessor && destinationDSP.getProcessor()) {
+            sourceDSP.getProcessor().connect(destinationDSP.getProcessor());
+        }
+    };
+    Connect.prototype.disconnectOutput = function (destination, source) {
+        destination.audioNode.context.suspend();
     };
     // Disconnect Nodes in Web Audio Graph
-    Connect.prototype.disconnectModules = function (src, dst) {
+    Connect.prototype.disconnectModules = function (source, destination) {
         // We want to be dealing with the audio node elements from here on
-        var srcCpy = src;
+        var sourceCopy = source;
+        var sourceCopyDSP;
         // Searching for src/dst DSP if existing
-        if (srcCpy.getDSP)
-            srcCpy = srcCpy.getDSP();
-        if (srcCpy.audioNode)
-            srcCpy.audioNode.disconnect();
-        else
-            srcCpy.getProcessor().disconnect();
+        if (sourceCopy.getDSP)
+            sourceCopyDSP = sourceCopy.getDSP();
+        //if(srcCpy.audioNode)
+        // srcCpy.audioNode.disconnect();
+        //else
+        sourceCopyDSP.getProcessor().disconnect();
         // Reconnect all disconnected connections (because disconnect API cannot break a single connection)
-        if (src.getOutputConnections()) {
-            for (var i = 0; i < src.getOutputConnections().length; i++) {
-                if (src.getOutputConnections()[i].destination != dst)
-                    this.connectModules(src, src.getOutputConnections()[i].destination);
+        if (source.getOutputConnections()) {
+            for (var i = 0; i < source.getOutputConnections().length; i++) {
+                if (source.getOutputConnections()[i].destination != destination)
+                    this.connectModules(source, source.getOutputConnections()[i].destination);
             }
         }
     };

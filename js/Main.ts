@@ -111,13 +111,13 @@ interface MediaStreamAudioDestinationNode extends AudioNode {
 interface AudioContext {
     state: string;
     close: () => void;
-    createMediaStreamSource: (m: MediaStream) => AudioContext;
+    createMediaStreamSource: (m: MediaStream) => MediaStreamAudioSourceNode;
     createMediaStreamDestination: () => any;
     resume: () => void;
     suspend: () => void;
 }
 interface IHTMLDivElementSrc extends HTMLDivElement {
-    audioNode: AudioContext;
+    audioNode: MediaStreamAudioSourceNode;
 }
 interface IHTMLDivElementOut extends HTMLDivElement{
     audioNode: AudioDestinationNode;
@@ -240,7 +240,7 @@ class App {
     getDevice(device: MediaStream,app:App):void {
 
         // Create an AudioNode from the stream.
-        App.src = <IHTMLDivElementSrc> document.getElementById("input");
+        App.src = <IHTMLDivElementSrc>document.getElementById("input");
         App.src.audioNode = App.audioContext.createMediaStreamSource(device);
         var drag: Drag = new Drag();
         var inputDiv: HTMLDivElement = document.createElement("div");
@@ -250,18 +250,18 @@ class App {
         inputDiv.innerHTML = "<span class='node-button'>&nbsp;</span>";
         App.src.appendChild(inputDiv);
         var connect: Connect = new Connect();
-        connect.connectModules(App.src, App.scene.fAudioInput);
+        connect.connectInput(App.scene.fAudioInput, App.src);
     }
 
 
-    activateAudioOutput(sceneOutput: HTMLElement):void {
+    activateAudioOutput(sceneOutput: ModuleClass): void {
 
         App.out = <IHTMLDivElementOut> document.createElement("div");
         App.out.id = "audioOutput";
         App.out.audioNode = App.audioContext.destination;
         document.body.appendChild(App.out);
-        //var connect: Connect = new Connect();
-        //connect.connectModules(sceneOutput, App.out);
+        var connect: Connect = new Connect();
+        connect.connectOutput(sceneOutput, App.out);
     }
 
     /********************************************************************

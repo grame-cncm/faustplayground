@@ -127,15 +127,15 @@ var App = (function () {
         inputDiv.innerHTML = "<span class='node-button'>&nbsp;</span>";
         App.src.appendChild(inputDiv);
         var connect = new Connect();
-        connect.connectModules(App.src, App.scene.fAudioInput);
+        connect.connectInput(App.scene.fAudioInput, App.src);
     };
     App.prototype.activateAudioOutput = function (sceneOutput) {
         App.out = document.createElement("div");
         App.out.id = "audioOutput";
         App.out.audioNode = App.audioContext.destination;
         document.body.appendChild(App.out);
-        //var connect: Connect = new Connect();
-        //connect.connectModules(sceneOutput, App.out);
+        var connect = new Connect();
+        connect.connectOutput(sceneOutput, App.out);
     };
     /********************************************************************
     ****************  CREATE FAUST FACTORIES AND MODULES ****************

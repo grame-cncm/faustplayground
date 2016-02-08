@@ -57,15 +57,13 @@ class Scene {
         this.onunload(this)
     }
     /*********************** MUTE/UNMUTE SCENE ***************************/
-    muteScene():void {
-        var out = document.getElementById("audioOutput");
-        var connect: Connect = new Connect();
-        connect.disconnectModules(this.fAudioOutput, out);
+    muteScene(): void {
+        var out: IHTMLDivElementOut = <IHTMLDivElementOut>document.getElementById("audioOutput");
+        out.audioNode.context.suspend();
     }
     unmuteScene(): void {
-        var out = document.getElementById("audioOutput");
-        var connect: Connect = new Connect();
-        connect.connectModules(this.fAudioOutput, out);
+        var out: IHTMLDivElementOut = <IHTMLDivElementOut>document.getElementById("audioOutput");
+        out.audioNode.context.resume();
     }
     /******************** HANDLE MODULES IN SCENE ************************/
     getModules(): ModuleClass[] { return this.fModuleList; }
@@ -114,7 +112,7 @@ class Scene {
         if (scene.fAudioOutput) {
             scene.fAudioOutput.setSource("process=_,_;");
             scene.fAudioOutput.createDSP(factory);
-            scene.parent.activateAudioOutput(document.getElementById("sceneOutput"));
+            scene.parent.activateAudioOutput(scene.fAudioOutput);
         }
     }
     integrateAudioInput(factory: Factory, scene: Scene):void {

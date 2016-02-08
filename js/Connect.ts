@@ -24,33 +24,6 @@ interface ConnectorShape extends SVGElement {
     destination: ModuleClass;
     source: ModuleClass;
     drag: Drag;
-    //id: string;
-    //onclick: any;
-    //ondblclick: any;
-    //onfocusin: any;
-    //onfocusout: any;
-    //onload: any;
-    //onmousedown: any;
-    //onmousemove: any;
-    //onmouseout: any;
-    //onmouseover: any;
-    //onmouseup: any;
-    //ownerSVGElement: any;
-    //viewportElement: any;
-    //xmlbase: any;
-    //className: any;
-    //addEventListener: any;
-    //classList: any;
-    //clientHeight: any;
-    //clientLeft: any;
-    //clientTop: any;
-    //clientWidth: any;
-    //msContentZoomFactor: any;
-    //msRegionOverflow: any;
-    //onariarequest: any;
-
-
-
 }
 class Connector {
     connectorShape: ConnectorShape;
@@ -58,62 +31,55 @@ class Connector {
     destination: ModuleClass;
 
 }
-class Connect{
+class Connect {
     connector: Connector;
-// Connect Nodes in Web Audio Graph
-    connectModules( src, dst ) {
 
-    // Searching for src/dst DSP if existing
-	    if(dst!=null&&dst.getDSP)
-		    dst = dst.getDSP();
-			
-	    if(src.getDSP)
-		    src = src.getDSP();
-		
-	    // if the source has an audio node, connect them up.  
-	    // AudioBufferSourceNodes may not have an audio node yet.
-	    if (src.audioNode ){
-		
-		    if(dst!=null&&dst.audioNode)
-			    src.audioNode.connect(dst.audioNode);
-            else if (dst != null && dst.getProcessor)
-			    src.audioNode.connect(dst.getProcessor());
-			
-    // 		src.connect(dst.getProcessor().audioNode);
-	    }
-	    else if(src.getProcessor){
-		
-		    if(dst.audioNode)
-			    src.getProcessor().connect(dst.audioNode);
-		    else
-			    src.getProcessor().connect(dst.getProcessor())
 
-	    }
+    connectInput(inputModule: ModuleClass, divSrc: IHTMLDivElementSrc): void {
+        divSrc.audioNode.connect(inputModule.getDSP().getProcessor());
+    }
+    connectOutput(outputModule: ModuleClass, divOut: IHTMLDivElementOut): void {
+        outputModule.getDSP().getProcessor().connect(divOut.audioNode);
+    }
+    // Connect Nodes in Web Audio Graph
+    connectModules(source: ModuleClass, destination: ModuleClass): void {
+        var sourceDSP: IfDSP;
+        var destinationDSP: IfDSP;
+        if (destination != null && destination.getDSP) {
+            destinationDSP = destination.getDSP();
+        }
+        if (source.getDSP) {
+            sourceDSP = source.getDSP();
+        }
 
-	    if (dst!=null&&dst.onConnectInput)
-		    dst.onConnectInput();
+        if (sourceDSP.getProcessor && destinationDSP.getProcessor()) {
+            sourceDSP.getProcessor().connect(destinationDSP.getProcessor())
+        }
+    }
+    disconnectOutput(destination: IHTMLDivElementOut, source: ModuleClass) {
+        destination.audioNode.context.suspend();
     }
 
     // Disconnect Nodes in Web Audio Graph
-    disconnectModules(src, dst){
+    disconnectModules(source: ModuleClass, destination: ModuleClass) {
 	
-	    // We want to be dealing with the audio node elements from here on
-	    var srcCpy = src;
-	
+        // We want to be dealing with the audio node elements from here on
+        var sourceCopy: ModuleClass = source;
+        var sourceCopyDSP: IfDSP;
 	    // Searching for src/dst DSP if existing
-	    if(srcCpy.getDSP)
-		    srcCpy = srcCpy.getDSP();
+        if (sourceCopy.getDSP)
+            sourceCopyDSP = sourceCopy.getDSP();
 
-	    if(srcCpy.audioNode)
-		    srcCpy.audioNode.disconnect();
-	    else
-		    srcCpy.getProcessor().disconnect();
+	    //if(srcCpy.audioNode)
+		   // srcCpy.audioNode.disconnect();
+	    //else
+        sourceCopyDSP.getProcessor().disconnect();
 		
     // Reconnect all disconnected connections (because disconnect API cannot break a single connection)
-	    if(src.getOutputConnections()){
-		    for(var i=0; i<src.getOutputConnections().length; i++){
-			    if(src.getOutputConnections()[i].destination != dst)
-				    this.connectModules(src, src.getOutputConnections()[i].destination);
+        if (source.getOutputConnections()){
+            for (var i = 0; i < source.getOutputConnections().length; i++){
+                if (source.getOutputConnections()[i].destination != destination)
+                    this.connectModules(source, source.getOutputConnections()[i].destination);
 		    }
 	    }
     }

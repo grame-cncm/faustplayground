@@ -27,13 +27,14 @@
 
 
 "use strict";
-interface FDSPAudioContext extends AudioContext {
+interface IfDSP {
     json: () => string;
     getValue: (text: string) => string;
     setValue: (text: string, val: number) => void;
     getNumInputs: () => number;
     getNumOutputs: () => number;
     controls: () => any;
+    getProcessor: () => ScriptProcessorNode;
 }
 
 interface HTMLfEdit extends HTMLImageElement {
@@ -61,7 +62,7 @@ class ModuleClass implements IModule {
     patchID: string;
     fModuleContainer: HTMLElement;
     sceneParent: Scene;
-    fDSP: FDSPAudioContext;
+    fDSP: IfDSP;
     deleteCallback: (module: ModuleClass) => void;
     fName: string;
     fSource: string;
@@ -242,7 +243,7 @@ class ModuleClass implements IModule {
 
     getName(): string { return this.fName; }
 
-    getDSP(): FDSPAudioContext {
+    getDSP(): IfDSP {
         return this.fDSP;
     }
 	
@@ -293,7 +294,7 @@ class ModuleClass implements IModule {
         }
     }
 
-    deleteDSP(todelete: FDSPAudioContext): void {
+    deleteDSP(todelete: IfDSP): void {
         // 	TO DO SAFELY --> FOR NOW CRASHES SOMETIMES
         // 		if(todelete)
         // 		    faust.deleteDSPInstance(todelete);
