@@ -28,9 +28,6 @@ var Scene = (function () {
     }
     Scene.prototype.onload = function (s) { };
     Scene.prototype.onunload = function (s) { };
-    Scene.prototype.audioInput = function () {
-        return null;
-    };
     Scene.prototype.getSceneContainer = function () { return this.fSceneContainer; };
     /************************* SHOW/HIDE SCENE ***************************/
     Scene.prototype.showScene = function () { this.fSceneContainer.style.visibility = "visible"; };
@@ -73,19 +70,19 @@ var Scene = (function () {
         document.body.appendChild(this.fSceneContainer);
     };
     /*************** ACTIONS ON AUDIO IN/OUTPUT ***************************/
-    Scene.prototype.integrateInput = function (afterWork) {
+    Scene.prototype.integrateInput = function (callBackIntegrateOutput) {
         this.fAudioInput = new ModuleClass(App.idX++, 0, 0, "input", this, this.fSceneContainer, this.removeModule);
         this.fAudioInput.hideModule();
         var scene = this;
         this.parent.compileFaust("input", "process=_,_;", 0, 0, function callback(factory, scene) { scene.integrateAudioInput(factory, scene); });
-        afterWork();
+        callBackIntegrateOutput();
     };
-    Scene.prototype.integrateOutput = function (afterWork) {
+    Scene.prototype.integrateOutput = function (callBackKeepGoingOnWithInit) {
         var scene = this;
         this.fAudioOutput = new ModuleClass(App.idX++, 0, 0, "output", this, this.fSceneContainer, this.removeModule);
         this.fAudioOutput.hideModule();
         this.parent.compileFaust("output", "process=_,_;", 0, 0, function callback(factory, scene) { scene.integrateAudioOutput(factory, scene); });
-        afterWork();
+        callBackKeepGoingOnWithInit();
     };
     Scene.prototype.integrateAudioOutput = function (factory, scene) {
         if (App.isPedagogie) {
@@ -162,8 +159,7 @@ var Scene = (function () {
     Scene.prototype.recallScene = function (json) {
         this.parent.currentNumberDSP = this.fModuleList.length;
         var data = JSON.parse(json);
-        var sel;
-        for (sel in data) {
+        for (var sel in data) {
             var dataCopy = data[sel];
             var newsel;
             var name, code, x, y;
@@ -193,7 +189,7 @@ var Scene = (function () {
         //---- There probably is a better way to do this !!
         if (!factory) {
             alert(faust.getErrorMessage());
-            return null;
+            return;
         }
         var faustModule = new ModuleClass(App.idX++, this.parent.tempModuleX, this.parent.tempModuleY, window.name, this, document.getElementById("modules"), this.removeModule);
         faustModule.setSource(this.parent.tempModuleSourceCode);

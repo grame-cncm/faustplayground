@@ -29,10 +29,6 @@ class Scene {
 
     onload(s: Scene) { }
     onunload(s: Scene) { }
-    audioInput(): Object {
-        return null;
-    }
-    getSceneContainer(): HTMLDivElement { return this.fSceneContainer; }
 
 
     constructor(identifiant: string, parent: App, onload?: (s: Scene) => void, onunload?: (s: Scene) => void) {
@@ -48,69 +44,70 @@ class Scene {
     }
 
     
+    getSceneContainer(): HTMLDivElement { return this.fSceneContainer; }
 
     /************************* SHOW/HIDE SCENE ***************************/
-    showScene() { this.fSceneContainer.style.visibility = "visible"; }
-    hideScene() { this.fSceneContainer.style.visibility = "hidden"; }
+    showScene(): void { this.fSceneContainer.style.visibility = "visible"; }
+    hideScene(): void { this.fSceneContainer.style.visibility = "hidden"; }
     /*********************** LOAD/UNLOAD SCENE ***************************/
-    loadScene() {
+    loadScene(): void {
         this.onload(this);
     }
-    unloadScene() {
+    unloadScene():void {
         this.onunload(this)
     }
     /*********************** MUTE/UNMUTE SCENE ***************************/
-    muteScene() {
+    muteScene():void {
         var out = document.getElementById("audioOutput");
         var connect: Connect = new Connect();
         connect.disconnectModules(this.fAudioOutput, out);
     }
-    unmuteScene (){
+    unmuteScene(): void {
         var out = document.getElementById("audioOutput");
         var connect: Connect = new Connect();
         connect.connectModules(this.fAudioOutput, out);
     }
     /******************** HANDLE MODULES IN SCENE ************************/
-    getModules() { return this.fModuleList; }
-    addModule(module: ModuleClass) { this.fModuleList.push(module); }
-    removeModule(module: ModuleClass, scene: Scene) { scene.fModuleList.splice(scene.fModuleList.indexOf(module), 1); }
+    getModules(): ModuleClass[] { return this.fModuleList; }
+    addModule(module: ModuleClass): void { this.fModuleList.push(module); }
+    removeModule(module: ModuleClass, scene: Scene):void { scene.fModuleList.splice(scene.fModuleList.indexOf(module), 1); }
 	
-    cleanModules () {
+    cleanModules():void {
         for (var i = this.fModuleList.length - 1; i >= 0; i--) {
             this.fModuleList[i].deleteModule();
             this.removeModule(this.fModuleList[i],this);
         }
     }
     /*******************************  PUBLIC METHODS  **********************************/
-    deleteScene() {
+    deleteScene():void {
         this.cleanModules();
         this.hideScene();
         this.muteScene();
     }
     
-    integrateSceneInBody() {
+    integrateSceneInBody():void {
         document.body.appendChild(this.fSceneContainer);
     }
 
     /*************** ACTIONS ON AUDIO IN/OUTPUT ***************************/
-    integrateInput(afterWork) {
+    integrateInput(callBackIntegrateOutput:()=>void) {
 
         this.fAudioInput = new ModuleClass(App.idX++, 0, 0, "input", this, this.fSceneContainer,  this.removeModule);
         this.fAudioInput.hideModule();
         var scene: Scene = this;
         this.parent.compileFaust("input", "process=_,_;", 0, 0, function callback (factory, scene) { scene.integrateAudioInput(factory,scene) });
-        afterWork();
+        callBackIntegrateOutput();
     }
-    integrateOutput(afterWork) {
+    integrateOutput(callBackKeepGoingOnWithInit: (sceneView?: ScenePlaygroundView) => void) {
         var scene: Scene = this;
         this.fAudioOutput = new ModuleClass(App.idX++, 0, 0, "output", this, this.fSceneContainer, this.removeModule );
         this.fAudioOutput.hideModule();
         this.parent.compileFaust("output", "process=_,_;", 0, 0, function callback (factory, scene) { scene.integrateAudioOutput(factory,scene) });
 
-        afterWork();
+        callBackKeepGoingOnWithInit();
     }
 
-    integrateAudioOutput(factory: Factory, scene: Scene) {
+    integrateAudioOutput(factory: Factory, scene: Scene): void {
         if (App.isPedagogie) {
             scene = scene.parent.scenes[1];
         }
@@ -120,21 +117,21 @@ class Scene {
             scene.parent.activateAudioOutput(document.getElementById("sceneOutput"));
         }
     }
-    integrateAudioInput(factory: Factory, scene: Scene) {
+    integrateAudioInput(factory: Factory, scene: Scene):void {
         if (scene.fAudioInput) {
             scene.fAudioInput.setSource("process=_,_;");
             scene.fAudioInput.createDSP(factory);
             scene.parent.activateAudioInput(scene.parent);
         }
     }
-	
-    getAudioOutput() { return this.fAudioOutput; }
-    getAudioInput() { return this.fAudioInput; }
+
+    getAudioOutput(): ModuleClass { return this.fAudioOutput; }
+    getAudioInput(): ModuleClass { return this.fAudioInput; }
      
 
     /*********************** SAVE/RECALL SCENE ***************************/
     //not used for now and not seriously typescripted
-    saveScene() {
+    saveScene():string {
 
         for (var i = 0; i < this.fModuleList.length; i++) {
             this.fModuleList[i].patchID = String(i + 1);
@@ -142,7 +139,7 @@ class Scene {
 
         this.fAudioOutput.patchID = String(0);
 
-        var json = '{';
+        var json:string = '{';
 
         for (var i = 0; i < this.fModuleList.length; i++) {
             if (i != 0)
@@ -155,7 +152,7 @@ class Scene {
             json += '{"name\":"' + this.fModuleList[i].getName() + '"},';
             json += '{"code":' + JSON.stringify(this.fModuleList[i].getSource()) + '},';
 
-            var inputs = this.fModuleList[i].getInputConnections();
+            var inputs: Connector[] = this.fModuleList[i].getInputConnections();
 
             if (inputs) {
 
@@ -206,19 +203,17 @@ class Scene {
         // 	console.log(json);
         return json;
     }
-    
-    recallScene(json) {
+
+    recallScene(json: string):void {
 
         this.parent.currentNumberDSP = this.fModuleList.length;
-        var data = JSON.parse(json);
-        var sel;
-
-        for (sel in data) {
+        var data: JSON = JSON.parse(json);
+        for (var sel in data) {
 
             var dataCopy = data[sel];
 
             var newsel;
-            var name, code, x, y;
+            var name: string, code: string, x: number, y: number;
 
             for (newsel in dataCopy) {
                 var mainData = dataCopy[newsel];
@@ -241,17 +236,17 @@ class Scene {
         }
     }
 	
-    createModuleAndConnectIt(factory:Factory) {
+    createModuleAndConnectIt(factory:Factory):void {
 
         //---- This is very similar to "createFaustModule" from Main.js
         //---- But as we need to set Params before calling "createFaustInterface", it is copied
         //---- There probably is a better way to do this !!
         if (!factory) {
             alert(faust.getErrorMessage());
-            return null;
+            return;
         }
 
-        var faustModule = new ModuleClass(App.idX++, this.parent.tempModuleX, this.parent.tempModuleY, window.name,this, document.getElementById("modules"), this.removeModule);
+        var faustModule: ModuleClass = new ModuleClass(App.idX++, this.parent.tempModuleX, this.parent.tempModuleY, window.name, this, document.getElementById("modules"), this.removeModule);
         faustModule.setSource(this.parent.tempModuleSourceCode);
         faustModule.createDSP(factory);
 

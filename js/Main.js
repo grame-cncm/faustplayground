@@ -148,16 +148,20 @@ var App = (function () {
         this.tempModuleY = y;
         var currentScene = this.scenes[App.currentScene];
         // To Avoid click during compilation
-        if (currentScene)
+        if (currentScene) {
             currentScene.muteScene();
+        }
+        ;
         //var args = ["-I", "http://faust.grame.fr/faustcode/"];
         //var args = ["-I", "http://ifaust.grame.fr/faustcode/"];
         //var args = ["-I", "http://10.0.1.2/faustcode/"];
         var args = ["-I", "http://" + location.hostname + "/faustcode/"];
         this.factory = faust.createDSPFactory(sourcecode, args);
         callback(this.factory, App.scene, this);
-        if (currentScene)
+        if (currentScene) {
             currentScene.unmuteScene();
+        }
+        ;
     };
     App.prototype.createFaustModule = function (factory, scene, app) {
         if (!factory) {
@@ -206,13 +210,15 @@ var App = (function () {
     };
     //-- Finds out if the drop was on an existing module or creating a new one
     App.prototype.uploadFile = function (e) {
-        if (!e)
+        if (!e) {
             e = window.event;
+        }
         var alreadyInNode = false;
         var modules = this.scenes[App.currentScene].getModules();
         for (var i = 0; i < modules.length; i++) {
-            if (modules[i].isPointInNode(e.clientX, e.clientY))
+            if (modules[i].isPointInNode(e.clientX, e.clientY)) {
                 alreadyInNode = true;
+            }
         }
         if (!alreadyInNode) {
             var x = e.clientX;
@@ -230,14 +236,16 @@ var App = (function () {
             var url = e.dataTransfer.getData('URL');
             var filename = url.toString().split('/').pop();
             filename = filename.toString().split('.').shift();
-            var xmlhttp = new XMLHttpRequest();
+            var xmlhttp = new XMLHttpRequest;
             xmlhttp.onreadystatechange = function () {
                 if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
                     var dsp_code = "process = vgroup(\"" + filename + "\",environment{" + xmlhttp.responseText + "}.process);";
-                    if (module == null)
+                    if (module == null) {
                         app.compileFaust(filename, dsp_code, x, y, app.createFaustModule);
-                    else
+                    }
+                    else {
                         module.update(filename, dsp_code);
+                    }
                 }
                 app.terminateUpload();
             };
@@ -251,17 +259,20 @@ var App = (function () {
             // CASE 2 : THE DROPPED OBJECT IS SOME FAUST CODE
             if (dsp_code) {
                 dsp_code = "process = vgroup(\"" + "TEXT" + "\",environment{" + dsp_code + "}.process);";
-                if (!module)
+                if (!module) {
                     app.compileFaust("TEXT", dsp_code, x, y, app.createFaustModule);
-                else
+                }
+                else {
                     module.update("TEXT", dsp_code);
+                }
                 app.terminateUpload();
             }
             else {
                 var files = e.dataTransfer.files; //e.target.files ||
                 var file = files[0];
-                if (location.host.indexOf("sitepointstatic") >= 0)
+                if (location.host.indexOf("sitepointstatic") >= 0) {
                     return;
+                }
                 var request = new XMLHttpRequest();
                 if (request.upload) {
                     var reader = new FileReader();
@@ -276,16 +287,20 @@ var App = (function () {
                         type = "json";
                         reader.readAsText(file);
                     }
-                    else
+                    else {
                         this.terminateUpload();
+                    }
                     reader.onloadend = function (e) {
                         dsp_code = "process = vgroup(\"" + filename + "\",environment{" + reader.result + "}.process);";
-                        if (!module && type == "dsp")
+                        if (!module && type == "dsp") {
                             app.compileFaust(filename, dsp_code, x, y, app.createFaustModule);
-                        else if (type == "dsp")
+                        }
+                        else if (type == "dsp") {
                             module.update(filename, dsp_code);
-                        else if (type == "json")
+                        }
+                        else if (type == "json") {
                             app.scenes[App.currentScene].recallScene(reader.result);
+                        }
                         app.terminateUpload();
                     };
                 }
