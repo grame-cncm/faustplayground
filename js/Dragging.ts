@@ -37,7 +37,7 @@ class Drag {
     connectorShape: ConnectorShape;
     elemNode: HTMLElement;
 
-    startDraggingModule(event: MouseEvent, module: ModuleClass) {
+    startDraggingModule(event: MouseEvent, module: ModuleClass):void {
 
         var el: HTMLElement = <HTMLElement>event.target;
         var x: number, y: number;
@@ -82,8 +82,8 @@ class Drag {
         event.preventDefault();
     }
 
-    whileDraggingModule(event :MouseEvent, module: ModuleClass) {
-	    var x, y;
+    whileDraggingModule(event: MouseEvent, module: ModuleClass): void {
+        var x: number, y: number;
 	
 	    var moduleContainer = module.getModuleContainer();
 	
@@ -110,8 +110,8 @@ class Drag {
 		
 		    for (var c=0; c<module.getInputConnections().length; c++) {
 
-                module.getInputConnections()[c].connectorShape.setAttributeNS(null, "x1", x);
-                module.getInputConnections()[c].connectorShape.setAttributeNS(null, "y1", y);
+                module.getInputConnections()[c].connectorShape.setAttributeNS(null, "x1", String(x));
+                module.getInputConnections()[c].connectorShape.setAttributeNS(null, "y1", String(y));
 		    }
 	    }
 
@@ -131,8 +131,8 @@ class Drag {
 		    for (var c=0; c<module.getOutputConnections().length; c++) {
 
                 if (module.getOutputConnections()[c].connectorShape) {
-                    module.getOutputConnections()[c].connectorShape.setAttributeNS(null, "x2", x);
-                    module.getOutputConnections()[c].connectorShape.setAttributeNS(null, "y2", y);
+                    module.getOutputConnections()[c].connectorShape.setAttributeNS(null, "x2", String(x));
+                    module.getOutputConnections()[c].connectorShape.setAttributeNS(null, "y2", String(y));
 			    }
 		    }
 	    }
@@ -140,7 +140,7 @@ class Drag {
         event.preventDefault();
     }
 
-    stopDraggingModule(event: MouseEvent, module: ModuleClass) {
+    stopDraggingModule(event: MouseEvent, module: ModuleClass):void {
       // Stop capturing mousemove and mouseup events.
         module.removeListener("mousemove", null, document);
         module.removeListener("mouseup", null, document);
@@ -150,7 +150,7 @@ class Drag {
     /*** Connector Dragging - these are used for dragging the connectors between nodes***/
     /************************************************************************************/
 
-    startDraggingConnection(module: ModuleClass, target: HTMLElement) {
+    startDraggingConnection(module: ModuleClass, target: HTMLElement):void {
 
         // if this is the green or red button, use its parent.
         if (target.classList.contains("node-button"))
@@ -192,7 +192,7 @@ class Drag {
         document.getElementById("svgCanvas").appendChild(shape);
     }
 
-    stopDraggingConnection(sourceModule: ModuleClass, destination: ModuleClass) {
+    stopDraggingConnection(sourceModule: ModuleClass, destination: ModuleClass):void {
 
 
 	    if (sourceModule.getInterfaceContainer().lastLit) {
@@ -291,7 +291,7 @@ class Drag {
 	    this.connectorShape = null;
     }
 
-    startDraggingConnector(module: ModuleClass, event: MouseEvent) {
+    startDraggingConnector(module: ModuleClass, event: MouseEvent):void {
         this.startDraggingConnection(module, <HTMLElement>event.target);
 
         // Capture mousemove and mouseup events on the page.
@@ -354,15 +354,15 @@ class Drag {
 	    event.stopPropagation();
     }
 
-    stopDraggingConnector(module: ModuleClass, event:MouseEvent) {
+    stopDraggingConnector(module: ModuleClass, event:MouseEvent):void {
 
   	    // Stop capturing mousemove and mouseup events.
         module.removeCnxListener(<HTMLElement>event.target, "mousemove",module);
         module.removeCnxListener(<HTMLElement>event.target, "mouseup",module);
 
-	    var arrivingNode;
+        var arrivingNode: ModuleClass;
 
-        var modules = module.sceneParent.getModules();
+        var modules: ModuleClass[] = module.sceneParent.getModules();
 
 	    for(var i=0; i<modules.length; i++){
 		    if((this.originIsInput && modules[i].isPointInOutput(event.clientX, event.clientY)) || modules[i].isPointInInput(event.clientX, event.clientY)){

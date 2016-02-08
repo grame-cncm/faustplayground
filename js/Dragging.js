@@ -74,8 +74,8 @@ var Drag = (function () {
                 offset = offset.offsetParent;
             }
             for (var c = 0; c < module.getInputConnections().length; c++) {
-                module.getInputConnections()[c].connectorShape.setAttributeNS(null, "x1", x);
-                module.getInputConnections()[c].connectorShape.setAttributeNS(null, "y1", y);
+                module.getInputConnections()[c].connectorShape.setAttributeNS(null, "x1", String(x));
+                module.getInputConnections()[c].connectorShape.setAttributeNS(null, "y1", String(y));
             }
         }
         if (module.getOutputConnections() != null) {
@@ -89,8 +89,8 @@ var Drag = (function () {
             }
             for (var c = 0; c < module.getOutputConnections().length; c++) {
                 if (module.getOutputConnections()[c].connectorShape) {
-                    module.getOutputConnections()[c].connectorShape.setAttributeNS(null, "x2", x);
-                    module.getOutputConnections()[c].connectorShape.setAttributeNS(null, "y2", y);
+                    module.getOutputConnections()[c].connectorShape.setAttributeNS(null, "x2", String(x));
+                    module.getOutputConnections()[c].connectorShape.setAttributeNS(null, "y2", String(y));
                 }
             }
         }

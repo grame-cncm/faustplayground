@@ -142,7 +142,7 @@ class Connect{
 
 
 
-    deleteConnection(drag: Drag):any {
+    deleteConnection(drag:Drag): any {
 
         this.breakSingleInputConnection(this.connector.connectorShape.source, this.connector.connectorShape.destination, this.connector);
         return true;
