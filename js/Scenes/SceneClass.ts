@@ -133,6 +133,7 @@ class Scene {
      
 
     /*********************** SAVE/RECALL SCENE ***************************/
+    //not used for now and not seriously typescripted
     saveScene() {
 
         for (var i = 0; i < this.fModuleList.length; i++) {

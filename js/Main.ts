@@ -50,7 +50,7 @@ window.addEventListener('load', init, false);
 
 
 
-function init() {
+function init():void {
 
     var app: App = new App();
 
@@ -69,18 +69,32 @@ function init() {
     **************************  CLASS  *********************************
     ********************************************************************/
 
-//interface Navigator {
-//    getUserMedia(
-//        options: { video?: boolean; audio?: boolean; },
-//        success: (stream: any) => void,
-//        error?: (error: string) => void
-//    ): void;
-//    webkitGetUserMedia(
-//        options: { video?: boolean; audio?: boolean; },
-//        successCallback: (stream: any) => void,
-//        errorCallback: (error: Error) => void)
-//        : any;
-//}
+interface Navigator {
+    //default way to get the devices of browsers
+    getUserMedia(
+        options: { video?: boolean; audio?: boolean; },
+        success: (stream: any) => void,
+        error?: (error: string) => void
+    ): void;
+    webkitGetUserMedia(
+        options: { video?: boolean; audio?: boolean; },
+        successCallback: (stream: any) => void,
+        errorCallback?: (error: string) => void
+    ): void;
+    mozGetUserMedia(
+        options: { video?: boolean; audio?: boolean; },
+        successCallback: (stream: any) => void,
+        errorCallback?: (error: string) => void
+    ): void;
+}
+
+
+
+interface FaustEvent extends Event {
+
+
+}
+
 interface MediaStream {
     id: string;
     active: boolean;
@@ -140,11 +154,11 @@ class App {
     static exportURL: string;
     factory: Factory;
 
-    showFirstScene() {
+    showFirstScene():void {
         App.scene.showScene();
     }
 
-    createAllScenes() {
+    createAllScenes():void {
         this.scenes = [];
 
         if (App.isPedagogie) {
@@ -172,7 +186,7 @@ class App {
     **********************  NAVIGATION BETWEEN SCENES *******************
     ********************************************************************/
 
-    nextScene() {
+    nextScene():void {
 
         var index: number = App.currentScene;
 
@@ -189,7 +203,7 @@ class App {
         this.scenes[index + 1].loadScene();
     }
 
-    previousScene() {
+    previousScene():void {
 
         var index = App.currentScene;
 
@@ -206,9 +220,9 @@ class App {
     **********************  ACTIVATE PHYSICAL IN/OUTPUT *****************
     ********************************************************************/
 
-    activateAudioInput(app:App) {
+    activateAudioInput(app:App):void {
 
-        var navigatorLoc = <any>navigator;
+        var navigatorLoc: Navigator = navigator;
         if (!navigatorLoc.getUserMedia) {
             navigatorLoc.getUserMedia = navigatorLoc.webkitGetUserMedia || navigatorLoc.mozGetUserMedia;
         }
@@ -223,30 +237,30 @@ class App {
         }
     }
 
-    getDevice(device: MediaStream,app:App) {
+    getDevice(device: MediaStream,app:App):void {
 
         // Create an AudioNode from the stream.
         App.src = <IHTMLDivElementSrc> document.getElementById("input");
         App.src.audioNode = App.audioContext.createMediaStreamSource(device);
         var drag: Drag = new Drag();
-        var inputDiv = document.createElement("div");
+        var inputDiv: HTMLDivElement = document.createElement("div");
         inputDiv.className = "node node-output";
-        inputDiv.addEventListener("mousedown", <any>function () { drag.startDraggingConnector }, true);
+        inputDiv.addEventListener("mousedown", function () { drag.startDraggingConnector }, true);
         App.scene.getAudioInput().setInputOutputNodes(null, inputDiv);
-        //inputDiv.addEventListener("mousedown", <any>function () { drag.startDraggingConnector }, true);
         inputDiv.innerHTML = "<span class='node-button'>&nbsp;</span>";
         App.src.appendChild(inputDiv);
         var connect: Connect = new Connect();
         connect.connectModules(App.src, App.scene.fAudioInput);
     }
 
-    activateAudioOutput(sceneOutput: HTMLElement) {
+
+    activateAudioOutput(sceneOutput: HTMLElement):void {
 
         App.out = <IHTMLDivElementOut> document.createElement("div");
         App.out.id = "audioOutput";
         App.out.audioNode = App.audioContext.destination;
         document.body.appendChild(App.out);
-        var connect: Connect = new Connect();
+        //var connect: Connect = new Connect();
         //connect.connectModules(sceneOutput, App.out);
     }
 
@@ -254,7 +268,7 @@ class App {
     ****************  CREATE FAUST FACTORIES AND MODULES ****************
     ********************************************************************/
 
-    compileFaust(name, sourcecode, x, y, callback) {
+    compileFaust(name: string, sourcecode: string, x: number, y: number, callback: (Factory: Factory, scene: Scene,app:App) => void) {
 
         //  Temporarily Saving parameters of compilation
         this.tempModuleName = name;
@@ -262,7 +276,7 @@ class App {
         this.tempModuleX = x;
         this.tempModuleY = y;
 
-        var currentScene = this.scenes[App.currentScene];
+        var currentScene:Scene = this.scenes[App.currentScene];
 
         // To Avoid click during compilation
         if (currentScene) currentScene.muteScene();
@@ -270,7 +284,7 @@ class App {
         //var args = ["-I", "http://faust.grame.fr/faustcode/"];
         //var args = ["-I", "http://ifaust.grame.fr/faustcode/"];
         //var args = ["-I", "http://10.0.1.2/faustcode/"];
-        var args = ["-I", "http://" + location.hostname + "/faustcode/"];
+        var args:string[] = ["-I", "http://" + location.hostname + "/faustcode/"];
         this.factory = faust.createDSPFactory(sourcecode, args);
         callback(this.factory, App.scene, this);
 
@@ -278,14 +292,14 @@ class App {
 
     }
 
-    createFaustModule(factory: Factory, scene: Scene, app: App) {
+    createFaustModule(factory: Factory, scene: Scene, app: App):void {
 
         if (!factory) {
             alert(faust.getErrorMessage());
             return null;
         }
 
-        var faustModule;
+        var faustModule: ModuleClass;
 
         // can't it be just window.scenes[window.currentScene] ???
         //if (App.isTooltipEnabled)
@@ -306,7 +320,7 @@ class App {
     ********************************************************************/
 
     //-- Init drag and drop reactions
-    setGeneralDragAndDrop(app:App) {
+    setGeneralDragAndDrop(app:App):void {
 
         window.ondragover = function () { this.className = 'hover'; return false; };
         window.ondragend = function () { this.className = ''; return false; };
@@ -319,7 +333,7 @@ class App {
     }
 
     //-- Init drag and drop reactions
-    resetGeneralDragAndDrop(div) {
+    resetGeneralDragAndDrop(div:HTMLElement):void {
 
         window.ondragover = function () { return false; };
         window.ondragend = function () { return false; };
@@ -328,13 +342,13 @@ class App {
 
 
     //-- Prevent Default Action of the browser from happening
-    preventDefaultAction(e) {
+    preventDefaultAction(e: Event):void {
         e.preventDefault();
     }
 
-    terminateUpload() {
+    terminateUpload():void {
 
-        var uploadTitle = document.getElementById("upload");
+        var uploadTitle: HTMLElement = document.getElementById("upload");
         uploadTitle.textContent = "";
 
         if (App.isTooltipEnabled && Tooltips.sceneHasInstrumentAndEffect(this.scenes[App.currentScene]))
@@ -342,14 +356,14 @@ class App {
     }
 
     //-- Finds out if the drop was on an existing module or creating a new one
-    uploadFile(e) {
+    uploadFile(e:DragEvent):void {
 
         if (!e)
-            e = window.event;
+            e = <DragEvent>window.event;
 
-        var alreadyInNode = false;
+        var alreadyInNode: Boolean = false;
 
-        var modules = this.scenes[App.currentScene].getModules();
+        var modules: ModuleClass[] = this.scenes[App.currentScene].getModules();
 
         for (var i = 0; i < modules.length; i++) {
             if (modules[i].isPointInNode(e.clientX, e.clientY))
@@ -366,26 +380,26 @@ class App {
     }
 
     //-- Upload content dropped on the page and create a Faust DSP with it
-    uploadOn(app:App,module:ModuleClass, x, y, e) {
+    uploadOn(app: App, module: ModuleClass, x: number, y: number, e: DragEvent) {
 
         this.preventDefaultAction(e);
 
-        var uploadTitle = document.getElementById("upload");
+        var uploadTitle: HTMLElement = document.getElementById("upload");
 
         uploadTitle.textContent = "CHARGEMENT EN COURS ...";
 
         // CASE 1 : THE DROPPED OBJECT IS A URL TO SOME FAUST CODE
         if (e.dataTransfer.getData('URL') && e.dataTransfer.getData('URL').split(':').shift() != "file") {
-            var url = e.dataTransfer.getData('URL');
+            var url: string = e.dataTransfer.getData('URL');
 
-            var filename = url.toString().split('/').pop();
+            var filename: string = url.toString().split('/').pop();
             filename = filename.toString().split('.').shift();
 
-            var xmlhttp = new XMLHttpRequest();
+            var xmlhttp: XMLHttpRequest = new XMLHttpRequest();
 
             xmlhttp.onreadystatechange = function () {
                 if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-                    var dsp_code = "process = vgroup(\"" + filename + "\",environment{" + xmlhttp.responseText + "}.process);";
+                    var dsp_code: string = "process = vgroup(\"" + filename + "\",environment{" + xmlhttp.responseText + "}.process);";
 
                     if (module == null)
                         app.compileFaust(filename, dsp_code, x, y, app.createFaustModule);
@@ -403,7 +417,7 @@ class App {
         }
         else if (e.dataTransfer.getData('URL').split(':').shift() != "file") {
 
-            var dsp_code = e.dataTransfer.getData('text');
+            var dsp_code: string = e.dataTransfer.getData('text');
 
             // CASE 2 : THE DROPPED OBJECT IS SOME FAUST CODE
             if (dsp_code) {
@@ -418,22 +432,22 @@ class App {
             }
             // CASE 3 : THE DROPPED OBJECT IS A FILE CONTAINING SOME FAUST CODE
             else {
-                var files = e.target.files || e.dataTransfer.files;
+                var files: FileList = e.dataTransfer.files;//e.target.files ||
 
-                var file = files[0];
+                var file: File = files[0];
 
                 if (location.host.indexOf("sitepointstatic") >= 0) return
 
-                var request = new XMLHttpRequest();
+                var request: XMLHttpRequest = new XMLHttpRequest();
                 if (request.upload) {
 
-                    var reader = new FileReader();
+                    var reader: FileReader = new FileReader();
 
-                    var ext = file.name.toString().split('.').pop();
+                    var ext: string = file.name.toString().split('.').pop();
 
-                    var filename = file.name.toString().split('.').shift();
+                    var filename: string = file.name.toString().split('.').shift();
 
-                    var type;
+                    var type: string;
 
                     if (ext == "dsp") {
                         type = "dsp";

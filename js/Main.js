@@ -124,7 +124,6 @@ var App = (function () {
         inputDiv.className = "node node-output";
         inputDiv.addEventListener("mousedown", function () { drag.startDraggingConnector; }, true);
         App.scene.getAudioInput().setInputOutputNodes(null, inputDiv);
-        //inputDiv.addEventListener("mousedown", <any>function () { drag.startDraggingConnector }, true);
         inputDiv.innerHTML = "<span class='node-button'>&nbsp;</span>";
         App.src.appendChild(inputDiv);
         var connect = new Connect();
@@ -135,7 +134,7 @@ var App = (function () {
         App.out.id = "audioOutput";
         App.out.audioNode = App.audioContext.destination;
         document.body.appendChild(App.out);
-        var connect = new Connect();
+        //var connect: Connect = new Connect();
         //connect.connectModules(sceneOutput, App.out);
     };
     /********************************************************************
@@ -259,7 +258,7 @@ var App = (function () {
                 app.terminateUpload();
             }
             else {
-                var files = e.target.files || e.dataTransfer.files;
+                var files = e.dataTransfer.files; //e.target.files ||
                 var file = files[0];
                 if (location.host.indexOf("sitepointstatic") >= 0)
                     return;
