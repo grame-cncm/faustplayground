@@ -53,6 +53,8 @@ interface IModule {
 }
 interface HTMLInterfaceContainer extends HTMLDivElement {
     unlitClassname: string;
+    lastLit: any;
+
 }
 class ModuleClass implements IModule {
     drag: Drag = new Drag()
@@ -83,7 +85,7 @@ class ModuleClass implements IModule {
     name: string;
     htmlElementModuleContainer: HTMLElement;
     removeModuleCallBack: (module: ModuleClass, scene: Scene) => void;
-    eventDraggingHandler: (event: Event) => void;
+    eventDraggingHandler: (event: MouseEvent) => void;
     eventConnectorHandler: (event: Event) => void;
 
 
@@ -101,7 +103,7 @@ class ModuleClass implements IModule {
 
     createModule(ID, x, y, name, parent, callback): void {
         var self: ModuleClass = this
-        this.eventConnectorHandler = function (event: Event) { self.dragCnxCallback(event, self) };
+        this.eventConnectorHandler = function (event: MouseEvent) { self.dragCnxCallback(event, self) };
 
         // ---- Capturing module instance	
         // ----- Delete Callback was added to make sure 
@@ -157,7 +159,7 @@ class ModuleClass implements IModule {
     }
     /***************  PRIVATE METHODS  ******************************/
 
-    dragCallback(event: Event, module: ModuleClass): void {
+    dragCallback(event: MouseEvent, module: ModuleClass): void {
 
         if (event.type == "mousedown") {
             module.drag.startDraggingModule(event, module);
@@ -168,7 +170,7 @@ class ModuleClass implements IModule {
         }
     }
 
-    dragCnxCallback(event: Event, module: ModuleClass): void {
+    dragCnxCallback(event: MouseEvent, module: ModuleClass): void {
 
         if (event.type == "mousedown") {
             module.drag.startDraggingConnector(module, event);
@@ -474,9 +476,13 @@ class ModuleClass implements IModule {
     addListener(type: string, module: ModuleClass): void {
         document.addEventListener(type, module.eventDraggingHandler, true);
     }
-    removeListener(div: HTMLElement, type: string): void {
+    removeListener(type: string, div?: HTMLElement, document?: Document): void {
         var module: ModuleClass = this;
-        div.removeEventListener(type, module.eventDraggingHandler, true);
+        if (!document) {
+            div.removeEventListener(type, module.eventDraggingHandler, true)
+        } else {
+            document.removeEventListener(type, module.eventDraggingHandler, true)
+        }
     }
     addCnxListener(div: HTMLElement, type: string, module: ModuleClass): void {
         if (type == "mousedown") {

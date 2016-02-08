@@ -65,31 +65,29 @@ var Drag = (function () {
         moduleContainer.style.left = (this.elementStartLeft + x - this.cursorStartX) + "px";
         moduleContainer.style.top = (this.elementStartTop + y - this.cursorStartY) + "px";
         if (module.getInputConnections() != null) {
-            var c;
-            var off = module.getInputNode();
+            var offset = module.getInputNode();
             x = window.scrollX + 12;
             y = window.scrollY + 12;
-            while (off) {
-                x += off.offsetLeft;
-                y += off.offsetTop;
-                off = off.offsetParent;
+            while (offset) {
+                x += offset.offsetLeft;
+                y += offset.offsetTop;
+                offset = offset.offsetParent;
             }
-            for (c = 0; c < module.getInputConnections().length; c++) {
+            for (var c = 0; c < module.getInputConnections().length; c++) {
                 module.getInputConnections()[c].connectorShape.setAttributeNS(null, "x1", x);
                 module.getInputConnections()[c].connectorShape.setAttributeNS(null, "y1", y);
             }
         }
         if (module.getOutputConnections() != null) {
-            var c;
-            var off = module.getOutputNode();
+            var offset = module.getOutputNode();
             x = window.scrollX + 12;
             y = window.scrollY + 12;
-            while (off) {
-                x += off.offsetLeft;
-                y += off.offsetTop;
-                off = off.offsetParent;
+            while (offset) {
+                x += offset.offsetLeft;
+                y += offset.offsetTop;
+                offset = offset.offsetParent;
             }
-            for (c = 0; c < module.getOutputConnections().length; c++) {
+            for (var c = 0; c < module.getOutputConnections().length; c++) {
                 if (module.getOutputConnections()[c].connectorShape) {
                     module.getOutputConnections()[c].connectorShape.setAttributeNS(null, "x2", x);
                     module.getOutputConnections()[c].connectorShape.setAttributeNS(null, "y2", y);
@@ -100,8 +98,8 @@ var Drag = (function () {
     };
     Drag.prototype.stopDraggingModule = function (event, module) {
         // Stop capturing mousemove and mouseup events.
-        module.removeListener(document, "mousemove");
-        module.removeListener(document, "mouseup");
+        module.removeListener("mousemove", null, document);
+        module.removeListener("mouseup", null, document);
     };
     /************************************************************************************/
     /*** Connector Dragging - these are used for dragging the connectors between nodes***/
@@ -111,13 +109,13 @@ var Drag = (function () {
         if (target.classList.contains("node-button"))
             target = target.parentNode;
         // Get the position of the originating connector with respect to the page.
-        var off = target;
+        var offset = target;
         var x = window.scrollX + 12;
         var y = window.scrollY + 12;
-        while (off) {
-            x += off.offsetLeft;
-            y += off.offsetTop;
-            off = off.offsetParent;
+        while (offset) {
+            x += offset.offsetLeft;
+            y += offset.offsetTop;
+            offset = offset.offsetParent;
         }
         // Save starting positions of cursor and element.
         this.cursorStartX = x;
@@ -139,32 +137,30 @@ var Drag = (function () {
         document.getElementById("svgCanvas").appendChild(shape);
     };
     Drag.prototype.stopDraggingConnection = function (sourceModule, destination) {
-        //if (sourceModule.getInterfaceContainer().lastLit) {
-        // sourceModule.getInterfaceContainer().lastLit.className = sourceModule.getInterfaceContainer().lastLit.unlitClassname;
-        // sourceModule.getInterfaceContainer().lastLit = null;
-        //}
-        //sourceModule.getInterfaceContainer().className = sourceModule.getInterfaceContainer().unlitClassname;
+        if (sourceModule.getInterfaceContainer().lastLit) {
+            sourceModule.getInterfaceContainer().lastLit.className = sourceModule.getInterfaceContainer().lastLit.unlitClassname;
+            sourceModule.getInterfaceContainer().lastLit = null;
+        }
+        sourceModule.getInterfaceContainer().className = sourceModule.getInterfaceContainer().unlitClassname;
         var x, y;
         if (destination) {
             // Get the position of the originating connector with respect to the page.
-            var off;
+            var offset;
             if (!this.originIsInput)
-                off = destination.getInputNode();
+                offset = destination.getInputNode();
             else
-                off = destination.getOutputNode();
-            var toElem = off;
-            console.log(destination.getName());
-            console.log(toElem);
+                offset = destination.getOutputNode();
+            var toElem = offset;
             // Get the position of the originating connector with respect to the page.			
             x = window.scrollX + 12;
             y = window.scrollY + 12;
-            while (off) {
-                x += off.offsetLeft;
-                y += off.offsetTop;
-                off = off.offsetParent;
+            while (offset) {
+                x += offset.offsetLeft;
+                y += offset.offsetTop;
+                offset = offset.offsetParent;
             }
-            this.connectorShape.setAttributeNS(null, "x2", x);
-            this.connectorShape.setAttributeNS(null, "y2", y);
+            this.connectorShape.setAttributeNS(null, "x2", String(x));
+            this.connectorShape.setAttributeNS(null, "y2", String(y));
             var src, dst;
             // If connecting from output to input
             if (this.originIsInput) {
@@ -177,12 +173,12 @@ var Drag = (function () {
                 if (toElem.classList.contains("node-input")) {
                     // Make sure the connector line points go from src->dest (x1->x2)
                     var shape = this.connectorShape;
-                    x = shape.getAttributeNS(null, "x2");
-                    y = shape.getAttributeNS(null, "y2");
+                    x = parseFloat(shape.getAttributeNS(null, "x2"));
+                    y = parseFloat(shape.getAttributeNS(null, "y2"));
                     shape.setAttributeNS(null, "x2", shape.getAttributeNS(null, "x1"));
                     shape.setAttributeNS(null, "y2", shape.getAttributeNS(null, "y1"));
-                    shape.setAttributeNS(null, "x1", x);
-                    shape.setAttributeNS(null, "y1", y);
+                    shape.setAttributeNS(null, "x1", String(x));
+                    shape.setAttributeNS(null, "y1", String(y));
                     // can connect!
                     // TODO: first: swap the line endpoints so they're consistently x1->x2
                     // That makes updating them when we drag nodes around easier.
@@ -227,8 +223,8 @@ var Drag = (function () {
         var x = event.clientX + window.scrollX;
         var y = event.clientY + window.scrollY;
         // Move connector visual line
-        this.connectorShape.setAttributeNS(null, "x2", x);
-        this.connectorShape.setAttributeNS(null, "y2", y);
+        this.connectorShape.setAttributeNS(null, "x2", String(x));
+        this.connectorShape.setAttributeNS(null, "y2", String(y));
         if (toElem.classList) {
             // if this is the green or red button, use its parent.
             if (toElem.classList.contains("node-button"))
@@ -283,7 +279,7 @@ var Drag = (function () {
             if ((this.originIsInput && outputModule.isPointInOutput(event.clientX, event.clientY)) || outputModule.isPointInInput(event.clientX, event.clientY)) {
                 arrivingNode = outputModule;
             }
-            else {
+            else if ((!this.originIsInput && inputModule.isPointInInput(event.clientX, event.clientY)) || inputModule.isPointInOutput(event.clientX, event.clientY)) {
                 arrivingNode = inputModule;
             }
         }

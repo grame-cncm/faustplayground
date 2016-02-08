@@ -327,9 +327,14 @@ var ModuleClass = (function () {
     ModuleClass.prototype.addListener = function (type, module) {
         document.addEventListener(type, module.eventDraggingHandler, true);
     };
-    ModuleClass.prototype.removeListener = function (div, type) {
+    ModuleClass.prototype.removeListener = function (type, div, document) {
         var module = this;
-        div.removeEventListener(type, module.eventDraggingHandler, true);
+        if (!document) {
+            div.removeEventListener(type, module.eventDraggingHandler, true);
+        }
+        else {
+            document.removeEventListener(type, module.eventDraggingHandler, true);
+        }
     };
     ModuleClass.prototype.addCnxListener = function (div, type, module) {
         if (type == "mousedown") {

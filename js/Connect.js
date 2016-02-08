@@ -82,7 +82,7 @@ var Connect = (function () {
         drag.stopDraggingConnection(src, dst);
     };
     Connect.prototype.deleteConnection = function (drag) {
-        this.breakSingleInputConnection(this.connector.connectorShape.source, drag.connectorShape.destination, drag.connectorShape.inputConnection);
+        this.breakSingleInputConnection(this.connector.connectorShape.source, this.connector.connectorShape.destination, this.connector);
         return true;
     };
     Connect.prototype.breakSingleInputConnection = function (src, dst, connector) {
