@@ -44,9 +44,9 @@ var Export = (function () {
             var selPlatform = platformsSelect.options[platformsSelect.selectedIndex].value;
             var dataCopy = data[selPlatform];
             var iterator = 0;
-            for (data in dataCopy) {
+            for (var subData in dataCopy) {
                 if (iterator < dataCopy.length) {
-                    var mainData = dataCopy[data];
+                    var mainData = dataCopy[subData];
                     this.addItem('architectures', mainData);
                     iterator = iterator + 1;
                 }
@@ -62,8 +62,8 @@ var Export = (function () {
         ExportLib.getTargets(App.exportURL, function (json) {
             App.jsonText = json;
             var data = JSON.parse(App.jsonText);
-            for (var event in data) {
-                self.addItem('platforms', event);
+            for (var platform in data) {
+                self.addItem('platforms', platform);
             }
             self.updateArchitectures(self);
         }, function (json) {

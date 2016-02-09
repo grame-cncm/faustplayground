@@ -21,7 +21,7 @@
 ******************* INIT/LOAD/UNLOAD EXPORT SCENE ******************
 ********************************************************************/
 class SceneExportView{
-    onloadExportScene(scene, sceneView: SceneExportView)
+    onloadExportScene(scene: Scene, sceneView: SceneExportView): void
     {
     // 	window.scenes[1].saveScene();
 
@@ -36,32 +36,32 @@ class SceneExportView{
         this.initExportScene(scene, appName);
     }
 
-    initExportScene(scene:Scene, name)
+    initExportScene(scene: Scene, name: string): void
     {
-	    var container = scene.getSceneContainer();
+        var container: HTMLDivElement = scene.getSceneContainer();
 
-    //--------- HEADER
-	    var head = document.createElement("header");
+        //--------- HEADER
+        var head: HTMLElement = document.createElement("header");
 	    head.id = "header";
 	    container.appendChild(head);
 		
-	    var mySceneName = document.createElement("div");
+        var mySceneName:HTMLDivElement = document.createElement("div");
 	    mySceneName.id = "exportName";
 	    mySceneName.className = "sceneTitle";
 	    mySceneName.textContent = "Télécharge " +name;
 	    head.appendChild(mySceneName);
 	
-	    var mySceneSub = document.createElement("div");
+        var mySceneSub: HTMLDivElement = document.createElement("div");
 	    mySceneSub.id = "sceneSubtitle";
 	    mySceneSub.textContent = "Ton Application Android";
 	    head.appendChild(mySceneSub);
 
     //--------- QRCORE ZONE
-	    var androidApp = document.createElement("div");
+        var androidApp: HTMLDivElement = document.createElement("div");
 	    androidApp.id= "androidButton";
 	    container.appendChild(androidApp);
 
-	    var androidImg = document.createElement("img");
+        var androidImg: HTMLImageElement = document.createElement("img");
         androidImg.id = "androidImg";
         androidImg.src = App.baseImg + "loader.gif";
 	    androidApp.appendChild(androidImg);
@@ -71,8 +71,8 @@ class SceneExportView{
 		    Tooltips.changeSceneToolTip(0);
 		    Tooltips.disableTooltips();
 	    }
-    //--------- PREVIOUS SCENE BUTTON
-	    var backImg = document.createElement("img");
+        //--------- PREVIOUS SCENE BUTTON
+        var backImg: HTMLImageElement = document.createElement("img");
 	    backImg.id = "backImg";
         backImg.src = App.baseImg + "BACK.png";
         backImg.onclick = function () { scene.parent.previousScene() };
@@ -80,13 +80,13 @@ class SceneExportView{
 
         //-------- GET FAUST EQUIVALENT & LAUNCH EXPORT
         var equivalentFaust: EquivalentFaust = new EquivalentFaust();
-        var faustSource = equivalentFaust.getFaustEquivalent(scene.parent.scenes[1], name)
+        var faustSource: string = equivalentFaust.getFaustEquivalent(scene.parent.scenes[1], name)
 	
 	    if (faustSource)
 		   this.getAndroidApp(name, faustSource);
     }
 
-    onunloadExportScene(scene)
+    onunloadExportScene(scene: Scene):void
     {
     //--- clean graphical elements
 	    var children = scene.getSceneContainer().childNodes;
@@ -100,16 +100,16 @@ class SceneExportView{
     ********************************************************************/
 
     //--- Create QrCode once precompile request has finished
-    static terminateAndroidMenu(sha)
+    static terminateAndroidMenu(sha: string):void
     {
 	    if (document.getElementById("androidImg"))
 		    document.getElementById("androidButton").removeChild(document.getElementById("androidImg"));
 
-	    var url = "http://faustservice.grame.fr";
+	    var url:string = "http://faustservice.grame.fr";
 
 	    if (document.getElementById("androidButton")) {
-	
-		    var qrcodeDiv = ExportLib.getQrCode(url, sha, "android", "android", "binary.apk", 170);
+
+            var qrcodeDiv: HTMLDivElement = ExportLib.getQrCode(url, sha, "android", "android", "binary.apk", 170);
 		    qrcodeDiv.id = "qrcode";
 	
 		    document.getElementById("androidButton").appendChild(qrcodeDiv);
@@ -117,13 +117,13 @@ class SceneExportView{
 	    }
     }
 
-    exportAndroidCallback(sha)
+    exportAndroidCallback(sha: string):void
     {
         var exportLib: ExportLib = new ExportLib();
         exportLib.sendPrecompileRequest("http://faustservice.grame.fr", sha, "android", "android", SceneExportView.terminateAndroidMenu);
     }
 
-    getAndroidApp(name, source): HTMLElement
+    getAndroidApp(name:string, source:string): HTMLElement
     {
 
         ExportLib.getSHAKey("http://faustservice.grame.fr", name, source, this.exportAndroidCallback);

@@ -10,9 +10,9 @@ class ExportLib{
     // 				- @param : the available targets as a JSON application
     // json = {"platform1":["arch1", "arch2", ..., "archn"], ... , "platformn":["arch1", "arch2", ..., "archn"]}
 
-    static getTargets(exportUrl, callback, errCallback)
+    static getTargets(exportUrl: string, callback: (json: string) => void, errCallback: (json: string) => void)
     {
-	    var getrequest = new XMLHttpRequest();
+        var getrequest: XMLHttpRequest = new XMLHttpRequest();
 				
 	    getrequest.onreadystatechange = function() {
 		    if (getrequest.readyState == 4 && getrequest.status == 200)				    		
@@ -21,7 +21,7 @@ class ExportLib{
 			    errCallback(getrequest.responseText);
 	    }
 				
-	    var targetsUrl = exportUrl + "/targets";
+	    var targetsUrl:string = exportUrl + "/targets";
 	    getrequest.open("GET", targetsUrl, true);
 	    getrequest.send(null);
     }	
@@ -32,15 +32,15 @@ class ExportLib{
     // @source_code : Faust code to compile
     // @callback : function called once request succeeded 
     // 				- @param : the sha key corresponding to source_code
-    static getSHAKey(exportUrl, name, source_code, callback, errCallback?)
+    static getSHAKey(exportUrl:string, name:string, source_code:string, callback:(shaKey:string)=>any, errCallback?):void
     {
-        var filename = name + ".dsp";
+        var filename: string = name + ".dsp";
         var file: File = new File([source_code], filename);
-	    var newRequest = new XMLHttpRequest();
+        var newRequest: XMLHttpRequest = new XMLHttpRequest();
 
-	    var params = new FormData();
-	    params.append('file', file);
-        var urlToTarget = exportUrl + "/filepost";	
+        var params: FormData = new FormData();
+        params.append('file', file);
+        var urlToTarget: string = exportUrl + "/filepost";	
 	    newRequest.open("POST", urlToTarget, true);
 
 	    newRequest.onreadystatechange = function() {
@@ -59,17 +59,17 @@ class ExportLib{
     // @platform/architecture : platform/architecture to precompile
     // @callback : function called once request succeeded 
     // 				- @param : the sha key 
-    sendPrecompileRequest(exportUrl, sha, platform, architecture, callback)
+    sendPrecompileRequest(exportUrl: string, sha: string, platform: string, architecture: string, callback)
     {
-	    var getrequest = new XMLHttpRequest();
+        var getrequest: XMLHttpRequest = new XMLHttpRequest();
 				
 	    getrequest.onreadystatechange = function() {
 		    if (getrequest.readyState == 4) {
 			    callback(sha);
             }
 	    }
-			
-	    var compileUrl = exportUrl + "/" + sha + "/" + platform + "/" + architecture + "/precompile";
+
+        var compileUrl: string = exportUrl + "/" + sha + "/" + platform + "/" + architecture + "/precompile";
 				
 	    getrequest.open("GET", compileUrl, true);
 	    getrequest.send(null);
@@ -81,7 +81,7 @@ class ExportLib{
     // @sha : sha key of DSP
     // @platform/architecture/target : platform/architecture/target compiled
     // @cote : width and height of the returned QrCode
-    static getQrCode(url, sha, plateform, architecture, target, size)
+    static getQrCode(url: string, sha: string, plateform: string, architecture: string, target: string, size: number): HTMLDivElement
     {
 	    var downloadString = url + "/" + sha + "/" + plateform + "/" + architecture + "/" + target;
 	    var whiteContainer = document.createElement('div');
@@ -100,11 +100,11 @@ class ExportLib{
 	    whiteContainer.appendChild(qqDiv);
 	    return whiteContainer;
     }
-
+    //unused for now, probably useless...
     // Return the array of available platforms from the json description
-    getPlatforms(json)
+    getPlatforms(json:string):string[]
     {
-	    var platforms = [];
+	    var platforms:string[] = [];
 	    var data = JSON.parse(json);
 	    var index = 0;
 
@@ -117,9 +117,9 @@ class ExportLib{
     }
 
     // Return the list of available architectures for a specific platform from the json description
-    getArchitectures(json, platform)
+    getArchitectures(json:string, platform:string)
     {
-	    var architectures = [];
+	    var architectures:string[] = [];
 	    var data = JSON.parse(json);
 		
 	    return data[platform];						

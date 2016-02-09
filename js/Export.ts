@@ -21,16 +21,16 @@
 class Export{
 
 
-//------ Handle Combo Boxes
-    addItem(id, itemText)
+    //------ Handle Combo Boxes
+    addItem(id: string, itemText:string):void
     {
-        var platformsSelect = <HTMLSelectElement> document.getElementById(id);
-	    var option = document.createElement('option');
+        var platformsSelect: HTMLSelectElement = <HTMLSelectElement>document.getElementById(id);
+        var option: HTMLOptionElement = document.createElement('option');
 	    option.text = itemText;
         platformsSelect.options.add(option);
     }
 
-    clearComboBox(id): boolean
+    clearComboBox(id: string): boolean
     {
         if (document.getElementById(id) != undefined) {
             while (document.getElementById(id).childNodes.length > 0) {
@@ -50,18 +50,18 @@ class Export{
         } else {
 
 
-            var data = JSON.parse(App.jsonText);
+            var data:string[] = JSON.parse(App.jsonText);
 
-            var platformsSelect = <HTMLSelectElement>document.getElementById('platforms');//get the combobox
-            var selPlatform = platformsSelect.options[platformsSelect.selectedIndex].value;
+            var platformsSelect: HTMLSelectElement = <HTMLSelectElement>document.getElementById('platforms');//get the combobox
+            var selPlatform: string = platformsSelect.options[platformsSelect.selectedIndex].value;
 
-            var dataCopy = data[selPlatform];
+            var dataCopy :string[] = data[selPlatform];
             var iterator = 0;
 
-            for (data in dataCopy) {
+            for (var subData in dataCopy) {
 
                 if (iterator < dataCopy.length) {
-                    var mainData = dataCopy[data];
+                    var mainData: string = dataCopy[subData];
 
                     this.addItem('architectures', mainData);
                     iterator = iterator + 1;
@@ -70,24 +70,24 @@ class Export{
         }
     }
 
-    uploadTargets()
+    uploadTargets():void
     {
 	    this.clearComboBox('platforms');
 	    this.clearComboBox('architectures');
         var input: HTMLInputElement = <HTMLInputElement>document.getElementById("faustweburl")
         App.exportURL = input.value;
-        var self = this;
-        ExportLib.getTargets(App.exportURL, function (json) {
+        var self: Export = this;
+        ExportLib.getTargets(App.exportURL, function (json:string) {
 			    App.jsonText = json;
 				    		
-			    var data = JSON.parse(App.jsonText);
+			    var data:string[] = JSON.parse(App.jsonText);
 
-			    for (var event in data) {
-                    self.addItem('platforms', event);
+			    for (var platform in data) {
+                    self.addItem('platforms', platform);
         	    }
 
                 self.updateArchitectures(self);
-	    }, function(json){
+        }, function (json: string) {
 		    alert('Impossible to get FaustWeb targets');
 	    });
     }		
@@ -96,11 +96,11 @@ class Export{
     *********************  HANDLE POST TO FAUST WEB  ********************
     ********************************************************************/
 
-    exportPatch(event, expor: Export)
+    exportPatch(event:Event, expor: Export)
     {
-        var sceneName = document.getElementById("PatchName").innerHTML;
+        var sceneName:string = document.getElementById("PatchName").innerHTML;
         var equivalentFaust: EquivalentFaust = new EquivalentFaust();
-        var faustCode = equivalentFaust.getFaustEquivalent(App.scene, sceneName);
+        var faustCode:string = equivalentFaust.getFaustEquivalent(App.scene, sceneName);
         ExportLib.getSHAKey((<HTMLInputElement>document.getElementById("faustweburl")).value, sceneName, faustCode, expor.exportFaustCode);
     }
 
@@ -108,37 +108,37 @@ class Export{
     **************  CALLBACK ONCE SHA KEY WAS CALCULATED  ***************
     ********************************************************************/
 
-    exportFaustCode(shaKey)
+    exportFaustCode(shaKey: string):void
     {
-	    var xhr = new XMLHttpRequest();
+        var xhr: XMLHttpRequest = new XMLHttpRequest();
 
-        var platformsSelect = <HTMLSelectElement> document.getElementById("platforms");//get the combobox
-        var selPlatform = platformsSelect.options[platformsSelect.selectedIndex].value;
-			    
-        var architecturesSelect = <HTMLSelectElement>document.getElementById("architectures");//get the combobox
-        var selArch = architecturesSelect.options[architecturesSelect.selectedIndex].value;
+        var platformsSelect: HTMLSelectElement = <HTMLSelectElement>document.getElementById("platforms");//get the combobox
+        var selPlatform: string = platformsSelect.options[platformsSelect.selectedIndex].value;
 
-        var serverUrl = (<HTMLInputElement> document.getElementById("faustweburl")).value;
- 		
-	    var appType = "binary.zip";
+        var architecturesSelect: HTMLSelectElement = <HTMLSelectElement>document.getElementById("architectures");//get the combobox
+        var selArch: string = architecturesSelect.options[architecturesSelect.selectedIndex].value;
+
+        var serverUrl: string = (<HTMLInputElement>document.getElementById("faustweburl")).value;
+
+        var appType: string = "binary.zip";
 	
 	    if (selArch == "android")
 		    appType = "binary.apk";
 	
-	    // 	Delete existing content if existing
-	    var qrcodeSpan = document.getElementById('qrcodeDiv');
+        // 	Delete existing content if existing
+        var qrcodeSpan: HTMLElement = document.getElementById('qrcodeDiv');
 	    if (qrcodeSpan)
 		    qrcodeSpan.parentNode.removeChild(qrcodeSpan);
-			
-	    var qrDiv = document.createElement('div');
+
+        var qrDiv: HTMLElement = document.createElement('div');
 	    qrDiv.id = "qrcodeDiv";
 	    document.getElementById("sceneOutput").appendChild(qrDiv);
-	
-	    var link = document.createElement('a');
+
+        var link: HTMLAnchorElement = document.createElement('a');
 	    link.href = serverUrl + "/" + shaKey +"/"+ selPlatform + "/" + selArch + "/"+appType;
 	    qrDiv.appendChild(link);
 
-	    var myWhiteDiv = ExportLib.getQrCode(serverUrl, shaKey, selPlatform, selArch, appType, 120);
+        var myWhiteDiv: HTMLElement = ExportLib.getQrCode(serverUrl, shaKey, selPlatform, selArch, appType, 120);
 	    link.appendChild(myWhiteDiv);
     }
 }

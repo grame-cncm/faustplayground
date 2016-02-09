@@ -83,6 +83,7 @@ var ExportLib = (function () {
         whiteContainer.appendChild(qqDiv);
         return whiteContainer;
     };
+    //unused for now, probably useless...
     // Return the array of available platforms from the json description
     ExportLib.prototype.getPlatforms = function (json) {
         var platforms = [];
