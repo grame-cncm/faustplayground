@@ -12,18 +12,18 @@
 "use strict";
 
 class SceneAccueilView{
-    static initWelcomeScene(scene:Scene){
+    static initWelcomeScene(scene:Scene):void{
 	
-		var container = scene.getSceneContainer();
+		var container:HTMLDivElement = scene.getSceneContainer();
 
 //--------- HEADER		
-		var title = document.createElement("div");
+        var title: HTMLDivElement = document.createElement("div");
 		title.className = "sceneTitle";
 		title.appendChild(document.createTextNode("Bienvenue Sur L'Aire de Jeu\r\n FAUST"));
 
 		container.appendChild(title);
 	
-		var subtitle = document.createElement("div");
+        var subtitle: HTMLDivElement = document.createElement("div");
 		subtitle.className = "sceneSubtitle";
 		subtitle.appendChild(document.createTextNode("Ici tu pourras créer ton application musicale"));
 		container.appendChild(subtitle);
@@ -33,14 +33,14 @@ class SceneAccueilView{
 		container.appendChild(document.createElement("br"));
 
 //--------- NAME AREA
-		var nametitle = document.createElement("div");
+        var nametitle: HTMLDivElement = document.createElement("div");
 		nametitle.className = "sceneSubtitle";
 		nametitle.id = "NameTag";
 		nametitle.appendChild(document.createTextNode("Indique ton nom :     "));
 
 		container.appendChild(nametitle);
-	
-		var nameTag = document.createElement("textarea");
+
+        var nameTag: HTMLTextAreaElement = document.createElement("textarea");
 		nameTag.id = "nameTag";
 		nameTag.rows = 1;
 		nameTag.cols = 20;
@@ -52,7 +52,7 @@ class SceneAccueilView{
 		nametitle.appendChild(nameTag);
 		nameTag.focus();
 	
-		var startButton = document.createElement("div");
+        var startButton:HTMLDivElement = document.createElement("div");
 		startButton.id= "startButton";
 		startButton.className= "orangeButton";
         startButton.textContent = "Démarrer";
