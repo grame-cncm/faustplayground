@@ -10,10 +10,10 @@
 
 
 class Tooltips{
-/*************** ALL TOOLTIP CHOICES ***************************/
-    static changeSceneToolTip(toolTipNumber){
+    /*************** ALL TOOLTIP CHOICES ***************************/
+    static changeSceneToolTip(toolTipNumber: number):void {
 
-	    var subtitle;
+        var subtitle: HTMLElement;
 
 	    if(document.getElementById("sceneToolTip"))
 		    subtitle = document.getElementById("sceneToolTip");
@@ -44,23 +44,23 @@ class Tooltips{
     }
 
     /*************** ACTIVATE/DISACTIVATE TOOLTIPS ****************/
-    enableTooltips() {
+    enableTooltips():void {
         App.isTooltipEnabled = true;
     }
     
-    static disableTooltips() {
+    static disableTooltips():void {
         App.isTooltipEnabled = false;
     }
 
-    isTooltipEnabled() {
+    isTooltipEnabled(): boolean {
         return App.isTooltipEnabled;
     }
 
 
     /******** INTERROGATE THE SCENE TO CREATE RIGHT TOOLTIP ******/
-    static sceneHasInstrumentAndEffect(scene: Scene) {
+    static sceneHasInstrumentAndEffect(scene: Scene):boolean {
 
-	    var modules = scene.getModules();
+        var modules: ModuleClass[] = scene.getModules();
 
 	    if(modules.length<2)
 		    return false
@@ -80,9 +80,9 @@ class Tooltips{
 	    return hasInstrument && hasEffect;
     }
 
-    static isInstrumentConnected(scene:Scene){
+    static isInstrumentConnected(scene: Scene): boolean{
 
-	    var modules = scene.getModules();
+        var modules: ModuleClass[] = scene.getModules();
 
 	    for (var i = 0; i < modules.length; i++) {
 		    if(!modules[i].getInputNode() && modules[i].getOutputConnections() && modules[i].getOutputConnections().length > 0)
@@ -92,14 +92,14 @@ class Tooltips{
 	    return false;
     }
 
-    toolTipForLibrary(type){
+    toolTipForLibrary(type: string): HTMLDivElement {
 
-	    var tooltip = document.createElement("div");
+        var tooltip: HTMLDivElement = document.createElement("div");
 
-	    var image = document.createElement('span');
+        var image: HTMLSpanElement = document.createElement('span');
 	    image.className= "number";
 
-	    var subtitle;
+	    var subtitle:Text;
 
 	    if(type == "instruments"){
 		    image.textContent = "1";
@@ -117,13 +117,13 @@ class Tooltips{
 	    return tooltip;
     }
 
-    static toolTipForConnections(scene: Scene){
+    static toolTipForConnections(scene: Scene):void{
 
-	    var currentScene = scene;
+        var currentScene: Scene = scene;
 
         if (App.isTooltipEnabled) {
 
-		    var connectedNode = currentScene.getAudioOutput();
+            var connectedNode: ModuleClass = currentScene.getAudioOutput();
 
 		    while(connectedNode){
 
