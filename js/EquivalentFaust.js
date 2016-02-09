@@ -10,16 +10,16 @@
 /// <reference path="Connect.ts"/>
 /// <reference path="main.ts"/>
 "use strict";
-var ModuleRecursive = (function () {
-    function ModuleRecursive() {
+var ModuleTree = (function () {
+    function ModuleTree() {
     }
-    return ModuleRecursive;
+    return ModuleTree;
 })();
 var EquivalentFaust = (function () {
     function EquivalentFaust() {
     }
-    EquivalentFaust.prototype.isModuleRecursiveExisting = function (moduleRecursive) {
-        if (App.recursiveMap[moduleRecursive.patchID])
+    EquivalentFaust.prototype.isModuleRecursiveExisting = function (moduleTree) {
+        if (App.recursiveMap[moduleTree.patchID])
             return true;
         return false;
     };
@@ -29,54 +29,54 @@ var EquivalentFaust = (function () {
             modules[i].patchID = String(i + 1);
         }
     };
-    EquivalentFaust.prototype.treatRecursiveModule = function (moduleRecursive) {
+    EquivalentFaust.prototype.treatRecursiveModule = function (moduleTree) {
         // 	Save recursion in map and flag it
-        var ModuleToReplace = this.getFirstOccurenceOfModuleInCourse(moduleRecursive);
-        App.recursiveMap[moduleRecursive.patchID] = ModuleToReplace;
+        var ModuleToReplace = this.getFirstOccurenceOfModuleInCourse(moduleTree);
+        App.recursiveMap[moduleTree.patchID] = ModuleToReplace;
         ModuleToReplace.recursiveFlag = true;
     };
-    EquivalentFaust.prototype.getFirstOccurenceOfModuleInCourse = function (moduleRecursive) {
-        for (var i = 0; i < moduleRecursive.course.length; i++) {
-            if (moduleRecursive.patchID == moduleRecursive.course[i].patchID) {
-                return moduleRecursive.course[i];
+    EquivalentFaust.prototype.getFirstOccurenceOfModuleInCourse = function (moduleTree) {
+        for (var i = 0; i < moduleTree.course.length; i++) {
+            if (moduleTree.patchID == moduleTree.course[i].patchID) {
+                return moduleTree.course[i];
             }
         }
         return null;
     };
     EquivalentFaust.prototype.createTree = function (module, parent) {
-        var moduleRecursive = new ModuleRecursive();
-        moduleRecursive.patchID = module.patchID;
-        moduleRecursive.course = [];
+        var moduleTree = new ModuleTree();
+        moduleTree.patchID = module.patchID;
+        moduleTree.course = [];
         if (parent) {
             // 		COPY PARENT COURSE
             for (var k = 0; k < parent.course.length; k++)
-                moduleRecursive.course[k] = parent.course[k];
+                moduleTree.course[k] = parent.course[k];
         }
-        moduleRecursive.moduleInputs = [];
-        moduleRecursive.recursiveFlag = false;
-        if (this.isModuleRecursiveExisting(moduleRecursive)) {
-            var ModuleToReuse = App.recursiveMap[moduleRecursive.patchID];
-            moduleRecursive.sourceCode = ModuleToReuse.sourceCode;
-            moduleRecursive.moduleInputs = ModuleToReuse.moduleInputs;
+        moduleTree.moduleInputs = [];
+        moduleTree.recursiveFlag = false;
+        if (this.isModuleRecursiveExisting(moduleTree)) {
+            var ModuleToReuse = App.recursiveMap[moduleTree.patchID];
+            moduleTree.sourceCode = ModuleToReuse.sourceCode;
+            moduleTree.moduleInputs = ModuleToReuse.moduleInputs;
         }
-        else if (this.getFirstOccurenceOfModuleInCourse(moduleRecursive)) {
-            this.treatRecursiveModule(moduleRecursive);
+        else if (this.getFirstOccurenceOfModuleInCourse(moduleTree)) {
+            this.treatRecursiveModule(moduleTree);
             // 	Stop Recursion in Tree		
-            moduleRecursive = null;
+            moduleTree = null;
         }
         else if (module.patchID == "input") {
-            moduleRecursive.sourceCode = module.getSource();
-            moduleRecursive.course[moduleRecursive.course.length] = moduleRecursive;
+            moduleTree.sourceCode = module.getSource();
+            moduleTree.course[moduleTree.course.length] = moduleTree;
         }
         else {
-            moduleRecursive.sourceCode = module.getSource();
-            moduleRecursive.course[moduleRecursive.course.length] = moduleRecursive;
+            moduleTree.sourceCode = module.getSource();
+            moduleTree.course[moduleTree.course.length] = moduleTree;
             if (module.getInputConnections()) {
                 for (var j = 0; j < module.getInputConnections().length; j++)
-                    moduleRecursive.moduleInputs[j] = this.createTree(module.getInputConnections()[j].source, moduleRecursive);
+                    moduleTree.moduleInputs[j] = this.createTree(module.getInputConnections()[j].source, moduleTree);
             }
         }
-        return moduleRecursive;
+        return moduleTree;
     };
     /********************************************************************
     ***********************  CREATE FAUST EQUIVALENT ********************

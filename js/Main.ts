@@ -149,7 +149,7 @@ class App {
     params: any[];
     static buttonVal: number;
     static libraryContent: string;
-    static recursiveMap: ModuleRecursive[];
+    static recursiveMap: ModuleTree[];
     static jsonText: string;
     static exportURL: string;
     factory: Factory;

@@ -16,18 +16,18 @@
 /******************************************************************** 
 *************  ALGORITHME DE DÉRECURSIVATION DU PATCH ***************
 ********************************************************************/
-interface IModuleRecursive {
+interface IModuleTree {
     patchID: string;
-    course: any[];
-    moduleInputs: ModuleRecursive[];
+    course: ModuleTree[];
+    moduleInputs: ModuleTree[];
     recursiveFlag: boolean;
     sourceCode: string;
 }
 
-class ModuleRecursive implements IModuleRecursive {
+class ModuleTree implements IModuleTree {
     patchID: string;
-    course: any[];
-    moduleInputs: ModuleRecursive[];
+    course: ModuleTree[];
+    moduleInputs: ModuleTree[];
     recursiveFlag: boolean;
     sourceCode: string;
 
@@ -35,92 +35,92 @@ class ModuleRecursive implements IModuleRecursive {
 }
 class EquivalentFaust {
 
-    isModuleRecursiveExisting(moduleRecursive: ModuleRecursive) {
+    isModuleRecursiveExisting(moduleTree: ModuleTree): boolean {
 
-        if (App.recursiveMap[moduleRecursive.patchID])
+        if (App.recursiveMap[moduleTree.patchID])
             return true;
 
         return false;
 
     }
 
-    giveIdToModules(scene: Scene) {
+    giveIdToModules(scene: Scene):void {
 
-        var modules = scene.getModules();
+        var modules: ModuleClass[] = scene.getModules();
 
         for (var i = 0; i < modules.length; i++) {
             modules[i].patchID = String(i + 1);
         }
     }
 
-    treatRecursiveModule(moduleRecursive: ModuleRecursive) {
+    treatRecursiveModule(moduleTree: ModuleTree):void {
 			
         // 	Save recursion in map and flag it
-        var ModuleToReplace = this.getFirstOccurenceOfModuleInCourse(moduleRecursive);
+        var ModuleToReplace = this.getFirstOccurenceOfModuleInCourse(moduleTree);
 
-        App.recursiveMap[moduleRecursive.patchID] = ModuleToReplace;
+        App.recursiveMap[moduleTree.patchID] = ModuleToReplace;
 
         ModuleToReplace.recursiveFlag = true;
     }
 
-    getFirstOccurenceOfModuleInCourse(moduleRecursive: ModuleRecursive) {
+    getFirstOccurenceOfModuleInCourse(moduleTree: ModuleTree): ModuleTree {
 
-        for (var i = 0; i < moduleRecursive.course.length; i++) {
-            if (moduleRecursive.patchID == moduleRecursive.course[i].patchID) {
-                return moduleRecursive.course[i];
+        for (var i = 0; i < moduleTree.course.length; i++) {
+            if (moduleTree.patchID == moduleTree.course[i].patchID) {
+                return moduleTree.course[i];
             }
         }
 
         return null;
     }
 
-    createTree(module: ModuleClass, parent) {
-        var moduleRecursive: ModuleRecursive = new ModuleRecursive();
-        moduleRecursive.patchID = module.patchID;
-        moduleRecursive.course = [];
+    createTree(module: ModuleClass, parent): ModuleTree {
+        var moduleTree: ModuleTree = new ModuleTree();
+        moduleTree.patchID = module.patchID;
+        moduleTree.course = [];
 
         if (parent) {
 	
             // 		COPY PARENT COURSE
             for (var k = 0; k < parent.course.length; k++)
-                moduleRecursive.course[k] = parent.course[k];
+                moduleTree.course[k] = parent.course[k];
         }
 
-        moduleRecursive.moduleInputs = [];
-        moduleRecursive.recursiveFlag = false;
+        moduleTree.moduleInputs = [];
+        moduleTree.recursiveFlag = false;
 
-        if (this.isModuleRecursiveExisting(moduleRecursive)) {
+        if (this.isModuleRecursiveExisting(moduleTree)) {
 
-            var ModuleToReuse = App.recursiveMap[moduleRecursive.patchID];
+            var ModuleToReuse = App.recursiveMap[moduleTree.patchID];
 
-            moduleRecursive.sourceCode = ModuleToReuse.sourceCode;
-            moduleRecursive.moduleInputs = ModuleToReuse.moduleInputs;
+            moduleTree.sourceCode = ModuleToReuse.sourceCode;
+            moduleTree.moduleInputs = ModuleToReuse.moduleInputs;
 
         }
-        else if (this.getFirstOccurenceOfModuleInCourse(moduleRecursive)) {
+        else if (this.getFirstOccurenceOfModuleInCourse(moduleTree)) {
 
-            this.treatRecursiveModule(moduleRecursive);
+            this.treatRecursiveModule(moduleTree);
 		
             // 	Stop Recursion in Tree		
-            moduleRecursive = null;
+            moduleTree = null;
         }
         else if (module.patchID == "input") {
-            moduleRecursive.sourceCode = module.getSource();
-            moduleRecursive.course[moduleRecursive.course.length] = moduleRecursive;
+            moduleTree.sourceCode = module.getSource();
+            moduleTree.course[moduleTree.course.length] = moduleTree;
         }
         else {
-            moduleRecursive.sourceCode = module.getSource();
+            moduleTree.sourceCode = module.getSource();
 
-            moduleRecursive.course[moduleRecursive.course.length] = moduleRecursive;
+            moduleTree.course[moduleTree.course.length] = moduleTree;
 
             if (module.getInputConnections()) {
                 for (var j = 0; j < module.getInputConnections().length; j++)
-                    moduleRecursive.moduleInputs[j] = this.createTree(module.getInputConnections()[j].source, moduleRecursive);
+                    moduleTree.moduleInputs[j] = this.createTree(module.getInputConnections()[j].source, moduleTree);
             }
         }
 
 
-        return moduleRecursive;
+        return moduleTree;
     }
 
     /******************************************************************** 
@@ -135,15 +135,15 @@ class EquivalentFaust {
     //*** Every Faust Expression is "Stereoized" before composition with other expressions to ensure composability
 
     // Computing a Module is computing its entries and merging them in the Module's own faust code.
-    computeModule(module: ModuleRecursive) {
+    computeModule(module: ModuleTree) : string {
 
-        var moduleInputs = module.moduleInputs;
-        var faustResult = "";
+        var moduleInputs: ModuleTree[] = module.moduleInputs;
+        var faustResult: string = "";
 	
         // Iterate on input Modules to compute them
         if (moduleInputs && moduleInputs.length != 0) {
 
-            var inputCode = "";
+            var inputCode:string = "";
 
             for (var i = 0; i < moduleInputs.length; i++) {
                 if (moduleInputs[i]) {
@@ -165,7 +165,7 @@ class EquivalentFaust {
             }
         }
 
-        var ModuleCode = module.sourceCode;
+        var ModuleCode: string = module.sourceCode;
 
         if (module.recursiveFlag)
             faustResult += "stereoize(environment{" + ModuleCode + "}.process))~(_,_)";
@@ -177,7 +177,7 @@ class EquivalentFaust {
     }
 
     // Computing the trees unconnected to the output
-    connectUnconnectedModules(faustModuleList, output) {
+    connectUnconnectedModules(faustModuleList: ModuleClass[], output: ModuleClass):void {
 
         for (var i in faustModuleList) {
 
@@ -191,9 +191,9 @@ class EquivalentFaust {
     }
 
     //Calculate Faust Equivalent of the Scene
-    getFaustEquivalent(scene, patchName) {
+    getFaustEquivalent(scene: Scene, patchName: string): string {
 
-        var faustModuleList = scene.getModules();
+        var faustModuleList:ModuleClass[]= scene.getModules();
 
         if (faustModuleList.length > 0) {
 

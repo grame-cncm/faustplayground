@@ -78,9 +78,8 @@ class ModuleClass implements IModule {
     fTitle: HTMLElement;
     x: number;
     y: number;
-    course: ModuleClass[];
     recursiveFlag: boolean;
-    moduleInputs: ModuleRecursive[];
+    moduleInputs: ModuleTree[];
     sourceCode: any;
     id: number;
     name: string;
