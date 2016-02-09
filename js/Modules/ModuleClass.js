@@ -111,7 +111,7 @@ var ModuleClass = (function () {
         if (this.fModuleContainer)
             this.fModuleContainer.parentNode.removeChild(this.fModuleContainer);
         this.deleteDSP(this.fDSP);
-        this.deleteCallback(this);
+        this.deleteCallback(this, this.sceneParent);
     };
     /*************** ACTIONS ON IN/OUTPUT NODES ***************************/
     // ------ Returns Graphical input and output Node
@@ -139,7 +139,6 @@ var ModuleClass = (function () {
         this.fInputConnections.splice(this.fInputConnections.indexOf(connector), 1);
     };
     /********************* SHOW/HIDE MODULE IN SCENE **********************/
-    ModuleClass.prototype.showModule = function () { this.fModuleContainer.style.visibility = "visible"; };
     ModuleClass.prototype.hideModule = function () { this.fModuleContainer.style.visibility = "hidden"; };
     /********************** GET/SET SOURCE/NAME/DSP ***********************/
     ModuleClass.prototype.setSource = function (code) {

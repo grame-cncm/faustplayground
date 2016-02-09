@@ -26,6 +26,7 @@ var Scene = (function () {
             this.onunload = onunload;
         }
     }
+    /******************CALLBACKS FOR LOADING/UNLOADING SCENE **************/
     Scene.prototype.onload = function (s) { };
     Scene.prototype.onunload = function (s) { };
     Scene.prototype.getSceneContainer = function () { return this.fSceneContainer; };

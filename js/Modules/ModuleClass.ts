@@ -44,49 +44,41 @@ interface HTMLinterfaceElement extends HTMLElement {
     label: string;
 }
 interface IModule {
-    id: number;
     x: number;
     y: number;
-    name: string;
     sceneParent: Scene;
-    htmlElementModuleContainer: HTMLElement;
-    removeModuleCallBack: (module: ModuleClass, scene: Scene) => void;
 }
 interface HTMLInterfaceContainer extends HTMLDivElement {
     unlitClassname: string;
     lastLit: any;
 
 }
+
+
 class ModuleClass implements IModule {
     drag: Drag = new Drag()
     patchID: string;
-    fModuleContainer: HTMLElement;
     sceneParent: Scene;
-    fDSP: IfDSP;
-    deleteCallback: (module: ModuleClass) => void;
-    fName: string;
-    fSource: string;
-    fTempSource: string;
-    fTempName: string;
-    fParams: number[] = [];
-    fInputNode: HTMLDivElement;
-    fOutputNode: HTMLDivElement;
-    fOutputConnections: Connector[] = [];
-    fInputConnections: Connector[] = [];
-    fInterfaceContainer: HTMLInterfaceContainer;
-    fEditImg: HTMLfEdit;
-    fTitle: HTMLElement;
     x: number;
     y: number;
-    recursiveFlag: boolean;
-    moduleInputs: ModuleTree[];
-    sourceCode: any;
-    id: number;
-    name: string;
-    htmlElementModuleContainer: HTMLElement;
-    removeModuleCallBack: (module: ModuleClass, scene: Scene) => void;
-    eventDraggingHandler: (event: MouseEvent) => void;
-    eventConnectorHandler: (event: Event) => void;
+
+    private fModuleContainer: HTMLElement;
+    private fDSP: IfDSP;
+    private deleteCallback: (module: ModuleClass,scene:Scene) => void;
+    private fName: string;
+    private fSource: string;
+    private fTempSource: string;
+    private fTempName: string;
+    private fParams: number[] = [];
+    private fInputNode: HTMLDivElement;
+    private fOutputNode: HTMLDivElement;
+    private fOutputConnections: Connector[] = [];
+    private fInputConnections: Connector[] = [];
+    private fInterfaceContainer: HTMLInterfaceContainer;
+    private fEditImg: HTMLfEdit;
+    private fTitle: HTMLElement;
+    private eventDraggingHandler: (event: MouseEvent) => void;
+    private eventConnectorHandler: (event: Event) => void;
 
 
 
@@ -101,7 +93,7 @@ class ModuleClass implements IModule {
 
 
 
-    createModule(ID, x, y, name, parent, callback): void {
+    private createModule(ID: number, x: number, y: number, name: string, parent: HTMLElement, callback: (m: ModuleClass, scene: Scene) => void): void {
         var self: ModuleClass = this
         this.eventConnectorHandler = function (event: MouseEvent) { self.dragCnxCallback(event, self) };
 
@@ -159,7 +151,7 @@ class ModuleClass implements IModule {
     }
     /***************  PRIVATE METHODS  ******************************/
 
-    dragCallback(event: MouseEvent, module: ModuleClass): void {
+    private dragCallback(event: MouseEvent, module: ModuleClass): void {
 
         if (event.type == "mousedown") {
             module.drag.startDraggingModule(event, module);
@@ -170,7 +162,7 @@ class ModuleClass implements IModule {
         }
     }
 
-    dragCnxCallback(event: MouseEvent, module: ModuleClass): void {
+    private dragCnxCallback(event: MouseEvent, module: ModuleClass): void {
 
         if (event.type == "mousedown") {
             module.drag.startDraggingConnector(module, event);
@@ -198,7 +190,7 @@ class ModuleClass implements IModule {
             this.fModuleContainer.parentNode.removeChild(this.fModuleContainer);
 
         this.deleteDSP(this.fDSP);
-        this.deleteCallback(this);
+        this.deleteCallback(this, this.sceneParent);
     }
 	
     /*************** ACTIONS ON IN/OUTPUT NODES ***************************/
@@ -231,7 +223,6 @@ class ModuleClass implements IModule {
     }
 	
     /********************* SHOW/HIDE MODULE IN SCENE **********************/
-    showModule(): void { this.fModuleContainer.style.visibility = "visible"; }
     hideModule(): void { this.fModuleContainer.style.visibility = "hidden"; }
 	
     /********************** GET/SET SOURCE/NAME/DSP ***********************/
@@ -252,7 +243,7 @@ class ModuleClass implements IModule {
     }
 
     //--- Update DSP in module 
-    updateDSP(factory: Factory, module: ModuleClass): void {
+    private updateDSP(factory: Factory, module: ModuleClass): void {
 
         var toDelete: IfDSP = module.fDSP;
 	
@@ -293,13 +284,13 @@ class ModuleClass implements IModule {
         }
     }
 
-    deleteDSP(todelete: IfDSP): void {
+    private deleteDSP(todelete: IfDSP): void {
         // 	TO DO SAFELY --> FOR NOW CRASHES SOMETIMES
         // 		if(todelete)
         // 		    faust.deleteDSPInstance(todelete);
     }
     /******************** EDIT SOURCE & RECOMPILE *************************/
-    edit(module: ModuleClass): void {
+    private edit(module: ModuleClass): void {
 
         module.saveParams();
 
@@ -327,7 +318,7 @@ class ModuleClass implements IModule {
     }
 	
     //---- React to recompilation triggered by click on icon
-    recompileSource(event: MouseEvent, module: ModuleClass): void {
+    private recompileSource(event: MouseEvent, module: ModuleClass): void {
         var buttonImage: HTMLfEdit = <HTMLfEdit>event.target;
         var dsp_code: string = buttonImage.area.value;
 
@@ -347,7 +338,7 @@ class ModuleClass implements IModule {
         var faustInterface: FaustInterface = new FaustInterface()
         faustInterface.parse_ui(JSON.parse(this.fDSP.json()).ui, this);
     }
-    deleteFaustInterface(): void {
+    private deleteFaustInterface(): void {
 
         while (this.fInterfaceContainer.childNodes.length != 0)
             this.fInterfaceContainer.removeChild(this.fInterfaceContainer.childNodes[0]);
@@ -401,7 +392,7 @@ class ModuleClass implements IModule {
     }
 	
     // Save graphical parameters of a Faust Node
-    saveParams(): void {
+    private saveParams(): void {
 
         var interfaceElements: NodeList = this.fInterfaceContainer.childNodes;
 
@@ -453,7 +444,7 @@ class ModuleClass implements IModule {
 			this.fModuleContainer.appendChild(this.fOutputNode);
 		}		
     }
-    deleteInputOutputNodes(): void{
+    private deleteInputOutputNodes(): void{
 		if(this.fInputNode)
 			this.fModuleContainer.removeChild(this.fInputNode);
 	

@@ -18,17 +18,17 @@
 
 
 class Scene {
+
     parent: App;
-    //-- Graphical Scene container
-    fSceneContainer: HTMLDivElement;
     //-- Audio Input/Output
     fAudioOutput: ModuleClass;
     fAudioInput: ModuleClass;
     //-- Modules contained in the scene
-    fModuleList: ModuleClass[]=[];
+    private fModuleList: ModuleClass[] = [];
+    //-- Graphical Scene container
+    private fSceneContainer: HTMLDivElement;
 
-    onload(s: Scene) { }
-    onunload(s: Scene) { }
+    
 
 
     constructor(identifiant: string, parent: App, onload?: (s: Scene) => void, onunload?: (s: Scene) => void) {
@@ -42,8 +42,12 @@ class Scene {
             this.onunload = onunload;
         }
     }
+   /******************CALLBACKS FOR LOADING/UNLOADING SCENE **************/
 
-    
+    private onload(s: Scene) { }
+    private onunload(s: Scene) { }
+
+
     getSceneContainer(): HTMLDivElement { return this.fSceneContainer; }
 
     /************************* SHOW/HIDE SCENE ***************************/
@@ -70,14 +74,14 @@ class Scene {
     addModule(module: ModuleClass): void { this.fModuleList.push(module); }
     removeModule(module: ModuleClass, scene: Scene):void { scene.fModuleList.splice(scene.fModuleList.indexOf(module), 1); }
 	
-    cleanModules():void {
+    private cleanModules():void {
         for (var i = this.fModuleList.length - 1; i >= 0; i--) {
             this.fModuleList[i].deleteModule();
             this.removeModule(this.fModuleList[i],this);
         }
     }
     /*******************************  PUBLIC METHODS  **********************************/
-    deleteScene():void {
+    private deleteScene():void {
         this.cleanModules();
         this.hideScene();
         this.muteScene();
@@ -105,7 +109,7 @@ class Scene {
         callBackKeepGoingOnWithInit();
     }
 
-    integrateAudioOutput(factory: Factory, scene: Scene): void {
+    private integrateAudioOutput(factory: Factory, scene: Scene): void {
         if (App.isPedagogie) {
             scene = scene.parent.scenes[1];
         }
@@ -115,7 +119,7 @@ class Scene {
             scene.parent.activateAudioOutput(scene.fAudioOutput);
         }
     }
-    integrateAudioInput(factory: Factory, scene: Scene):void {
+    private integrateAudioInput(factory: Factory, scene: Scene):void {
         if (scene.fAudioInput) {
             scene.fAudioInput.setSource("process=_,_;");
             scene.fAudioInput.createDSP(factory);
@@ -132,7 +136,7 @@ class Scene {
     //not used for now and not seriously typescripted//
     ///////////////////////////////////////////////////
 
-    saveScene():string {
+    private saveScene():string {
 
         for (var i = 0; i < this.fModuleList.length; i++) {
             this.fModuleList[i].patchID = String(i + 1);
@@ -237,7 +241,7 @@ class Scene {
         }
     }
 	
-    createModuleAndConnectIt(factory:Factory):void {
+    private createModuleAndConnectIt(factory:Factory):void {
 
         //---- This is very similar to "createFaustModule" from Main.js
         //---- But as we need to set Params before calling "createFaustInterface", it is copied

@@ -129,17 +129,25 @@ interface Factory {
 class App {
 
     //************* Fields
+
     static audioContext: AudioContext;
     static idX: number;
-    scenes: Scene[];
     static scene: Scene;
     static isPedagogie: boolean;
     static baseImg: string="img/";
     static isTooltipEnabled: boolean;
-    static currentScene: number;
-    static src: IHTMLDivElementSrc ;
-    static out: IHTMLDivElementOut ;
-    tempModuleName: string;
+    static buttonVal: number;
+    static libraryContent: string;
+    static recursiveMap: ModuleTree[];
+    static jsonText: string;
+    static exportURL: string;
+    private static currentScene: number;
+    private static src: IHTMLDivElementSrc ;
+    private static out: IHTMLDivElementOut;
+
+
+    private tempModuleName: string;    
+    scenes: Scene[];
     tempModuleSourceCode: string;
     tempModuleX: number;
     tempModuleY: number;
@@ -147,11 +155,6 @@ class App {
     inputs: any[];
     outputs: any[];
     params: any[];
-    static buttonVal: number;
-    static libraryContent: string;
-    static recursiveMap: ModuleTree[];
-    static jsonText: string;
-    static exportURL: string;
     factory: Factory;
 
     showFirstScene():void {
@@ -237,7 +240,7 @@ class App {
         }
     }
 
-    getDevice(device: MediaStream,app:App):void {
+    private getDevice(device: MediaStream,app:App):void {
 
         // Create an AudioNode from the stream.
         App.src = <IHTMLDivElementSrc>document.getElementById("input");
@@ -292,7 +295,7 @@ class App {
 
     }
 
-    createFaustModule(factory: Factory, scene: Scene, app: App):void {
+    private createFaustModule(factory: Factory, scene: Scene, app: App):void {
 
         if (!factory) {
             alert(faust.getErrorMessage());
@@ -333,7 +336,7 @@ class App {
     }
 
     //-- Init drag and drop reactions
-    resetGeneralDragAndDrop(div:HTMLElement):void {
+    private resetGeneralDragAndDrop(div:HTMLElement):void {
 
         window.ondragover = function () { return false; };
         window.ondragend = function () { return false; };
@@ -346,7 +349,7 @@ class App {
         e.preventDefault();
     }
 
-    terminateUpload():void {
+    private terminateUpload():void {
 
         var uploadTitle: HTMLElement = document.getElementById("upload");
         uploadTitle.textContent = "";
@@ -356,7 +359,7 @@ class App {
     }
 
     //-- Finds out if the drop was on an existing module or creating a new one
-    uploadFile(e:DragEvent):void {
+    private uploadFile(e:DragEvent):void {
 
         if (!e) {
             e = <DragEvent>window.event;

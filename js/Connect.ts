@@ -67,13 +67,11 @@ class Connect {
         var sourceCopy: ModuleClass = source;
         var sourceCopyDSP: IfDSP;
 	    // Searching for src/dst DSP if existing
-        if (sourceCopy.getDSP)
+        if (sourceCopy.getDSP) {
             sourceCopyDSP = sourceCopy.getDSP();
-
-	    //if(srcCpy.audioNode)
-		   // srcCpy.audioNode.disconnect();
-	    //else
-        sourceCopyDSP.getProcessor().disconnect();
+            sourceCopyDSP.getProcessor().disconnect();
+        }
+        
 		
     // Reconnect all disconnected connections (because disconnect API cannot break a single connection)
         if (source.getOutputConnections()){
