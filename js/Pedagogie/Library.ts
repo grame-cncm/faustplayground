@@ -33,25 +33,26 @@
 interface IImageNode extends HTMLImageElement {
     state: string;
     section: string;
+    folder: HTMLUListElement;
 }
 
 class Library{
     imageNode: IImageNode;
 
-    initLibrary(parent){
+    initLibrary(parent: HTMLDivElement): void{
 
-	    var libraryDiv = document.createElement('div');
+        var libraryDiv: HTMLDivElement = document.createElement('div');
 	    libraryDiv.id = "library";
 
 	    parent.appendChild(libraryDiv);
 
-	    var libraryTitle = document.createElement('span');
+        var libraryTitle: HTMLSpanElement = document.createElement('span');
 	    libraryTitle.id = "libraryTitle";
 	    libraryTitle.className = "title";
 	    libraryTitle.textContent="Bibliothèque Faust";
 	    libraryDiv.appendChild(libraryTitle);
 
-        this.imageNode = <IImageNode> document.createElement('img');
+        this.imageNode = <IImageNode>document.createElement('img');
 	    this.imageNode.id = "arrow";
 	    this.imageNode.src= App.baseImg + "open.png";
 	    this.imageNode.state = "closed";
@@ -63,11 +64,11 @@ class Library{
     }
 
     /***************  OPEN/CLOSE LIBRARY DIV  ***************************/
-    changeLibraryState(event, library: Library) {
+    changeLibraryState(event: MouseEvent, library: Library):void {
 
-	    var libDiv = document.getElementById("library");
+        var libDiv: HTMLElement = document.getElementById("library");
 
-	    var boudingRect = libDiv.getBoundingClientRect();
+        var boudingRect: ClientRect = libDiv.getBoundingClientRect();
 
 
         if (event.type == "mouseover" && library.imageNode.state == "closed") {
@@ -86,21 +87,21 @@ class Library{
     }
 
     //--- Load Library Content
-    viewLibraryList(library: Library) {
+    viewLibraryList(library: Library):void {
 
 	    document.getElementById("libraryTitle").style.cssText = " writing-mode:lr-tb; -webkit-transform:rotate(0deg); -moz-transform:rotate(0deg); -o-transform: rotate(0deg); display:block; position: relative; top:3%; left:5px; font-family: 'Droid Serif', Georgia, serif;  font-size:20px; z-index:3; margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px;";
 	    document.getElementById("library").style.cssText = "width:250px;";
 	    document.getElementById("arrow").style.cssText = "display: block; position: absolute; left:200px; top:2%; z-index:3;";
 
-	    var spaceDiv = document.createElement("div");
+        var spaceDiv: HTMLDivElement = document.createElement("div");
 	    spaceDiv.className = "space";
 
 	    document.getElementById("library").appendChild(spaceDiv);
 
 	    //var url = "http://faust.grame.fr/www/pedagogie/index.json";
-	    var url = "faust-modules/index.json"
+	    var url:string = "faust-modules/index.json"
 
-	    var getrequest = new XMLHttpRequest();
+        var getrequest: XMLHttpRequest = new XMLHttpRequest();
 
 	    getrequest.onreadystatechange = function() {
 		    console.log("enter onreadystatechange");
@@ -108,14 +109,14 @@ class Library{
 
 			    App.libraryContent = getrequest.responseText;
 
-			    var data = JSON.parse(App.libraryContent);
+			    var data:JSON = JSON.parse(App.libraryContent);
 
-			    var sections = ["instruments", "effets", "exemples"];
+			    var sections:string[] = ["instruments", "effets", "exemples"];
 
 			    for(var i=0; i<3; i++){
 				    var section = sections[i];
 
-				    var div=document.createElement("ul");
+                    var div: HTMLUListElement = document.createElement("ul");
                     div.className = "ulElem";
                     document.getElementById("library").appendChild(div);
 
@@ -124,7 +125,7 @@ class Library{
 					    div.appendChild(tooltip);
 				    }
 
-				    var sel1=document.createElement("li");
+                    var sel1: HTMLLIElement = document.createElement("li");
 				    sel1.id = "generalSection";
 				    sel1.className="sections";
 
@@ -153,10 +154,10 @@ class Library{
     }
 
     //--- Unload Library Content
-    deleteLibraryList(library: Library) {
+    deleteLibraryList(library: Library):void {
 
-        var libraryDiv = document.getElementById("library");
-        var arrow = document.getElementById("arrow");
+        var libraryDiv: HTMLElement = document.getElementById("library");
+        var arrow: HTMLElement = document.getElementById("arrow");
 
 	    for(var i=libraryDiv.childNodes.length-1; i>=0; i--){
 
@@ -170,7 +171,7 @@ class Library{
     }
 
     //-------- CLOSE LIB ON LINK DRAGGING OUT OF LIB
-    onLinkDrag(event, library: Library) {
+    onLinkDrag(event: MouseEvent, library: Library) {
 
         if (event.x > document.getElementById("library").getBoundingClientRect().width) {
             ;
@@ -181,14 +182,13 @@ class Library{
 	    }
     }
 
-    onclickPrevent(event){
+    onclickPrevent(event: MouseEvent) {
 	    event.preventDefault();
     }
 
 
-     /***************  OPEN/CLOSE SECTION OF LIBRARY  ***************************/
-    changeSectionState(event){
-
+    /***************  OPEN/CLOSE SECTION OF LIBRARY  ***************************/
+    changeSectionState(event):void {
 	    if(event.target.state == "closed"){
 		    event.target.src = App.baseImg + "triangleOpen.png";
 		    event.target.state = "opened";
