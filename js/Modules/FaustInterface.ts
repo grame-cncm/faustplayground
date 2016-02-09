@@ -13,19 +13,35 @@
 ********************************************************************/
 interface IGroup extends HTMLDivElement {
     label: string;
+    items:Iitem[]
+}
+interface Iui extends JSON {
+    group: IGroup[]
+    
+}
+interface Iitem extends HTMLDivElement{
+    label: string;
+    init: string;
+    address: string;
+    type: string;
+    items: Iitem[];
+    min: string;
+    max: string;
+    step: string;
+
 }
 
-class FaustInterface{
+class FaustInterface {
     group: IGroup;
 
 
 
-    parse_ui(ui, module:ModuleClass){
+    parse_ui(ui: IGroup[], module:ModuleClass):void{
         for (var i = 0; i < ui.length; i++)
             this.parse_group(ui[i], module);
     }
 
-    parse_group(group, module: ModuleClass) { 
+    parse_group(group: IGroup, module: ModuleClass):void { 
 	    if (group.items)
     	    this.parse_items(group.items, module);
     }
@@ -36,7 +52,7 @@ class FaustInterface{
     //    	parse_item(items[i], node);
     //}
 
-    parse_item(item, module: ModuleClass) {
+    parse_item(item: Iitem, module: ModuleClass):void {
 
 	    var params = module.getParams();
 
@@ -57,7 +73,7 @@ class FaustInterface{
             this.addFaustCheckBox(module, item.address, module.interfaceCallback);
     }
 
-    parse_items(items, node){
+    parse_items(items: Iitem[], node: ModuleClass):void {
  	    for (var i = 0; i < items.length; i++)
             this.parse_item(items[i], node);
     }
@@ -66,28 +82,28 @@ class FaustInterface{
     ********************* ADD GRAPHICAL ELEMENTS ************************
     ********************************************************************/
 
-    addFaustModuleSlider(module: ModuleClass, groupName, label, ivalue, imin, imax, stepUnits, units, onUpdate) {
+    addFaustModuleSlider(module: ModuleClass, groupName: string, label: string, ivalue: string, imin: string, imax: string, stepUnits: string, units: string, onUpdate: (event: Event, module: ModuleClass) => any): HTMLInputElement {
 
 	    var precision = stepUnits.toString().split('.').pop().length;
 
-	    this.group = <IGroup>document.createElement("div");
+        this.group = <Iitem>document.createElement("div");
  	    this.group.className="control-group";
 	    this.group.label = groupName;
 
-	    var info = document.createElement("div");
+        var info: HTMLDivElement = document.createElement("div");
 	    info.className="slider-info";
 	    info.setAttribute("min", imin );
 	    info.setAttribute("max", imax );
 	    info.setAttribute("step", stepUnits );
-	    info.setAttribute("precision", precision);
-	    var lab = document.createElement("span");
+        info.setAttribute("precision", String(precision));
+        var lab: HTMLSpanElement = document.createElement("span");
 	    lab.className="label";
 	    lab.appendChild(document.createTextNode(label));
 	    info.appendChild(lab);
-	    var val = document.createElement("span");
+        var val: HTMLSpanElement = document.createElement("span");
 	    val.className="value";
 
-	    var myValue = Number(ivalue).toFixed(precision);
+        var myValue: string = Number(ivalue).toFixed(precision);
 	    val.appendChild(document.createTextNode("" + myValue + " " + units));
 
 	    // cache the units type on the element for updates
@@ -96,13 +112,13 @@ class FaustInterface{
 
 	    this.group.appendChild(info);
 
-	    var high = (imax-imin)/stepUnits;
+        var high:number = (parseFloat(imax) - parseFloat(imin)) / parseFloat(stepUnits);
 
-	    var slider = document.createElement("input");
+        var slider: HTMLInputElement = document.createElement("input");
 	    slider.type="range";
 	    slider.min =  "0";
 	    slider.max = String(high);
-	    slider.value = String((ivalue-imin)/stepUnits);
+        slider.value = String((parseFloat(ivalue) - parseFloat(imin)) / parseFloat(stepUnits));
 	    slider.step = "1";
         slider.oninput = function (event) { onUpdate(event,module) };
 	    this.group.appendChild(slider);
@@ -111,41 +127,41 @@ class FaustInterface{
 	    return slider;
     }
 
-    addFaustCheckBox(module: ModuleClass, ivalue, onUpdate) {
-	    var group = document.createElement("div");
+    addFaustCheckBox(module: ModuleClass, ivalue: string, onUpdate: (event: Event, module: ModuleClass) => any): HTMLInputElement {
+        this.group = <Iitem>document.createElement("div");
 
-	    var checkbox = document.createElement("input");
+        var checkbox: HTMLInputElement = document.createElement("input");
 	    checkbox.type = "checkbox";
 	    checkbox.checked = false;
-	    checkbox.onchange = onUpdate;
+        checkbox.onchange = function (event: Event) { onUpdate };
 
 	    checkbox.id = "mycheckbox";
 
-	    var label = document.createElement('label')
+        var label: HTMLLabelElement = document.createElement('label')
 	    label.htmlFor = "mycheckbox";
 	    label.appendChild(document.createTextNode(" " + ivalue));
 	
-	    group.appendChild(checkbox);
-	    group.appendChild(label);
+	    this.group.appendChild(checkbox);
+	    this.group.appendChild(label);
 
-	    module.getInterfaceContainer().appendChild(group);
+	    module.getInterfaceContainer().appendChild(this.group);
 	    return checkbox;
     }
 
-    addFaustButton(module: ModuleClass, groupName, label, onUpdate) {
+    addFaustButton(module: ModuleClass, groupName: string, label: string, onUpdate: (event: Event, module: ModuleClass) => any):HTMLElement {
 
-	    var group = document.createElement("div");
+        this.group = <Iitem>document.createElement("div");
 	    this.group.label = groupName;
 
-	    var button = document.createElement("BUTTON");        // Create a <button> element
-	    button.onmouseup = onUpdate;	
-	    button.onmousedown = onUpdate;	
-		
-	    var labelText = document.createTextNode(label);       // Create a text node
+        var button: HTMLElement = document.createElement("BUTTON");        // Create a <button> element
+        button.onmouseup = function (event: Event) { onUpdate };	
+        button.onmousedown = function (event: Event) { onUpdate };	
+
+        var labelText: Text = document.createTextNode(label);       // Create a text node
         button.appendChild(labelText);
 	                                    // Append the text to <button>
-	    group.appendChild(button);
-	    module.getInterfaceContainer().appendChild(group);
+	    this.group.appendChild(button);
+	    module.getInterfaceContainer().appendChild(this.group);
 	
 	    return button;
     }

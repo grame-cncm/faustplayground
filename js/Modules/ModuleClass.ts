@@ -363,7 +363,7 @@ class ModuleClass implements IModule {
 
     //---- Generic callback for Faust Interface
     //---- Called every time an element of the UI changes value
-    interfaceCallback(event: Event, module: ModuleClass): void {
+    interfaceCallback(event: Event, module: ModuleClass): any {
 
         var input: HTMLInputElement = <HTMLInputElement>event.target
         var groupInput: HTMLinterfaceElement = <HTMLinterfaceElement>input.parentNode;
