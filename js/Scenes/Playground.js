@@ -117,13 +117,11 @@ var ScenePlaygroundView = (function () {
         nodeimg.className = "node-button";
         //nodeimg.value = "&nbsp;";
         node.appendChild(nodeimg);
-        var input;
         scene.integrateSceneInBody();
         var playgroundView = this;
         scene.integrateInput(function () {
             scene.integrateOutput(function () {
                 scene.getAudioOutput().setInputOutputNodes(node, null);
-                //scene.getAudioInput().setInputOutputNodes(null, input);//
                 playgroundView.onloadNormalScene(scene);
                 playgroundView.expor.uploadTargets();
             });

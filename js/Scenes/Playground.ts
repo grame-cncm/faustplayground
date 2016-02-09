@@ -21,7 +21,7 @@ class ScenePlaygroundView{
 ********************************************************************/
     expor: Export = new Export()
     initNormalScene(scene) {
-        var container = scene.getSceneContainer();
+        var container: HTMLDivElement = scene.getSceneContainer();
 
         var svgCanvas = <SVGElement>document.createElementNS("http://www.w3.org/2000/svg", "svg");
         svgCanvas.id = "svgCanvas";
@@ -29,66 +29,66 @@ class ScenePlaygroundView{
         container.appendChild(svgCanvas);
 
         //--------- HEADER
-        var head = document.createElement("header");
+        var head: HTMLElement = document.createElement("header");
         head.id = "header";
         container.appendChild(head);
 
-        var myScene = document.createElement("div");
+        var myScene: HTMLDivElement = document.createElement("div");
         myScene.id = "PatchName";
         myScene.className = "sceneTitle";
         //myScene.style.contentEditable = "true";
         myScene.textContent = "Patch";
         head.appendChild(myScene);
 
-        var uploadDiv = document.createElement("div");
+        var uploadDiv: HTMLDivElement = document.createElement("div");
         uploadDiv.id = "upload";
         uploadDiv.className = "uploading";
         head.appendChild(uploadDiv);
 
         //----------- MODULES
-        var moduleContainer = document.createElement("section");
+        var moduleContainer: HTMLElement = document.createElement("section");
         moduleContainer.id = "modules";
         moduleContainer.className = "container";
         container.appendChild(moduleContainer);
 
         //------------ INPUT/OUTPUT
-        var destDiv = document.createElement("div");
+        var destDiv: HTMLDivElement = document.createElement("div");
         destDiv.id = "sceneOutput";
         destDiv.className = "destination";
         container.appendChild(destDiv);
 
-        var fwurl = document.createElement("input");
+        var fwurl: HTMLInputElement = document.createElement("input");
         fwurl.id = "faustweburl";
         fwurl.onkeyup = this.onEnterKey;
         fwurl.value = "http://faustservice.grame.fr";
         destDiv.appendChild(fwurl);
 
-        var subfooter = document.createElement('div');
+        var subfooter: HTMLDivElement = document.createElement('div');
         destDiv.appendChild(subfooter);
 
-        var refButton = document.createElement("div");
+        var refButton: HTMLDivElement = document.createElement("div");
         refButton.id = "refreshButton";
         refButton.onclick = this.expor.uploadTargets;
         refButton.innerHTML = '<svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="50.000000pt" height="50.000000pt" viewBox="0 0 50.000000 50.000000" preserveAspectRatio="xMidYMid meet"><g transform="translate(0.000000,50.000000) scale(0.100000,-0.100000)" fill="#000000" stroke="none"> <path d="M186 309 c-37 -29 -37 -89 0 -118 28 -22 69 -27 93 -12 23 15 3 30 -33 24 -29 -4 -37 -1 -51 21 -16 24 -16 28 -1 51 18 27 63 34 84 13 17 -17 15 -31 -3 -24 -20 7 -19 1 6 -28 l22 -25 18 24 c20 25 25 40 9 30 -5 -3 -16 7 -24 23 -25 47 -75 56 -120 21z"/></g></svg>';
         subfooter.appendChild(refButton);
 
-        var selectDiv = document.createElement("div");
+        var selectDiv: HTMLDivElement= document.createElement("div");
         selectDiv.id = "selectDiv"
         subfooter.appendChild(selectDiv);
 
-        var selectPlatform = document.createElement("select");
+        var selectPlatform: HTMLSelectElement= document.createElement("select");
         selectPlatform.id = "platforms";
         selectPlatform.className = "platforms";
         var self = this;
         selectPlatform.addEventListener("change", function () { self.expor.updateArchitectures(self.expor) });
         selectDiv.appendChild(selectPlatform);
 
-        var selectArch = document.createElement("select");
+        var selectArch: HTMLSelectElement = document.createElement("select");
         selectArch.id = "architectures";
         selectArch.className = "architectures";
         selectDiv.appendChild(selectArch);
 
-        var equButton = document.createElement("input");
+        var equButton: HTMLInputElement = document.createElement("input");
         equButton.id = "exportButton";
         equButton.type = "submit";
         equButton.className = "grayButton";
@@ -97,56 +97,54 @@ class ScenePlaygroundView{
         equButton.value = "Export";
         subfooter.appendChild(equButton);
 
-        var linkWilson = document.createElement("div");
+        var linkWilson: HTMLDivElement = document.createElement("div");
         linkWilson.id = "ChrisLine"
         linkWilson.className = "link";
         linkWilson.textContent = "Extension of the WebAudio Playground by ";
         container.appendChild(linkWilson);
 
-        var alink = document.createElement("a");
+        var alink: HTMLAnchorElement = document.createElement("a");
         alink.href = "https://github.com/cwilso/WebAudio";
         alink.textContent = "Chris Wilson";
         linkWilson.appendChild(alink);
 
-        var srcDiv = document.createElement("div");
+        var srcDiv: HTMLDivElement = document.createElement("div");
         srcDiv.id = "input";
         srcDiv.className = "source";
         container.appendChild(srcDiv);
 
-        var inText = document.createElement("span");
+        var inText: HTMLSpanElement = document.createElement("span");
         inText.className = "text";
         inText.textContent = "PHYSICAL INPUT";
         srcDiv.appendChild(inText);
 
-        var imageDiv = document.createElement('div');
+        var imageDiv: HTMLDivElement = document.createElement('div');
         imageDiv.id = "logoDiv";
         srcDiv.appendChild(imageDiv);
 
-        var imageLogo = document.createElement('img');
+        var imageLogo: HTMLImageElement = document.createElement('img');
         imageLogo.className = "logoGrame";
         imageLogo.src = "img/grame.png";
         imageDiv.appendChild(imageLogo);
 
-        var outText = document.createElement("span");
+        var outText: HTMLSpanElement = document.createElement("span");
         outText.className = "text";
         outText.textContent = "PHYSICAL OUTPUT";
         destDiv.appendChild(outText);
 
-        var node = document.createElement("div");
+        var node: HTMLDivElement = document.createElement("div");
         node.className = "node node-input";
         destDiv.appendChild(node);
 
-        var nodeimg = document.createElement("span");
+        var nodeimg: HTMLSpanElement = document.createElement("span");
         nodeimg.className = "node-button";
         //nodeimg.value = "&nbsp;";
         node.appendChild(nodeimg);
-        var input;
         scene.integrateSceneInBody();
         var playgroundView: ScenePlaygroundView = this;
         scene.integrateInput(function () {
             scene.integrateOutput(function () {
                 scene.getAudioOutput().setInputOutputNodes(node, null);
-                //scene.getAudioInput().setInputOutputNodes(null, input);//
 
                 playgroundView.onloadNormalScene(scene);
                 playgroundView.expor.uploadTargets();
@@ -155,9 +153,9 @@ class ScenePlaygroundView{
     }
 
 
-    onEnterKey(e) {
+    onEnterKey(e:KeyboardEvent):void {
         
-	    if (!e) { e = window.event; } 
+        if (!e) { e = <KeyboardEvent>window.event; } 
 	
 	    if (e.keyCode == 13){ 
             e.preventDefault();
@@ -166,12 +164,12 @@ class ScenePlaygroundView{
     }
 
 // On Load And UnLoad Playground Scene
-    onloadNormalScene(scene: Scene) {
+    onloadNormalScene(scene: Scene):void {
         scene.parent.setGeneralDragAndDrop(scene.parent);
 	    scene.unmuteScene();
     }
 
-    onunloadNormalScene(scene:Scene){
+    onunloadNormalScene(scene:Scene):void{
 	    scene.muteScene();
     }
 

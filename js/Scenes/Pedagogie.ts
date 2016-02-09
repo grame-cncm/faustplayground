@@ -18,9 +18,9 @@
 "use strict";
 class ScenePedagogieView {
 // Add visual elements to Pedagogical Playground Scene
-    static initPedagogieScene(scene:Scene){
+    static initPedagogieScene(scene:Scene):void{
 
-		var container = scene.getSceneContainer();
+        var container: HTMLDivElement = scene.getSceneContainer();
 	
 		var svgCanvas = <SVGElement>document.createElementNS("http://www.w3.org/2000/svg", "svg");
 		svgCanvas.id="svgCanvas";
@@ -28,81 +28,81 @@ class ScenePedagogieView {
 		container.appendChild(svgCanvas);
 
 //--------- HEADER	
-		var head = document.createElement("header");
+        var head: HTMLElement = document.createElement("header");
 		head.id = "header";
 		container.appendChild(head);
 		
-		var myScene = document.createElement("div");
+        var myScene: HTMLDivElement = document.createElement("div");
 		myScene.id = "PatchName";
 		myScene.className = "sceneTitle";
 		myScene.textContent = "Scène de " + "";
 		head.appendChild(myScene);
 
-		var uploadDiv = document.createElement("div");
+        var uploadDiv: HTMLDivElement = document.createElement("div");
 		uploadDiv.id = "upload";
 		uploadDiv.className = "uploading";
 		head.appendChild(uploadDiv);
 	
-//--------- MODULES
-		var moduleContainer = document.createElement("section");
+        //--------- MODULES
+        var moduleContainer: HTMLElement = document.createElement("section");
 		moduleContainer.id = "modules";
 		moduleContainer.className = "container";
 		container.appendChild(moduleContainer);
 	
 //--------- FOOTER
-		var footer = document.createElement("div");
+        var footer: HTMLDivElement = document.createElement("div");
 		footer.id = "footer";
 		container.appendChild(footer);
 	
-		var equButton = document.createElement("div");
+        var equButton: HTMLDivElement = document.createElement("div");
 		equButton.id = "exportButton";
 		equButton.className = "grayButton";
 		footer.appendChild(equButton);
 
-		var equText = document.createElement("a");
+        var equText: HTMLAnchorElement = document.createElement("a");
 		equText.id = "cfe";
         equText.textContent = "FINALISE TON APPLICATION";
         equButton.onclick = function () { scene.parent.nextScene(); };
 		equButton.appendChild(equText);
 	
-		var subText = document.createElement("div");
+        var subText: HTMLDivElement = document.createElement("div");
 		subText.id = "subtitleButton";		
 		subText.textContent = "pour l'emmener avec toi";
 		equButton.appendChild(subText);
 
-		var linkWilson = document.createElement("div");
+        var linkWilson: HTMLDivElement = document.createElement("div");
 		linkWilson.className = "link";
 		linkWilson.style.right = "10px";
 		linkWilson.textContent = "Extension of the WebAudio Playground by ";
 		footer.appendChild(linkWilson);
 
-		var alink = document.createElement("a");
+        var alink: HTMLAnchorElement = document.createElement("a");
 		alink.href = "https://github.com/cwilso/WebAudio";
 		alink.textContent = "Chris Wilson";
 		linkWilson.appendChild(alink);
-	
-		var imageLogo = document.createElement('img');
+
+        var imageLogo: HTMLImageElement = document.createElement('img');
         imageLogo.className = "logoGrame";
         imageLogo.src = App.baseImg + "grame.png";
 		footer.appendChild(imageLogo);
 	
 //------------ INPUT/OUTPUT
 	
-		var destDiv = document.createElement("div");
+        var destDiv: HTMLDivElement = document.createElement("div");
 		destDiv.id = "sceneOutput";
 		destDiv.className = "destination";
 		container.appendChild(destDiv);
-	
-		var outText = document.createElement("span");
+
+        var outText: HTMLSpanElement = document.createElement("span");
 		outText.className = "text";
 		outText.textContent = "SORTIE AUDIO";
 		destDiv.appendChild(outText);
 	
-		var node = document.createElement("div");
+        var node: HTMLDivElement = document.createElement("div");
 		node.className = "node node-input";
 		destDiv.appendChild(node);
-	
-		var nodeimg = document.createElement("span");
+
+        var nodeimg: HTMLSpanElement = document.createElement("span");
 		nodeimg.className = "node-button";
 		//nodeimg.value = "&nbsp;";
 		node.appendChild(nodeimg);
@@ -125,7 +125,7 @@ class ScenePedagogieView {
     }
 
     // Load And UnLoad Pedagogical Playground Scene
-    static onloadPedagogieScene(scene: Scene) {
+    static onloadPedagogieScene(scene: Scene):void {
         var nameInput: HTMLTextAreaElement = <HTMLTextAreaElement>document.getElementById("nameTag")
         document.getElementById("PatchName").textContent = "Scène de   " + nameInput.value;
 	    document.getElementById("PatchName").style.cssText = "color:white";
@@ -140,7 +140,7 @@ class ScenePedagogieView {
     // 	recallScene(json);
     }
 
-    static onunloadPedagogieScene(scene){
+    static onunloadPedagogieScene(scene: Scene):void {
 
 	    scene.muteScene();
     }
