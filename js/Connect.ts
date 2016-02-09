@@ -56,12 +56,12 @@ class Connect {
             sourceDSP.getProcessor().connect(destinationDSP.getProcessor())
         }
     }
-    disconnectOutput(destination: IHTMLDivElementOut, source: ModuleClass) {
+    disconnectOutput(destination: IHTMLDivElementOut, source: ModuleClass):void {
         destination.audioNode.context.suspend();
     }
 
     // Disconnect Nodes in Web Audio Graph
-    disconnectModules(source: ModuleClass, destination: ModuleClass) {
+    disconnectModules(source: ModuleClass, destination: ModuleClass):void {
 	
         // We want to be dealing with the audio node elements from here on
         var sourceCopy: ModuleClass = source;
@@ -89,42 +89,42 @@ class Connect {
     /**************************************************/
 
     //----- Add connection to src and dst connections structures
-    saveConnection(src: ModuleClass, dst: ModuleClass, connector: Connector, connectorShape: ConnectorShape) {
+    saveConnection(source: ModuleClass, destination: ModuleClass, connector: Connector, connectorShape: ConnectorShape):void {
         this.connector = connector;
 	    connector.connectorShape = connectorShape;
-	    connector.destination = dst;
-	    connector.source = src;
+        connector.destination = destination;
+        connector.source = source;
     }
 
     /***************************************************************/
     /**************** Create/Break Connection(s) *******************/
     /***************************************************************/
 
-    createConnection(src, outtarget, dst, intarget) {
+    createConnection(source: ModuleClass, outtarget: HTMLElement, destination: ModuleClass, intarget: HTMLElement):void {
         var drag: Drag = new Drag();
-	    drag.startDraggingConnection(src, outtarget);
-	    drag.stopDraggingConnection(src, dst);
+        drag.startDraggingConnection(source, outtarget);
+        drag.stopDraggingConnection(source, destination);
     }
 
 
 
-    deleteConnection(drag:Drag): any {
+    deleteConnection(drag: Drag): boolean {
 
         this.breakSingleInputConnection(this.connector.connectorShape.source, this.connector.connectorShape.destination, this.connector);
         return true;
     }
 
-    breakSingleInputConnection( src, dst, connector ) {
+    breakSingleInputConnection(source: ModuleClass, destination: ModuleClass, connector: Connector) {
 
-	    this.disconnectModules(src, dst);
+        this.disconnectModules(source, destination);
 		
 	    // delete connection from src .outputConnections,
-	    if(src.getOutputConnections)
-		    src.removeOutputConnection(connector);
+        if (source.getOutputConnections)
+            source.removeOutputConnection(connector);
 
 	    // delete connection from dst .inputConnections,
-	    if(dst.getInputConnections)
-		    dst.removeInputConnection(connector);
+        if (destination.getInputConnections)
+            destination.removeInputConnection(connector);
 		
 	    // and delete the connectorShape
 	    if(connector.connectorShape)
@@ -132,19 +132,19 @@ class Connect {
     }
 
     // Disconnect a node from all its connections
-    disconnectModule( nodeElement) {
+    disconnectModule(module: ModuleClass) {
 
 	    //for all output nodes
-	    if(nodeElement.getOutputConnections && nodeElement.getOutputConnections()){
+        if (module.getOutputConnections && module.getOutputConnections()){
 	
-		    while(nodeElement.getOutputConnections().length>0)
-			    this.breakSingleInputConnection(nodeElement, nodeElement.getOutputConnections()[0].destination, nodeElement.getOutputConnections()[0]);
+            while (module.getOutputConnections().length>0)
+                this.breakSingleInputConnection(module, module.getOutputConnections()[0].destination, module.getOutputConnections()[0]);
 	    }
 	
 	    //for all input nodes 
-	    if(nodeElement.getInputConnections && nodeElement.getInputConnections()){
-		    while(nodeElement.getInputConnections().length>0)
-			    this.breakSingleInputConnection(nodeElement.getInputConnections()[0].source, nodeElement, nodeElement.getInputConnections()[0]);
+        if (module.getInputConnections && module.getInputConnections()){
+            while (module.getInputConnections().length>0)
+                this.breakSingleInputConnection(module.getInputConnections()[0].source, module, module.getInputConnections()[0]);
 	    }
     }
 

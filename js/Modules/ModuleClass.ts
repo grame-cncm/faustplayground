@@ -255,11 +255,11 @@ class ModuleClass implements IModule {
     //--- Update DSP in module 
     updateDSP(factory: Factory, module: ModuleClass): void {
 
-        var toDelete = module.fDSP;
+        var toDelete: IfDSP = module.fDSP;
 	
         // 	Save Cnx
-        var saveOutCnx = new Array().concat(module.fOutputConnections);
-        var saveInCnx = new Array().concat(module.fInputConnections);
+        var saveOutCnx: Connector[] = new Array().concat(module.fOutputConnections);
+        var saveInCnx: Connector[] = new Array().concat(module.fInputConnections);
 			
         // Delete old ModuleClass 
         var connect: Connect = new Connect();

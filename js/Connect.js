@@ -67,47 +67,47 @@ var Connect = (function () {
     /***************** Save Connection*****************/
     /**************************************************/
     //----- Add connection to src and dst connections structures
-    Connect.prototype.saveConnection = function (src, dst, connector, connectorShape) {
+    Connect.prototype.saveConnection = function (source, destination, connector, connectorShape) {
         this.connector = connector;
         connector.connectorShape = connectorShape;
-        connector.destination = dst;
-        connector.source = src;
+        connector.destination = destination;
+        connector.source = source;
     };
     /***************************************************************/
     /**************** Create/Break Connection(s) *******************/
     /***************************************************************/
-    Connect.prototype.createConnection = function (src, outtarget, dst, intarget) {
+    Connect.prototype.createConnection = function (source, outtarget, destination, intarget) {
         var drag = new Drag();
-        drag.startDraggingConnection(src, outtarget);
-        drag.stopDraggingConnection(src, dst);
+        drag.startDraggingConnection(source, outtarget);
+        drag.stopDraggingConnection(source, destination);
     };
     Connect.prototype.deleteConnection = function (drag) {
         this.breakSingleInputConnection(this.connector.connectorShape.source, this.connector.connectorShape.destination, this.connector);
         return true;
     };
-    Connect.prototype.breakSingleInputConnection = function (src, dst, connector) {
-        this.disconnectModules(src, dst);
+    Connect.prototype.breakSingleInputConnection = function (source, destination, connector) {
+        this.disconnectModules(source, destination);
         // delete connection from src .outputConnections,
-        if (src.getOutputConnections)
-            src.removeOutputConnection(connector);
+        if (source.getOutputConnections)
+            source.removeOutputConnection(connector);
         // delete connection from dst .inputConnections,
-        if (dst.getInputConnections)
-            dst.removeInputConnection(connector);
+        if (destination.getInputConnections)
+            destination.removeInputConnection(connector);
         // and delete the connectorShape
         if (connector.connectorShape)
             connector.connectorShape.parentNode.removeChild(connector.connectorShape);
     };
     // Disconnect a node from all its connections
-    Connect.prototype.disconnectModule = function (nodeElement) {
+    Connect.prototype.disconnectModule = function (module) {
         //for all output nodes
-        if (nodeElement.getOutputConnections && nodeElement.getOutputConnections()) {
-            while (nodeElement.getOutputConnections().length > 0)
-                this.breakSingleInputConnection(nodeElement, nodeElement.getOutputConnections()[0].destination, nodeElement.getOutputConnections()[0]);
+        if (module.getOutputConnections && module.getOutputConnections()) {
+            while (module.getOutputConnections().length > 0)
+                this.breakSingleInputConnection(module, module.getOutputConnections()[0].destination, module.getOutputConnections()[0]);
         }
         //for all input nodes 
-        if (nodeElement.getInputConnections && nodeElement.getInputConnections()) {
-            while (nodeElement.getInputConnections().length > 0)
-                this.breakSingleInputConnection(nodeElement.getInputConnections()[0].source, nodeElement, nodeElement.getInputConnections()[0]);
+        if (module.getInputConnections && module.getInputConnections()) {
+            while (module.getInputConnections().length > 0)
+                this.breakSingleInputConnection(module.getInputConnections()[0].source, module, module.getInputConnections()[0]);
         }
     };
     return Connect;
