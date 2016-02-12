@@ -1,7 +1,24 @@
-﻿class ModuleView {
+﻿
+/*				MODULEVIEW.JS
+	HAND-MADE JAVASCRIPT CLASS CONTAINING A FAUST MODULE  INTERFACE
+	
+	Interface structure
+	===================
+	DIV --> this.fModuleContainer
+    H6 --> fTitle
+    DIV --> fInterfaceContainer
+    DIV --> fCloseButton
+    DIV --> fFooter
+    IMG --> fEditImg
+	===================*/
+
+
+class ModuleView {
     fModuleContainer: HTMLElement;
-
-
+    fName: string;
+    fInterfaceContainer: HTMLInterfaceContainer;
+    fEditImg: HTMLfEdit;
+    fTitle: HTMLElement;
 
     createModuleView(ID: number, x: number, y: number, name: string, parent: HTMLElement, module: ModuleClass): void {
         var self: ModuleView = this
@@ -11,8 +28,7 @@
         // ----- the module is well deleted from the scene containing it
 
         //------- GRAPHICAL ELEMENTS OF MODULE
-        var fModuleContainer = self.fModuleContainer
-        fModuleContainer = document.createElement("div");
+        var fModuleContainer = document.createElement("div");
         fModuleContainer.className = "moduleFaust";
         fModuleContainer.style.left = "" + x + "px";
         fModuleContainer.style.top = "" + y + "px";
@@ -59,8 +75,11 @@
         
         //---- Redirect drop to main.js
 
-        var fName = name;
-
+        this.fName = name;
+        this.fModuleContainer = fModuleContainer;
+        this.fInterfaceContainer = fInterfaceContainer;
+        this.fEditImg = fEditImg;
+        this.fTitle = fTitle;
     }
 
 }

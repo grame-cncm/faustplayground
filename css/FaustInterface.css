@@ -148,6 +148,9 @@
 	text-transform: uppercase;
 	width: 23%;
 }
+footer>img {
+    cursor: pointer;
+}
 
 
 /*	---------------------------------------------------------------------------
