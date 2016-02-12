@@ -37,6 +37,7 @@ div.link a {
 
 line {
 	z-index:5;
+    cursor:pointer;
 }
 
 

@@ -1,3 +1,15 @@
+/*				MODULEVIEW.JS
+    HAND-MADE JAVASCRIPT CLASS CONTAINING A FAUST MODULE  INTERFACE
+    
+    Interface structure
+    ===================
+    DIV --> this.fModuleContainer
+    H6 --> fTitle
+    DIV --> fInterfaceContainer
+    DIV --> fCloseButton
+    DIV --> fFooter
+    IMG --> fEditImg
+    ===================*/
 var ModuleView = (function () {
     function ModuleView() {
     }
@@ -48,7 +60,11 @@ var ModuleView = (function () {
         // add the node into the soundfield
         parent.appendChild(fModuleContainer);
         //---- Redirect drop to main.js
-        var fName = name;
+        this.fName = name;
+        this.fModuleContainer = fModuleContainer;
+        this.fInterfaceContainer = fInterfaceContainer;
+        this.fEditImg = fEditImg;
+        this.fTitle = fTitle;
     };
     return ModuleView;
 })();

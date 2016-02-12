@@ -75,9 +75,6 @@ class ModuleClass implements IModule {
     private fOutputNode: HTMLDivElement;
     private fOutputConnections: Connector[] = [];
     private fInputConnections: Connector[] = [];
-    private fInterfaceContainer: HTMLInterfaceContainer;
-    private fEditImg: HTMLfEdit;
-    private fTitle: HTMLElement;
     eventDraggingHandler: (event: MouseEvent) => void;
     eventConnectorHandler: (event: Event) => void;
 
@@ -104,7 +101,8 @@ class ModuleClass implements IModule {
         this.deleteCallback = callback;
         this.eventDraggingHandler = function (event) { self.dragCallback(event, self) };
         //var eventHandler = function (event) { self.dragCallback(event, self) }
-
+        self.moduleView = new ModuleView();
+        self.moduleView.createModuleView(ID, x, y, name, parent, self)
 
     }
     /***************  PRIVATE METHODS  ******************************/
@@ -145,7 +143,7 @@ class ModuleClass implements IModule {
     
         // Then delete the visual element
         if (this.moduleView)
-            this.moduleView.parentNode.removeChild(this.moduleView);
+            this.moduleView.fModuleContainer.parentNode.removeChild(this.moduleView.fModuleContainer);
 
         this.deleteDSP(this.fDSP);
         this.deleteCallback(this, this.sceneParent);
@@ -181,7 +179,7 @@ class ModuleClass implements IModule {
     }
 	
     /********************* SHOW/HIDE MODULE IN SCENE **********************/
-    hideModule(): void { this.fModuleContainer.style.visibility = "hidden"; }
+    hideModule(): void { this.moduleView.fModuleContainer.style.visibility = "hidden"; }
 	
     /********************** GET/SET SOURCE/NAME/DSP ***********************/
     setSource(code: string): void {
@@ -258,11 +256,11 @@ class ModuleClass implements IModule {
         textArea.rows = 15;
         textArea.cols = 60;
         textArea.value = this.fSource;
-        module.fInterfaceContainer.appendChild(textArea);
+        module.moduleView.fInterfaceContainer.appendChild(textArea);
 
-        module.fEditImg.src = App.baseImg + "enter.png";
-        module.fEditImg.onclick = function (event) { module.recompileSource(event, module) };
-        module.fEditImg.area = textArea;
+        module.moduleView.fEditImg.src = App.baseImg + "enter.png";
+        module.moduleView.fEditImg.onclick = function (event) { module.recompileSource(event, module) };
+        module.moduleView.fEditImg.area = textArea;
     }
 
     //---- Update ModuleClass with new name/code source
@@ -280,11 +278,11 @@ class ModuleClass implements IModule {
         var buttonImage: HTMLfEdit = <HTMLfEdit>event.target;
         var dsp_code: string = buttonImage.area.value;
 
-        module.update(this.fTitle.textContent, dsp_code);
+        module.update(this.moduleView.fTitle.textContent, dsp_code);
         module.recallParams();
 
-        module.fEditImg.src = App.baseImg + "edit.png";
-        module.fEditImg.onclick = function () { module.edit(module) };
+        module.moduleView.fEditImg.src = App.baseImg + "edit.png";
+        module.moduleView.fEditImg.onclick = function () { module.edit(module) };
     }
 	
     /***************** CREATE/DELETE the DSP Interface ********************/
@@ -292,21 +290,21 @@ class ModuleClass implements IModule {
     // Fill fInterfaceContainer with the DSP's Interface (--> see FaustInterface.js)
     createFaustInterface(): void {
 
-        this.fTitle.textContent = this.fName;
+        this.moduleView.fTitle.textContent = this.fName;
         var faustInterface: FaustInterface = new FaustInterface()
         faustInterface.parse_ui(JSON.parse(this.fDSP.json()).ui, this);
     }
     private deleteFaustInterface(): void {
 
-        while (this.fInterfaceContainer.childNodes.length != 0)
-            this.fInterfaceContainer.removeChild(this.fInterfaceContainer.childNodes[0]);
+        while (this.moduleView.fInterfaceContainer.childNodes.length != 0)
+            this.moduleView.fInterfaceContainer.removeChild(this.moduleView.fInterfaceContainer.childNodes[0]);
     }
 
     getModuleContainer(): HTMLElement {
-        return this.fModuleContainer;
+        return this.moduleView.fModuleContainer;
     }
     getInterfaceContainer(): HTMLInterfaceContainer {
-        return this.fInterfaceContainer;
+        return this.moduleView.fInterfaceContainer;
     }
 
     //---- Generic callback for Faust Interface
@@ -352,7 +350,7 @@ class ModuleClass implements IModule {
     // Save graphical parameters of a Faust Node
     private saveParams(): void {
 
-        var interfaceElements: NodeList = this.fInterfaceContainer.childNodes;
+        var interfaceElements: NodeList = this.moduleView.fInterfaceContainer.childNodes;
 
         for (var j = 0; j < interfaceElements.length; j++) {
             var interfaceElement: HTMLinterfaceElement = <HTMLinterfaceElement>interfaceElements[j];
@@ -382,32 +380,32 @@ class ModuleClass implements IModule {
 /******************* GET/SET INPUT/OUTPUT NODES **********************/
     addInputOutputNodes(): void{
         var module: ModuleClass = this;
-        if (this.fDSP.getNumInputs() > 0 && this.fName!="input") {
+        if (this.fDSP.getNumInputs() > 0 && this.moduleView.fName != "input") {
 		
 			this.fInputNode=document.createElement("div");
 			this.fInputNode.className="node node-input";
 	    	this.addCnxListener(this.fInputNode, "mousedown",module);
 			this.fInputNode.innerHTML = "<span class='node-button'>&nbsp;</span>";
-		
-			this.fModuleContainer.appendChild(this.fInputNode);
+
+            this.moduleView.fModuleContainer.appendChild(this.fInputNode);
 		}
-			
-        if (this.fDSP.getNumOutputs() > 0 && this.fName != "output") {
+
+        if (this.fDSP.getNumOutputs() > 0 && this.moduleView.fName != "output") {
 		
 			this.fOutputNode=document.createElement("div");
 			this.fOutputNode.className="node node-output";
             this.addCnxListener(this.fOutputNode, "mousedown",module);
 			this.fOutputNode.innerHTML = "<span class='node-button'>&nbsp;</span>";
-		
-			this.fModuleContainer.appendChild(this.fOutputNode);
+
+            this.moduleView.fModuleContainer.appendChild(this.fOutputNode);
 		}		
     }
     private deleteInputOutputNodes(): void{
-		if(this.fInputNode)
-			this.fModuleContainer.removeChild(this.fInputNode);
+        if (this.fInputNode)
+            this.moduleView.fModuleContainer.removeChild(this.fInputNode);
 	
-		if(this.fOutputNode)
-			this.fModuleContainer.removeChild(this.fOutputNode);	
+        if (this.fOutputNode)
+            this.moduleView.fModuleContainer.removeChild(this.fOutputNode);	
     }
     // Added for physical Input and Output which are create outside of ModuleClass (--> see Playground.js or Pedagogie.js)
     setInputOutputNodes(input: HTMLDivElement, output: HTMLDivElement): void{
@@ -461,8 +459,8 @@ class ModuleClass implements IModule {
     }
 
     isPointInNode(x: number, y: number): boolean {
-	
-        if (this.fModuleContainer && this.fModuleContainer.getBoundingClientRect().left < x && x < this.fModuleContainer.getBoundingClientRect().right && this.fModuleContainer.getBoundingClientRect().top < y && y < this.fModuleContainer.getBoundingClientRect().bottom) {
+
+        if (this.moduleView.fModuleContainer && this.moduleView.fModuleContainer.getBoundingClientRect().left < x && x < this.moduleView.fModuleContainer.getBoundingClientRect().right && this.moduleView.fModuleContainer.getBoundingClientRect().top < y && y < this.moduleView.fModuleContainer.getBoundingClientRect().bottom) {
             return true;
         }
 		return false;
