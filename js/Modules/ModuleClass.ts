@@ -63,7 +63,7 @@ class ModuleClass implements IModule {
     x: number;
     y: number;
 
-    private fModuleContainer: HTMLElement;
+    private moduleView: ModuleView;
     private fDSP: IfDSP;
     private deleteCallback: (module: ModuleClass,scene:Scene) => void;
     private fName: string;
@@ -78,8 +78,8 @@ class ModuleClass implements IModule {
     private fInterfaceContainer: HTMLInterfaceContainer;
     private fEditImg: HTMLfEdit;
     private fTitle: HTMLElement;
-    private eventDraggingHandler: (event: MouseEvent) => void;
-    private eventConnectorHandler: (event: Event) => void;
+    eventDraggingHandler: (event: MouseEvent) => void;
+    eventConnectorHandler: (event: Event) => void;
 
 
 
@@ -102,62 +102,9 @@ class ModuleClass implements IModule {
         // ----- Delete Callback was added to make sure 
         // ----- the module is well deleted from the scene containing it
         this.deleteCallback = callback;
-
-        //------- GRAPHICAL ELEMENTS OF MODULE
-        this.fModuleContainer = document.createElement("div");
-        this.fModuleContainer.className = "moduleFaust";
-        
-        this.fModuleContainer.style.left = "" + x + "px";
-        this.fModuleContainer.style.top = "" + y + "px";
-
-        this.fTitle = document.createElement("h6");
-        this.fTitle.className = "module-title";
-        this.fTitle.textContent = "";
-        this.fModuleContainer.appendChild(this.fTitle);
-
-        this.fInterfaceContainer = <HTMLInterfaceContainer>document.createElement("div");
-        this.fInterfaceContainer.className = "content";
-        this.fModuleContainer.appendChild(this.fInterfaceContainer);
         this.eventDraggingHandler = function (event) { self.dragCallback(event, self) };
         //var eventHandler = function (event) { self.dragCallback(event, self) }
-        this.fModuleContainer.addEventListener("mousedown", self.eventDraggingHandler, true);
 
-        
-
-
-
-        if (name == "input") {
-            this.fModuleContainer.id = "moduleInput";
-        } else if (name == "output") {
-            this.fModuleContainer.id = "moduleOutput";
-        } else {
-            var fFooter: HTMLElement = document.createElement("footer");
-            fFooter.id = "moduleFooter";
-            this.fModuleContainer.id = "module" + ID;
-            var fCloseButton: HTMLAnchorElement = document.createElement("a");
-            fCloseButton.href = "#";
-            fCloseButton.className = "close";
-            fCloseButton.onclick = function () { self.deleteModule(); };
-            this.fModuleContainer.appendChild(fCloseButton);
-            this.fEditImg = <HTMLfEdit>document.createElement("img");
-            this.fEditImg.src = App.baseImg + "edit.png";
-
-            this.fEditImg.onclick = function () { self.edit(self); };
-            fFooter.appendChild(this.fEditImg);
-            this.fModuleContainer.appendChild(fFooter);
-
-        }
-        
-
-        // add the node into the soundfield
-        parent.appendChild(this.fModuleContainer);
-        
-        //---- Redirect drop to main.js
-        this.fModuleContainer.ondrop = function (e) {
-            self.sceneParent.parent.uploadOn(self.sceneParent.parent, self, 0, 0, e);
-            return true;
-        };
-        this.fName = name;
 
     }
     /***************  PRIVATE METHODS  ******************************/
@@ -197,8 +144,8 @@ class ModuleClass implements IModule {
         this.deleteFaustInterface();	
     
         // Then delete the visual element
-        if (this.fModuleContainer)
-            this.fModuleContainer.parentNode.removeChild(this.fModuleContainer);
+        if (this.moduleView)
+            this.moduleView.parentNode.removeChild(this.moduleView);
 
         this.deleteDSP(this.fDSP);
         this.deleteCallback(this, this.sceneParent);
@@ -301,7 +248,7 @@ class ModuleClass implements IModule {
         // 		    faust.deleteDSPInstance(todelete);
     }
     /******************** EDIT SOURCE & RECOMPILE *************************/
-    private edit(module: ModuleClass): void {
+    edit(module: ModuleClass): void {
 
         module.saveParams();
 
