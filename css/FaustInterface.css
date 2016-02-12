@@ -50,12 +50,13 @@
 	background-color:white;
 	color:orange;
 	border-radius: 5px;
-	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.4);
 	display: inline-block;
 	position: absolute;
 	margin-left:auto;
 	margin-right:auto;
 	z-index:5;
+    cursor:move;
 }
 
 .moduleFaust .content {
