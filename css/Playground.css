@@ -10,42 +10,56 @@
 #faustweburl{
 	border:0px; 
 	text-align:center; 
-	font-size:16px; 
+	font-size:12px; 
 	background-color:transparent; 
 	outline: 0px solid transparent; 
 	text-align:center;
+    position:relative;
 }
-
+#optionExportContainer{
+    position:relative;
+    width:100%
+}
 #refreshButton{
-	position:absolute; 
-	left:0%; 
-	top:25px;
+	position:relative; 
+    width: 30%;
+    float:left;
 }
 
 #selectDiv{
-	position:absolute; 
-	left:30%; 
-	top:35px;
+	position:relative; 
+    width: 70%;
+    float:left;
 }
 
 #plateforms{
-	float:bottom; 
+
 	display:block; 
 	margin-bottom:5px; 
-	padding:0;
 }
 
 #architectures{
-	float:bottom; 
+
 	display:block; 
 	margin-bottom:15px; 
-	padding:0;
 }
 
 #exportButton{
-	position:absolute; 
-	top:20%; 
-	left:25%;
+	position:relative; 
+    margin:0 auto;
+    text-align: center;
+    border: solid white 0;
+    border-radius: 20px;
+    color: #4c4c4c;
+    padding-top: 5px;
+    padding-right: 10px;
+    padding-bottom: 5px;
+    padding-left: 10px;
+    text-transform: uppercase;
+    font-size: 20px;
+    box-shadow: 0 0 5px#424242;
+    width:100%;
+
 }
 
 #ChrisLine{
@@ -68,6 +82,11 @@
 
 #qrcodeDiv{
 	position: relative; 
-	top:70%; 
+    margin-top: 15px;
+}
+
+#qrcodeDiv>a>div {
+    padding: 0!important;
+    box-shadow: 0 0 3px grey;
 }
 

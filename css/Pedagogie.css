@@ -7,11 +7,15 @@
 	z-index:-1;
 }
 
-#exportButton{
-	position: relative; 
-	width: 300px; 
-	top:20%; 
-	left:35%;
+#exportButton>a {
+    box-shadow: 0 0 10px grey;
+    border-radius: 50px;
+    margin-bottom: 20px;
+    display: block;
+    cursor: pointer;
+}
+#exportButton>a:hover{
+    box-shadow: 0 0 10px black;
 }
 
 #subtitleButton{

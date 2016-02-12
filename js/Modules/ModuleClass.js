@@ -21,7 +21,8 @@
 /// <reference path="../Dragging.ts"/>
 /// <reference path="../Connect.ts"/>
 /// <reference path="../Modules/FaustInterface.ts"/>
-/// <reference path="../main.ts"/>
+/// <reference path="../Main.ts"/>
+/// <reference path="../App.ts"/>
 "use strict";
 var ModuleClass = (function () {
     function ModuleClass(id, x, y, name, sceneParent, htmlElementModuleContainer, removeModuleCallBack) {
@@ -45,7 +46,6 @@ var ModuleClass = (function () {
         //------- GRAPHICAL ELEMENTS OF MODULE
         this.fModuleContainer = document.createElement("div");
         this.fModuleContainer.className = "moduleFaust";
-        this.fModuleContainer.id = "module" + ID;
         this.fModuleContainer.style.left = "" + x + "px";
         this.fModuleContainer.style.top = "" + y + "px";
         this.fTitle = document.createElement("h6");
@@ -58,18 +58,27 @@ var ModuleClass = (function () {
         this.eventDraggingHandler = function (event) { self.dragCallback(event, self); };
         //var eventHandler = function (event) { self.dragCallback(event, self) }
         this.fModuleContainer.addEventListener("mousedown", self.eventDraggingHandler, true);
-        var fCloseButton = document.createElement("a");
-        fCloseButton.href = "#";
-        fCloseButton.className = "close";
-        fCloseButton.onclick = function () { self.deleteModule(); };
-        this.fModuleContainer.appendChild(fCloseButton);
-        var fFooter = document.createElement("footer");
-        fFooter.id = "moduleFooter";
-        this.fEditImg = document.createElement("img");
-        this.fEditImg.src = App.baseImg + "edit.png";
-        this.fEditImg.onclick = function () { self.edit(self); };
-        fFooter.appendChild(this.fEditImg);
-        this.fModuleContainer.appendChild(fFooter);
+        if (name == "input") {
+            this.fModuleContainer.id = "moduleInput";
+        }
+        else if (name == "output") {
+            this.fModuleContainer.id = "moduleOutput";
+        }
+        else {
+            var fFooter = document.createElement("footer");
+            fFooter.id = "moduleFooter";
+            this.fModuleContainer.id = "module" + ID;
+            var fCloseButton = document.createElement("a");
+            fCloseButton.href = "#";
+            fCloseButton.className = "close";
+            fCloseButton.onclick = function () { self.deleteModule(); };
+            this.fModuleContainer.appendChild(fCloseButton);
+            this.fEditImg = document.createElement("img");
+            this.fEditImg.src = App.baseImg + "edit.png";
+            this.fEditImg.onclick = function () { self.edit(self); };
+            fFooter.appendChild(this.fEditImg);
+            this.fModuleContainer.appendChild(fFooter);
+        }
         // add the node into the soundfield
         parent.appendChild(this.fModuleContainer);
         //---- Redirect drop to main.js
@@ -291,14 +300,14 @@ var ModuleClass = (function () {
     /******************* GET/SET INPUT/OUTPUT NODES **********************/
     ModuleClass.prototype.addInputOutputNodes = function () {
         var module = this;
-        if (this.fDSP.getNumInputs() > 0) {
+        if (this.fDSP.getNumInputs() > 0 && this.fName != "input") {
             this.fInputNode = document.createElement("div");
             this.fInputNode.className = "node node-input";
             this.addCnxListener(this.fInputNode, "mousedown", module);
             this.fInputNode.innerHTML = "<span class='node-button'>&nbsp;</span>";
             this.fModuleContainer.appendChild(this.fInputNode);
         }
-        if (this.fDSP.getNumOutputs() > 0) {
+        if (this.fDSP.getNumOutputs() > 0 && this.fName != "output") {
             this.fOutputNode = document.createElement("div");
             this.fOutputNode.className = "node node-output";
             this.addCnxListener(this.fOutputNode, "mousedown", module);

@@ -24,7 +24,8 @@
     DEPENDENCIES :
         - faust.grame.fr/www/pedagogie/index.json
 */
-/// <reference path="../main.ts"/>
+/// <reference path="../App.ts"/>
+/// <reference path="../Main.ts"/>
 var Library = (function () {
     function Library() {
     }
@@ -45,6 +46,9 @@ var Library = (function () {
         var library = this;
         libraryDiv.onmouseover = function (event) { library.changeLibraryState(event, library); };
         libraryDiv.onmouseout = function (event) { library.changeLibraryState(event, library); };
+        document.getElementById("libraryTitle").style.cssText = " -webkit-transform:rotate(270deg); -moz-transform:rotate(270deg); -o-transform: rotate(270deg); display:block; position: relative; top:40%; right:250%; width:300px; font-family: 'Droid Serif', Georgia, serif;  font-size:20px; z-index:3; margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px;";
+        document.getElementById("library").style.cssText = "width:50px;";
+        document.getElementById("arrow").style.cssText = "display: block; margin-left: auto; margin-right: auto;";
     };
     /***************  OPEN/CLOSE LIBRARY DIV  ***************************/
     Library.prototype.changeLibraryState = function (event, library) {
@@ -115,7 +119,7 @@ var Library = (function () {
             if (libraryDiv.childNodes[i] != arrow && libraryDiv.childNodes[i] != document.getElementById("libraryTitle"))
                 libraryDiv.removeChild(libraryDiv.childNodes[i]);
         }
-        document.getElementById("libraryTitle").style.cssText = " writing-mode:tb-rl; -webkit-transform:rotate(270deg); -moz-transform:rotate(270deg); -o-transform: rotate(270deg); display:block; position: relative; top:50%; right:250%; width:300px; font-family: 'Droid Serif', Georgia, serif;  font-size:20px; z-index:3; margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px;";
+        document.getElementById("libraryTitle").style.cssText = "  -webkit-transform:rotate(270deg); -moz-transform:rotate(270deg); -o-transform: rotate(270deg); display:block; position: relative; top:40%; right:250%; width:300px; font-family: 'Droid Serif', Georgia, serif;  font-size:20px; z-index:3; margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px;";
         document.getElementById("library").style.cssText = "width:50px;";
         document.getElementById("arrow").style.cssText = "display: block; margin-left: auto; margin-right: auto;";
     };
@@ -178,4 +182,4 @@ var Library = (function () {
     };
     return Library;
 })();
-//# sourceMappingURL=Library.js.map
+//# sourceMappingURL=library.js.map

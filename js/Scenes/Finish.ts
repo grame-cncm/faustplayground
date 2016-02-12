@@ -11,7 +11,8 @@
 /// <reference path="../Pedagogie/Tooltips.ts"/>
 /// <reference path="../EquivalentFaust.ts"/>
 /// <reference path="../ExportLib.ts"/>
-/// <reference path="../main.ts"/>
+/// <reference path="../Main.ts"/>
+/// <reference path="../App.ts"/>
 
 
 

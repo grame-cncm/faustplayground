@@ -70,7 +70,7 @@ class Export{
         }
     }
 
-    uploadTargets():void
+    public uploadTargets=()=>
     {
 	    this.clearComboBox('platforms');
 	    this.clearComboBox('architectures');

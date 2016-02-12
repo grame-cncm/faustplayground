@@ -20,7 +20,8 @@ class ScenePlaygroundView{
 **************************  INITIALIZATION **************************
 ********************************************************************/
     expor: Export = new Export()
-    initNormalScene(scene) {
+
+    initNormalScene(scene: Scene) {
         var container: HTMLDivElement = scene.getSceneContainer();
 
         var svgCanvas = <SVGElement>document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -64,12 +65,15 @@ class ScenePlaygroundView{
         destDiv.appendChild(fwurl);
 
         var subfooter: HTMLDivElement = document.createElement('div');
+        subfooter.id="optionExportContainer"
         destDiv.appendChild(subfooter);
 
         var refButton: HTMLDivElement = document.createElement("div");
         refButton.id = "refreshButton";
         refButton.onclick = this.expor.uploadTargets;
-        refButton.innerHTML = '<svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="50.000000pt" height="50.000000pt" viewBox="0 0 50.000000 50.000000" preserveAspectRatio="xMidYMid meet"><g transform="translate(0.000000,50.000000) scale(0.100000,-0.100000)" fill="#000000" stroke="none"> <path d="M186 309 c-37 -29 -37 -89 0 -118 28 -22 69 -27 93 -12 23 15 3 30 -33 24 -29 -4 -37 -1 -51 21 -16 24 -16 28 -1 51 18 27 63 34 84 13 17 -17 15 -31 -3 -24 -20 7 -19 1 6 -28 l22 -25 18 24 c20 25 25 40 9 30 -5 -3 -16 7 -24 23 -25 47 -75 56 -120 21z"/></g></svg>';
+
+        refButton.innerHTML = '<svg version="1.0" id="svgRefreshButton" xmlns="http://www.w3.org/2000/svg" width="50.000000pt" height="50.000000pt" viewBox="0 0 50.000000 50.000000" preserveAspectRatio="xMidYMid meet"><g transform="translate(0.000000,50.000000) scale(0.100000,-0.100000)" fill="#000000" stroke="none"> <path d="M186 309 c-37 -29 -37 -89 0 -118 28 -22 69 -27 93 -12 23 15 3 30 -33 24 -29 -4 -37 -1 -51 21 -16 24 -16 28 -1 51 18 27 63 34 84 13 17 -17 15 -31 -3 -24 -20 7 -19 1 6 -28 l22 -25 18 24 c20 25 25 40 9 30 -5 -3 -16 7 -24 23 -25 47 -75 56 -120 21z"/></g></svg>';
+        
         subfooter.appendChild(refButton);
 
         var selectDiv: HTMLDivElement= document.createElement("div");
@@ -113,11 +117,6 @@ class ScenePlaygroundView{
         srcDiv.className = "source";
         container.appendChild(srcDiv);
 
-        var inText: HTMLSpanElement = document.createElement("span");
-        inText.className = "text";
-        inText.textContent = "PHYSICAL INPUT";
-        srcDiv.appendChild(inText);
-
         var imageDiv: HTMLDivElement = document.createElement('div');
         imageDiv.id = "logoDiv";
         srcDiv.appendChild(imageDiv);
@@ -127,24 +126,11 @@ class ScenePlaygroundView{
         imageLogo.src = "img/grame.png";
         imageDiv.appendChild(imageLogo);
 
-        var outText: HTMLSpanElement = document.createElement("span");
-        outText.className = "text";
-        outText.textContent = "PHYSICAL OUTPUT";
-        destDiv.appendChild(outText);
-
-        var node: HTMLDivElement = document.createElement("div");
-        node.className = "node node-input";
-        destDiv.appendChild(node);
-
-        var nodeimg: HTMLSpanElement = document.createElement("span");
-        nodeimg.className = "node-button";
-        //nodeimg.value = "&nbsp;";
-        node.appendChild(nodeimg);
         scene.integrateSceneInBody();
         var playgroundView: ScenePlaygroundView = this;
         scene.integrateInput(function () {
             scene.integrateOutput(function () {
-                scene.getAudioOutput().setInputOutputNodes(node, null);
+                //scene.getAudioOutput().setInputOutputNodes(node, null);
 
                 playgroundView.onloadNormalScene(scene);
                 playgroundView.expor.uploadTargets();
@@ -153,8 +139,8 @@ class ScenePlaygroundView{
     }
 
 
-    onEnterKey(e:KeyboardEvent):void {
-        
+
+    onEnterKey = (e: KeyboardEvent) =>{    
         if (!e) { e = <KeyboardEvent>window.event; } 
 	
 	    if (e.keyCode == 13){ 

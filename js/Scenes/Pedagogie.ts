@@ -12,7 +12,11 @@
 
 /// <reference path="../Scenes/SceneClass.ts"/>
 /// <reference path="../Pedagogie/Tooltips.ts"/>
-/// <reference path="../main.ts"/>
+/// <reference path="../Pedagogie/library.ts"/>
+
+/// <reference path="../Main.ts"/>
+/// <reference path="../App.ts"/>
+
 
 
 "use strict";
@@ -53,22 +57,6 @@ class ScenePedagogieView {
         var footer: HTMLDivElement = document.createElement("div");
 		footer.id = "footer";
 		container.appendChild(footer);
-	
-        var equButton: HTMLDivElement = document.createElement("div");
-		equButton.id = "exportButton";
-		equButton.className = "grayButton";
-		footer.appendChild(equButton);
-
-        var equText: HTMLAnchorElement = document.createElement("a");
-		equText.id = "cfe";
-        equText.textContent = "FINALISE TON APPLICATION";
-        equButton.onclick = function () { scene.parent.nextScene(); };
-		equButton.appendChild(equText);
-	
-        var subText: HTMLDivElement = document.createElement("div");
-		subText.id = "subtitleButton";		
-		subText.textContent = "pour l'emmener avec toi";
-		equButton.appendChild(subText);
 
         var linkWilson: HTMLDivElement = document.createElement("div");
 		linkWilson.className = "link";
@@ -93,19 +81,32 @@ class ScenePedagogieView {
 		destDiv.className = "destination";
 		container.appendChild(destDiv);
 
-        var outText: HTMLSpanElement = document.createElement("span");
-		outText.className = "text";
-		outText.textContent = "SORTIE AUDIO";
-		destDiv.appendChild(outText);
-	
-        var node: HTMLDivElement = document.createElement("div");
-		node.className = "node node-input";
-		destDiv.appendChild(node);
 
-        var nodeimg: HTMLSpanElement = document.createElement("span");
-		nodeimg.className = "node-button";
-		//nodeimg.value = "&nbsp;";
-		node.appendChild(nodeimg);
+
+        var equButton: HTMLDivElement = document.createElement("div");
+        equButton.id = "exportButton";
+        equButton.className = "grayButton";
+        destDiv.appendChild(equButton);
+
+        var equText: HTMLAnchorElement = document.createElement("a");
+        equText.id = "cfe";
+        equText.textContent = "FINALISE TON APPLICATION";
+        equButton.onclick = function () { scene.parent.nextScene(); };
+        equButton.appendChild(equText);
+
+        var subText: HTMLDivElement = document.createElement("div");
+        subText.id = "subtitleButton";
+        subText.textContent = "pour l'emmener avec toi";
+        equButton.appendChild(subText);
+	
+  //      var node: HTMLDivElement = document.createElement("div");
+		//node.className = "node node-input";
+		//destDiv.appendChild(node);
+
+  //      var nodeimg: HTMLSpanElement = document.createElement("span");
+		//nodeimg.className = "node-button";
+		////nodeimg.value = "&nbsp;";
+		//node.appendChild(nodeimg);
 
 //Integrate Output
 	    scene.integrateSceneInBody();
@@ -115,7 +116,7 @@ class ScenePedagogieView {
             if (App.isTooltipEnabled)
                 Tooltips.changeSceneToolTip(1);
 			
-            scene.getAudioOutput().setInputOutputNodes(node, null);
+            //scene.getAudioOutput().setInputOutputNodes(node, null);
             var library: Library = new Library;
             library.initLibrary(container);
 

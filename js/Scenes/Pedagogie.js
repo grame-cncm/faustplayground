@@ -11,7 +11,9 @@
 */
 /// <reference path="../Scenes/SceneClass.ts"/>
 /// <reference path="../Pedagogie/Tooltips.ts"/>
-/// <reference path="../main.ts"/>
+/// <reference path="../Pedagogie/library.ts"/>
+/// <reference path="../Main.ts"/>
+/// <reference path="../App.ts"/>
 "use strict";
 var ScenePedagogieView = (function () {
     function ScenePedagogieView() {
@@ -45,19 +47,6 @@ var ScenePedagogieView = (function () {
         var footer = document.createElement("div");
         footer.id = "footer";
         container.appendChild(footer);
-        var equButton = document.createElement("div");
-        equButton.id = "exportButton";
-        equButton.className = "grayButton";
-        footer.appendChild(equButton);
-        var equText = document.createElement("a");
-        equText.id = "cfe";
-        equText.textContent = "FINALISE TON APPLICATION";
-        equButton.onclick = function () { scene.parent.nextScene(); };
-        equButton.appendChild(equText);
-        var subText = document.createElement("div");
-        subText.id = "subtitleButton";
-        subText.textContent = "pour l'emmener avec toi";
-        equButton.appendChild(subText);
         var linkWilson = document.createElement("div");
         linkWilson.className = "link";
         linkWilson.style.right = "10px";
@@ -76,23 +65,32 @@ var ScenePedagogieView = (function () {
         destDiv.id = "sceneOutput";
         destDiv.className = "destination";
         container.appendChild(destDiv);
-        var outText = document.createElement("span");
-        outText.className = "text";
-        outText.textContent = "SORTIE AUDIO";
-        destDiv.appendChild(outText);
-        var node = document.createElement("div");
-        node.className = "node node-input";
-        destDiv.appendChild(node);
-        var nodeimg = document.createElement("span");
-        nodeimg.className = "node-button";
-        //nodeimg.value = "&nbsp;";
-        node.appendChild(nodeimg);
+        var equButton = document.createElement("div");
+        equButton.id = "exportButton";
+        equButton.className = "grayButton";
+        destDiv.appendChild(equButton);
+        var equText = document.createElement("a");
+        equText.id = "cfe";
+        equText.textContent = "FINALISE TON APPLICATION";
+        equButton.onclick = function () { scene.parent.nextScene(); };
+        equButton.appendChild(equText);
+        var subText = document.createElement("div");
+        subText.id = "subtitleButton";
+        subText.textContent = "pour l'emmener avec toi";
+        equButton.appendChild(subText);
+        //      var node: HTMLDivElement = document.createElement("div");
+        //node.className = "node node-input";
+        //destDiv.appendChild(node);
+        //      var nodeimg: HTMLSpanElement = document.createElement("span");
+        //nodeimg.className = "node-button";
+        ////nodeimg.value = "&nbsp;";
+        //node.appendChild(nodeimg);
         //Integrate Output
         scene.integrateSceneInBody();
         scene.integrateOutput(function (sceneView) {
             if (App.isTooltipEnabled)
                 Tooltips.changeSceneToolTip(1);
-            scene.getAudioOutput().setInputOutputNodes(node, null);
+            //scene.getAudioOutput().setInputOutputNodes(node, null);
             var library = new Library;
             library.initLibrary(container);
             scene.parent.activateAudioOutput(scene.fAudioOutput);

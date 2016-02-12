@@ -5,7 +5,8 @@
         - SceneClass.js
         - ModuleClass.js
 */
-/// <reference path="../main.ts"/>
+/// <reference path="../Main.ts"/>
+/// <reference path="../App.ts"/>
 /// <reference path="../Scenes/SceneClass.ts"/>
 var Tooltips = (function () {
     function Tooltips() {

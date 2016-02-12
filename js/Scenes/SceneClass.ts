@@ -10,7 +10,8 @@
 /// <reference path="../Modules/ModuleClass.ts"/>
 /// <reference path="../Connect.ts"/>
 /// <reference path="../webaudio-asm-wrapper.d.ts"/>
-/// <reference path="../main.ts"/>
+/// <reference path="../Main.ts"/>
+/// <reference path="../App.ts"/>
 
 
 "use strict";
@@ -92,20 +93,23 @@ class Scene {
     }
 
     /*************** ACTIONS ON AUDIO IN/OUTPUT ***************************/
-    integrateInput(callBackIntegrateOutput:()=>void) {
-
-        this.fAudioInput = new ModuleClass(App.idX++, 0, 0, "input", this, this.fSceneContainer,  this.removeModule);
-        this.fAudioInput.hideModule();
+    integrateInput(callBackIntegrateOutput: () => void) {
+        var positionInput: PositionModule = this.positionInputModule();
+        this.fAudioInput = new ModuleClass(App.idX++, positionInput.x, positionInput.y, "input", this, this.fSceneContainer, this.removeModule);
+        //this.fAudioInput.hideModule();
         var scene: Scene = this;
-        this.parent.compileFaust("input", "process=_,_;", 0, 0, function callback (factory, scene) { scene.integrateAudioInput(factory,scene) });
+        this.parent.compileFaust("input", "process=_,_;", positionInput.x, positionInput.y, function callback(factory, scene) { scene.integrateAudioInput(factory, scene) });
+        this.fAudioInput.addInputOutputNodes();
         callBackIntegrateOutput();
     }
     integrateOutput(callBackKeepGoingOnWithInit: (sceneView?: ScenePlaygroundView) => void) {
+        var positionOutput: PositionModule = this.positionOutputModule();
         var scene: Scene = this;
-        this.fAudioOutput = new ModuleClass(App.idX++, 0, 0, "output", this, this.fSceneContainer, this.removeModule );
-        this.fAudioOutput.hideModule();
-        this.parent.compileFaust("output", "process=_,_;", 0, 0, function callback (factory, scene) { scene.integrateAudioOutput(factory,scene) });
-
+        this.fAudioOutput = new ModuleClass(App.idX++, positionOutput.x, positionOutput.y, "output", this, this.fSceneContainer, this.removeModule);
+        
+        //this.fAudioOutput.hideModule()
+        this.parent.compileFaust("output", "process=_,_;", positionOutput.x, positionOutput.y, function callback(factory, scene) { scene.integrateAudioOutput(factory, scene) });
+        this.fAudioOutput.addInputOutputNodes();
         callBackKeepGoingOnWithInit();
     }
 
@@ -291,6 +295,18 @@ class Scene {
                     connect.createConnection(faustModule, faustModule.getOutputNode(), dst, dst.getInputNode());
             }
         }
+    }
+    positionInputModule(): PositionModule {
+        var position: PositionModule = new PositionModule();
+        position.x = 10;
+        position.y = window.innerHeight / 2;
+        return position
+    }
+    positionOutputModule(): PositionModule {
+        var position: PositionModule = new PositionModule();
+        position.x = window.innerWidth - 98;
+        position.y = window.innerHeight / 2;
+        return position
     }
 }
 

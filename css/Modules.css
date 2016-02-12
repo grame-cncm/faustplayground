@@ -30,17 +30,11 @@
  *	:: Input
  *	-------------------------------------------------------------------------*/
 #input {
-	background:
-		url('../img/ico-speaker.png') 50% 50% no-repeat,
-		url('../img/output-bkg.gif') 0 0 repeat;
-	border-left: 1px solid #363636;
-	box-shadow: 0 0 3px rgba(0,0,0, .4);
+	
 	bottom: 0;
 	display: block;
-	height: 100%;
 	position: fixed;
-	padding-right:20px;
-	padding-left:20px;
+	padding:10px;
 	left: 0;
 	width: 8%;
 	z-index: 1;
@@ -71,19 +65,18 @@
  *	-------------------------------------------------------------------------*/
 #sceneOutput {
 	background:
-		url('../img/ico-speaker.png') 50% 50% no-repeat,
 		url('../img/output-bkg.gif') 0 0 repeat;
 	box-shadow: 0 0 3px rgba(0,0,0, .4);
-	bottom: 0;
 	display: block;
-	height: 100%;
 	position: fixed;
 	padding-right:20px;
 	padding-left:20px;
-	right: 0%;
-	top: 0%;
-	width: 15%;
+	right: 0;
+	top: 0;
+	width: 150px;
 	z-index: 4;
+    border-radius: 0px 0px 0px 20px;
+    padding:10px;
 }
 
 
@@ -106,6 +99,11 @@
 
 #sceneOutput .architectures, #sceneOutput .platforms{
 	width: 100%; 
+    margin-top: 7px;
+    border-radius: 32px;
+}
+#svgRefreshButton{
+    width: 100%;
 }
 
 #sceneOutput .qrcodeDiv{

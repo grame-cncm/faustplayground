@@ -265,6 +265,8 @@ var Drag = (function () {
         // Stop capturing mousemove and mouseup events.
         module.removeCnxListener(event.target, "mousemove", module);
         module.removeCnxListener(event.target, "mouseup", module);
+        var arrivingHTMLNode = event.target;
+        var arrivingHTMLParentNode = arrivingHTMLNode.offsetParent;
         var arrivingNode;
         var modules = module.sceneParent.getModules();
         for (var i = 0; i < modules.length; i++) {
@@ -276,10 +278,10 @@ var Drag = (function () {
         if (!arrivingNode) {
             var outputModule = module.sceneParent.getAudioOutput();
             var inputModule = module.sceneParent.getAudioInput();
-            if ((this.originIsInput && outputModule.isPointInOutput(event.clientX, event.clientY)) || outputModule.isPointInInput(event.clientX, event.clientY)) {
+            if ((this.originIsInput && outputModule.isPointInOutput(event.clientX, event.clientY)) || outputModule.isPointInInput(event.clientX, event.clientY) || arrivingHTMLParentNode.offsetParent.getAttribute("id") == "moduleOutput") {
                 arrivingNode = outputModule;
             }
-            else if ((!this.originIsInput && inputModule.isPointInInput(event.clientX, event.clientY)) || inputModule.isPointInOutput(event.clientX, event.clientY)) {
+            else if ((!this.originIsInput && inputModule.isPointInInput(event.clientX, event.clientY)) || inputModule.isPointInOutput(event.clientX, event.clientY) || arrivingHTMLParentNode.offsetParent.getAttribute("id") == "moduleInput") {
                 arrivingNode = inputModule;
             }
         }

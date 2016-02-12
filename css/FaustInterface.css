@@ -12,6 +12,38 @@
 #modules {
 	padding-left: 2em;
 }
+/* Module Input*/
+
+#moduleInput>.content {
+    min-width: 3em;
+    background:url("../img/ico-micro.png");
+    background-repeat:no-repeat!important;
+    background-position:center!important;
+    height:50px;
+    padding-top: 0.6em;
+    padding-bottom: 0.6em;
+    
+
+
+}
+#moduleInput {
+
+}
+/* Module Output*/
+#moduleOutput>.content {
+    padding-top: 0.4em;
+    padding-bottom: 0.4em;
+    min-width: 3em;
+    background:url("../img/ico-speaker.png");
+    background-repeat:no-repeat!important;
+    background-position:center!important;
+    height:50px;
+
+
+}
+#moduleOutput {
+}
+    
 
 /* Modules */
 .moduleFaust {

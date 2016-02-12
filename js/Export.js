@@ -14,6 +14,24 @@
 ********************************************************************/
 var Export = (function () {
     function Export() {
+        var _this = this;
+        this.uploadTargets = function () {
+            _this.clearComboBox('platforms');
+            _this.clearComboBox('architectures');
+            var input = document.getElementById("faustweburl");
+            App.exportURL = input.value;
+            var self = _this;
+            ExportLib.getTargets(App.exportURL, function (json) {
+                App.jsonText = json;
+                var data = JSON.parse(App.jsonText);
+                for (var platform in data) {
+                    self.addItem('platforms', platform);
+                }
+                self.updateArchitectures(self);
+            }, function (json) {
+                alert('Impossible to get FaustWeb targets');
+            });
+        };
     }
     //------ Handle Combo Boxes
     Export.prototype.addItem = function (id, itemText) {
@@ -52,23 +70,6 @@ var Export = (function () {
                 }
             }
         }
-    };
-    Export.prototype.uploadTargets = function () {
-        this.clearComboBox('platforms');
-        this.clearComboBox('architectures');
-        var input = document.getElementById("faustweburl");
-        App.exportURL = input.value;
-        var self = this;
-        ExportLib.getTargets(App.exportURL, function (json) {
-            App.jsonText = json;
-            var data = JSON.parse(App.jsonText);
-            for (var platform in data) {
-                self.addItem('platforms', platform);
-            }
-            self.updateArchitectures(self);
-        }, function (json) {
-            alert('Impossible to get FaustWeb targets');
-        });
     };
     /********************************************************************
     *********************  HANDLE POST TO FAUST WEB  ********************
