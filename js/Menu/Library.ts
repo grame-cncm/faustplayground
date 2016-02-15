@@ -42,30 +42,44 @@ class Library{
 
     initLibrary(parent: HTMLDivElement): void{
 
-        var libraryDiv: HTMLDivElement = document.createElement('div');
-	    libraryDiv.id = "library";
+        var library: HTMLElement = document.createElement("div");
+        library.id = "menuContainer";
 
-	    parent.appendChild(libraryDiv);
+        var libraryButton: HTMLElement = document.createElement("div");
+        libraryButton.id = "libraryButton";
+        libraryButton.className = "menuButton";
 
-        var libraryTitle: HTMLSpanElement = document.createElement('span');
-	    libraryTitle.id = "libraryTitle";
-	    libraryTitle.className = "title";
-	    libraryTitle.textContent="Bibliothèque Faust";
-	    libraryDiv.appendChild(libraryTitle);
+        var libraryContent: HTMLElement = document.createElement("div");
+        libraryContent.id = "libraryContent";
+        libraryContent.className = "menuContent";
 
-        this.imageNode = <IImageNode>document.createElement('img');
-	    this.imageNode.id = "arrow";
-	    this.imageNode.src= App.baseImg + "open.png";
-	    this.imageNode.state = "closed";
+        var instrumentLibraryContent: HTMLElement = document.createElement("div");
+        instrumentLibraryContent.id = "instrumentLibraryContent";
+        instrumentLibraryContent.className = "submenuLibraryContent";
 
+        var instrumentLibraryTitle: HTMLSpanElement = document.createElement("span");
+        instrumentLibraryTitle.id = "instrumentLibraryTitle";
+        instrumentLibraryTitle.className = "libraryTitles";
 
-        libraryDiv.appendChild(this.imageNode);
-        var library: Library = this;
-        libraryDiv.onmouseover = function (event) { library.changeLibraryState(event, library) };
-        libraryDiv.onmouseout = function (event) { library.changeLibraryState(event, library) };
-        document.getElementById("libraryTitle").style.cssText = " -webkit-transform:rotate(270deg); -moz-transform:rotate(270deg); -o-transform: rotate(270deg); display:block; position: relative; top:40%; right:250%; width:300px; font-family: 'Droid Serif', Georgia, serif;  font-size:20px; z-index:3; margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px;";
-        document.getElementById("library").style.cssText = "width:50px;";
-        document.getElementById("arrow").style.cssText = "display: block; margin-left: auto; margin-right: auto;";
+        var effetLibraryContent: HTMLElement = document.createElement("div");
+        effetLibraryContent.id = "effetLibraryContent";
+        effetLibraryContent.className = "submenuLibraryContent";
+
+        var effetLibraryTitle: HTMLSpanElement = document.createElement("span");
+        effetLibraryTitle.id = "effetLibraryTitle";
+        effetLibraryTitle.className = "libraryTitles";
+
+        var exempleLibraryContent: HTMLElement = document.createElement("div");
+        exempleLibraryContent.id = "exempleLibraryContent";
+        exempleLibraryContent.className = "submenuLibraryContent";
+
+        var exempleLibraryTitle: HTMLSpanElement = document.createElement("span");
+        exempleLibraryTitle.id = "exempleLibraryTitle";
+        exempleLibraryTitle.className = "libraryTitles";
+
+        var instrumentLibraryContent: HTMLElement = document.createElement("div");
+        instrumentLibraryContent.id = "instrumentLibraryContent";
+        instrumentLibraryContent.className = "submenuLibraryContent"; 
     }
 
     /***************  OPEN/CLOSE LIBRARY DIV  ***************************/

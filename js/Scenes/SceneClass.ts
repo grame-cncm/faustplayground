@@ -28,11 +28,13 @@ class Scene {
     private fModuleList: ModuleClass[] = [];
     //-- Graphical Scene container
     private fSceneContainer: HTMLDivElement;
+    sceneView: ScenePlaygroundView;
+    menu: Menu;
 
     
 
 
-    constructor(identifiant: string, parent: App, onload?: (s: Scene) => void, onunload?: (s: Scene) => void) {
+    constructor(identifiant: string, parent: App, onload?: (s: Scene) => void, onunload?: (s: Scene) => void, sceneView?: ScenePlaygroundView) {
         this.parent = parent;
         this.fSceneContainer = document.createElement("div");
         this.fSceneContainer.id = identifiant;
@@ -134,6 +136,11 @@ class Scene {
     getAudioOutput(): ModuleClass { return this.fAudioOutput; }
     getAudioInput(): ModuleClass { return this.fAudioInput; }
      
+    /*********************** INITIALISE MENU *****************************/
+    initMenu(menuContainer) {
+        this.menu = new Menu(menuContainer);
+
+    }
 
     /*********************** SAVE/RECALL SCENE ***************************/
     ///////////////////////////////////////////////////

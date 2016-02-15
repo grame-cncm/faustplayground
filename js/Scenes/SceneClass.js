@@ -14,7 +14,7 @@
 /// <reference path="../App.ts"/>
 "use strict";
 var Scene = (function () {
-    function Scene(identifiant, parent, onload, onunload) {
+    function Scene(identifiant, parent, onload, onunload, sceneView) {
         //-- Modules contained in the scene
         this.fModuleList = [];
         this.parent = parent;
@@ -107,6 +107,10 @@ var Scene = (function () {
     };
     Scene.prototype.getAudioOutput = function () { return this.fAudioOutput; };
     Scene.prototype.getAudioInput = function () { return this.fAudioInput; };
+    /*********************** INITIALISE MENU *****************************/
+    Scene.prototype.initMenu = function (menuContainer) {
+        this.menu = new Menu(menuContainer);
+    };
     /*********************** SAVE/RECALL SCENE ***************************/
     ///////////////////////////////////////////////////
     //not used for now and not seriously typescripted//

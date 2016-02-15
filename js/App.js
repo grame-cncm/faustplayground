@@ -33,7 +33,7 @@ DEPENDENCIES:
 /// <reference path="Scenes/Finish.ts"/>
 /// <reference path="Scenes/Pedagogie.ts"/>
 /// <reference path="Scenes/Playground.ts"/>
-/// <reference path="Export.ts"/>
+/// <reference path="Menu/Export.ts"/>
 /// <reference path="ExportLib.ts"/>
 /// <reference path="EquivalentFaust.ts"/>
 /// <reference path="Pedagogie/Tooltips.ts"/>
@@ -57,9 +57,10 @@ var App = (function () {
         }
         else {
             var scenePlaygroundView = new ScenePlaygroundView();
-            this.scenes[0] = new Scene("Normal", this, scenePlaygroundView.onloadNormalScene, scenePlaygroundView.onunloadNormalScene);
+            this.scenes[0] = new Scene("Normal", this, scenePlaygroundView.onloadNormalScene, scenePlaygroundView.onunloadNormalScene, scenePlaygroundView);
             App.scene = this.scenes[0];
             scenePlaygroundView.initNormalScene(this.scenes[0]);
+            App.scene.sceneView = scenePlaygroundView;
         }
         App.currentScene = 0;
     };

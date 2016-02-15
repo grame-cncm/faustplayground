@@ -13,7 +13,7 @@
 var ModuleView = (function () {
     function ModuleView() {
     }
-    ModuleView.prototype.createModuleView = function (ID, x, y, name, parent, module) {
+    ModuleView.prototype.createModuleView = function (ID, x, y, name, htmlParent, module) {
         var self = this;
         // ---- Capturing module instance	
         // ----- Delete Callback was added to make sure 
@@ -58,7 +58,7 @@ var ModuleView = (function () {
             return true;
         };
         // add the node into the soundfield
-        parent.appendChild(fModuleContainer);
+        htmlParent.appendChild(fModuleContainer);
         //---- Redirect drop to main.js
         this.fName = name;
         this.fModuleContainer = fModuleContainer;

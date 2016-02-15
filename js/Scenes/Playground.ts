@@ -10,7 +10,7 @@
 		- Export.js
 */
 /// <reference path="../Scenes/SceneClass.ts"/>
-/// <reference path="../Export.ts"/>
+/// <reference path="../Menu/Export.ts"/>
 
 
 "use strict";
@@ -20,6 +20,7 @@ class ScenePlaygroundView{
 **************************  INITIALIZATION **************************
 ********************************************************************/
     expor: Export = new Export()
+    menuContainer: HTMLElement;
 
     initNormalScene(scene: Scene) {
         var container: HTMLDivElement = scene.getSceneContainer();
@@ -51,6 +52,13 @@ class ScenePlaygroundView{
         moduleContainer.id = "modules";
         moduleContainer.className = "container";
         container.appendChild(moduleContainer);
+
+        //------------ MENUS
+
+        var menuContainer: HTMLElement = document.createElement("div")
+        menuContainer.id = "menuContainer";
+        container.appendChild(menuContainer);
+        this.menuContainer = menuContainer;
 
         //------------ INPUT/OUTPUT
         var destDiv: HTMLDivElement = document.createElement("div");
@@ -136,6 +144,7 @@ class ScenePlaygroundView{
                 playgroundView.expor.uploadTargets();
             });
         });
+        scene.initMenu(this.menuContainer);
     }
 
 

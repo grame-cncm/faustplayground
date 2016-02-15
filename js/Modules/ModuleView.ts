@@ -35,7 +35,7 @@ class ModuleView {
     y: number;
 
 
-    createModuleView(ID: number, x: number, y: number, name: string, parent: HTMLElement, module: ModuleClass): void {
+    createModuleView(ID: number, x: number, y: number, name: string, htmlParent: HTMLElement, module: ModuleClass): void {
         var self: ModuleView = this
 
         // ---- Capturing module instance	
@@ -86,7 +86,7 @@ class ModuleView {
             return true;
         };
         // add the node into the soundfield
-        parent.appendChild(fModuleContainer);
+        htmlParent.appendChild(fModuleContainer);
         
         //---- Redirect drop to main.js
 

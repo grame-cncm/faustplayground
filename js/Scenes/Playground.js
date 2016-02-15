@@ -10,7 +10,7 @@
         - Export.js
 */
 /// <reference path="../Scenes/SceneClass.ts"/>
-/// <reference path="../Export.ts"/>
+/// <reference path="../Menu/Export.ts"/>
 "use strict";
 var ScenePlaygroundView = (function () {
     function ScenePlaygroundView() {
@@ -54,6 +54,11 @@ var ScenePlaygroundView = (function () {
         moduleContainer.id = "modules";
         moduleContainer.className = "container";
         container.appendChild(moduleContainer);
+        //------------ MENUS
+        var menuContainer = document.createElement("div");
+        menuContainer.id = "menuContainer";
+        container.appendChild(menuContainer);
+        this.menuContainer = menuContainer;
         //------------ INPUT/OUTPUT
         var destDiv = document.createElement("div");
         destDiv.id = "sceneOutput";
@@ -122,6 +127,7 @@ var ScenePlaygroundView = (function () {
                 playgroundView.expor.uploadTargets();
             });
         });
+        scene.initMenu(this.menuContainer);
     };
     // On Load And UnLoad Playground Scene
     ScenePlaygroundView.prototype.onloadNormalScene = function (scene) {

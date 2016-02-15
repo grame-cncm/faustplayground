@@ -12,7 +12,7 @@
 
 /// <reference path="../Scenes/SceneClass.ts"/>
 /// <reference path="../Pedagogie/Tooltips.ts"/>
-/// <reference path="../Pedagogie/library.ts"/>
+/// <reference path="../Menu/library.ts"/>
 
 /// <reference path="../Main.ts"/>
 /// <reference path="../App.ts"/>
