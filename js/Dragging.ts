@@ -34,7 +34,7 @@ class Drag {
     elementStartLeft: number;
     elementStartTop: number;
     originIsInput: boolean;
-    connectorShape: ConnectorShape;
+    connector: Connector = new Connector();
     elemNode: HTMLElement;
 
     startDraggingModule(event: MouseEvent, module: ModuleClass):void {
@@ -187,7 +187,7 @@ class Drag {
         shape.setAttributeNS(null, "y2", String(y));
         shape.setAttributeNS(null, "stroke", "black");
         shape.setAttributeNS(null, "stroke-width", "5");
-        this.connectorShape = <ConnectorShape>shape;
+        this.connector.connectorShape = <ConnectorShape>shape;
 
         document.getElementById("svgCanvas").appendChild(shape);
     }
@@ -226,8 +226,8 @@ class Drag {
                 offset = <HTMLElement> offset.offsetParent;
 		    }
 
-            this.connectorShape.setAttributeNS(null, "x2", String(x));
-	        this.connectorShape.setAttributeNS(null, "y2", String(y));
+            this.connector.connectorShape.setAttributeNS(null, "x2", String(x));
+            this.connector.connectorShape.setAttributeNS(null, "y2", String(y));
 
             var src: ModuleClass, dst: ModuleClass;
 	
@@ -243,7 +243,7 @@ class Drag {
 			    if (toElem.classList.contains("node-input")) {
 
                     // Make sure the connector line points go from src->dest (x1->x2)
-                    var shape: ConnectorShape = this.connectorShape;
+                    var shape: ConnectorShape = this.connector.connectorShape;
 				    x = parseFloat(shape.getAttributeNS(null, "x2"));
                     y = parseFloat(shape.getAttributeNS(null, "y2"));
 			        shape.setAttributeNS(null, "x2", shape.getAttributeNS(null, "x1"));
@@ -261,21 +261,19 @@ class Drag {
 		    }
 		
             if (src && dst) {
-                var connect: Connect = new Connect();
-			    connect.connectModules(src, dst);
+			    
 
                 var connector: Connector = new Connector();
-                
+                connector.connectModules(src, dst);
 
                 dst.moduleFaust.addInputConnection(connector);
                 src.moduleFaust.addOutputConnection(connector);
-			
-			    this.connectorShape.inputConnection = connector;
-			    this.connectorShape.destination = dst;
-                this.connectorShape.source = src;
+
+                this.connector.destination = dst;
+                this.connector.source = src;
                 var drag: Drag = this
-                connect.saveConnection(src, dst, connector, this.connectorShape);
-                this.connectorShape.onclick = function () { connect.deleteConnection(drag) };
+                connector.saveConnection(src, dst, this.connector.connectorShape);
+                this.connector.connectorShape.onclick = function () { connector.deleteConnection(drag) };
 
 			    //this.connectorShape = null;
                 ;
@@ -286,9 +284,9 @@ class Drag {
 		    }
 	    }
 
-	    // Otherwise, delete the line
-	    this.connectorShape.parentNode.removeChild(this.connectorShape);
-	    this.connectorShape = null;
+        // Otherwise, delete the line
+        this.connector.connectorShape.parentNode.removeChild(this.connector.connectorShape);
+        this.connector.connectorShape = null;
     }
 
     startDraggingConnector(module: ModuleClass, event: MouseEvent):void {
@@ -310,9 +308,9 @@ class Drag {
         var x: number = event.clientX + window.scrollX;
         var y: number = event.clientY + window.scrollY;
 	
-	    // Move connector visual line
-        this.connectorShape.setAttributeNS(null, "x2", String(x));
-        this.connectorShape.setAttributeNS(null, "y2", String(y));
+        // Move connector visual line
+        this.connector.connectorShape.setAttributeNS(null, "x2", String(x));
+        this.connector.connectorShape.setAttributeNS(null, "y2", String(y));
 
 
         if (toElem.classList) {	// if we don't have class, we're not a node.

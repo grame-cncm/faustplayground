@@ -15,19 +15,14 @@
 var Connector = (function () {
     function Connector() {
     }
-    return Connector;
-})();
-var Connect = (function () {
-    function Connect() {
-    }
-    Connect.prototype.connectInput = function (inputModule, divSrc) {
+    Connector.prototype.connectInput = function (inputModule, divSrc) {
         divSrc.audioNode.connect(inputModule.moduleFaust.getDSP().getProcessor());
     };
-    Connect.prototype.connectOutput = function (outputModule, divOut) {
+    Connector.prototype.connectOutput = function (outputModule, divOut) {
         outputModule.moduleFaust.getDSP().getProcessor().connect(divOut.audioNode);
     };
     // Connect Nodes in Web Audio Graph
-    Connect.prototype.connectModules = function (source, destination) {
+    Connector.prototype.connectModules = function (source, destination) {
         var sourceDSP;
         var destinationDSP;
         if (destination != null && destination.moduleFaust.getDSP) {
@@ -40,11 +35,11 @@ var Connect = (function () {
             sourceDSP.getProcessor().connect(destinationDSP.getProcessor());
         }
     };
-    Connect.prototype.disconnectOutput = function (destination, source) {
+    Connector.prototype.disconnectOutput = function (destination, source) {
         destination.audioNode.context.suspend();
     };
     // Disconnect Nodes in Web Audio Graph
-    Connect.prototype.disconnectModules = function (source, destination) {
+    Connector.prototype.disconnectModules = function (source, destination) {
         // We want to be dealing with the audio node elements from here on
         var sourceCopy = source;
         var sourceCopyDSP;
@@ -65,25 +60,24 @@ var Connect = (function () {
     /***************** Save Connection*****************/
     /**************************************************/
     //----- Add connection to src and dst connections structures
-    Connect.prototype.saveConnection = function (source, destination, connector, connectorShape) {
-        this.connector = connector;
-        connector.connectorShape = connectorShape;
-        connector.destination = destination;
-        connector.source = source;
+    Connector.prototype.saveConnection = function (source, destination, connectorShape) {
+        this.connectorShape = connectorShape;
+        this.destination = destination;
+        this.source = source;
     };
     /***************************************************************/
     /**************** Create/Break Connection(s) *******************/
     /***************************************************************/
-    Connect.prototype.createConnection = function (source, outtarget, destination, intarget) {
+    Connector.prototype.createConnection = function (source, outtarget, destination, intarget) {
         var drag = new Drag();
         drag.startDraggingConnection(source, outtarget);
         drag.stopDraggingConnection(source, destination);
     };
-    Connect.prototype.deleteConnection = function (drag) {
-        this.breakSingleInputConnection(this.connector.connectorShape.source, this.connector.connectorShape.destination, this.connector);
+    Connector.prototype.deleteConnection = function (drag) {
+        this.breakSingleInputConnection(this.source, this.destination, this);
         return true;
     };
-    Connect.prototype.breakSingleInputConnection = function (source, destination, connector) {
+    Connector.prototype.breakSingleInputConnection = function (source, destination, connector) {
         this.disconnectModules(source, destination);
         // delete connection from src .outputConnections,
         if (source.moduleFaust.getOutputConnections)
@@ -96,7 +90,7 @@ var Connect = (function () {
             connector.connectorShape.parentNode.removeChild(connector.connectorShape);
     };
     // Disconnect a node from all its connections
-    Connect.prototype.disconnectModule = function (module) {
+    Connector.prototype.disconnectModule = function (module) {
         //for all output nodes
         if (module.moduleFaust.getOutputConnections && module.moduleFaust.getOutputConnections()) {
             while (module.moduleFaust.getOutputConnections().length > 0)
@@ -108,6 +102,6 @@ var Connect = (function () {
                 this.breakSingleInputConnection(module.moduleFaust.getInputConnections()[0].source, module, module.moduleFaust.getInputConnections()[0]);
         }
     };
-    return Connect;
+    return Connector;
 })();
 //# sourceMappingURL=Connect.js.map

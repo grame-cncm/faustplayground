@@ -98,8 +98,8 @@ class ModuleClass implements IModule {
 
 
     deleteModule(): void {
-        var connect: Connect = new Connect()
-        connect.disconnectModule(this);
+        var connector: Connector = new Connector()
+        connector.disconnectModule(this);
         this.deleteFaustInterface();	
     
         // Then delete the visual element
@@ -130,8 +130,8 @@ class ModuleClass implements IModule {
         var saveInCnx: Connector[] = new Array().concat(module.moduleFaust.fInputConnections);
 			
         // Delete old ModuleClass 
-        var connect: Connect = new Connect();
-        connect.disconnectModule(module);
+        var connector: Connector = new Connector();
+        connector.disconnectModule(module);
 
         module.deleteFaustInterface();
         module.moduleView.deleteInputOutputNodes();	
@@ -151,13 +151,13 @@ class ModuleClass implements IModule {
 
             for (var i = 0; i < saveOutCnx.length; i++) {
                 if (saveOutCnx[i])
-                    connect.createConnection(module, module.moduleView.getOutputNode(), saveOutCnx[i].destination, saveOutCnx[i].destination.moduleView.getInputNode());
+                    connector.createConnection(module, module.moduleView.getOutputNode(), saveOutCnx[i].destination, saveOutCnx[i].destination.moduleView.getInputNode());
             }
         }
         if (saveInCnx && module.moduleView.getInputNode()) {
             for (var i = 0; i < saveInCnx.length; i++) {
                 if (saveInCnx[i])
-                    connect.createConnection(saveInCnx[i].source, saveInCnx[i].source.moduleView.getOutputNode(), module, module.moduleView.getInputNode());
+                    connector.createConnection(saveInCnx[i].source, saveInCnx[i].source.moduleView.getOutputNode(), module, module.moduleView.getInputNode());
             }
         }
     }

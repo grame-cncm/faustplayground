@@ -20,20 +20,13 @@
 /**************************************************/
 
 interface ConnectorShape extends SVGElement {
-    inputConnection: Connector;
-    destination: ModuleClass;
-    source: ModuleClass;
-    drag: Drag;
+
 }
+
 class Connector {
     connectorShape: ConnectorShape;
     source: ModuleClass;
     destination: ModuleClass;
-
-}
-class Connect {
-    connector: Connector;
-
 
     connectInput(inputModule: ModuleClass, divSrc: IHTMLDivElementSrc): void {
         divSrc.audioNode.connect(inputModule.moduleFaust.getDSP().getProcessor());
@@ -87,11 +80,10 @@ class Connect {
     /**************************************************/
 
     //----- Add connection to src and dst connections structures
-    saveConnection(source: ModuleClass, destination: ModuleClass, connector: Connector, connectorShape: ConnectorShape):void {
-        this.connector = connector;
-	    connector.connectorShape = connectorShape;
-        connector.destination = destination;
-        connector.source = source;
+    saveConnection(source: ModuleClass, destination: ModuleClass, connectorShape: ConnectorShape):void {
+        this.connectorShape = connectorShape;
+        this.destination = destination;
+        this.source = source;
     }
 
     /***************************************************************/
@@ -108,7 +100,7 @@ class Connect {
 
     deleteConnection(drag: Drag): boolean {
 
-        this.breakSingleInputConnection(this.connector.connectorShape.source, this.connector.connectorShape.destination, this.connector);
+        this.breakSingleInputConnection(this.source, this.destination, this);
         return true;
     }
 

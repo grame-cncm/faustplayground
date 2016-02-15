@@ -108,7 +108,7 @@ var App = (function () {
         App.src = document.getElementById("input");
         App.src.audioNode = App.audioContext.createMediaStreamSource(device);
         var drag = new Drag();
-        var connect = new Connect();
+        var connect = new Connector();
         connect.connectInput(App.scene.fAudioInput, App.src);
     };
     App.prototype.activateAudioOutput = function (sceneOutput) {
@@ -116,7 +116,7 @@ var App = (function () {
         App.out.id = "audioOutput";
         App.out.audioNode = App.audioContext.destination;
         document.body.appendChild(App.out);
-        var connect = new Connect();
+        var connect = new Connector();
         connect.connectOutput(sceneOutput, App.out);
     };
     /********************************************************************

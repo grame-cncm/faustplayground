@@ -280,19 +280,19 @@ class Scene {
             for (var i = 0; i < this.parent.inputs.length; i++) {
                 var src = this.getModules()[this.parent.inputs[i]["src"] - 1 + this.parent.currentNumberDSP];
                 if (src)
-                    var connect: Connect = new Connect();
-                connect.createConnection(src, src.moduleView.getOutputNode(), faustModule, faustModule.moduleView.getInputNode());
+                    var connector: Connector = new Connector();
+                connector.createConnection(src, src.moduleView.getOutputNode(), faustModule, faustModule.moduleView.getInputNode());
             }
         }
 
         if (this.parent.outputs) {
             for (var i = 0; i < this.parent.outputs.length; i++) {
                 var dst = this.getModules()[this.parent.outputs[i]["dst"] + this.parent.currentNumberDSP - 1];
-                var connect: Connect = new Connect();
+                var connector: Connector = new Connector();
                 if (this.parent.outputs[i]["dst"] == 0)
-                    connect.createConnection(faustModule, faustModule.moduleView.getOutputNode(), this.fAudioOutput, this.fAudioOutput.moduleView.getInputNode());
+                    connector.createConnection(faustModule, faustModule.moduleView.getOutputNode(), this.fAudioOutput, this.fAudioOutput.moduleView.getInputNode());
                 else if (dst)
-                    connect.createConnection(faustModule, faustModule.moduleView.getOutputNode(), dst, dst.moduleView.getInputNode());
+                    connector.createConnection(faustModule, faustModule.moduleView.getOutputNode(), dst, dst.moduleView.getInputNode());
             }
         }
     }

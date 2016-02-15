@@ -65,8 +65,8 @@ var ModuleClass = (function () {
     };
     /*******************************  PUBLIC METHODS  **********************************/
     ModuleClass.prototype.deleteModule = function () {
-        var connect = new Connect();
-        connect.disconnectModule(this);
+        var connector = new Connector();
+        connector.disconnectModule(this);
         this.deleteFaustInterface();
         // Then delete the visual element
         if (this.moduleView)
@@ -85,8 +85,8 @@ var ModuleClass = (function () {
         var saveOutCnx = new Array().concat(module.moduleFaust.fOutputConnections);
         var saveInCnx = new Array().concat(module.moduleFaust.fInputConnections);
         // Delete old ModuleClass 
-        var connect = new Connect();
-        connect.disconnectModule(module);
+        var connector = new Connector();
+        connector.disconnectModule(module);
         module.deleteFaustInterface();
         module.moduleView.deleteInputOutputNodes();
         // Create new one
@@ -100,13 +100,13 @@ var ModuleClass = (function () {
         if (saveOutCnx && module.moduleView.getOutputNode()) {
             for (var i = 0; i < saveOutCnx.length; i++) {
                 if (saveOutCnx[i])
-                    connect.createConnection(module, module.moduleView.getOutputNode(), saveOutCnx[i].destination, saveOutCnx[i].destination.moduleView.getInputNode());
+                    connector.createConnection(module, module.moduleView.getOutputNode(), saveOutCnx[i].destination, saveOutCnx[i].destination.moduleView.getInputNode());
             }
         }
         if (saveInCnx && module.moduleView.getInputNode()) {
             for (var i = 0; i < saveInCnx.length; i++) {
                 if (saveInCnx[i])
-                    connect.createConnection(saveInCnx[i].source, saveInCnx[i].source.moduleView.getOutputNode(), module, module.moduleView.getInputNode());
+                    connector.createConnection(saveInCnx[i].source, saveInCnx[i].source.moduleView.getOutputNode(), module, module.moduleView.getInputNode());
             }
         }
     };

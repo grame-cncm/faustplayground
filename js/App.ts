@@ -161,7 +161,7 @@ class App {
         App.src = <IHTMLDivElementSrc>document.getElementById("input");
         App.src.audioNode = App.audioContext.createMediaStreamSource(device);
         var drag: Drag = new Drag();
-        var connect: Connect = new Connect();
+        var connect: Connector = new Connector();
         connect.connectInput(App.scene.fAudioInput, App.src);
     }
 
@@ -172,7 +172,7 @@ class App {
         App.out.id = "audioOutput";
         App.out.audioNode = App.audioContext.destination;
         document.body.appendChild(App.out);
-        var connect: Connect = new Connect();
+        var connect: Connector = new Connector();
         connect.connectOutput(sceneOutput, App.out);
     }
 

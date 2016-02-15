@@ -19,6 +19,7 @@
 var Drag = (function () {
     function Drag() {
         this.zIndex = 0;
+        this.connector = new Connector();
     }
     Drag.prototype.startDraggingModule = function (event, module) {
         var el = event.target;
@@ -133,7 +134,7 @@ var Drag = (function () {
         shape.setAttributeNS(null, "y2", String(y));
         shape.setAttributeNS(null, "stroke", "black");
         shape.setAttributeNS(null, "stroke-width", "5");
-        this.connectorShape = shape;
+        this.connector.connectorShape = shape;
         document.getElementById("svgCanvas").appendChild(shape);
     };
     Drag.prototype.stopDraggingConnection = function (sourceModule, destination) {
@@ -159,8 +160,8 @@ var Drag = (function () {
                 y += offset.offsetTop;
                 offset = offset.offsetParent;
             }
-            this.connectorShape.setAttributeNS(null, "x2", String(x));
-            this.connectorShape.setAttributeNS(null, "y2", String(y));
+            this.connector.connectorShape.setAttributeNS(null, "x2", String(x));
+            this.connector.connectorShape.setAttributeNS(null, "y2", String(y));
             var src, dst;
             // If connecting from output to input
             if (this.originIsInput) {
@@ -172,7 +173,7 @@ var Drag = (function () {
             else {
                 if (toElem.classList.contains("node-input")) {
                     // Make sure the connector line points go from src->dest (x1->x2)
-                    var shape = this.connectorShape;
+                    var shape = this.connector.connectorShape;
                     x = parseFloat(shape.getAttributeNS(null, "x2"));
                     y = parseFloat(shape.getAttributeNS(null, "y2"));
                     shape.setAttributeNS(null, "x2", shape.getAttributeNS(null, "x1"));
@@ -187,17 +188,15 @@ var Drag = (function () {
                 }
             }
             if (src && dst) {
-                var connect = new Connect();
-                connect.connectModules(src, dst);
                 var connector = new Connector();
+                connector.connectModules(src, dst);
                 dst.moduleFaust.addInputConnection(connector);
                 src.moduleFaust.addOutputConnection(connector);
-                this.connectorShape.inputConnection = connector;
-                this.connectorShape.destination = dst;
-                this.connectorShape.source = src;
+                this.connector.destination = dst;
+                this.connector.source = src;
                 var drag = this;
-                connect.saveConnection(src, dst, connector, this.connectorShape);
-                this.connectorShape.onclick = function () { connect.deleteConnection(drag); };
+                connector.saveConnection(src, dst, this.connector.connectorShape);
+                this.connector.connectorShape.onclick = function () { connector.deleteConnection(drag); };
                 //this.connectorShape = null;
                 ;
                 if (App.isTooltipEnabled)
@@ -206,8 +205,8 @@ var Drag = (function () {
             }
         }
         // Otherwise, delete the line
-        this.connectorShape.parentNode.removeChild(this.connectorShape);
-        this.connectorShape = null;
+        this.connector.connectorShape.parentNode.removeChild(this.connector.connectorShape);
+        this.connector.connectorShape = null;
     };
     Drag.prototype.startDraggingConnector = function (module, event) {
         this.startDraggingConnection(module, event.target);
@@ -223,8 +222,8 @@ var Drag = (function () {
         var x = event.clientX + window.scrollX;
         var y = event.clientY + window.scrollY;
         // Move connector visual line
-        this.connectorShape.setAttributeNS(null, "x2", String(x));
-        this.connectorShape.setAttributeNS(null, "y2", String(y));
+        this.connector.connectorShape.setAttributeNS(null, "x2", String(x));
+        this.connector.connectorShape.setAttributeNS(null, "y2", String(y));
         if (toElem.classList) {
             // if this is the green or red button, use its parent.
             if (toElem.classList.contains("node-button"))
