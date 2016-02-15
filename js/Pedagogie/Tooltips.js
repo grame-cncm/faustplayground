@@ -59,7 +59,7 @@ var Tooltips = (function () {
             var hasInstrument = false;
             var hasEffect = false;
             for (var i = 0; i < modules.length; i++) {
-                if (modules[i].getInputNode())
+                if (modules[i].moduleView.getInputNode())
                     hasEffect = true;
                 else
                     hasInstrument = true;
@@ -70,7 +70,7 @@ var Tooltips = (function () {
     Tooltips.isInstrumentConnected = function (scene) {
         var modules = scene.getModules();
         for (var i = 0; i < modules.length; i++) {
-            if (!modules[i].getInputNode() && modules[i].getOutputConnections() && modules[i].getOutputConnections().length > 0)
+            if (!modules[i].moduleView.getInputNode() && modules[i].moduleFaust.getOutputConnections() && modules[i].moduleFaust.getOutputConnections().length > 0)
                 return true;
         }
         return false;
@@ -102,10 +102,10 @@ var Tooltips = (function () {
             var connectedNode = currentScene.getAudioOutput();
             while (connectedNode) {
                 // 			Node is an effect
-                if (connectedNode.getInputNode()) {
+                if (connectedNode.moduleView.getInputNode()) {
                     //	 		Node is connected
-                    if (connectedNode.getInputConnections() && connectedNode.getInputConnections().length > 0)
-                        connectedNode = connectedNode.getInputConnections()[0].source;
+                    if (connectedNode.moduleFaust.getInputConnections() && connectedNode.moduleFaust.getInputConnections().length > 0)
+                        connectedNode = connectedNode.moduleFaust.getInputConnections()[0].source;
                     else if (this.sceneHasInstrumentAndEffect(scene)) {
                         if (!this.isInstrumentConnected(scene))
                             this.changeSceneToolTip(3);

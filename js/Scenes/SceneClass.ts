@@ -118,14 +118,14 @@ class Scene {
             scene = scene.parent.scenes[1];
         }
         if (scene.fAudioOutput) {
-            scene.fAudioOutput.setSource("process=_,_;");
+            scene.fAudioOutput.moduleFaust.setSource("process=_,_;");
             scene.fAudioOutput.createDSP(factory);
             scene.parent.activateAudioOutput(scene.fAudioOutput);
         }
     }
     private integrateAudioInput(factory: Factory, scene: Scene):void {
         if (scene.fAudioInput) {
-            scene.fAudioInput.setSource("process=_,_;");
+            scene.fAudioInput.moduleFaust.setSource("process=_,_;");
             scene.fAudioInput.createDSP(factory);
             scene.parent.activateAudioInput(scene.parent);
         }
@@ -156,12 +156,12 @@ class Scene {
 
             json += '"' + this.fModuleList[i].patchID.toString() + '":['
 
-            json += '{"x":"' + this.fModuleList[i].getModuleContainer().getBoundingClientRect().left + '"},';
-            json += '{"y\":"' + this.fModuleList[i].getModuleContainer().getBoundingClientRect().top + '"},';
-            json += '{"name\":"' + this.fModuleList[i].getName() + '"},';
-            json += '{"code":' + JSON.stringify(this.fModuleList[i].getSource()) + '},';
+            json += '{"x":"' + this.fModuleList[i].moduleView.getModuleContainer().getBoundingClientRect().left + '"},';
+            json += '{"y\":"' + this.fModuleList[i].moduleView.getModuleContainer().getBoundingClientRect().top + '"},';
+            json += '{"name\":"' + this.fModuleList[i].moduleFaust.getName() + '"},';
+            json += '{"code":' + JSON.stringify(this.fModuleList[i].moduleFaust.getSource()) + '},';
 
-            var inputs: Connector[] = this.fModuleList[i].getInputConnections();
+            var inputs: Connector[] = this.fModuleList[i].moduleFaust.getInputConnections();
 
             if (inputs) {
 
@@ -175,7 +175,7 @@ class Scene {
                 json += ']},';
             }
 
-            var outputs = this.fModuleList[i].getOutputConnections();
+            var outputs = this.fModuleList[i].moduleFaust.getOutputConnections();
             if (outputs) {
                 json += '{"outputs":[';
 
@@ -189,7 +189,7 @@ class Scene {
                 json += ']},';
             }
 
-            var params = this.fModuleList[i].getDSP().controls();
+            var params = this.fModuleList[i].moduleFaust.getDSP().controls();
             if (params) {
                 json += '{"params":[';
 
@@ -198,7 +198,7 @@ class Scene {
                         json += ',';
 
                     json += '{"path":"' + params[j] + '"},';
-                    json += '{"value":"' + this.fModuleList[i].getDSP().getValue(params[j]) + '"}';
+                    json += '{"value":"' + this.fModuleList[i].moduleFaust.getDSP().getValue(params[j]) + '"}';
                 }
 
                 json += ']}';
@@ -247,7 +247,7 @@ class Scene {
 	
     private createModuleAndConnectIt(factory:Factory):void {
 
-        //---- This is very similar to "createFaustModule" from Main.js
+        //---- This is very similar to "createFaustModule" from App.js
         //---- But as we need to set Params before calling "createFaustInterface", it is copied
         //---- There probably is a better way to do this !!
         if (!factory) {
@@ -256,7 +256,7 @@ class Scene {
         }
 
         var faustModule: ModuleClass = new ModuleClass(App.idX++, this.parent.tempModuleX, this.parent.tempModuleY, window.name, this, document.getElementById("modules"), this.removeModule);
-        faustModule.setSource(this.parent.tempModuleSourceCode);
+        faustModule.moduleFaust.setSource(this.parent.tempModuleSourceCode);
         faustModule.createDSP(factory);
 
         if (this.parent.params) {
@@ -264,13 +264,13 @@ class Scene {
                 //console.log("WINDOW.PARAMS");
                 //console.log(this.parent.params.length);
                 if (this.parent.params[i] && this.parent.params[i + 1]) {
-                    faustModule.addParam(this.parent.params[i]["path"], this.parent.params[i + 1]["value"]);
+                    faustModule.addInterfaceParam(this.parent.params[i]["path"], this.parent.params[i + 1]["value"]);
                     i + 1;
                 }
             }
         }
 
-        faustModule.recallParams();
+        faustModule.recallInterfaceParams();
         faustModule.createFaustInterface();
         faustModule.addInputOutputNodes();
         this.addModule(faustModule);
@@ -281,7 +281,7 @@ class Scene {
                 var src = this.getModules()[this.parent.inputs[i]["src"] - 1 + this.parent.currentNumberDSP];
                 if (src)
                     var connect: Connect = new Connect();
-                    connect.createConnection(src, src.getOutputNode(), faustModule, faustModule.getInputNode());
+                connect.createConnection(src, src.moduleView.getOutputNode(), faustModule, faustModule.moduleView.getInputNode());
             }
         }
 
@@ -290,9 +290,9 @@ class Scene {
                 var dst = this.getModules()[this.parent.outputs[i]["dst"] + this.parent.currentNumberDSP - 1];
                 var connect: Connect = new Connect();
                 if (this.parent.outputs[i]["dst"] == 0)
-                    connect.createConnection(faustModule, faustModule.getOutputNode(), this.fAudioOutput, this.fAudioOutput.getInputNode());
+                    connect.createConnection(faustModule, faustModule.moduleView.getOutputNode(), this.fAudioOutput, this.fAudioOutput.moduleView.getInputNode());
                 else if (dst)
-                    connect.createConnection(faustModule, faustModule.getOutputNode(), dst, dst.getInputNode());
+                    connect.createConnection(faustModule, faustModule.moduleView.getOutputNode(), dst, dst.moduleView.getInputNode());
             }
         }
     }

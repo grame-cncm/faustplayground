@@ -145,22 +145,21 @@ var App = (function () {
         }
         ;
     };
-    App.prototype.createFaustModule = function (factory, scene, app) {
+    App.prototype.createModule = function (factory, scene, app) {
         if (!factory) {
             alert(faust.getErrorMessage());
             return null;
         }
-        var faustModule;
         // can't it be just window.scenes[window.currentScene] ???
         //if (App.isTooltipEnabled)
-        faustModule = new ModuleClass(App.idX++, app.tempModuleX, app.tempModuleY, app.tempModuleName, scene, document.getElementById("modules"), scene.removeModule);
+        var module = new ModuleClass(App.idX++, app.tempModuleX, app.tempModuleY, app.tempModuleName, scene, document.getElementById("modules"), scene.removeModule);
         //else
         //    faustModule = new ModuleClass(this.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), this.scenes[0].removeModule);
-        faustModule.setSource(app.tempModuleSourceCode);
-        faustModule.createDSP(factory);
-        faustModule.createFaustInterface();
-        faustModule.addInputOutputNodes();
-        scene.addModule(faustModule);
+        module.moduleFaust.setSource(app.tempModuleSourceCode);
+        module.createDSP(factory);
+        module.createFaustInterface();
+        module.addInputOutputNodes();
+        scene.addModule(module);
     };
     /********************************************************************
     ***********************  HANDLE DRAG AND DROP ***********************
@@ -198,7 +197,7 @@ var App = (function () {
         var alreadyInNode = false;
         var modules = this.scenes[App.currentScene].getModules();
         for (var i = 0; i < modules.length; i++) {
-            if (modules[i].isPointInNode(e.clientX, e.clientY)) {
+            if (modules[i].moduleView.isPointInNode(e.clientX, e.clientY)) {
                 alreadyInNode = true;
             }
         }
@@ -223,7 +222,7 @@ var App = (function () {
                 if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
                     var dsp_code = "process = vgroup(\"" + filename + "\",environment{" + xmlhttp.responseText + "}.process);";
                     if (module == null) {
-                        app.compileFaust(filename, dsp_code, x, y, app.createFaustModule);
+                        app.compileFaust(filename, dsp_code, x, y, app.createModule);
                     }
                     else {
                         module.update(filename, dsp_code);
@@ -242,7 +241,7 @@ var App = (function () {
             if (dsp_code) {
                 dsp_code = "process = vgroup(\"" + "TEXT" + "\",environment{" + dsp_code + "}.process);";
                 if (!module) {
-                    app.compileFaust("TEXT", dsp_code, x, y, app.createFaustModule);
+                    app.compileFaust("TEXT", dsp_code, x, y, app.createModule);
                 }
                 else {
                     module.update("TEXT", dsp_code);
@@ -275,7 +274,7 @@ var App = (function () {
                     reader.onloadend = function (e) {
                         dsp_code = "process = vgroup(\"" + filename + "\",environment{" + reader.result + "}.process);";
                         if (!module && type == "dsp") {
-                            app.compileFaust(filename, dsp_code, x, y, app.createFaustModule);
+                            app.compileFaust(filename, dsp_code, x, y, app.createModule);
                         }
                         else if (type == "dsp") {
                             module.update(filename, dsp_code);

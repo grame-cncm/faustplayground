@@ -21,20 +21,20 @@ var Connect = (function () {
     function Connect() {
     }
     Connect.prototype.connectInput = function (inputModule, divSrc) {
-        divSrc.audioNode.connect(inputModule.getDSP().getProcessor());
+        divSrc.audioNode.connect(inputModule.moduleFaust.getDSP().getProcessor());
     };
     Connect.prototype.connectOutput = function (outputModule, divOut) {
-        outputModule.getDSP().getProcessor().connect(divOut.audioNode);
+        outputModule.moduleFaust.getDSP().getProcessor().connect(divOut.audioNode);
     };
     // Connect Nodes in Web Audio Graph
     Connect.prototype.connectModules = function (source, destination) {
         var sourceDSP;
         var destinationDSP;
-        if (destination != null && destination.getDSP) {
-            destinationDSP = destination.getDSP();
+        if (destination != null && destination.moduleFaust.getDSP) {
+            destinationDSP = destination.moduleFaust.getDSP();
         }
-        if (source.getDSP) {
-            sourceDSP = source.getDSP();
+        if (source.moduleFaust.getDSP) {
+            sourceDSP = source.moduleFaust.getDSP();
         }
         if (sourceDSP.getProcessor && destinationDSP.getProcessor()) {
             sourceDSP.getProcessor().connect(destinationDSP.getProcessor());
@@ -49,15 +49,15 @@ var Connect = (function () {
         var sourceCopy = source;
         var sourceCopyDSP;
         // Searching for src/dst DSP if existing
-        if (sourceCopy.getDSP) {
-            sourceCopyDSP = sourceCopy.getDSP();
+        if (sourceCopy.moduleFaust.getDSP) {
+            sourceCopyDSP = sourceCopy.moduleFaust.getDSP();
             sourceCopyDSP.getProcessor().disconnect();
         }
         // Reconnect all disconnected connections (because disconnect API cannot break a single connection)
-        if (source.getOutputConnections()) {
-            for (var i = 0; i < source.getOutputConnections().length; i++) {
-                if (source.getOutputConnections()[i].destination != destination)
-                    this.connectModules(source, source.getOutputConnections()[i].destination);
+        if (source.moduleFaust.getOutputConnections()) {
+            for (var i = 0; i < source.moduleFaust.getOutputConnections().length; i++) {
+                if (source.moduleFaust.getOutputConnections()[i].destination != destination)
+                    this.connectModules(source, source.moduleFaust.getOutputConnections()[i].destination);
             }
         }
     };
@@ -86,11 +86,11 @@ var Connect = (function () {
     Connect.prototype.breakSingleInputConnection = function (source, destination, connector) {
         this.disconnectModules(source, destination);
         // delete connection from src .outputConnections,
-        if (source.getOutputConnections)
-            source.removeOutputConnection(connector);
+        if (source.moduleFaust.getOutputConnections)
+            source.moduleFaust.removeOutputConnection(connector);
         // delete connection from dst .inputConnections,
-        if (destination.getInputConnections)
-            destination.removeInputConnection(connector);
+        if (destination.moduleFaust.getInputConnections)
+            destination.moduleFaust.removeInputConnection(connector);
         // and delete the connectorShape
         if (connector.connectorShape)
             connector.connectorShape.parentNode.removeChild(connector.connectorShape);
@@ -98,14 +98,14 @@ var Connect = (function () {
     // Disconnect a node from all its connections
     Connect.prototype.disconnectModule = function (module) {
         //for all output nodes
-        if (module.getOutputConnections && module.getOutputConnections()) {
-            while (module.getOutputConnections().length > 0)
-                this.breakSingleInputConnection(module, module.getOutputConnections()[0].destination, module.getOutputConnections()[0]);
+        if (module.moduleFaust.getOutputConnections && module.moduleFaust.getOutputConnections()) {
+            while (module.moduleFaust.getOutputConnections().length > 0)
+                this.breakSingleInputConnection(module, module.moduleFaust.getOutputConnections()[0].destination, module.moduleFaust.getOutputConnections()[0]);
         }
         //for all input nodes 
-        if (module.getInputConnections && module.getInputConnections()) {
-            while (module.getInputConnections().length > 0)
-                this.breakSingleInputConnection(module.getInputConnections()[0].source, module, module.getInputConnections()[0]);
+        if (module.moduleFaust.getInputConnections && module.moduleFaust.getInputConnections()) {
+            while (module.moduleFaust.getInputConnections().length > 0)
+                this.breakSingleInputConnection(module.moduleFaust.getInputConnections()[0].source, module, module.moduleFaust.getInputConnections()[0]);
         }
     };
     return Connect;

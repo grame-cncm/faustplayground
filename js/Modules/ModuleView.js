@@ -65,6 +65,53 @@ var ModuleView = (function () {
         this.fInterfaceContainer = fInterfaceContainer;
         this.fEditImg = fEditImg;
         this.fTitle = fTitle;
+        this.x = x;
+        this.y = y;
+    };
+    // ------ Returns Graphical input and output Node
+    ModuleView.prototype.getOutputNode = function () { return this.fOutputNode; };
+    ModuleView.prototype.getInputNode = function () { return this.fInputNode; };
+    ModuleView.prototype.getModuleContainer = function () {
+        return this.fModuleContainer;
+    };
+    ModuleView.prototype.getInterfaceContainer = function () {
+        return this.fInterfaceContainer;
+    };
+    ModuleView.prototype.setInputNode = function () {
+        this.fInputNode = document.createElement("div");
+        this.fInputNode.className = "node node-input";
+        this.fInputNode.innerHTML = "<span class='node-button'>&nbsp;</span>";
+        this.fModuleContainer.appendChild(this.fInputNode);
+    };
+    ModuleView.prototype.setOutputNode = function () {
+        this.fOutputNode = document.createElement("div");
+        this.fOutputNode.className = "node node-output";
+        this.fOutputNode.innerHTML = "<span class='node-button'>&nbsp;</span>";
+        this.fModuleContainer.appendChild(this.fOutputNode);
+    };
+    ModuleView.prototype.deleteInputOutputNodes = function () {
+        if (this.fInputNode)
+            this.fModuleContainer.removeChild(this.fInputNode);
+        if (this.fOutputNode)
+            this.fModuleContainer.removeChild(this.fOutputNode);
+    };
+    ModuleView.prototype.isPointInOutput = function (x, y) {
+        if (this.fOutputNode && this.fOutputNode.getBoundingClientRect().left < x && x < this.fOutputNode.getBoundingClientRect().right && this.fOutputNode.getBoundingClientRect().top < y && y < this.fOutputNode.getBoundingClientRect().bottom) {
+            return true;
+        }
+        return false;
+    };
+    ModuleView.prototype.isPointInInput = function (x, y) {
+        if (this.fInputNode && this.fInputNode.getBoundingClientRect().left <= x && x <= this.fInputNode.getBoundingClientRect().right && this.fInputNode.getBoundingClientRect().top <= y && y <= this.fInputNode.getBoundingClientRect().bottom) {
+            return true;
+        }
+        return false;
+    };
+    ModuleView.prototype.isPointInNode = function (x, y) {
+        if (this.fModuleContainer && this.fModuleContainer.getBoundingClientRect().left < x && x < this.fModuleContainer.getBoundingClientRect().right && this.fModuleContainer.getBoundingClientRect().top < y && y < this.fModuleContainer.getBoundingClientRect().bottom) {
+            return true;
+        }
+        return false;
     };
     return ModuleView;
 })();

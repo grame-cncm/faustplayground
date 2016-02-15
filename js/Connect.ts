@@ -36,20 +36,20 @@ class Connect {
 
 
     connectInput(inputModule: ModuleClass, divSrc: IHTMLDivElementSrc): void {
-        divSrc.audioNode.connect(inputModule.getDSP().getProcessor());
+        divSrc.audioNode.connect(inputModule.moduleFaust.getDSP().getProcessor());
     }
     connectOutput(outputModule: ModuleClass, divOut: IHTMLDivElementOut): void {
-        outputModule.getDSP().getProcessor().connect(divOut.audioNode);
+        outputModule.moduleFaust.getDSP().getProcessor().connect(divOut.audioNode);
     }
     // Connect Nodes in Web Audio Graph
     connectModules(source: ModuleClass, destination: ModuleClass): void {
         var sourceDSP: IfDSP;
         var destinationDSP: IfDSP;
-        if (destination != null && destination.getDSP) {
-            destinationDSP = destination.getDSP();
+        if (destination != null && destination.moduleFaust.getDSP) {
+            destinationDSP = destination.moduleFaust.getDSP();
         }
-        if (source.getDSP) {
-            sourceDSP = source.getDSP();
+        if (source.moduleFaust.getDSP) {
+            sourceDSP = source.moduleFaust.getDSP();
         }
 
         if (sourceDSP.getProcessor && destinationDSP.getProcessor()) {
@@ -66,18 +66,18 @@ class Connect {
         // We want to be dealing with the audio node elements from here on
         var sourceCopy: ModuleClass = source;
         var sourceCopyDSP: IfDSP;
-	    // Searching for src/dst DSP if existing
-        if (sourceCopy.getDSP) {
-            sourceCopyDSP = sourceCopy.getDSP();
+        // Searching for src/dst DSP if existing
+        if (sourceCopy.moduleFaust.getDSP) {
+            sourceCopyDSP = sourceCopy.moduleFaust.getDSP();
             sourceCopyDSP.getProcessor().disconnect();
         }
         
 		
-    // Reconnect all disconnected connections (because disconnect API cannot break a single connection)
-        if (source.getOutputConnections()){
-            for (var i = 0; i < source.getOutputConnections().length; i++){
-                if (source.getOutputConnections()[i].destination != destination)
-                    this.connectModules(source, source.getOutputConnections()[i].destination);
+        // Reconnect all disconnected connections (because disconnect API cannot break a single connection)
+        if (source.moduleFaust.getOutputConnections()) {
+            for (var i = 0; i < source.moduleFaust.getOutputConnections().length; i++){
+                if (source.moduleFaust.getOutputConnections()[i].destination != destination)
+                    this.connectModules(source, source.moduleFaust.getOutputConnections()[i].destination);
 		    }
 	    }
     }
@@ -116,13 +116,13 @@ class Connect {
 
         this.disconnectModules(source, destination);
 		
-	    // delete connection from src .outputConnections,
-        if (source.getOutputConnections)
-            source.removeOutputConnection(connector);
+        // delete connection from src .outputConnections,
+        if (source.moduleFaust.getOutputConnections)
+            source.moduleFaust.removeOutputConnection(connector);
 
-	    // delete connection from dst .inputConnections,
-        if (destination.getInputConnections)
-            destination.removeInputConnection(connector);
+        // delete connection from dst .inputConnections,
+        if (destination.moduleFaust.getInputConnections)
+            destination.moduleFaust.removeInputConnection(connector);
 		
 	    // and delete the connectorShape
 	    if(connector.connectorShape)
@@ -132,17 +132,17 @@ class Connect {
     // Disconnect a node from all its connections
     disconnectModule(module: ModuleClass) {
 
-	    //for all output nodes
-        if (module.getOutputConnections && module.getOutputConnections()){
-	
-            while (module.getOutputConnections().length>0)
-                this.breakSingleInputConnection(module, module.getOutputConnections()[0].destination, module.getOutputConnections()[0]);
+        //for all output nodes
+        if (module.moduleFaust.getOutputConnections && module.moduleFaust.getOutputConnections()) {
+
+            while (module.moduleFaust.getOutputConnections().length > 0)
+                this.breakSingleInputConnection(module, module.moduleFaust.getOutputConnections()[0].destination, module.moduleFaust.getOutputConnections()[0]);
 	    }
 	
-	    //for all input nodes 
-        if (module.getInputConnections && module.getInputConnections()){
-            while (module.getInputConnections().length>0)
-                this.breakSingleInputConnection(module.getInputConnections()[0].source, module, module.getInputConnections()[0]);
+        //for all input nodes 
+        if (module.moduleFaust.getInputConnections && module.moduleFaust.getInputConnections()) {
+            while (module.moduleFaust.getInputConnections().length > 0)
+                this.breakSingleInputConnection(module.moduleFaust.getInputConnections()[0].source, module, module.moduleFaust.getInputConnections()[0]);
 	    }
     }
 

@@ -70,8 +70,8 @@ class Tooltips{
 		    var hasInstrument = false;
 		    var hasEffect = false;
 
-		    for (var i = 0; i < modules.length; i++) {
-			    if(modules[i].getInputNode())
+            for (var i = 0; i < modules.length; i++) {
+                if (modules[i].moduleView.getInputNode())
 				    hasEffect = true;
 			    else
 				    hasInstrument = true;
@@ -85,8 +85,8 @@ class Tooltips{
 
         var modules: ModuleClass[] = scene.getModules();
 
-	    for (var i = 0; i < modules.length; i++) {
-		    if(!modules[i].getInputNode() && modules[i].getOutputConnections() && modules[i].getOutputConnections().length > 0)
+        for (var i = 0; i < modules.length; i++) {
+            if (!modules[i].moduleView.getInputNode() && modules[i].moduleFaust.getOutputConnections() && modules[i].moduleFaust.getOutputConnections().length > 0)
 			    return true;
 	    }
 
@@ -128,12 +128,12 @@ class Tooltips{
 
 		    while(connectedNode){
 
-    // 			Node is an effect
-			    if(connectedNode.getInputNode()){
+                // 			Node is an effect
+                if (connectedNode.moduleView.getInputNode()) {
 
-    //	 		Node is connected
-				    if(connectedNode.getInputConnections() && connectedNode.getInputConnections().length > 0)
-					    connectedNode = connectedNode.getInputConnections()[0].source;
+                    //	 		Node is connected
+                    if (connectedNode.moduleFaust.getInputConnections() && connectedNode.moduleFaust.getInputConnections().length > 0)
+                        connectedNode = connectedNode.moduleFaust.getInputConnections()[0].source;
                     //	 		Node is not connected and there is everything on the scene
                     else if (this.sceneHasInstrumentAndEffect(scene)) {
 					    if(!this.isInstrumentConnected(scene))

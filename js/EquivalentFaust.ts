@@ -105,17 +105,17 @@ class EquivalentFaust {
             moduleTree = null;
         }
         else if (module.patchID == "input") {
-            moduleTree.sourceCode = module.getSource();
+            moduleTree.sourceCode = module.moduleFaust.getSource();
             moduleTree.course[moduleTree.course.length] = moduleTree;
         }
         else {
-            moduleTree.sourceCode = module.getSource();
+            moduleTree.sourceCode = module.moduleFaust.getSource();
 
             moduleTree.course[moduleTree.course.length] = moduleTree;
 
-            if (module.getInputConnections()) {
-                for (var j = 0; j < module.getInputConnections().length; j++)
-                    moduleTree.moduleInputs[j] = this.createTree(module.getInputConnections()[j].source, moduleTree);
+            if (module.moduleFaust.getInputConnections()) {
+                for (var j = 0; j < module.moduleFaust.getInputConnections().length; j++)
+                    moduleTree.moduleInputs[j] = this.createTree(module.moduleFaust.getInputConnections()[j].source, moduleTree);
             }
         }
 
@@ -181,11 +181,11 @@ class EquivalentFaust {
 
         for (var i in faustModuleList) {
 
-            var outputNode = faustModuleList[i].getOutputNode();
+            var outputNode = faustModuleList[i].moduleView.getOutputNode();
 
-            if (outputNode && (!faustModuleList[i].getOutputConnections || !faustModuleList[i].getOutputConnections() || faustModuleList[i].getOutputConnections().length == 0)) {
+            if (outputNode && (!faustModuleList[i].moduleFaust.getOutputConnections || !faustModuleList[i].moduleFaust.getOutputConnections() || faustModuleList[i].moduleFaust.getOutputConnections().length == 0)) {
                 var connect: Connect = new Connect();
-                connect.createConnection(faustModuleList[i], faustModuleList[i].getOutputNode(), output, output.getInputNode());
+                connect.createConnection(faustModuleList[i], faustModuleList[i].moduleView.getOutputNode(), output, output.moduleView.getInputNode());
             }
         }
     }
@@ -236,7 +236,7 @@ class EquivalentFaust {
 
             var destinationDIVVV = this.createTree(dest, null);
 
-            if (dest.getInputConnections())
+            if (dest.moduleFaust.getInputConnections())
                 faustResult += "process = vgroup(\"" + patchName + "\",(" + this.computeModule(destinationDIVVV) + "));";
 		
             // 		console.log(faustResult);

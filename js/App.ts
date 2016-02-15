@@ -204,27 +204,26 @@ class App {
 
     }
 
-    private createFaustModule(factory: Factory, scene: Scene, app: App): void {
+    private createModule(factory: Factory, scene: Scene, app: App): void {
 
         if (!factory) {
             alert(faust.getErrorMessage());
             return null;
         }
 
-        var faustModule: ModuleClass;
 
         // can't it be just window.scenes[window.currentScene] ???
         //if (App.isTooltipEnabled)
-        faustModule = new ModuleClass(App.idX++, app.tempModuleX, app.tempModuleY, app.tempModuleName, scene, document.getElementById("modules"), scene.removeModule);
+        var module: ModuleClass = new ModuleClass(App.idX++, app.tempModuleX, app.tempModuleY, app.tempModuleName, scene, document.getElementById("modules"), scene.removeModule);
         //else
         //    faustModule = new ModuleClass(this.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), this.scenes[0].removeModule);
 
-        faustModule.setSource(app.tempModuleSourceCode);
-        faustModule.createDSP(factory);
-        faustModule.createFaustInterface();
-        faustModule.addInputOutputNodes();
+        module.moduleFaust.setSource(app.tempModuleSourceCode);
+        module.createDSP(factory);
+        module.createFaustInterface();
+        module.addInputOutputNodes();
 
-        scene.addModule(faustModule);
+        scene.addModule(module);
     }
 
     /********************************************************************
@@ -279,7 +278,7 @@ class App {
         var modules: ModuleClass[] = this.scenes[App.currentScene].getModules();
 
         for (var i = 0; i < modules.length; i++) {
-            if (modules[i].isPointInNode(e.clientX, e.clientY)) {
+            if (modules[i].moduleView.isPointInNode(e.clientX, e.clientY)) {
                 alreadyInNode = true;
             }
         }
@@ -312,7 +311,7 @@ class App {
                     var dsp_code: string = "process = vgroup(\"" + filename + "\",environment{" + xmlhttp.responseText + "}.process);";
 
                     if (module == null) {
-                        app.compileFaust(filename, dsp_code, x, y, app.createFaustModule);
+                        app.compileFaust(filename, dsp_code, x, y, app.createModule);
                     } else {
                         module.update(filename, dsp_code);
                     }
@@ -335,7 +334,7 @@ class App {
                 dsp_code = "process = vgroup(\"" + "TEXT" + "\",environment{" + dsp_code + "}.process);";
 
                 if (!module) {
-                    app.compileFaust("TEXT", dsp_code, x, y, app.createFaustModule);
+                    app.compileFaust("TEXT", dsp_code, x, y, app.createModule);
                 } else {
                     module.update("TEXT", dsp_code);
                 }
@@ -376,7 +375,7 @@ class App {
                         dsp_code = "process = vgroup(\"" + filename + "\",environment{" + reader.result + "}.process);";
 
                         if (!module && type == "dsp") {
-                            app.compileFaust(filename, dsp_code, x, y, app.createFaustModule);
+                            app.compileFaust(filename, dsp_code, x, y, app.createModule);
                         } else if (type == "dsp") {
                             module.update(filename, dsp_code);
                         } else if (type == "json") {

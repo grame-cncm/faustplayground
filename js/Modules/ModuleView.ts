@@ -12,6 +12,16 @@
     IMG --> fEditImg
 	===================*/
 
+interface HTMLfEdit extends HTMLImageElement {
+    area: HTMLTextAreaElement;
+}
+interface HTMLinterfaceElement extends HTMLElement {
+    label: string;
+}
+interface HTMLInterfaceContainer extends HTMLDivElement {
+    unlitClassname: string;
+    lastLit: any;
+}
 
 class ModuleView {
     fModuleContainer: HTMLElement;
@@ -19,6 +29,11 @@ class ModuleView {
     fInterfaceContainer: HTMLInterfaceContainer;
     fEditImg: HTMLfEdit;
     fTitle: HTMLElement;
+    fInputNode: HTMLDivElement;
+    fOutputNode: HTMLDivElement;
+    x: number;
+    y: number;
+
 
     createModuleView(ID: number, x: number, y: number, name: string, parent: HTMLElement, module: ModuleClass): void {
         var self: ModuleView = this
@@ -80,6 +95,62 @@ class ModuleView {
         this.fInterfaceContainer = fInterfaceContainer;
         this.fEditImg = fEditImg;
         this.fTitle = fTitle;
+        this.x = x;
+        this.y = y;
+    }
+    // ------ Returns Graphical input and output Node
+    getOutputNode(): HTMLElement { return this.fOutputNode; }
+    getInputNode(): HTMLElement { return this.fInputNode; }
+
+    getModuleContainer(): HTMLElement {
+        return this.fModuleContainer;
+    }
+    getInterfaceContainer(): HTMLInterfaceContainer {
+        return this.fInterfaceContainer;
     }
 
+    setInputNode(): void {
+        this.fInputNode = document.createElement("div");
+        this.fInputNode.className = "node node-input";
+        this.fInputNode.innerHTML = "<span class='node-button'>&nbsp;</span>";
+        this.fModuleContainer.appendChild(this.fInputNode);
+    }
+    setOutputNode():void{
+        this.fOutputNode = document.createElement("div");
+        this.fOutputNode.className = "node node-output";
+        this.fOutputNode.innerHTML = "<span class='node-button'>&nbsp;</span>";
+        this.fModuleContainer.appendChild(this.fOutputNode);
+    }
+    deleteInputOutputNodes(): void {
+        if (this.fInputNode)
+            this.fModuleContainer.removeChild(this.fInputNode);
+
+        if (this.fOutputNode)
+            this.fModuleContainer.removeChild(this.fOutputNode);
+    }
+
+
+
+    isPointInOutput(x: number, y: number): boolean {
+
+        if (this.fOutputNode && this.fOutputNode.getBoundingClientRect().left < x && x < this.fOutputNode.getBoundingClientRect().right && this.fOutputNode.getBoundingClientRect().top < y && y < this.fOutputNode.getBoundingClientRect().bottom) {
+            return true;
+        }
+        return false;
+    }
+    isPointInInput(x: number, y: number): boolean {
+
+        if (this.fInputNode && this.fInputNode.getBoundingClientRect().left <= x && x <= this.fInputNode.getBoundingClientRect().right && this.fInputNode.getBoundingClientRect().top <= y && y <= this.fInputNode.getBoundingClientRect().bottom) {
+            return true;
+        }
+        return false;
+    }
+
+    isPointInNode(x: number, y: number): boolean {
+
+        if (this.fModuleContainer && this.fModuleContainer.getBoundingClientRect().left < x && x < this.fModuleContainer.getBoundingClientRect().right && this.fModuleContainer.getBoundingClientRect().top < y && y < this.fModuleContainer.getBoundingClientRect().bottom) {
+            return true;
+        }
+        return false;
+    }
 }

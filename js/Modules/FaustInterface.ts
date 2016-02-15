@@ -54,7 +54,7 @@ class FaustInterface {
 
     parse_item(item: Iitem, module: ModuleClass):void {
 
-	    var params = module.getParams();
+        var params = module.getInterfaceParams();
 
 	    if( params && params[item.address]){
 		    item.init = params[item.address];
@@ -123,7 +123,7 @@ class FaustInterface {
         slider.oninput = function (event) { onUpdate(event,module) };
 	    this.group.appendChild(slider);
 
-	    module.getInterfaceContainer().appendChild(this.group);
+        module.moduleView.getInterfaceContainer().appendChild(this.group);
 	    return slider;
     }
 
@@ -144,7 +144,7 @@ class FaustInterface {
 	    this.group.appendChild(checkbox);
 	    this.group.appendChild(label);
 
-	    module.getInterfaceContainer().appendChild(this.group);
+        module.moduleView.getInterfaceContainer().appendChild(this.group);
 	    return checkbox;
     }
 
@@ -160,8 +160,8 @@ class FaustInterface {
         var labelText: Text = document.createTextNode(label);       // Create a text node
         button.appendChild(labelText);
 	                                    // Append the text to <button>
-	    this.group.appendChild(button);
-	    module.getInterfaceContainer().appendChild(this.group);
+        this.group.appendChild(button);
+        module.moduleView.getInterfaceContainer().appendChild(this.group);
 	
 	    return button;
     }

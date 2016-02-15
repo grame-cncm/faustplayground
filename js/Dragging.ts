@@ -56,7 +56,7 @@ class Drag {
 	    if (!el.classList.contains("moduleFaust"))
 		    return;
 
-        var moduleContainer: HTMLElement = module.getModuleContainer();
+        var moduleContainer: HTMLElement = module.moduleView.getModuleContainer();
 
 
 	    // Get cursor position with respect to the page.
@@ -84,8 +84,8 @@ class Drag {
 
     whileDraggingModule(event: MouseEvent, module: ModuleClass): void {
         var x: number, y: number;
-	
-	    var moduleContainer = module.getModuleContainer();
+
+        var moduleContainer = module.moduleView.getModuleContainer();
 	
 	    // Get cursor position with respect to the page.
         x = event.clientX + window.scrollX;
@@ -94,10 +94,10 @@ class Drag {
         // Move drag element by the same amount the cursor has moved.
         moduleContainer.style.left = (this.elementStartLeft + x - this.cursorStartX) + "px";
         moduleContainer.style.top = (this.elementStartTop + y - this.cursorStartY) + "px";
-	
-	    if (module.getInputConnections() != null) {	// update any lines that point in here.
-		
-		    var offset:HTMLElement = module.getInputNode();
+
+        if (module.moduleFaust.getInputConnections() != null) {	// update any lines that point in here.
+
+            var offset: HTMLElement = module.moduleView.getInputNode();
 	        x = window.scrollX + 12;
 	        y = window.scrollY + 12;
 
@@ -107,18 +107,18 @@ class Drag {
                 y += offset.offsetTop;
                 offset = <HTMLDivElement>offset.offsetParent;
 		    }
-		
-		    for (var c=0; c<module.getInputConnections().length; c++) {
 
-                module.getInputConnections()[c].connectorShape.setAttributeNS(null, "x1", String(x));
-                module.getInputConnections()[c].connectorShape.setAttributeNS(null, "y1", String(y));
+            for (var c = 0; c < module.moduleFaust.getInputConnections().length; c++) {
+
+                module.moduleFaust.getInputConnections()[c].connectorShape.setAttributeNS(null, "x1", String(x));
+                module.moduleFaust.getInputConnections()[c].connectorShape.setAttributeNS(null, "y1", String(y));
 		    }
 	    }
 
-	    if (module.getOutputConnections()!= null) {	// update any lines that point out of here.
+        if (module.moduleFaust.getOutputConnections() != null) {	// update any lines that point out of here.
 		    
-		
-		    var offset = module.getOutputNode();
+
+            var offset = module.moduleView.getOutputNode();
 	        x = window.scrollX + 12;
 	        y = window.scrollY + 12;
 
@@ -127,12 +127,12 @@ class Drag {
                 y += offset.offsetTop;
                 offset = <HTMLDivElement>offset.offsetParent;
 		    }
-		
-		    for (var c=0; c<module.getOutputConnections().length; c++) {
 
-                if (module.getOutputConnections()[c].connectorShape) {
-                    module.getOutputConnections()[c].connectorShape.setAttributeNS(null, "x2", String(x));
-                    module.getOutputConnections()[c].connectorShape.setAttributeNS(null, "y2", String(y));
+            for (var c = 0; c < module.moduleFaust.getOutputConnections().length; c++) {
+
+                if (module.moduleFaust.getOutputConnections()[c].connectorShape) {
+                    module.moduleFaust.getOutputConnections()[c].connectorShape.setAttributeNS(null, "x2", String(x));
+                    module.moduleFaust.getOutputConnections()[c].connectorShape.setAttributeNS(null, "y2", String(y));
 			    }
 		    }
 	    }
@@ -174,8 +174,8 @@ class Drag {
 	    // remember if this is an input or output node, so we can match
 	    this.originIsInput = target.classList.contains("node-input");
 
-	    module.getInterfaceContainer().unlitClassname = module.getInterfaceContainer().className;
-	    module.getInterfaceContainer().className += " canConnect";
+        module.moduleView.getInterfaceContainer().unlitClassname = module.moduleView.getInterfaceContainer().className;
+        module.moduleView.getInterfaceContainer().className += " canConnect";
 	
 	    // Create a connector visual line
 	    var svgns:string = "http://www.w3.org/2000/svg";
@@ -195,12 +195,12 @@ class Drag {
     stopDraggingConnection(sourceModule: ModuleClass, destination: ModuleClass):void {
 
 
-	    if (sourceModule.getInterfaceContainer().lastLit) {
-		    sourceModule.getInterfaceContainer().lastLit.className = sourceModule.getInterfaceContainer().lastLit.unlitClassname;
-		    sourceModule.getInterfaceContainer().lastLit = null;
+        if (sourceModule.moduleView.getInterfaceContainer().lastLit) {
+            sourceModule.moduleView.getInterfaceContainer().lastLit.className = sourceModule.moduleView.getInterfaceContainer().lastLit.unlitClassname;
+            sourceModule.moduleView.getInterfaceContainer().lastLit = null;
 	    }
 
-	    sourceModule.getInterfaceContainer().className = sourceModule.getInterfaceContainer().unlitClassname;
+        sourceModule.moduleView.getInterfaceContainer().className = sourceModule.moduleView.getInterfaceContainer().unlitClassname;
 
         var x: number, y: number
         if (destination) {	
@@ -208,10 +208,10 @@ class Drag {
 		    // Get the position of the originating connector with respect to the page.
 
             var offset: HTMLElement;
-		    if(!this.originIsInput)
-                offset = destination.getInputNode();
-		    else
-                offset = destination.getOutputNode();
+            if (!this.originIsInput)
+                offset = destination.moduleView.getInputNode();
+            else
+                offset = destination.moduleView.getOutputNode();
 
             var toElem: HTMLElement = offset;
 	
@@ -267,8 +267,8 @@ class Drag {
                 var connector: Connector = new Connector();
                 
 
-			    dst.addInputConnection(connector);
-			    src.addOutputConnection(connector);
+                dst.moduleFaust.addInputConnection(connector);
+                src.moduleFaust.addOutputConnection(connector);
 			
 			    this.connectorShape.inputConnection = connector;
 			    this.connectorShape.destination = dst;
@@ -365,8 +365,8 @@ class Drag {
 
         var modules: ModuleClass[] = module.sceneParent.getModules();
 
-	    for(var i=0; i<modules.length; i++){
-		    if((this.originIsInput && modules[i].isPointInOutput(event.clientX, event.clientY)) || modules[i].isPointInInput(event.clientX, event.clientY)){
+        for (var i = 0; i < modules.length; i++){
+            if ((this.originIsInput && modules[i].moduleView.isPointInOutput(event.clientX, event.clientY)) || modules[i].moduleView.isPointInInput(event.clientX, event.clientY)) {
 			    arrivingNode = modules[i];
 			    break;
 		    }
@@ -375,9 +375,9 @@ class Drag {
         if (!arrivingNode) {
             var outputModule = module.sceneParent.getAudioOutput();
             var inputModule = module.sceneParent.getAudioInput();
-            if ((this.originIsInput && outputModule.isPointInOutput(event.clientX, event.clientY)) || outputModule.isPointInInput(event.clientX, event.clientY) || arrivingHTMLParentNode.offsetParent.getAttribute("id")=="moduleOutput") {
+            if ((this.originIsInput && outputModule.moduleView.isPointInOutput(event.clientX, event.clientY)) || outputModule.moduleView.isPointInInput(event.clientX, event.clientY) || arrivingHTMLParentNode.offsetParent.getAttribute("id") == "moduleOutput") {
                 arrivingNode = outputModule;
-            } else if ((!this.originIsInput && inputModule.isPointInInput(event.clientX, event.clientY)) || inputModule.isPointInOutput(event.clientX, event.clientY) || arrivingHTMLParentNode.offsetParent.getAttribute("id") == "moduleInput") {
+            } else if ((!this.originIsInput && inputModule.moduleView.isPointInInput(event.clientX, event.clientY)) || inputModule.moduleView.isPointInOutput(event.clientX, event.clientY) || arrivingHTMLParentNode.offsetParent.getAttribute("id") == "moduleInput") {
                 arrivingNode = inputModule;
             }
         }

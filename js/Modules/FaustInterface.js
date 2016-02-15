@@ -23,7 +23,7 @@ var FaustInterface = (function () {
     //    	parse_item(items[i], node);
     //}
     FaustInterface.prototype.parse_item = function (item, module) {
-        var params = module.getParams();
+        var params = module.getInterfaceParams();
         if (params && params[item.address]) {
             item.init = params[item.address];
         }
@@ -75,7 +75,7 @@ var FaustInterface = (function () {
         slider.step = "1";
         slider.oninput = function (event) { onUpdate(event, module); };
         this.group.appendChild(slider);
-        module.getInterfaceContainer().appendChild(this.group);
+        module.moduleView.getInterfaceContainer().appendChild(this.group);
         return slider;
     };
     FaustInterface.prototype.addFaustCheckBox = function (module, ivalue, onUpdate) {
@@ -90,7 +90,7 @@ var FaustInterface = (function () {
         label.appendChild(document.createTextNode(" " + ivalue));
         this.group.appendChild(checkbox);
         this.group.appendChild(label);
-        module.getInterfaceContainer().appendChild(this.group);
+        module.moduleView.getInterfaceContainer().appendChild(this.group);
         return checkbox;
     };
     FaustInterface.prototype.addFaustButton = function (module, groupName, label, onUpdate) {
@@ -103,7 +103,7 @@ var FaustInterface = (function () {
         button.appendChild(labelText);
         // Append the text to <button>
         this.group.appendChild(button);
-        module.getInterfaceContainer().appendChild(this.group);
+        module.moduleView.getInterfaceContainer().appendChild(this.group);
         return button;
     };
     return FaustInterface;
