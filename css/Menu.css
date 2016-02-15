@@ -1,0 +1,19 @@
+﻿/*Menu.css*/
+
+
+
+div#buttonsMenu {
+    float: left;
+    position: relative;
+    width: 96px;
+    cursor:pointer;
+}
+
+div#contentsMenu {
+    float: left;
+    position: relative;
+}
+
+.submenuLibraryContent {
+    float: left;
+}
