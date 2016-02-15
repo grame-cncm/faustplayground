@@ -49,21 +49,22 @@
     margin:0 auto;
     text-align: center;
     border: solid white 0;
-    border-radius: 20px;
-    color: #4c4c4c;
-    padding-top: 5px;
+    border-radius: 0px;
+    color: #fafafc;
+    padding-top: 10px;
     padding-right: 10px;
     padding-bottom: 5px;
     padding-left: 10px;
     text-transform: uppercase;
     font-size: 20px;
-    box-shadow: 0 0 5px #424242;
+    box-shadow: 0 0 5px#424242;
     width:100%;
 }
 #exportButton:hover {
     box-shadow: 0 0 5px black;
     color: black;
 
+	background: #1D4CBF;
 }
 
 #ChrisLine{
