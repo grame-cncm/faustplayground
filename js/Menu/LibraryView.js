@@ -2,7 +2,7 @@
 var LibraryView = (function () {
     function LibraryView() {
     }
-    LibraryView.prototype.initLibrary = function () {
+    LibraryView.prototype.initLibraryView = function () {
         var libraryContent = document.createElement("div");
         libraryContent.id = "libraryContent";
         libraryContent.className = "menuContent";
@@ -13,9 +13,8 @@ var LibraryView = (function () {
         instrumentLibraryTitle.id = "instrumentLibraryTitle";
         instrumentLibraryTitle.className = "libraryTitles";
         instrumentLibraryTitle.appendChild(document.createTextNode("Instruments"));
-        var intrumentLibrarySelect = document.createElement("select");
-        intrumentLibrarySelect.multiple = true;
-        intrumentLibrarySelect.id = "intrumentLibrarySelect";
+        var intrumentLibrarySelect = document.createElement("ul");
+        intrumentLibrarySelect.id = "instrumentLibrarySelect";
         intrumentLibrarySelect.className = "librarySelects";
         instrumentLibraryContent.appendChild(instrumentLibraryTitle);
         instrumentLibraryContent.appendChild(intrumentLibrarySelect);
@@ -26,8 +25,7 @@ var LibraryView = (function () {
         effetLibraryTitle.id = "effetLibraryTitle";
         effetLibraryTitle.className = "libraryTitles";
         effetLibraryTitle.appendChild(document.createTextNode("Effets"));
-        var effetLibrarySelect = document.createElement("select");
-        effetLibrarySelect.multiple = true;
+        var effetLibrarySelect = document.createElement("ul");
         effetLibrarySelect.id = "effetLibrarySelect";
         effetLibrarySelect.className = "librarySelects";
         effetLibraryContent.appendChild(effetLibraryTitle);
@@ -39,8 +37,7 @@ var LibraryView = (function () {
         exempleLibraryTitle.id = "exempleLibraryTitle";
         exempleLibraryTitle.className = "libraryTitles";
         exempleLibraryTitle.appendChild(document.createTextNode("Exemples"));
-        var exempleLibrarySelect = document.createElement("select");
-        exempleLibrarySelect.multiple = true;
+        var exempleLibrarySelect = document.createElement("ul");
         exempleLibrarySelect.id = "exempleLibrarySelect";
         exempleLibrarySelect.className = "librarySelects";
         exempleLibraryContent.appendChild(exempleLibraryTitle);

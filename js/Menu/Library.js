@@ -29,6 +29,45 @@
 var Library = (function () {
     function Library() {
     }
+    Library.prototype.fillLibrary = function () {
+        var _this = this;
+        var url = "faust-modules/index.json";
+        App.getXHR(url, function (json) { _this.fillLibraryCallBack(json); });
+    };
+    Library.prototype.fillLibraryCallBack = function (json) {
+        var jsonObject = JSON.parse(json);
+        jsonObject.effet = "effetLibrarySelect";
+        jsonObject.effetSupprStructure = "faust-modules/effects/";
+        jsonObject.instrument = "instrumentLibrarySelect";
+        jsonObject.instrumentSupprStructure = "faust-modules/generators/";
+        jsonObject.exemple = "exempleLibrarySelect";
+        jsonObject.exempleSupprStructure = "faust-modules/combined/";
+        this.fillSubMenu(jsonObject.instruments, jsonObject.instrument, jsonObject.instrumentSupprStructure);
+        this.fillSubMenu(jsonObject.effets, jsonObject.effet, jsonObject.effetSupprStructure);
+        this.fillSubMenu(jsonObject.exemples, jsonObject.exemple, jsonObject.exempleSupprStructure);
+    };
+    Library.prototype.fillSubMenu = function (options, subMenuId, stringStructureRemoved) {
+        var subMenu = document.getElementById(subMenuId);
+        //subMenu.ondrag = App.preventdefault;
+        for (var i = 0; i < options.length; i++) {
+            var li = document.createElement("li");
+            var a = document.createElement("a");
+            li.appendChild(a);
+            a.href = options[i];
+            a.draggable = true;
+            a.ondragstart = this.selectDrag;
+            //option.onmousedown = App.preventdefault;
+            //option.ondrag = this.selectDrag;
+            a.text = this.cleanNameElement(options[i], stringStructureRemoved);
+            subMenu.appendChild(li);
+        }
+    };
+    Library.prototype.cleanNameElement = function (elementComplete, stringStructureRemoved) {
+        return elementComplete.replace(stringStructureRemoved, "").replace(".dsp", "");
+    };
+    Library.prototype.selectDrag = function () {
+        //event.preventDefault();
+    };
     Library.prototype.initLibrary = function (parent) {
         var library = document.createElement("div");
         library.id = "menuContainer";

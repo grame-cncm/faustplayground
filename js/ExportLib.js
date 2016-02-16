@@ -11,6 +11,7 @@ var ExportLib = (function () {
     // 				- @param : the available targets as a JSON application
     // json = {"platform1":["arch1", "arch2", ..., "archn"], ... , "platformn":["arch1", "arch2", ..., "archn"]}
     ExportLib.getTargets = function (exportUrl, callback, errCallback) {
+        //App.getXHR(exportUrl, callback)
         var getrequest = new XMLHttpRequest();
         getrequest.onreadystatechange = function () {
             if (getrequest.readyState == 4 && getrequest.status == 200)

@@ -32,7 +32,7 @@ DEPENDENCIES:
 /// <reference path="Scenes/Accueil.ts"/>
 /// <reference path="Scenes/Finish.ts"/>
 /// <reference path="Scenes/Pedagogie.ts"/>
-/// <reference path="Scenes/Playground.ts"/>
+/// <reference path="Scenes/SceneView.ts"/>
 /// <reference path="Menu/Export.ts"/>
 /// <reference path="ExportLib.ts"/>
 /// <reference path="EquivalentFaust.ts"/>
@@ -56,7 +56,7 @@ var App = (function () {
             this.scenes[2] = new Scene("Export", this, function (scene) { sceneExportView.onloadExportScene(scene, sceneExportView); }, sceneExportView.onunloadExportScene);
         }
         else {
-            var scenePlaygroundView = new ScenePlaygroundView();
+            var scenePlaygroundView = new SceneView();
             this.scenes[0] = new Scene("Normal", this, scenePlaygroundView.onloadNormalScene, scenePlaygroundView.onunloadNormalScene, scenePlaygroundView);
             App.scene = this.scenes[0];
             scenePlaygroundView.initNormalScene(this.scenes[0]);
@@ -301,6 +301,20 @@ var App = (function () {
         else {
             return false;
         }
+    };
+    App.getXHR = function (url, callback) {
+        var getrequest = new XMLHttpRequest();
+        getrequest.onreadystatechange = function () {
+            console.log("enter onreadystatechange");
+            if (getrequest.readyState == 4 && getrequest.status == 200) {
+                callback(getrequest.responseText);
+            }
+        };
+        getrequest.open("GET", url, true);
+        getrequest.send(null);
+    };
+    App.preventdefault = function (e) {
+        e.preventDefault();
     };
     App.idX = 0;
     App.baseImg = "img/";

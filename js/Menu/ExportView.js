@@ -2,7 +2,10 @@
 var ExportView = (function () {
     function ExportView() {
     }
-    ExportView.prototype.init = function () {
+    ExportView.prototype.initExportView = function () {
+        var exportContainer = document.createElement("div");
+        exportContainer.id = "exportContent";
+        exportContainer.className = "menuContent";
         var fwurl = document.createElement("input");
         fwurl.id = "faustweburl";
         fwurl.value = "http://faustservice.grame.fr";
@@ -35,6 +38,9 @@ var ExportView = (function () {
         //equButton.onclick = function (event) { sceneView.expor.exportPatch(event, sceneView.expor) };
         equButton.value = "Export";
         subfooter.appendChild(equButton);
+        exportContainer.appendChild(fwurl);
+        exportContainer.appendChild(subfooter);
+        return exportContainer;
     };
     return ExportView;
 })();

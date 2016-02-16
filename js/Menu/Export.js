@@ -15,22 +15,33 @@
 var Export = (function () {
     function Export() {
         var _this = this;
+        //------ Update Architectures with Plateform change
+        this.updateArchitectures = function () {
+            if (!_this.clearComboBox('architectures')) {
+                return;
+            }
+            else {
+                var data = JSON.parse(App.jsonText);
+                var platformsSelect = document.getElementById('platforms'); //get the combobox
+                var selPlatform = platformsSelect.options[platformsSelect.selectedIndex].value;
+                var dataCopy = data[selPlatform];
+                var iterator = 0;
+                for (var subData in dataCopy) {
+                    if (iterator < dataCopy.length) {
+                        var mainData = dataCopy[subData];
+                        _this.addItem('architectures', mainData);
+                        iterator = iterator + 1;
+                    }
+                }
+            }
+        };
         this.uploadTargets = function () {
             _this.clearComboBox('platforms');
             _this.clearComboBox('architectures');
             var input = document.getElementById("faustweburl");
             App.exportURL = input.value;
-            var self = _this;
-            ExportLib.getTargets(App.exportURL, function (json) {
-                App.jsonText = json;
-                var data = JSON.parse(App.jsonText);
-                for (var platform in data) {
-                    self.addItem('platforms', platform);
-                }
-                self.updateArchitectures(self);
-            }, function (json) {
-                alert('Impossible to get FaustWeb targets');
-            });
+            App.getXHR(Export.targetsUrl, function (json) { _this.uploadTargetCallback(json); });
+            //ExportLib.getTargets(App.exportURL, (json: string) => { this.uploadTargetCallback },  (json: string)=> {alert('Impossible to get FaustWeb targets')});
         };
     }
     //------ Handle Combo Boxes
@@ -51,25 +62,13 @@ var Export = (function () {
             return false;
         }
     };
-    //------ Update Architectures with Plateform change
-    Export.prototype.updateArchitectures = function (self) {
-        if (!self.clearComboBox('architectures')) {
-            return;
+    Export.prototype.uploadTargetCallback = function (json) {
+        App.jsonText = json;
+        var data = JSON.parse(App.jsonText);
+        for (var platform in data) {
+            this.addItem('platforms', platform);
         }
-        else {
-            var data = JSON.parse(App.jsonText);
-            var platformsSelect = document.getElementById('platforms'); //get the combobox
-            var selPlatform = platformsSelect.options[platformsSelect.selectedIndex].value;
-            var dataCopy = data[selPlatform];
-            var iterator = 0;
-            for (var subData in dataCopy) {
-                if (iterator < dataCopy.length) {
-                    var mainData = dataCopy[subData];
-                    this.addItem('architectures', mainData);
-                    iterator = iterator + 1;
-                }
-            }
-        }
+        this.updateArchitectures();
     };
     /********************************************************************
     *********************  HANDLE POST TO FAUST WEB  ********************
@@ -106,6 +105,8 @@ var Export = (function () {
         var myWhiteDiv = ExportLib.getQrCode(serverUrl, shaKey, selPlatform, selArch, appType, 120);
         link.appendChild(myWhiteDiv);
     };
+    Export.exportUrl = "http://faustservice.grame.fr";
+    Export.targetsUrl = "http://faustservice.grame.fr/targets";
     return Export;
 })();
 //# sourceMappingURL=Export.js.map

@@ -1,6 +1,10 @@
 ﻿/*Menu.css*/
 
-
+div#menuContainer {
+    width: 100%;
+    display: inline-flex;
+    z-index: 1;
+}
 
 div#buttonsMenu {
     float: left;
@@ -12,8 +16,21 @@ div#buttonsMenu {
 div#contentsMenu {
     float: left;
     position: relative;
+    width:100%;
+background: -moz-linear-gradient(top,  rgba(255,197,50,0.92) 0%, rgba(255,219,137,0.47) 100%);
+background: -webkit-linear-gradient(top,  rgba(255,197,50,0.92) 0%,rgba(255,219,137,0.47) 100%);
+background: linear-gradient(to bottom,  rgba(255,197,50,0.92) 0%,rgba(255,219,137,0.47) 100%);
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ebffc532', endColorstr='#78ffdb89',GradientType=0 );
+    box-shadow: 0 0 5px black;
+    padding: 10px 0;
+
+
 }
 
 .submenuLibraryContent {
     float: left;
+    height: 300px;
+    overflow-x: hidden;
+    width: 33%;
+    overflow-y: auto;
 }

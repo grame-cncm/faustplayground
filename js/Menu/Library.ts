@@ -36,8 +36,70 @@ interface IImageNode extends HTMLImageElement {
     section: string;
     folder: HTMLUListElement;
 }
+interface jsonObjectLibrary {
+    instrument: string;
+    effet: string;
+    exemple: string;
+    instrumentSupprStructure: string;
+    effetSupprStructure: string;
+    exempleSupprStructure: string;
+    instruments: string[];
+    effets: string[];
+    exemples: string[];
+}
+
 
 class Library{
+    libraryView: LibraryView;
+
+    fillLibrary() {
+        var url: string = "faust-modules/index.json"
+        App.getXHR(url, (json: string) => { this.fillLibraryCallBack(json) });
+    }
+
+    fillLibraryCallBack(json: string) {
+        var jsonObject: jsonObjectLibrary = JSON.parse(json);
+        jsonObject.effet = "effetLibrarySelect";
+        jsonObject.effetSupprStructure = "faust-modules/effects/";
+        jsonObject.instrument = "instrumentLibrarySelect";
+        jsonObject.instrumentSupprStructure = "faust-modules/generators/";
+        jsonObject.exemple = "exempleLibrarySelect";
+        jsonObject.exempleSupprStructure = "faust-modules/combined/";
+        this.fillSubMenu(jsonObject.instruments, jsonObject.instrument, jsonObject.instrumentSupprStructure);
+        this.fillSubMenu(jsonObject.effets, jsonObject.effet, jsonObject.effetSupprStructure);
+        this.fillSubMenu(jsonObject.exemples, jsonObject.exemple, jsonObject.exempleSupprStructure);
+
+    }
+
+    fillSubMenu(options: string[], subMenuId: string, stringStructureRemoved: string) {
+        var subMenu: HTMLUListElement = <HTMLUListElement>document.getElementById(subMenuId);
+        //subMenu.ondrag = App.preventdefault;
+        for (var i = 0; i < options.length; i++) {
+
+            var li: HTMLLIElement = document.createElement("li");
+            var a: HTMLAnchorElement = document.createElement("a");
+            li.appendChild(a);
+            a.href = options[i];
+            a.draggable = true;
+            a.ondragstart = this.selectDrag;
+            //option.onmousedown = App.preventdefault;
+            
+            //option.ondrag = this.selectDrag;
+            a.text = this.cleanNameElement(options[i], stringStructureRemoved);
+            subMenu.appendChild(li)
+        }
+    }
+
+    cleanNameElement(elementComplete: string, stringStructureRemoved: string): string {
+        return elementComplete.replace(stringStructureRemoved, "").replace(".dsp", "");
+    }
+
+    
+    selectDrag() {
+        //event.preventDefault();
+    }
+
+
     imageNode: IImageNode;
 
     initLibrary(parent: HTMLDivElement): void{

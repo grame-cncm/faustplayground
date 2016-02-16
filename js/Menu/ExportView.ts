@@ -2,7 +2,13 @@
 
 class ExportView {
 
-    init() {
+    initExportView(): HTMLElement {
+
+        var exportContainer: HTMLElement = document.createElement("div");
+        exportContainer.id = "exportContent";
+        exportContainer.className = "menuContent";
+
+
         var fwurl: HTMLInputElement = document.createElement("input");
         fwurl.id = "faustweburl";
 
@@ -45,7 +51,9 @@ class ExportView {
         //equButton.onclick = function (event) { sceneView.expor.exportPatch(event, sceneView.expor) };
         equButton.value = "Export";
         subfooter.appendChild(equButton);
-
+        exportContainer.appendChild(fwurl);
+        exportContainer.appendChild(subfooter);
+        return exportContainer;
 
     }
 }

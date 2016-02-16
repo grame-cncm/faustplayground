@@ -19,7 +19,8 @@
 
 
 class Export{
-
+    static exportUrl: string = "http://faustservice.grame.fr"
+    static targetsUrl: string = "http://faustservice.grame.fr/targets"
 
     //------ Handle Combo Boxes
     addItem(id: string, itemText:string):void
@@ -43,9 +44,9 @@ class Export{
     }
 
     //------ Update Architectures with Plateform change
-    updateArchitectures(self: Export):any
+    updateArchitectures = () =>
     {
-        if (!self.clearComboBox('architectures')) {
+        if (!this.clearComboBox('architectures')) {
             return
         } else {
 
@@ -76,21 +77,22 @@ class Export{
 	    this.clearComboBox('architectures');
         var input: HTMLInputElement = <HTMLInputElement>document.getElementById("faustweburl")
         App.exportURL = input.value;
-        var self: Export = this;
-        ExportLib.getTargets(App.exportURL, function (json:string) {
-			    App.jsonText = json;
-				    		
-			    var data:string[] = JSON.parse(App.jsonText);
 
-			    for (var platform in data) {
-                    self.addItem('platforms', platform);
-        	    }
+        App.getXHR(Export.targetsUrl, (json: string) => { this.uploadTargetCallback(json) });
+        //ExportLib.getTargets(App.exportURL, (json: string) => { this.uploadTargetCallback },  (json: string)=> {alert('Impossible to get FaustWeb targets')});
+    }	
 
-                self.updateArchitectures(self);
-        }, function (json: string) {
-		    alert('Impossible to get FaustWeb targets');
-	    });
-    }		
+    uploadTargetCallback(json: string) {
+        App.jsonText = json;
+
+        var data: string[] = JSON.parse(App.jsonText);
+
+        for (var platform in data) {
+            this.addItem('platforms', platform);
+        }
+
+        this.updateArchitectures();
+    }	
 
     /******************************************************************** 
     *********************  HANDLE POST TO FAUST WEB  ********************

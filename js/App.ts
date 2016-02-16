@@ -32,7 +32,7 @@ DEPENDENCIES:
 /// <reference path="Scenes/Accueil.ts"/>
 /// <reference path="Scenes/Finish.ts"/>
 /// <reference path="Scenes/Pedagogie.ts"/>
-/// <reference path="Scenes/Playground.ts"/>
+/// <reference path="Scenes/SceneView.ts"/>
 /// <reference path="Menu/Export.ts"/>
 /// <reference path="ExportLib.ts"/>
 /// <reference path="EquivalentFaust.ts"/>
@@ -91,7 +91,7 @@ class App {
             // 		Export Page doesn't need initialization
         }
         else {
-            var scenePlaygroundView: ScenePlaygroundView = new ScenePlaygroundView();
+            var scenePlaygroundView: SceneView = new SceneView();
             this.scenes[0] = new Scene("Normal", this, scenePlaygroundView.onloadNormalScene, scenePlaygroundView.onunloadNormalScene, scenePlaygroundView);
             App.scene = this.scenes[0];
             scenePlaygroundView.initNormalScene(this.scenes[0]);
@@ -400,5 +400,22 @@ class App {
         } else {
             return false
         }
+    }
+    static getXHR(url: string, callback: (any) => any) {
+
+        var getrequest: XMLHttpRequest = new XMLHttpRequest();
+
+        getrequest.onreadystatechange = function () {
+            console.log("enter onreadystatechange");
+            if (getrequest.readyState == 4 && getrequest.status == 200) {
+                callback(getrequest.responseText);
+            }
+        }
+
+        getrequest.open("GET", url, true);
+        getrequest.send(null);
+    }
+    static preventdefault(e: Event) {
+        e.preventDefault();
     }
 }

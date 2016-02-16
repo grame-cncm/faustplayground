@@ -28,13 +28,13 @@ class Scene {
     private fModuleList: ModuleClass[] = [];
     //-- Graphical Scene container
     private fSceneContainer: HTMLDivElement;
-    sceneView: ScenePlaygroundView;
+    sceneView: SceneView;
     menu: Menu;
 
     
 
 
-    constructor(identifiant: string, parent: App, onload?: (s: Scene) => void, onunload?: (s: Scene) => void, sceneView?: ScenePlaygroundView) {
+    constructor(identifiant: string, parent: App, onload?: (s: Scene) => void, onunload?: (s: Scene) => void, sceneView?: SceneView) {
         this.parent = parent;
         this.fSceneContainer = document.createElement("div");
         this.fSceneContainer.id = identifiant;
@@ -104,7 +104,7 @@ class Scene {
         this.fAudioInput.addInputOutputNodes();
         callBackIntegrateOutput();
     }
-    integrateOutput(callBackKeepGoingOnWithInit: (sceneView?: ScenePlaygroundView) => void) {
+    integrateOutput(callBackKeepGoingOnWithInit: (sceneView?: SceneView) => void) {
         var positionOutput: PositionModule = this.positionOutputModule();
         var scene: Scene = this;
         this.fAudioOutput = new ModuleClass(App.idX++, positionOutput.x, positionOutput.y, "output", this, this.fSceneContainer, this.removeModule);
