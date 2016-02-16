@@ -302,12 +302,16 @@ var App = (function () {
             return false;
         }
     };
-    App.getXHR = function (url, callback) {
+    //generic function to make XHR request
+    App.getXHR = function (url, callback, errCallback) {
         var getrequest = new XMLHttpRequest();
         getrequest.onreadystatechange = function () {
             console.log("enter onreadystatechange");
             if (getrequest.readyState == 4 && getrequest.status == 200) {
                 callback(getrequest.responseText);
+            }
+            else if (getrequest.readyState == 4 && getrequest.status == 400) {
+                errCallback(getrequest.responseText);
             }
         };
         getrequest.open("GET", url, true);

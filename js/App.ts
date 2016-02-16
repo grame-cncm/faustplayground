@@ -401,7 +401,8 @@ class App {
             return false
         }
     }
-    static getXHR(url: string, callback: (any) => any) {
+    //generic function to make XHR request
+    static getXHR(url: string, callback: (any) => any,errCallback:(any)=>any) {
 
         var getrequest: XMLHttpRequest = new XMLHttpRequest();
 
@@ -409,12 +410,16 @@ class App {
             console.log("enter onreadystatechange");
             if (getrequest.readyState == 4 && getrequest.status == 200) {
                 callback(getrequest.responseText);
+            } else if (getrequest.readyState == 4 && getrequest.status == 400){
+                errCallback(getrequest.responseText);
             }
         }
 
         getrequest.open("GET", url, true);
         getrequest.send(null);
     }
+
+
     static preventdefault(e: Event) {
         e.preventDefault();
     }

@@ -19,10 +19,16 @@
 
 
 class Export{
+    exportView: ExportView;
     static exportUrl: string = "http://faustservice.grame.fr"
     static targetsUrl: string = "http://faustservice.grame.fr/targets"
 
     //------ Handle Combo Boxes
+    setEventListeners() {
+        this.exportView.refreshButton.onclick = this.uploadTargets;
+        this.exportView.selectPlatform.onchange = () => { this.updateArchitectures() };
+        this.exportView.exportButton.onclick =  (event)=>{ this.exportPatch(event, this) };
+    }
     addItem(id: string, itemText:string):void
     {
         var platformsSelect: HTMLSelectElement = <HTMLSelectElement>document.getElementById(id);
@@ -78,7 +84,7 @@ class Export{
         var input: HTMLInputElement = <HTMLInputElement>document.getElementById("faustweburl")
         App.exportURL = input.value;
 
-        App.getXHR(Export.targetsUrl, (json: string) => { this.uploadTargetCallback(json) });
+        App.getXHR(Export.targetsUrl, (json: string) => { this.uploadTargetCallback(json) }, (errorMessage: string) => { ErrorFaust.errorCallBack(errorMessage) });
         //ExportLib.getTargets(App.exportURL, (json: string) => { this.uploadTargetCallback },  (json: string)=> {alert('Impossible to get FaustWeb targets')});
     }	
 
@@ -112,7 +118,6 @@ class Export{
 
     exportFaustCode(shaKey: string):void
     {
-        var xhr: XMLHttpRequest = new XMLHttpRequest();
 
         var platformsSelect: HTMLSelectElement = <HTMLSelectElement>document.getElementById("platforms");//get the combobox
         var selPlatform: string = platformsSelect.options[platformsSelect.selectedIndex].value;
@@ -134,7 +139,7 @@ class Export{
 
         var qrDiv: HTMLElement = document.createElement('div');
 	    qrDiv.id = "qrcodeDiv";
-	    document.getElementById("sceneOutput").appendChild(qrDiv);
+        document.getElementById("exportContent").appendChild(qrDiv);
 
         var link: HTMLAnchorElement = document.createElement('a');
 	    link.href = serverUrl + "/" + shaKey +"/"+ selPlatform + "/" + selArch + "/"+appType;

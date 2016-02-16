@@ -40,11 +40,17 @@ var Export = (function () {
             _this.clearComboBox('architectures');
             var input = document.getElementById("faustweburl");
             App.exportURL = input.value;
-            App.getXHR(Export.targetsUrl, function (json) { _this.uploadTargetCallback(json); });
+            App.getXHR(Export.targetsUrl, function (json) { _this.uploadTargetCallback(json); }, function (errorMessage) { ErrorFaust.errorCallBack(errorMessage); });
             //ExportLib.getTargets(App.exportURL, (json: string) => { this.uploadTargetCallback },  (json: string)=> {alert('Impossible to get FaustWeb targets')});
         };
     }
     //------ Handle Combo Boxes
+    Export.prototype.setEventListeners = function () {
+        var _this = this;
+        this.exportView.refreshButton.onclick = this.uploadTargets;
+        this.exportView.selectPlatform.onchange = function () { _this.updateArchitectures(); };
+        this.exportView.exportButton.onclick = function (event) { _this.exportPatch(event, _this); };
+    };
     Export.prototype.addItem = function (id, itemText) {
         var platformsSelect = document.getElementById(id);
         var option = document.createElement('option');
@@ -83,7 +89,6 @@ var Export = (function () {
     **************  CALLBACK ONCE SHA KEY WAS CALCULATED  ***************
     ********************************************************************/
     Export.prototype.exportFaustCode = function (shaKey) {
-        var xhr = new XMLHttpRequest();
         var platformsSelect = document.getElementById("platforms"); //get the combobox
         var selPlatform = platformsSelect.options[platformsSelect.selectedIndex].value;
         var architecturesSelect = document.getElementById("architectures"); //get the combobox
@@ -98,7 +103,7 @@ var Export = (function () {
             qrcodeSpan.parentNode.removeChild(qrcodeSpan);
         var qrDiv = document.createElement('div');
         qrDiv.id = "qrcodeDiv";
-        document.getElementById("sceneOutput").appendChild(qrDiv);
+        document.getElementById("exportContent").appendChild(qrDiv);
         var link = document.createElement('a');
         link.href = serverUrl + "/" + shaKey + "/" + selPlatform + "/" + selArch + "/" + appType;
         qrDiv.appendChild(link);

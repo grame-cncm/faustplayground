@@ -32,7 +32,7 @@ var Library = (function () {
     Library.prototype.fillLibrary = function () {
         var _this = this;
         var url = "faust-modules/index.json";
-        App.getXHR(url, function (json) { _this.fillLibraryCallBack(json); });
+        App.getXHR(url, function (json) { _this.fillLibraryCallBack(json); }, function (errorMessage) { ErrorFaust.errorCallBack(errorMessage); });
     };
     Library.prototype.fillLibraryCallBack = function (json) {
         var jsonObject = JSON.parse(json);

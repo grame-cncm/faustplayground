@@ -14,10 +14,14 @@ class Menu {
         this.menuView.libraryButtonMenu.onclick = () => { this.menuHandler(this.menuChoices = MenuChoices.library) };
         this.menuView.exportButtonMenu.onclick = () => { this.menuHandler(this.menuChoices = MenuChoices.export) };
         this.menuView.helpButtonMenu.onclick = () => { this.menuHandler(this.menuChoices = MenuChoices.help) };
+        this.menuView.closeButton.onclick = () => { this.menuHandler(this.menuChoices = MenuChoices.null) };
         this.library = new Library();
+        this.library.libraryView = this.menuView.libraryView;
         this.library.fillLibrary();
         this.expor = new Export();
+        this.expor.exportView = this.menuView.exportView;
         this.expor.uploadTargets();
+        this.expor.setEventListeners();
 
     }
 
@@ -31,6 +35,9 @@ class Menu {
                 break;
             case MenuChoices.help:
                 this.helpMenu();
+                break;
+            case MenuChoices.null:
+                this.closeMenu();
                 break;
         }
     }
@@ -98,6 +105,13 @@ class Menu {
                 this.currentMenuChoices = MenuChoices.help;
                 break;
         }
+    }
+    closeMenu() {
+        for (var i = 0; i < this.menuView.HTMLElementsMenu.length; i++) {
+            this.menuView.HTMLElementsMenu[i].style.display = "none";
+        }
+        this.menuView.contentsMenu.style.display = "none";
+        this.currentMenuChoices = MenuChoices.null;
     }
 
 }

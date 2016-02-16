@@ -16,10 +16,14 @@ var Menu = (function () {
         this.menuView.libraryButtonMenu.onclick = function () { _this.menuHandler(_this.menuChoices = MenuChoices.library); };
         this.menuView.exportButtonMenu.onclick = function () { _this.menuHandler(_this.menuChoices = MenuChoices.export); };
         this.menuView.helpButtonMenu.onclick = function () { _this.menuHandler(_this.menuChoices = MenuChoices.help); };
+        this.menuView.closeButton.onclick = function () { _this.menuHandler(_this.menuChoices = MenuChoices.null); };
         this.library = new Library();
+        this.library.libraryView = this.menuView.libraryView;
         this.library.fillLibrary();
         this.expor = new Export();
+        this.expor.exportView = this.menuView.exportView;
         this.expor.uploadTargets();
+        this.expor.setEventListeners();
     }
     Menu.prototype.menuHandler = function (menuChoises) {
         switch (this.menuChoices) {
@@ -31,6 +35,9 @@ var Menu = (function () {
                 break;
             case MenuChoices.help:
                 this.helpMenu();
+                break;
+            case MenuChoices.null:
+                this.closeMenu();
                 break;
         }
     };
@@ -96,6 +103,13 @@ var Menu = (function () {
                 this.currentMenuChoices = MenuChoices.help;
                 break;
         }
+    };
+    Menu.prototype.closeMenu = function () {
+        for (var i = 0; i < this.menuView.HTMLElementsMenu.length; i++) {
+            this.menuView.HTMLElementsMenu[i].style.display = "none";
+        }
+        this.menuView.contentsMenu.style.display = "none";
+        this.currentMenuChoices = MenuChoices.null;
     };
     return Menu;
 })();

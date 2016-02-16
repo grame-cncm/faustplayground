@@ -6,10 +6,25 @@ div#menuContainer {
     z-index: 1;
 }
 
+div#closeButtonContainer {
+    height: 50px;
+}
+
+div#closeButton {
+    background: url(../img/cross_close.png);
+    width: 50px;
+    height: 50px;
+    background-repeat: no-repeat;
+    background-position: 50%;
+    float: right;
+    cursor:pointer;
+}
+
+
 div#buttonsMenu {
     float: left;
     position: relative;
-    width: 96px;
+    width: 75px;
     cursor:pointer;
 }
 
@@ -17,20 +32,37 @@ div#contentsMenu {
     float: left;
     position: relative;
     width:100%;
-background: -moz-linear-gradient(top,  rgba(255,197,50,0.92) 0%, rgba(255,219,137,0.47) 100%);
-background: -webkit-linear-gradient(top,  rgba(255,197,50,0.92) 0%,rgba(255,219,137,0.47) 100%);
-background: linear-gradient(to bottom,  rgba(255,197,50,0.92) 0%,rgba(255,219,137,0.47) 100%);
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ebffc532', endColorstr='#78ffdb89',GradientType=0 );
+    color: white;
+    background-color: rgba(255, 0, 26, 0.67);
     box-shadow: 0 0 5px black;
-    padding: 10px 0;
-
+    padding-bottom: 10px;
 
 }
 
 .submenuLibraryContent {
     float: left;
     height: 300px;
-    overflow-x: hidden;
     width: 33%;
+}
+.librarySelects {
     overflow-y: auto;
+    height: 250px;
+    overflow-x: hidden;
+}
+
+.buttonsMenu {
+    line-height: 70px;
+    text-align: center;
+    width: 75px;
+    height: 75px;
+    background-color: rgba(0, 65, 238, 0.66);
+    margin-bottom: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: white;
+}
+.buttonsMenu:hover {
+
+    background-color: rgba(0, 65, 238, 1);
+   
 }

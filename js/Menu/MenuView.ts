@@ -8,7 +8,11 @@ class MenuView {
     exportContent: HTMLElement;
     helpContent: HTMLElement;
     contentsMenu: HTMLElement;
-    HTMLElementsMenu: HTMLElement[]=[];
+    closeButton: HTMLElement;
+    HTMLElementsMenu: HTMLElement[] = [];
+    libraryView: LibraryView;
+    exportView: ExportView;
+    
 
 
     init(htmlContainer: HTMLElement): void {
@@ -39,22 +43,34 @@ class MenuView {
         buttonsMenu.appendChild(helpButtonMenu);
 
         //create menu's Contents and there containers
+
         var contentsMenu: HTMLElement = document.createElement("div");
         contentsMenu.id = "contentsMenu";
         contentsMenu.style.display = "none";
 
+        var closeButton: HTMLElement = document.createElement("div")
+        closeButton.id = "closeButton";
+        this.closeButton = closeButton;
+
+        var CloseButtonContainer: HTMLElement = document.createElement("div");
+        CloseButtonContainer.id = "closeButtonContainer";
+        CloseButtonContainer.appendChild(closeButton);
+
         var libraryView: LibraryView = new LibraryView();
         var libraryContent: HTMLElement = libraryView.initLibraryView();
         libraryContent.style.display = "none";
+        this.libraryView = libraryView;
 
         var exportView: ExportView = new ExportView();
         var exportContent: HTMLElement = exportView.initExportView();
         exportContent.style.display = "none";
+        this.exportView = exportView;
 
         var helpView: HelpView = new HelpView();
         var helpContent: HTMLElement = helpView.initHelpView();
         helpContent.style.display = "none";
 
+        contentsMenu.appendChild(CloseButtonContainer);
         contentsMenu.appendChild(libraryContent);
         contentsMenu.appendChild(exportContent);
         contentsMenu.appendChild(helpContent);

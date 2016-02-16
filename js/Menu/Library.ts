@@ -54,7 +54,7 @@ class Library{
 
     fillLibrary() {
         var url: string = "faust-modules/index.json"
-        App.getXHR(url, (json: string) => { this.fillLibraryCallBack(json) });
+        App.getXHR(url, (json: string) => { this.fillLibraryCallBack(json) }, (errorMessage: string) => { ErrorFaust.errorCallBack(errorMessage)});
     }
 
     fillLibraryCallBack(json: string) {
