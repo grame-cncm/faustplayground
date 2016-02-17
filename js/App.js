@@ -320,6 +320,15 @@ var App = (function () {
     App.preventdefault = function (e) {
         e.preventDefault();
     };
+    App.addLoadingLogo = function (divTarget) {
+        var loading = document.createElement("img");
+        loading.src = App.baseImg + "logoAnim.gif";
+        loading.id = "loadingImg";
+        document.getElementById(divTarget).appendChild(loading);
+    };
+    App.removeLoadingLogo = function () {
+        document.getElementById("loadingImg").remove();
+    };
     App.idX = 0;
     App.baseImg = "img/";
     return App;

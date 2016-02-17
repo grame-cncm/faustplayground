@@ -96,9 +96,13 @@ class Export{
         for (var platform in data) {
             this.addItem('platforms', platform);
         }
-
+        this.setDefaultSelect();
         this.updateArchitectures();
     }	
+    setDefaultSelect() {
+        var platefromSelect: HTMLSelectElement = <HTMLSelectElement>document.getElementById("platforms");
+        platefromSelect.selectedIndex = 3;
+    }
 
     /******************************************************************** 
     *********************  HANDLE POST TO FAUST WEB  ********************
@@ -106,6 +110,7 @@ class Export{
 
     exportPatch(event:Event, expor: Export)
     {
+        App.addLoadingLogo("exportContent");
         var sceneName:string = document.getElementById("PatchName").innerHTML;
         var equivalentFaust: EquivalentFaust = new EquivalentFaust();
         var faustCode:string = equivalentFaust.getFaustEquivalent(App.scene, sceneName);
@@ -134,10 +139,7 @@ class Export{
 
         var exportLib: ExportLib = new ExportLib();
         exportLib.sendPrecompileRequest("http://faustservice.grame.fr", shaKey, platforme, architecture, appType, (serverUrl: string, shaKey: string, plateforme: string, architecture: string, appType: string) => { this.setDownloadOptions(serverUrl, shaKey, plateforme, architecture, appType) });
-        var loading = document.createElement("img");
-        loading.src = App.baseImg + "logoAnim.gif"
-        loading.id = "loadingImg";
-        document.getElementById("exportContent").appendChild(loading);
+
         // 	Delete existing content if existing
         
     }
@@ -154,9 +156,10 @@ class Export{
         var link: HTMLAnchorElement = document.createElement('a');
         link.href = serverUrl + "/" + shaKey + "/" + plateforme + "/" + architecture + "/" + appType;
         qrDiv.appendChild(link);
-        document.getElementById("loadingImg").remove();
+        
         var myWhiteDiv: HTMLElement = ExportLib.getQrCode(serverUrl, shaKey, plateforme, architecture, appType, 120);
         link.appendChild(myWhiteDiv);
+        App.removeLoadingLogo();
 
     }
 }

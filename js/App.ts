@@ -423,4 +423,14 @@ class App {
     static preventdefault(e: Event) {
         e.preventDefault();
     }
+
+    static addLoadingLogo(divTarget:string) {
+        var loading = document.createElement("img");
+        loading.src = App.baseImg + "logoAnim.gif"
+        loading.id = "loadingImg";
+        document.getElementById(divTarget).appendChild(loading);
+    }
+    static removeLoadingLogo() {
+        document.getElementById("loadingImg").remove();
+    }
 }

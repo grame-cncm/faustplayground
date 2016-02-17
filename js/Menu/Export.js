@@ -57,10 +57,6 @@ var Export = (function () {
                 appType = "binary.apk";
             var exportLib = new ExportLib();
             exportLib.sendPrecompileRequest("http://faustservice.grame.fr", shaKey, platforme, architecture, appType, function (serverUrl, shaKey, plateforme, architecture, appType) { _this.setDownloadOptions(serverUrl, shaKey, plateforme, architecture, appType); });
-            var loading = document.createElement("img");
-            loading.src = App.baseImg + "logoAnim.gif";
-            loading.id = "loadingImg";
-            document.getElementById("exportContent").appendChild(loading);
             // 	Delete existing content if existing
         };
         this.setDownloadOptions = function (serverUrl, shaKey, plateforme, architecture, appType) {
@@ -73,9 +69,9 @@ var Export = (function () {
             var link = document.createElement('a');
             link.href = serverUrl + "/" + shaKey + "/" + plateforme + "/" + architecture + "/" + appType;
             qrDiv.appendChild(link);
-            document.getElementById("loadingImg").remove();
             var myWhiteDiv = ExportLib.getQrCode(serverUrl, shaKey, plateforme, architecture, appType, 120);
             link.appendChild(myWhiteDiv);
+            App.removeLoadingLogo();
         };
     }
     //------ Handle Combo Boxes
@@ -108,12 +104,18 @@ var Export = (function () {
         for (var platform in data) {
             this.addItem('platforms', platform);
         }
+        this.setDefaultSelect();
         this.updateArchitectures();
+    };
+    Export.prototype.setDefaultSelect = function () {
+        var platefromSelect = document.getElementById("platforms");
+        platefromSelect.selectedIndex = 3;
     };
     /********************************************************************
     *********************  HANDLE POST TO FAUST WEB  ********************
     ********************************************************************/
     Export.prototype.exportPatch = function (event, expor) {
+        App.addLoadingLogo("exportContent");
         var sceneName = document.getElementById("PatchName").innerHTML;
         var equivalentFaust = new EquivalentFaust();
         var faustCode = equivalentFaust.getFaustEquivalent(App.scene, sceneName);
