@@ -78,3 +78,19 @@ div#contentsMenu {
     width: 100%;
     max-width:200px;
 }
+
+
+input#inputNameApp {
+    width: 98%;
+    max-width: 200px;
+}
+
+#buttonNameApp {
+    width: 98%;
+    max-width: 200px;
+}
+span#rulesName {
+    font-size: 0.8em;
+    display: block;
+    opacity: 0.6;
+}

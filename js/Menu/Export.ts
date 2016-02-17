@@ -1,4 +1,4 @@
-/*				EXPORT.JS
+﻿/*				EXPORT.JS
 	Handles Graphical elements for the Export Feature of the normal Playground
 		
 	DEPENDENCIES :
@@ -27,7 +27,8 @@ class Export{
     setEventListeners() {
         this.exportView.refreshButton.onclick = this.uploadTargets;
         this.exportView.selectPlatform.onchange = () => { this.updateArchitectures() };
-        this.exportView.exportButton.onclick =  (event)=>{ this.exportPatch(event, this) };
+        this.exportView.exportButton.onclick = (event) => { this.exportPatch(event, this) };
+        this.exportView.buttonNameApp.onclick = () => { this.renameScene() };
     }
     addItem(id: string, itemText:string):void
     {
@@ -110,6 +111,10 @@ class Export{
 
     exportPatch(event:Event, expor: Export)
     {
+        var sceneName: string = Scene.sceneName;
+        if (sceneName == null || sceneName == "") {
+            sceneName = "MonApplication";
+        }
         this.removeQRCode();
         App.addLoadingLogo("exportResultContainer");
         var equivalentFaust: EquivalentFaust = new EquivalentFaust();
@@ -151,19 +156,53 @@ class Export{
         qrDiv.id = "qrcodeDiv";
         document.getElementById("exportResultContainer").appendChild(qrDiv);
 
-        var link: HTMLAnchorElement = document.createElement('a');
-        link.href = serverUrl + "/" + shaKey + "/" + plateforme + "/" + architecture + "/" + appType;
-        qrDiv.appendChild(link);
+        var linkDownload: HTMLAnchorElement = document.createElement('a');
+        linkDownload.href = serverUrl + "/" + shaKey + "/" + plateforme + "/" + architecture + "/" + appType;
+        linkDownload.textContent = "télécharger";
+        document.getElementById("exportResultContainer").appendChild(linkDownload);
         
+
+
         var myWhiteDiv: HTMLElement = ExportLib.getQrCode(serverUrl, shaKey, plateforme, architecture, appType, 120);
-        link.appendChild(myWhiteDiv);
+        qrDiv.appendChild(myWhiteDiv);
         App.removeLoadingLogo();
 
     }
+
+
     removeQRCode() {
         var qrcodeSpan: HTMLElement = document.getElementById('qrcodeDiv');
         if (qrcodeSpan)
             qrcodeSpan.parentNode.removeChild(qrcodeSpan);
+    }
+    renameScene() {
+
+
+        var newName: string = this.exportView.inputNameApp.value;
+
+        newName = this.replaceAll(newName,"é", "e");
+        newName = this.replaceAll(newName, "è", "e");
+        newName = this.replaceAll(newName, "à", "a");
+        newName = this.replaceAll(newName, "ù", "u");
+        newName = this.replaceAll(newName, " ", "_");
+        newName = this.replaceAll(newName, "'", "_");
+        
+
+        var pattern: RegExp = new RegExp("^[a-zA-Z_][a-zA-Z_0-9]{1,50}$");
+
+        if (pattern.test(newName)) {
+            Scene.sceneName = newName;
+            this.exportView.dynamicName.textContent = Scene.sceneName;
+            this.exportView.rulesName.style.opacity = "0.6";
+            this.exportView.inputNameApp.style.boxShadow = "0 0 0 green inset"
+        } else {
+            this.exportView.rulesName.style.opacity = "1";
+            this.exportView.inputNameApp.style.boxShadow ="0 0 6px red inset"
+        }
+       
+    }
+    replaceAll(str: String, find: string, replace: string) {
+        return str.replace(new RegExp(find, 'g'), replace);
     }
 }
 

@@ -63,11 +63,12 @@ var Export = (function () {
             var qrDiv = document.createElement('div');
             qrDiv.id = "qrcodeDiv";
             document.getElementById("exportResultContainer").appendChild(qrDiv);
-            var link = document.createElement('a');
-            link.href = serverUrl + "/" + shaKey + "/" + plateforme + "/" + architecture + "/" + appType;
-            qrDiv.appendChild(link);
+            var linkDownload = document.createElement('a');
+            linkDownload.href = serverUrl + "/" + shaKey + "/" + plateforme + "/" + architecture + "/" + appType;
+            linkDownload.textContent = "télécharger";
+            document.getElementById("exportResultContainer").appendChild(linkDownload);
             var myWhiteDiv = ExportLib.getQrCode(serverUrl, shaKey, plateforme, architecture, appType, 120);
-            link.appendChild(myWhiteDiv);
+            qrDiv.appendChild(myWhiteDiv);
             App.removeLoadingLogo();
         };
     }
@@ -77,6 +78,7 @@ var Export = (function () {
         this.exportView.refreshButton.onclick = this.uploadTargets;
         this.exportView.selectPlatform.onchange = function () { _this.updateArchitectures(); };
         this.exportView.exportButton.onclick = function (event) { _this.exportPatch(event, _this); };
+        this.exportView.buttonNameApp.onclick = function () { _this.renameScene(); };
     };
     Export.prototype.addItem = function (id, itemText) {
         var platformsSelect = document.getElementById(id);
@@ -112,6 +114,10 @@ var Export = (function () {
     *********************  HANDLE POST TO FAUST WEB  ********************
     ********************************************************************/
     Export.prototype.exportPatch = function (event, expor) {
+        var sceneName = Scene.sceneName;
+        if (sceneName == null || sceneName == "") {
+            sceneName = "MonApplication";
+        }
         this.removeQRCode();
         App.addLoadingLogo("exportResultContainer");
         var equivalentFaust = new EquivalentFaust();
@@ -122,6 +128,29 @@ var Export = (function () {
         var qrcodeSpan = document.getElementById('qrcodeDiv');
         if (qrcodeSpan)
             qrcodeSpan.parentNode.removeChild(qrcodeSpan);
+    };
+    Export.prototype.renameScene = function () {
+        var newName = this.exportView.inputNameApp.value;
+        newName = this.replaceAll(newName, "é", "e");
+        newName = this.replaceAll(newName, "è", "e");
+        newName = this.replaceAll(newName, "à", "a");
+        newName = this.replaceAll(newName, "ù", "u");
+        newName = this.replaceAll(newName, " ", "_");
+        newName = this.replaceAll(newName, "'", "_");
+        var pattern = new RegExp("^[a-zA-Z_][a-zA-Z_0-9]{1,50}$");
+        if (pattern.test(newName)) {
+            Scene.sceneName = newName;
+            this.exportView.dynamicName.textContent = Scene.sceneName;
+            this.exportView.rulesName.style.opacity = "0.6";
+            this.exportView.inputNameApp.style.boxShadow = "0 0 0 green inset";
+        }
+        else {
+            this.exportView.rulesName.style.opacity = "1";
+            this.exportView.inputNameApp.style.boxShadow = "0 0 6px red inset";
+        }
+    };
+    Export.prototype.replaceAll = function (str, find, replace) {
+        return str.replace(new RegExp(find, 'g'), replace);
     };
     Export.exportUrl = "http://faustservice.grame.fr";
     Export.targetsUrl = "http://faustservice.grame.fr/targets";

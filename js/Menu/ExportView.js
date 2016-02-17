@@ -18,16 +18,26 @@ var ExportView = (function () {
         /////////////////////////////////  name App
         var nameAppTitle = document.createElement("span");
         nameAppTitle.id = "nameAppTitle";
-        nameAppTitle.textContent = "Nom de l'application";
+        nameAppTitle.textContent = "Nom de l'application est : ";
         nameAppTitle.className = "exportTitle";
+        var dynamicName = document.createElement("span");
+        dynamicName.id = "dynamicName";
+        dynamicName.textContent = Scene.sceneName;
+        nameAppTitle.appendChild(dynamicName);
+        this.dynamicName = dynamicName;
+        var rulesName = document.createElement("span");
+        rulesName.id = "rulesName";
+        rulesName.textContent = "Seul les lettres de l'alphabet et les nombres sont acceptés. Les espaces, les apostrophes et les accents sont automatiquement remplacés. Le nom ne peut commencer par un nombre, il doit comporter entre 1 et 50 caractères.";
+        this.rulesName = rulesName;
         var input = document.createElement("input");
         input.id = "inputNameApp";
         input.value = Scene.sceneName;
         var button = document.createElement("button");
         button.type = "button";
-        button.id = "buttonAppName";
+        button.id = "buttonNameApp";
         button.textContent = "Enregistrer le nom de d'application";
         nameAppContainer.appendChild(nameAppTitle);
+        nameAppContainer.appendChild(rulesName);
         nameAppContainer.appendChild(input);
         nameAppContainer.appendChild(button);
         this.inputNameApp = input;
