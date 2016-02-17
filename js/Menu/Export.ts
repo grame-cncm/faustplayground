@@ -110,11 +110,11 @@ class Export{
 
     exportPatch(event:Event, expor: Export)
     {
-        App.addLoadingLogo("exportContent");
-        var sceneName:string = document.getElementById("PatchName").innerHTML;
+        this.removeQRCode();
+        App.addLoadingLogo("exportResultContainer");
         var equivalentFaust: EquivalentFaust = new EquivalentFaust();
-        var faustCode:string = equivalentFaust.getFaustEquivalent(App.scene, sceneName);
-        ExportLib.getSHAKey((<HTMLInputElement>document.getElementById("faustweburl")).value, sceneName, faustCode, expor.exportFaustCode);
+        var faustCode:string = equivalentFaust.getFaustEquivalent(App.scene,Scene.sceneName);
+        ExportLib.getSHAKey((<HTMLInputElement>document.getElementById("faustweburl")).value, Scene.sceneName, faustCode, expor.exportFaustCode);
     }
 
     /******************************************************************** 
@@ -144,14 +144,12 @@ class Export{
         
     }
 
-    setDownloadOptions=(serverUrl: string, shaKey: string, plateforme: string, architecture: string, appType:string)=> {
-        var qrcodeSpan: HTMLElement = document.getElementById('qrcodeDiv');
-        if (qrcodeSpan)
-            qrcodeSpan.parentNode.removeChild(qrcodeSpan);
+    setDownloadOptions = (serverUrl: string, shaKey: string, plateforme: string, architecture: string, appType: string) => {
+        
 
         var qrDiv: HTMLElement = document.createElement('div');
         qrDiv.id = "qrcodeDiv";
-        document.getElementById("exportContent").appendChild(qrDiv);
+        document.getElementById("exportResultContainer").appendChild(qrDiv);
 
         var link: HTMLAnchorElement = document.createElement('a');
         link.href = serverUrl + "/" + shaKey + "/" + plateforme + "/" + architecture + "/" + appType;
@@ -161,6 +159,11 @@ class Export{
         link.appendChild(myWhiteDiv);
         App.removeLoadingLogo();
 
+    }
+    removeQRCode() {
+        var qrcodeSpan: HTMLElement = document.getElementById('qrcodeDiv');
+        if (qrcodeSpan)
+            qrcodeSpan.parentNode.removeChild(qrcodeSpan);
     }
 }
 

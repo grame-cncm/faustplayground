@@ -66,3 +66,15 @@ div#contentsMenu {
     background-color: rgba(0, 65, 238, 1);
    
 }
+
+.exportSubmenu {
+    width: 33%;
+    min-width: 33%;
+    position: relative;
+    float: left;
+}
+
+.selects {
+    width: 100%;
+    max-width:200px;
+}

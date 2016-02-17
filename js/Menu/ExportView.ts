@@ -4,6 +4,8 @@ class ExportView {
     exportButton: HTMLElement;
     selectPlatform: HTMLElement;
     refreshButton: HTMLElement;
+    inputNameApp: HTMLInputElement;
+    buttonNameApp: HTMLButtonElement
 
     initExportView(): HTMLElement {
 
@@ -11,6 +13,51 @@ class ExportView {
         exportContainer.id = "exportContent";
         exportContainer.className = "menuContent";
 
+        var nameAppContainer: HTMLElement = document.createElement("div");
+        nameAppContainer.id = "nameAppContainer";
+        nameAppContainer.className = "exportSubmenu";
+
+        var exportOptionContainer: HTMLElement = document.createElement("div");
+        exportOptionContainer.id = "exportOptionContainer";
+        exportOptionContainer.className = "exportSubmenu";
+
+        var exportResultContainer: HTMLElement = document.createElement("div");
+        exportResultContainer.id = "exportResultContainer";
+        exportResultContainer.className = "exportSubmenu";
+         
+
+
+
+/////////////////////////////////  name App
+
+        var nameAppTitle: HTMLSpanElement = document.createElement("span");
+        nameAppTitle.id = "nameAppTitle";
+        nameAppTitle.textContent = "Nom de l'application";
+        nameAppTitle.className = "exportTitle";
+
+        var input: HTMLInputElement = document.createElement("input");
+        input.id = "inputNameApp";
+        input.value = Scene.sceneName;
+
+        var button: HTMLButtonElement = document.createElement("button");
+        button.type = "button";
+        button.id = "buttonAppName";
+        button.textContent = "Enregistrer le nom de d'application";
+
+        nameAppContainer.appendChild(nameAppTitle);
+        nameAppContainer.appendChild(input);
+        nameAppContainer.appendChild(button);
+
+        this.inputNameApp = input;
+        this.buttonNameApp = button;
+
+
+/////////////////////////////////  export Options
+
+        var exportOptionTitle: HTMLSpanElement = document.createElement("span");
+        exportOptionTitle.id = "exportOptionTitle";
+        exportOptionTitle.textContent = "Choix de l'export";
+        exportOptionTitle.className = "exportTitle";
 
         var fwurl: HTMLInputElement = document.createElement("input");
         fwurl.id = "faustweburl";
@@ -34,14 +81,14 @@ class ExportView {
 
         var selectPlatform: HTMLSelectElement = document.createElement("select");
         selectPlatform.id = "platforms";
-        selectPlatform.className = "platforms";
+        selectPlatform.className = "selects";
         var self = this;
         this.selectPlatform = selectPlatform;
         selectDiv.appendChild(selectPlatform);
 
         var selectArch: HTMLSelectElement = document.createElement("select");
         selectArch.id = "architectures";
-        selectArch.className = "architectures";
+        selectArch.className = "selects";
         selectDiv.appendChild(selectArch);
 
         var exportButton: HTMLInputElement = document.createElement("input");
@@ -50,10 +97,26 @@ class ExportView {
         exportButton.className = "grayButton";
         exportButton.value = "Export";
         this.exportButton = exportButton;
-
         subfooter.appendChild(exportButton);
-        exportContainer.appendChild(fwurl);
-        exportContainer.appendChild(subfooter);
+
+        exportOptionContainer.appendChild(exportOptionTitle);
+        exportOptionContainer.appendChild(fwurl);
+        exportOptionContainer.appendChild(subfooter);
+
+
+//////////////////////////// export Result
+        var exportResultTitle: HTMLSpanElement = document.createElement("span");
+        exportResultTitle.id = "exportResultTitle";
+        exportResultTitle.textContent = "Téléchragement";
+        exportResultTitle.className = "exportTitle";
+
+        exportResultContainer.appendChild(exportResultTitle);
+    
+
+        exportContainer.appendChild(nameAppContainer);
+        exportContainer.appendChild(exportOptionContainer);
+        exportContainer.appendChild(exportResultContainer);
+
         return exportContainer;
 
     }

@@ -30,6 +30,7 @@ class Scene {
     private fSceneContainer: HTMLDivElement;
     sceneView: SceneView;
     menu: Menu;
+    static sceneName: string = "Patch";
 
     
 

@@ -250,6 +250,7 @@ var Scene = (function () {
         position.y = window.innerHeight / 2;
         return position;
     };
+    Scene.sceneName = "Patch";
     return Scene;
 })();
 //# sourceMappingURL=SceneClass.js.map

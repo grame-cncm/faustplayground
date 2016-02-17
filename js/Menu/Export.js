@@ -60,12 +60,9 @@ var Export = (function () {
             // 	Delete existing content if existing
         };
         this.setDownloadOptions = function (serverUrl, shaKey, plateforme, architecture, appType) {
-            var qrcodeSpan = document.getElementById('qrcodeDiv');
-            if (qrcodeSpan)
-                qrcodeSpan.parentNode.removeChild(qrcodeSpan);
             var qrDiv = document.createElement('div');
             qrDiv.id = "qrcodeDiv";
-            document.getElementById("exportContent").appendChild(qrDiv);
+            document.getElementById("exportResultContainer").appendChild(qrDiv);
             var link = document.createElement('a');
             link.href = serverUrl + "/" + shaKey + "/" + plateforme + "/" + architecture + "/" + appType;
             qrDiv.appendChild(link);
@@ -115,11 +112,16 @@ var Export = (function () {
     *********************  HANDLE POST TO FAUST WEB  ********************
     ********************************************************************/
     Export.prototype.exportPatch = function (event, expor) {
-        App.addLoadingLogo("exportContent");
-        var sceneName = document.getElementById("PatchName").innerHTML;
+        this.removeQRCode();
+        App.addLoadingLogo("exportResultContainer");
         var equivalentFaust = new EquivalentFaust();
-        var faustCode = equivalentFaust.getFaustEquivalent(App.scene, sceneName);
-        ExportLib.getSHAKey(document.getElementById("faustweburl").value, sceneName, faustCode, expor.exportFaustCode);
+        var faustCode = equivalentFaust.getFaustEquivalent(App.scene, Scene.sceneName);
+        ExportLib.getSHAKey(document.getElementById("faustweburl").value, Scene.sceneName, faustCode, expor.exportFaustCode);
+    };
+    Export.prototype.removeQRCode = function () {
+        var qrcodeSpan = document.getElementById('qrcodeDiv');
+        if (qrcodeSpan)
+            qrcodeSpan.parentNode.removeChild(qrcodeSpan);
     };
     Export.exportUrl = "http://faustservice.grame.fr";
     Export.targetsUrl = "http://faustservice.grame.fr/targets";
