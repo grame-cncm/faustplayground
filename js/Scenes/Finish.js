@@ -91,7 +91,7 @@ var SceneExportView = (function () {
     };
     SceneExportView.prototype.exportAndroidCallback = function (sha) {
         var exportLib = new ExportLib();
-        exportLib.sendPrecompileRequest("http://faustservice.grame.fr", sha, "android", "android", SceneExportView.terminateAndroidMenu);
+        //exportLib.sendPrecompileRequest("http://faustservice.grame.fr", sha, "android", "android", SceneExportView.terminateAndroidMenu);
     };
     SceneExportView.prototype.getAndroidApp = function (name, source) {
         ExportLib.getSHAKey("http://faustservice.grame.fr", name, source, this.exportAndroidCallback);

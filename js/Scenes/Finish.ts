@@ -121,7 +121,7 @@ class SceneExportView{
     exportAndroidCallback(sha: string):void
     {
         var exportLib: ExportLib = new ExportLib();
-        exportLib.sendPrecompileRequest("http://faustservice.grame.fr", sha, "android", "android", SceneExportView.terminateAndroidMenu);
+        //exportLib.sendPrecompileRequest("http://faustservice.grame.fr", sha, "android", "android", SceneExportView.terminateAndroidMenu);
     }
 
     getAndroidApp(name:string, source:string): HTMLElement

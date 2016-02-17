@@ -10,22 +10,22 @@ class ExportLib{
     // 				- @param : the available targets as a JSON application
     // json = {"platform1":["arch1", "arch2", ..., "archn"], ... , "platformn":["arch1", "arch2", ..., "archn"]}
 
-    static getTargets(exportUrl: string, callback: (json: string) => void, errCallback: (json: string) => void)
-    {
-        //App.getXHR(exportUrl, callback)
-        var getrequest: XMLHttpRequest = new XMLHttpRequest();
+    //static getTargets(exportUrl: string, callback: (json: string) => void, errCallback: (json: string) => void)
+    //{
+    //    //App.getXHR(exportUrl, callback)
+    //    var getrequest: XMLHttpRequest = new XMLHttpRequest();
 				
-	    getrequest.onreadystatechange = function() {
-		    if (getrequest.readyState == 4 && getrequest.status == 200)				    		
-			    callback(getrequest.responseText);
-		    else if (getrequest.readyState == 4 && getrequest.status == 400)				    		
-			    errCallback(getrequest.responseText);
-	    }
+	   // getrequest.onreadystatechange = function() {
+		  //  if (getrequest.readyState == 4 && getrequest.status == 200)				    		
+			 //   callback(getrequest.responseText);
+		  //  else if (getrequest.readyState == 4 && getrequest.status == 400)				    		
+			 //   errCallback(getrequest.responseText);
+	   // }
 				
-	    var targetsUrl:string = exportUrl + "/targets";
-	    getrequest.open("GET", targetsUrl, true);
-	    getrequest.send(null);
-    }	
+	   // var targetsUrl:string = exportUrl + "/targets";
+	   // getrequest.open("GET", targetsUrl, true);
+	   // getrequest.send(null);
+    //}	
 
     //--- Send asynchronous POST request to FaustWeb to compile a faust DSP
     // @exportUrl : url of FaustWeb service to target
@@ -60,17 +60,17 @@ class ExportLib{
     // @platform/architecture : platform/architecture to precompile
     // @callback : function called once request succeeded 
     // 				- @param : the sha key 
-    sendPrecompileRequest(exportUrl: string, sha: string, platform: string, architecture: string, callback)
+    sendPrecompileRequest(exportUrl: string, sha: string, platforme: string, architecture: string, appType: string, callback: (serverUrl: string, shaKey: string, plateforme: string, architecture: string, appType: string)=>any)
     {
         var getrequest: XMLHttpRequest = new XMLHttpRequest();
 				
 	    getrequest.onreadystatechange = function() {
-		    if (getrequest.readyState == 4) {
-			    callback(sha);
+            if (getrequest.readyState == 4) {
+                callback(exportUrl, sha, platforme, architecture, appType);
             }
 	    }
 
-        var compileUrl: string = exportUrl + "/" + sha + "/" + platform + "/" + architecture + "/precompile";
+        var compileUrl: string = exportUrl + "/" + sha + "/" + platforme + "/" + architecture + "/precompile";
 				
 	    getrequest.open("GET", compileUrl, true);
 	    getrequest.send(null);

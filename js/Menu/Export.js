@@ -43,6 +43,40 @@ var Export = (function () {
             App.getXHR(Export.targetsUrl, function (json) { _this.uploadTargetCallback(json); }, function (errorMessage) { ErrorFaust.errorCallBack(errorMessage); });
             //ExportLib.getTargets(App.exportURL, (json: string) => { this.uploadTargetCallback },  (json: string)=> {alert('Impossible to get FaustWeb targets')});
         };
+        /********************************************************************
+        **************  CALLBACK ONCE SHA KEY WAS CALCULATED  ***************
+        ********************************************************************/
+        this.exportFaustCode = function (shaKey) {
+            var platformsSelect = document.getElementById("platforms"); //get the combobox
+            var platforme = platformsSelect.options[platformsSelect.selectedIndex].value;
+            var architecturesSelect = document.getElementById("architectures"); //get the combobox
+            var architecture = architecturesSelect.options[architecturesSelect.selectedIndex].value;
+            var serverUrl = document.getElementById("faustweburl").value;
+            var appType = "binary.zip";
+            if (architecture == "android")
+                appType = "binary.apk";
+            var exportLib = new ExportLib();
+            exportLib.sendPrecompileRequest("http://faustservice.grame.fr", shaKey, platforme, architecture, appType, function (serverUrl, shaKey, plateforme, architecture, appType) { _this.setDownloadOptions(serverUrl, shaKey, plateforme, architecture, appType); });
+            var loading = document.createElement("img");
+            loading.src = App.baseImg + "logoAnim.gif";
+            loading.id = "loadingImg";
+            document.getElementById("exportContent").appendChild(loading);
+            // 	Delete existing content if existing
+        };
+        this.setDownloadOptions = function (serverUrl, shaKey, plateforme, architecture, appType) {
+            var qrcodeSpan = document.getElementById('qrcodeDiv');
+            if (qrcodeSpan)
+                qrcodeSpan.parentNode.removeChild(qrcodeSpan);
+            var qrDiv = document.createElement('div');
+            qrDiv.id = "qrcodeDiv";
+            document.getElementById("exportContent").appendChild(qrDiv);
+            var link = document.createElement('a');
+            link.href = serverUrl + "/" + shaKey + "/" + plateforme + "/" + architecture + "/" + appType;
+            qrDiv.appendChild(link);
+            document.getElementById("loadingImg").remove();
+            var myWhiteDiv = ExportLib.getQrCode(serverUrl, shaKey, plateforme, architecture, appType, 120);
+            link.appendChild(myWhiteDiv);
+        };
     }
     //------ Handle Combo Boxes
     Export.prototype.setEventListeners = function () {
@@ -84,31 +118,6 @@ var Export = (function () {
         var equivalentFaust = new EquivalentFaust();
         var faustCode = equivalentFaust.getFaustEquivalent(App.scene, sceneName);
         ExportLib.getSHAKey(document.getElementById("faustweburl").value, sceneName, faustCode, expor.exportFaustCode);
-    };
-    /********************************************************************
-    **************  CALLBACK ONCE SHA KEY WAS CALCULATED  ***************
-    ********************************************************************/
-    Export.prototype.exportFaustCode = function (shaKey) {
-        var platformsSelect = document.getElementById("platforms"); //get the combobox
-        var selPlatform = platformsSelect.options[platformsSelect.selectedIndex].value;
-        var architecturesSelect = document.getElementById("architectures"); //get the combobox
-        var selArch = architecturesSelect.options[architecturesSelect.selectedIndex].value;
-        var serverUrl = document.getElementById("faustweburl").value;
-        var appType = "binary.zip";
-        if (selArch == "android")
-            appType = "binary.apk";
-        // 	Delete existing content if existing
-        var qrcodeSpan = document.getElementById('qrcodeDiv');
-        if (qrcodeSpan)
-            qrcodeSpan.parentNode.removeChild(qrcodeSpan);
-        var qrDiv = document.createElement('div');
-        qrDiv.id = "qrcodeDiv";
-        document.getElementById("exportContent").appendChild(qrDiv);
-        var link = document.createElement('a');
-        link.href = serverUrl + "/" + shaKey + "/" + selPlatform + "/" + selArch + "/" + appType;
-        qrDiv.appendChild(link);
-        var myWhiteDiv = ExportLib.getQrCode(serverUrl, shaKey, selPlatform, selArch, appType, 120);
-        link.appendChild(myWhiteDiv);
     };
     Export.exportUrl = "http://faustservice.grame.fr";
     Export.targetsUrl = "http://faustservice.grame.fr/targets";
