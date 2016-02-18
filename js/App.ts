@@ -192,12 +192,16 @@ class App {
         var currentScene: Scene = this.scenes[App.currentScene];
 
         // To Avoid click during compilation
-        if (currentScene) { currentScene.muteScene() };
+        //if (currentScene) { currentScene.muteScene() };
 
         //var args = ["-I", "http://faust.grame.fr/faustcode/"];
         //var args = ["-I", "http://ifaust.grame.fr/faustcode/"];
         //var args = ["-I", "http://10.0.1.2/faustcode/"];
         var args: string[] = ["-I", "http://" + location.hostname + "/faustcode/"];
+        //var messageJson = JSON.stringify({
+        //    sourcecode, args
+        //})
+        //worker.postMessage(messageJson)
         this.factory = faust.createDSPFactory(sourcecode, args);
         callback(this.factory, App.scene, this);
 
@@ -225,6 +229,7 @@ class App {
         module.addInputOutputNodes();
 
         scene.addModule(module);
+        App.hideFullPageLoading()
     }
 
     /********************************************************************
@@ -293,7 +298,8 @@ class App {
 
     //-- Upload content dropped on the page and create a Faust DSP with it
     uploadOn(app: App, module: ModuleClass, x: number, y: number, e: DragEvent) {
-
+        App.showFullPageLoading();
+        //worker.postMessage("go");
         this.preventDefaultAction(e);
 
         var uploadTitle: HTMLElement = document.getElementById("upload");
@@ -424,13 +430,45 @@ class App {
         e.preventDefault();
     }
 
-    static addLoadingLogo(divTarget:string) {
-        var loading = document.createElement("img");
-        loading.src = App.baseImg + "logoAnim.gif"
-        loading.id = "loadingImg";
-        document.getElementById(divTarget).appendChild(loading);
+    static addLoadingLogo(divTarget: string) {
+        var loadingDiv = document.createElement("div");
+        loadingDiv.id = "loadingDiv";
+        var loadingImg = document.createElement("img");
+        loadingImg.src = App.baseImg + "logoAnim.gif"
+        loadingImg.id = "loadingImg";
+        var loadingText = document.createElement("span");
+        loadingText.textContent="Chargement..."
+
+        loadingDiv.appendChild(loadingImg);
+        loadingDiv.appendChild(loadingText);
+
+        document.getElementById(divTarget).appendChild(loadingDiv);
     }
     static removeLoadingLogo() {
-        document.getElementById("loadingImg").remove();
+        document.getElementById("loadingDiv").remove();
+    }
+    static showFullPageLoading() {
+        
+        var loadingPage = document.createElement("div");
+        loadingPage.id = "loadingPage";
+        var body = document.getElementsByTagName('body')[0];
+        var loadingText = document.createElement("div");
+        loadingText.id="loadingTextBig"
+        loadingText.textContent = "Chargement en cours";
+        loadingPage.appendChild(loadingText);
+        body.appendChild(loadingPage);
+        document.getElementById("Normal").style.filter = "blur(2px)"
+        document.getElementById("Normal").style.webkitFilter = "blur(2px)"
+
+
+
+        //App.addLoadingLogo(loadingPage.id);
+    }
+    static hideFullPageLoading() {
+        document.getElementById("loadingPage").remove();
+        document.getElementById("Normal").style.filter = "none"
+        document.getElementById("Normal").style.webkitFilter = "none"
+
+
     }
 }

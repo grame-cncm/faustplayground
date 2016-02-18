@@ -6,7 +6,7 @@
 	left: 0%;
 	top: 0%;
 	bottom: 15%;
-	z-index: 1;
+	/*z-index: 1;*/
 	font-size : 14px;
 	color:white;
 	text-align:center;
@@ -45,7 +45,7 @@
 	right:250%;
 	width:300px;
 	font-size:20px;
-	z-index:2;
+	/*z-index:2;*/
 	margin: 0px 0px 0px 0px;
 	padding: 0px 0px 0px 0px;
 }

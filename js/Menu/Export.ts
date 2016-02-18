@@ -151,29 +151,30 @@ class Export{
 
     setDownloadOptions = (serverUrl: string, shaKey: string, plateforme: string, architecture: string, appType: string) => {
         
-
+        var disposableExportDiv: HTMLDivElement = document.createElement("div");
+        disposableExportDiv.id = "disposableExportDiv"
         var qrDiv: HTMLElement = document.createElement('div');
         qrDiv.id = "qrcodeDiv";
-        document.getElementById("exportResultContainer").appendChild(qrDiv);
-
+        var myWhiteDiv: HTMLElement = ExportLib.getQrCode(serverUrl, shaKey, plateforme, architecture, appType, 120);
+        qrDiv.appendChild(myWhiteDiv);
         var linkDownload: HTMLAnchorElement = document.createElement('a');
         linkDownload.href = serverUrl + "/" + shaKey + "/" + plateforme + "/" + architecture + "/" + appType;
         linkDownload.textContent = "télécharger";
-        document.getElementById("exportResultContainer").appendChild(linkDownload);
-        
 
+        document.getElementById("exportResultContainer").appendChild(disposableExportDiv);
+        disposableExportDiv.appendChild(linkDownload);
+        disposableExportDiv.appendChild(qrDiv);
 
-        var myWhiteDiv: HTMLElement = ExportLib.getQrCode(serverUrl, shaKey, plateforme, architecture, appType, 120);
-        qrDiv.appendChild(myWhiteDiv);
         App.removeLoadingLogo();
 
     }
 
 
     removeQRCode() {
-        var qrcodeSpan: HTMLElement = document.getElementById('qrcodeDiv');
-        if (qrcodeSpan)
-            qrcodeSpan.parentNode.removeChild(qrcodeSpan);
+        var disposableExportDiv: HTMLElement = document.getElementById('disposableExportDiv');
+        if (disposableExportDiv) {
+            disposableExportDiv.remove();
+        }
     }
     renameScene() {
 

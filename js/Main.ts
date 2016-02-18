@@ -12,7 +12,8 @@
 
 
 window.addEventListener('load', init, false);
-
+//var worker = new Worker("js/worker.js");
+//worker.addEventListener("message", function (event) { console.log(event.data) }, false)
 
 
    

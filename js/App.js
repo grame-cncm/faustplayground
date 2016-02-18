@@ -131,14 +131,15 @@ var App = (function () {
         this.tempModuleY = y;
         var currentScene = this.scenes[App.currentScene];
         // To Avoid click during compilation
-        if (currentScene) {
-            currentScene.muteScene();
-        }
-        ;
+        //if (currentScene) { currentScene.muteScene() };
         //var args = ["-I", "http://faust.grame.fr/faustcode/"];
         //var args = ["-I", "http://ifaust.grame.fr/faustcode/"];
         //var args = ["-I", "http://10.0.1.2/faustcode/"];
         var args = ["-I", "http://" + location.hostname + "/faustcode/"];
+        //var messageJson = JSON.stringify({
+        //    sourcecode, args
+        //})
+        //worker.postMessage(messageJson)
         this.factory = faust.createDSPFactory(sourcecode, args);
         callback(this.factory, App.scene, this);
         if (currentScene) {
@@ -161,6 +162,7 @@ var App = (function () {
         module.createFaustInterface();
         module.addInputOutputNodes();
         scene.addModule(module);
+        App.hideFullPageLoading();
     };
     /********************************************************************
     ***********************  HANDLE DRAG AND DROP ***********************
@@ -210,6 +212,8 @@ var App = (function () {
     };
     //-- Upload content dropped on the page and create a Faust DSP with it
     App.prototype.uploadOn = function (app, module, x, y, e) {
+        App.showFullPageLoading();
+        //worker.postMessage("go");
         this.preventDefaultAction(e);
         var uploadTitle = document.getElementById("upload");
         uploadTitle.textContent = "CHARGEMENT EN COURS ...";
@@ -321,13 +325,37 @@ var App = (function () {
         e.preventDefault();
     };
     App.addLoadingLogo = function (divTarget) {
-        var loading = document.createElement("img");
-        loading.src = App.baseImg + "logoAnim.gif";
-        loading.id = "loadingImg";
-        document.getElementById(divTarget).appendChild(loading);
+        var loadingDiv = document.createElement("div");
+        loadingDiv.id = "loadingDiv";
+        var loadingImg = document.createElement("img");
+        loadingImg.src = App.baseImg + "logoAnim.gif";
+        loadingImg.id = "loadingImg";
+        var loadingText = document.createElement("span");
+        loadingText.textContent = "Chargement...";
+        loadingDiv.appendChild(loadingImg);
+        loadingDiv.appendChild(loadingText);
+        document.getElementById(divTarget).appendChild(loadingDiv);
     };
     App.removeLoadingLogo = function () {
-        document.getElementById("loadingImg").remove();
+        document.getElementById("loadingDiv").remove();
+    };
+    App.showFullPageLoading = function () {
+        var loadingPage = document.createElement("div");
+        loadingPage.id = "loadingPage";
+        var body = document.getElementsByTagName('body')[0];
+        var loadingText = document.createElement("div");
+        loadingText.id = "loadingTextBig";
+        loadingText.textContent = "Chargement en cours";
+        loadingPage.appendChild(loadingText);
+        body.appendChild(loadingPage);
+        document.getElementById("Normal").style.filter = "blur(2px)";
+        document.getElementById("Normal").style.webkitFilter = "blur(2px)";
+        //App.addLoadingLogo(loadingPage.id);
+    };
+    App.hideFullPageLoading = function () {
+        document.getElementById("loadingPage").remove();
+        document.getElementById("Normal").style.filter = "none";
+        document.getElementById("Normal").style.webkitFilter = "none";
     };
     App.idX = 0;
     App.baseImg = "img/";

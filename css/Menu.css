@@ -3,7 +3,7 @@
 div#menuContainer {
     width: 100%;
     display: inline-flex;
-    z-index: 1;
+    /*z-index: 1;*/
 }
 
 div#closeButtonContainer {

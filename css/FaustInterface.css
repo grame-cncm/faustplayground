@@ -55,7 +55,7 @@
 	position: absolute;
 	margin-left:auto;
 	margin-right:auto;
-	z-index:5;
+	/*z-index:5;*/
     cursor:move;
 }
 
@@ -201,7 +201,7 @@ footer>img {
 	left: 0;
 	padding-top: 8px;
 	position: absolute;
-	z-index: 1000;
+	/*z-index: 1000;*/
 }
 #controls ul {
 	background-color: #fff;
@@ -453,7 +453,7 @@ footer>img {
 	position: absolute;
 	top: -.3em;
 	width: 16px;
-	z-index: 2;
+	/*z-index: 2;*/
 }
 .ui-slider .ui-slider-range {
 	background-position: 0 0;
@@ -463,7 +463,7 @@ footer>img {
 	height: 100%;
 	position: absolute;
 	top: 0;
-	z-index: 1;
+	/*z-index: 1;*/
 }
 .ui-slider .ui-slider-range-min {
 	left: 0;
@@ -486,7 +486,7 @@ input[type="range"]::-webkit-slider-thumb {
 	-webkit-appearance: none;
 	position: relative;
 	top: 0px;
-	z-index: 1;
+	/*z-index: 1;*/
 	width: 20px;
 	height: 20px;
 	cursor: pointer;

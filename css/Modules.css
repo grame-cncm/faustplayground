@@ -37,7 +37,7 @@
 	padding:10px;
 	left: 0;
 	width: 8%;
-	z-index: 1;
+	/*z-index: 1;*/
 }
 
 #input .node {
@@ -74,7 +74,7 @@
 	right: 0;
 	top: 0;
 	width: 150px;
-	z-index: 4;
+	/*z-index: 4;*/
     border-radius: 0px 0px 0px 0px;
     padding:10px;
 	background: rgba(6, 39, 156, 0.21);

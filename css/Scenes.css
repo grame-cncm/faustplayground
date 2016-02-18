@@ -7,7 +7,7 @@
 	font-size:36px;
 	top:10px;
 	background-color:transparent;
-	z-index:0;
+	/*z-index:0;*/
 }
 
 .sceneTitle:focus { 
@@ -24,7 +24,7 @@
 	text-align:center;
 	font-size:18px;
 	background-color:transparent;
-	z-index:1;
+	/*z-index:1;*/
 }
 
 /* 

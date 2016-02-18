@@ -124,6 +124,7 @@ class ExportView {
         exportResultTitle.textContent = "Téléchragement";
         exportResultTitle.className = "exportTitle";
 
+
         exportResultContainer.appendChild(exportResultTitle);
     
 

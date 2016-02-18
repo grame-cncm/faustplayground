@@ -60,15 +60,18 @@ var Export = (function () {
             // 	Delete existing content if existing
         };
         this.setDownloadOptions = function (serverUrl, shaKey, plateforme, architecture, appType) {
+            var disposableExportDiv = document.createElement("div");
+            disposableExportDiv.id = "disposableExportDiv";
             var qrDiv = document.createElement('div');
             qrDiv.id = "qrcodeDiv";
-            document.getElementById("exportResultContainer").appendChild(qrDiv);
+            var myWhiteDiv = ExportLib.getQrCode(serverUrl, shaKey, plateforme, architecture, appType, 120);
+            qrDiv.appendChild(myWhiteDiv);
             var linkDownload = document.createElement('a');
             linkDownload.href = serverUrl + "/" + shaKey + "/" + plateforme + "/" + architecture + "/" + appType;
             linkDownload.textContent = "télécharger";
-            document.getElementById("exportResultContainer").appendChild(linkDownload);
-            var myWhiteDiv = ExportLib.getQrCode(serverUrl, shaKey, plateforme, architecture, appType, 120);
-            qrDiv.appendChild(myWhiteDiv);
+            document.getElementById("exportResultContainer").appendChild(disposableExportDiv);
+            disposableExportDiv.appendChild(linkDownload);
+            disposableExportDiv.appendChild(qrDiv);
             App.removeLoadingLogo();
         };
     }
@@ -125,9 +128,10 @@ var Export = (function () {
         ExportLib.getSHAKey(document.getElementById("faustweburl").value, Scene.sceneName, faustCode, expor.exportFaustCode);
     };
     Export.prototype.removeQRCode = function () {
-        var qrcodeSpan = document.getElementById('qrcodeDiv');
-        if (qrcodeSpan)
-            qrcodeSpan.parentNode.removeChild(qrcodeSpan);
+        var disposableExportDiv = document.getElementById('disposableExportDiv');
+        if (disposableExportDiv) {
+            disposableExportDiv.remove();
+        }
     };
     Export.prototype.renameScene = function () {
         var newName = this.exportView.inputNameApp.value;
