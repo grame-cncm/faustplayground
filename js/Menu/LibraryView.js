@@ -16,6 +16,8 @@ var LibraryView = (function () {
         var intrumentLibrarySelect = document.createElement("ul");
         intrumentLibrarySelect.id = "instrumentLibrarySelect";
         intrumentLibrarySelect.className = "librarySelects";
+        Ps.initialize(intrumentLibrarySelect);
+        this.intrumentLibrarySelect = intrumentLibrarySelect;
         instrumentLibraryContent.appendChild(instrumentLibraryTitle);
         instrumentLibraryContent.appendChild(intrumentLibrarySelect);
         var effetLibraryContent = document.createElement("div");
@@ -28,6 +30,8 @@ var LibraryView = (function () {
         var effetLibrarySelect = document.createElement("ul");
         effetLibrarySelect.id = "effetLibrarySelect";
         effetLibrarySelect.className = "librarySelects";
+        Ps.initialize(effetLibrarySelect);
+        this.effetLibrarySelect = effetLibrarySelect;
         effetLibraryContent.appendChild(effetLibraryTitle);
         effetLibraryContent.appendChild(effetLibrarySelect);
         var exempleLibraryContent = document.createElement("div");
@@ -40,6 +44,8 @@ var LibraryView = (function () {
         var exempleLibrarySelect = document.createElement("ul");
         exempleLibrarySelect.id = "exempleLibrarySelect";
         exempleLibrarySelect.className = "librarySelects";
+        Ps.initialize(exempleLibrarySelect);
+        this.exempleLibrarySelect = exempleLibrarySelect;
         exempleLibraryContent.appendChild(exempleLibraryTitle);
         exempleLibraryContent.appendChild(exempleLibrarySelect);
         libraryContent.appendChild(instrumentLibraryContent);

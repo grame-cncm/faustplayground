@@ -8,6 +8,7 @@ class Menu {
     menuView: MenuView;
     library: Library;
     expor: Export;
+    help: Help;
     constructor(htmlContainer: HTMLElement) {
         this.menuView = new MenuView();
         this.menuView.init(htmlContainer);
@@ -22,10 +23,14 @@ class Menu {
         this.expor.exportView = this.menuView.exportView;
         this.expor.uploadTargets();
         this.expor.setEventListeners();
+        this.help = new Help();
+        this.help.helpView = this.menuView.helpView;
 
     }
 
     menuHandler(menuChoises: MenuChoices): any {
+        this.help.stopVideo();
+
         switch (this.menuChoices) {
             case MenuChoices.library:
                 this.libraryMenu();
@@ -48,6 +53,7 @@ class Menu {
                 this.menuView.contentsMenu.style.display = "block";
                 this.menuView.libraryContent.style.display = "block";
                 this.currentMenuChoices = MenuChoices.library;
+                this.library.initScroll();
                 break;
             case MenuChoices.library:
                 this.menuView.contentsMenu.style.display = "none";

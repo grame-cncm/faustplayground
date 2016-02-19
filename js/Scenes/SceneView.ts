@@ -21,6 +21,7 @@ class SceneView{
 ********************************************************************/
     //expor: Export = new Export()
     menuContainer: HTMLElement;
+    inputOutputModuleContainer: HTMLDivElement;
 
     initNormalScene(scene: Scene) {
         var container: HTMLDivElement = scene.getSceneContainer();
@@ -46,6 +47,12 @@ class SceneView{
         uploadDiv.id = "upload";
         uploadDiv.className = "uploading";
         head.appendChild(uploadDiv);
+        //----------- INPUT OUTPUT MODULES
+
+        var inputOutputModuleContainer: HTMLDivElement = document.createElement("div");
+        inputOutputModuleContainer.id = "inputOutputModuleContainer";
+        container.appendChild(inputOutputModuleContainer);
+        this.inputOutputModuleContainer = inputOutputModuleContainer;
 
         //----------- MODULES
         var moduleContainer: HTMLElement = document.createElement("section");

@@ -94,3 +94,20 @@ span#rulesName {
     display: block;
     opacity: 0.6;
 }
+ul.librarySelects {
+    height: 80%;
+    position: relative;
+    width: 75%;
+}
+.librarySelects.ps-container > .ps-scrollbar-x-rail,
+.librarySelects.ps-container > .ps-scrollbar-y-rail
+{
+    opacity:0.6;
+
+}
+.librarySelects.ps-container > .ps-scrollbar-x-rail,
+.librarySelects.ps-container > .ps-scrollbar-y-rail:hover
+{
+    opacity:0.6;
+
+}

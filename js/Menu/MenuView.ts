@@ -12,7 +12,7 @@ class MenuView {
     HTMLElementsMenu: HTMLElement[] = [];
     libraryView: LibraryView;
     exportView: ExportView;
-    
+    helpView: HelpView;
 
 
     init(htmlContainer: HTMLElement): void {
@@ -69,6 +69,7 @@ class MenuView {
         var helpView: HelpView = new HelpView();
         var helpContent: HTMLElement = helpView.initHelpView();
         helpContent.style.display = "none";
+        this.helpView = helpView;
 
         contentsMenu.appendChild(CloseButtonContainer);
         contentsMenu.appendChild(libraryContent);

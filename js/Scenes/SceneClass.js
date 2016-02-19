@@ -72,7 +72,7 @@ var Scene = (function () {
     /*************** ACTIONS ON AUDIO IN/OUTPUT ***************************/
     Scene.prototype.integrateInput = function (callBackIntegrateOutput) {
         var positionInput = this.positionInputModule();
-        this.fAudioInput = new ModuleClass(App.idX++, positionInput.x, positionInput.y, "input", this, this.fSceneContainer, this.removeModule);
+        this.fAudioInput = new ModuleClass(App.idX++, positionInput.x, positionInput.y, "input", this, this.sceneView.inputOutputModuleContainer, this.removeModule);
         //this.fAudioInput.hideModule();
         var scene = this;
         this.parent.compileFaust("input", "process=_,_;", positionInput.x, positionInput.y, function callback(factory, scene) { scene.integrateAudioInput(factory, scene); });
@@ -82,7 +82,7 @@ var Scene = (function () {
     Scene.prototype.integrateOutput = function (callBackKeepGoingOnWithInit) {
         var positionOutput = this.positionOutputModule();
         var scene = this;
-        this.fAudioOutput = new ModuleClass(App.idX++, positionOutput.x, positionOutput.y, "output", this, this.fSceneContainer, this.removeModule);
+        this.fAudioOutput = new ModuleClass(App.idX++, positionOutput.x, positionOutput.y, "output", this, this.sceneView.inputOutputModuleContainer, this.removeModule);
         //this.fAudioOutput.hideModule()
         this.parent.compileFaust("output", "process=_,_;", positionOutput.x, positionOutput.y, function callback(factory, scene) { scene.integrateAudioOutput(factory, scene); });
         this.fAudioOutput.addInputOutputNodes();

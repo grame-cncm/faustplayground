@@ -91,11 +91,12 @@ class App {
             // 		Export Page doesn't need initialization
         }
         else {
-            var scenePlaygroundView: SceneView = new SceneView();
-            this.scenes[0] = new Scene("Normal", this, scenePlaygroundView.onloadNormalScene, scenePlaygroundView.onunloadNormalScene, scenePlaygroundView);
+            var sceneView: SceneView = new SceneView();
+            this.scenes[0] = new Scene("Normal", this, sceneView.onloadNormalScene, sceneView.onunloadNormalScene, sceneView);
             App.scene = this.scenes[0];
-            scenePlaygroundView.initNormalScene(this.scenes[0]);
-            App.scene.sceneView = scenePlaygroundView;
+            App.scene.sceneView = sceneView;
+            sceneView.initNormalScene(this.scenes[0]);
+            
 
         }
         App.currentScene = 0;
@@ -192,7 +193,7 @@ class App {
         var currentScene: Scene = this.scenes[App.currentScene];
 
         // To Avoid click during compilation
-        //if (currentScene) { currentScene.muteScene() };
+        if (currentScene) { currentScene.muteScene() };
 
         //var args = ["-I", "http://faust.grame.fr/faustcode/"];
         //var args = ["-I", "http://ifaust.grame.fr/faustcode/"];

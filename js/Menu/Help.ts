@@ -2,5 +2,8 @@
 
 class Help {
     helpView: HelpView;
+    stopVideo() {
+        this.helpView.videoContainer.contentWindow.postMessage('{"event":"command","func":"' + 'stopVideo' + '","args":""}', '*');
+    }
 
 }

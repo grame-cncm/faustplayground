@@ -55,18 +55,19 @@ var Library = (function () {
             li.appendChild(a);
             a.href = options[i];
             a.draggable = true;
-            a.ondragstart = this.selectDrag;
-            //option.onmousedown = App.preventdefault;
+            a.onclick = App.preventdefault;
             //option.ondrag = this.selectDrag;
             a.text = this.cleanNameElement(options[i], stringStructureRemoved);
             subMenu.appendChild(li);
         }
     };
+    Library.prototype.initScroll = function () {
+        this.libraryView.effetLibrarySelect.scrollTop += 1;
+        this.libraryView.exempleLibrarySelect.scrollTop += 1;
+        this.libraryView.intrumentLibrarySelect.scrollTop += 1;
+    };
     Library.prototype.cleanNameElement = function (elementComplete, stringStructureRemoved) {
         return elementComplete.replace(stringStructureRemoved, "").replace(".dsp", "");
-    };
-    Library.prototype.selectDrag = function () {
-        //event.preventDefault();
     };
     Library.prototype.initLibrary = function (parent) {
         var library = document.createElement("div");

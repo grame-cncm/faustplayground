@@ -43,6 +43,11 @@ var SceneView = (function () {
         uploadDiv.id = "upload";
         uploadDiv.className = "uploading";
         head.appendChild(uploadDiv);
+        //----------- INPUT OUTPUT MODULES
+        var inputOutputModuleContainer = document.createElement("div");
+        inputOutputModuleContainer.id = "inputOutputModuleContainer";
+        container.appendChild(inputOutputModuleContainer);
+        this.inputOutputModuleContainer = inputOutputModuleContainer;
         //----------- MODULES
         var moduleContainer = document.createElement("section");
         moduleContainer.id = "modules";

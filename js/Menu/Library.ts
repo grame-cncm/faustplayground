@@ -69,6 +69,7 @@ class Library{
         this.fillSubMenu(jsonObject.effets, jsonObject.effet, jsonObject.effetSupprStructure);
         this.fillSubMenu(jsonObject.exemples, jsonObject.exemple, jsonObject.exempleSupprStructure);
 
+
     }
 
     fillSubMenu(options: string[], subMenuId: string, stringStructureRemoved: string) {
@@ -81,13 +82,19 @@ class Library{
             li.appendChild(a);
             a.href = options[i];
             a.draggable = true;
-            a.ondragstart = this.selectDrag;
-            //option.onmousedown = App.preventdefault;
+            a.onclick = App.preventdefault;
             
             //option.ondrag = this.selectDrag;
             a.text = this.cleanNameElement(options[i], stringStructureRemoved);
             subMenu.appendChild(li)
+
         }
+    }
+
+    initScroll() {
+        this.libraryView.effetLibrarySelect.scrollTop += 1;
+        this.libraryView.exempleLibrarySelect.scrollTop += 1;
+        this.libraryView.intrumentLibrarySelect.scrollTop += 1;
     }
 
     cleanNameElement(elementComplete: string, stringStructureRemoved: string): string {
@@ -95,9 +102,6 @@ class Library{
     }
 
     
-    selectDrag() {
-        //event.preventDefault();
-    }
 
 
     imageNode: IImageNode;

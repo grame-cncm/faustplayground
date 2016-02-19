@@ -46,6 +46,7 @@ var MenuView = (function () {
         var helpView = new HelpView();
         var helpContent = helpView.initHelpView();
         helpContent.style.display = "none";
+        this.helpView = helpView;
         contentsMenu.appendChild(CloseButtonContainer);
         contentsMenu.appendChild(libraryContent);
         contentsMenu.appendChild(exportContent);

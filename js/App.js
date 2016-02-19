@@ -56,11 +56,11 @@ var App = (function () {
             this.scenes[2] = new Scene("Export", this, function (scene) { sceneExportView.onloadExportScene(scene, sceneExportView); }, sceneExportView.onunloadExportScene);
         }
         else {
-            var scenePlaygroundView = new SceneView();
-            this.scenes[0] = new Scene("Normal", this, scenePlaygroundView.onloadNormalScene, scenePlaygroundView.onunloadNormalScene, scenePlaygroundView);
+            var sceneView = new SceneView();
+            this.scenes[0] = new Scene("Normal", this, sceneView.onloadNormalScene, sceneView.onunloadNormalScene, sceneView);
             App.scene = this.scenes[0];
-            scenePlaygroundView.initNormalScene(this.scenes[0]);
-            App.scene.sceneView = scenePlaygroundView;
+            App.scene.sceneView = sceneView;
+            sceneView.initNormalScene(this.scenes[0]);
         }
         App.currentScene = 0;
     };
@@ -131,7 +131,10 @@ var App = (function () {
         this.tempModuleY = y;
         var currentScene = this.scenes[App.currentScene];
         // To Avoid click during compilation
-        //if (currentScene) { currentScene.muteScene() };
+        if (currentScene) {
+            currentScene.muteScene();
+        }
+        ;
         //var args = ["-I", "http://faust.grame.fr/faustcode/"];
         //var args = ["-I", "http://ifaust.grame.fr/faustcode/"];
         //var args = ["-I", "http://10.0.1.2/faustcode/"];

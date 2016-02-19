@@ -24,8 +24,11 @@ var Menu = (function () {
         this.expor.exportView = this.menuView.exportView;
         this.expor.uploadTargets();
         this.expor.setEventListeners();
+        this.help = new Help();
+        this.help.helpView = this.menuView.helpView;
     }
     Menu.prototype.menuHandler = function (menuChoises) {
+        this.help.stopVideo();
         switch (this.menuChoices) {
             case MenuChoices.library:
                 this.libraryMenu();
@@ -47,6 +50,7 @@ var Menu = (function () {
                 this.menuView.contentsMenu.style.display = "block";
                 this.menuView.libraryContent.style.display = "block";
                 this.currentMenuChoices = MenuChoices.library;
+                this.library.initScroll();
                 break;
             case MenuChoices.library:
                 this.menuView.contentsMenu.style.display = "none";
