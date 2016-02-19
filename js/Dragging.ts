@@ -180,7 +180,7 @@ class Drag {
 	    // Create a connector visual line
 	    var svgns:string = "http://www.w3.org/2000/svg";
 
-        var shape: SVGElement = <SVGElement>document.createElementNS(svgns, "line");
+        var shape: SVGElement = <SVGElement>document.createElementNS(svgns, "path");
 	    shape.setAttributeNS(null, "x1", String(x));
         shape.setAttributeNS(null, "y1", String(y));
         shape.setAttributeNS(null, "x2", String(x));

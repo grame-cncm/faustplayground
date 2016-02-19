@@ -21,6 +21,7 @@ function init() {
     }
     App.isPedagogie = App.isAppPedagogique();
     app.createAllScenes();
+    App.hideFullPageLoading();
     app.showFirstScene();
 }
 var PositionModule = (function () {
