@@ -44,7 +44,7 @@ div.link a {
 	text-decoration: underline;
 }
 
-line {
+path {
 	/*z-index:5;*/
     cursor:pointer;
 }

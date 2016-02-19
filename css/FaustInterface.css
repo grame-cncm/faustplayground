@@ -47,9 +47,9 @@
 
 /* Modules */
 .moduleFaust {
-	background-color:white;
+	background-color: rgba(255, 255, 255, 0.8);
 	color:orange;
-	border-radius: 5px;
+	/*border-radius: 5px;*/
 	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.4);
 	display: inline-block;
 	position: absolute;
@@ -61,7 +61,6 @@
 
 .moduleFaust .content {
 	display: inline-block;
-	background: #fff;
 	border-radius: 5px;
 	min-width: 10em;
 	overflow: hidden;
@@ -72,10 +71,7 @@
 	display: block;
 	margin: 0 auto;
 }
-.moduleFaust.has-footer .content {
-	border-bottom: 1px solid #dbdbdb;
-	border-radius: 5px 5px 0 0;
-}
+
 .moduleFaust h6 {
 	font-size: .75em;
 	margin: 1em 1em 1em;
@@ -115,9 +111,9 @@
 
 /* Module footer */
 .moduleFaust footer {
-	background-color: #fff;
-	background-image: -webkit-linear-gradient(top, rgb(255, 255, 255), rgb(219, 219, 219));
-	background-image: linear-gradient(top, rgb(255, 255, 255), rgb(219, 219, 219));
+	/*background-color: #fff;*/
+	/*background-image: -webkit-linear-gradient(top, rgb(255, 255, 255), rgb(219, 219, 219));
+	background-image: linear-gradient(top, rgb(255, 255, 255), rgb(219, 219, 219));*/
 	border-radius: 0 0 5px 5px;
 	overflow: hidden;
 	padding: 0em .4em .1em;	

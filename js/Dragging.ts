@@ -110,8 +110,16 @@ class Drag {
 
             for (var c = 0; c < module.moduleFaust.getInputConnections().length; c++) {
 
-                module.moduleFaust.getInputConnections()[c].connectorShape.setAttributeNS(null, "x1", String(x));
-                module.moduleFaust.getInputConnections()[c].connectorShape.setAttributeNS(null, "y1", String(y));
+                var currentConnectorShape: ConnectorShape = module.moduleFaust.getInputConnections()[c].connectorShape;
+                var x1 = x;
+                var y1 = y;
+                var x2 = currentConnectorShape.x2
+                var y2 = currentConnectorShape.y2
+                var d = this.setCurvePath(x1, y1, x2, y2, this.calculBezier1(x1, x2), this.calculBezier2(x1, x2))
+                currentConnectorShape.setAttributeNS(null, "d", d);
+                this.updateConnectorShapePath(currentConnectorShape, x1, x2, y1, y2);
+
+
 		    }
 	    }
 
@@ -131,8 +139,18 @@ class Drag {
             for (var c = 0; c < module.moduleFaust.getOutputConnections().length; c++) {
 
                 if (module.moduleFaust.getOutputConnections()[c].connectorShape) {
-                    module.moduleFaust.getOutputConnections()[c].connectorShape.setAttributeNS(null, "x2", String(x));
-                    module.moduleFaust.getOutputConnections()[c].connectorShape.setAttributeNS(null, "y2", String(y));
+                    var currentConnectorShape: ConnectorShape = module.moduleFaust.getOutputConnections()[c].connectorShape;
+                    var x1 = currentConnectorShape.x1;
+                    var y1 = currentConnectorShape.y1;
+                    var x2 = x;
+                    var y2 = y;
+                    var d = this.setCurvePath(x1, y1, x2, y2, this.calculBezier1(x1, x2), this.calculBezier2(x1, x2))
+                    
+                    currentConnectorShape.setAttributeNS(null, "d", d);
+                    this.updateConnectorShapePath(currentConnectorShape,x1, x2, y1, y2);
+
+                    //module.moduleFaust.getOutputConnections()[c].connectorShape.setAttributeNS(null, "x2", String(x));
+                    //module.moduleFaust.getOutputConnections()[c].connectorShape.setAttributeNS(null, "y2", String(y));
 			    }
 		    }
 	    }
@@ -149,6 +167,28 @@ class Drag {
     /************************************************************************************/
     /*** Connector Dragging - these are used for dragging the connectors between nodes***/
     /************************************************************************************/
+
+    updateConnectorShapePath(connectorShape:ConnectorShape,x1: number, x2: number, y1: number, y2: number) {
+        connectorShape.x1 = x1;
+        connectorShape.x2 = x2;
+        connectorShape.y1 = y1;
+        connectorShape.y2 = y2;
+    }
+
+    setCurvePath(x1: number, y1: number, x2: number, y2: number, x1Bezier: number, x2Bezier: number): string {
+        return "M" + x1 + "," + y1 + " C" + x1Bezier + "," + y1 + " " + x2Bezier + "," + y2 + " " + x2 + "," + y2;
+
+    }
+    calculDistance(x1: number, x2: number): number{
+        return (x1 - x2) / 2;
+    }
+    calculBezier1(x1: number, x2: number): number {
+        return x1 - this.calculDistance(x1, x2);
+    }
+    calculBezier2(x1: number, x2: number): number {
+        return x2 + this.calculDistance(x1, x2);
+    }
+
 
     startDraggingConnection(module: ModuleClass, target: HTMLElement):void {
 
@@ -180,6 +220,13 @@ class Drag {
 	    // Create a connector visual line
 	    var svgns:string = "http://www.w3.org/2000/svg";
 
+        var curve: SVGElement = <SVGElement>document.createElementNS(svgns, "path");
+        var d = this.setCurvePath(x,y,x,y,x,x)
+        curve.setAttributeNS(null, "d", d);
+        curve.setAttributeNS(null, "stroke", "black");
+        curve.setAttributeNS(null, "stroke-width", "5");
+        curve.setAttributeNS(null, "fill", "none");
+
         var shape: SVGElement = <SVGElement>document.createElementNS(svgns, "line");
 	    shape.setAttributeNS(null, "x1", String(x));
         shape.setAttributeNS(null, "y1", String(y));
@@ -187,9 +234,10 @@ class Drag {
         shape.setAttributeNS(null, "y2", String(y));
         shape.setAttributeNS(null, "stroke", "black");
         shape.setAttributeNS(null, "stroke-width", "5");
-        this.connector.connectorShape = <ConnectorShape>shape;
+        this.connector.connectorShape = <ConnectorShape>curve;
 
-        document.getElementById("svgCanvas").appendChild(shape);
+        document.getElementById("svgCanvas").appendChild(curve);
+        //document.getElementById("svgCanvas").appendChild(shape);
     }
 
     stopDraggingConnection(sourceModule: ModuleClass, destination: ModuleClass):void {
@@ -226,11 +274,19 @@ class Drag {
                 offset = <HTMLElement> offset.offsetParent;
 		    }
 
-            this.connector.connectorShape.setAttributeNS(null, "x2", String(x));
-            this.connector.connectorShape.setAttributeNS(null, "y2", String(y));
+            var x1 = this.cursorStartX;
+            var y1 = this.cursorStartY;
+            var x2 = x;
+            var y2 = y;
+            var d = this.setCurvePath(x1, y1, x2, y2, this.calculBezier1(x1, x2), this.calculBezier2(x1, x2))
+            this.connector.connectorShape.setAttributeNS(null, "d", d);
+            this.updateConnectorShapePath(this.connector.connectorShape, x1, x2, y1, y2);
+
+            //this.connector.connectorShape.setAttributeNS(null, "x2", String(x));
+            //this.connector.connectorShape.setAttributeNS(null, "y2", String(y));
 
             var src: ModuleClass, dst: ModuleClass;
-	
+
 		    // If connecting from output to input
 		    if (this.originIsInput) {
 		
@@ -243,13 +299,20 @@ class Drag {
 			    if (toElem.classList.contains("node-input")) {
 
                     // Make sure the connector line points go from src->dest (x1->x2)
-                    var shape: ConnectorShape = this.connector.connectorShape;
-				    x = parseFloat(shape.getAttributeNS(null, "x2"));
-                    y = parseFloat(shape.getAttributeNS(null, "y2"));
-			        shape.setAttributeNS(null, "x2", shape.getAttributeNS(null, "x1"));
-	    		    shape.setAttributeNS(null, "y2", shape.getAttributeNS(null, "y1"));
-				    shape.setAttributeNS(null, "x1", String(x));
-				    shape.setAttributeNS(null, "y1", String(y));
+                    var d = this.setCurvePath(x2, y2, x1, y1, this.calculBezier1(x1, x2), this.calculBezier2(x1, x2))
+                    this.connector.connectorShape.setAttributeNS(null, "d", d);
+                    this.updateConnectorShapePath(this.connector.connectorShape,x2, x1, y2, y1);
+
+
+        //            var shape: ConnectorShape = this.connector.connectorShape;
+				    //x = parseFloat(shape.getAttributeNS(null, "x2"));
+        //            y = parseFloat(shape.getAttributeNS(null, "y2"));
+			     //   shape.setAttributeNS(null, "x2", shape.getAttributeNS(null, "x1"));
+	    		 //   shape.setAttributeNS(null, "y2", shape.getAttributeNS(null, "y1"));
+				    //shape.setAttributeNS(null, "x1", String(x));
+        //            shape.setAttributeNS(null, "y1", String(y));
+
+
 				
 				    // can connect!
 				    // TODO: first: swap the line endpoints so they're consistently x1->x2
@@ -300,17 +363,26 @@ class Drag {
 	    event.stopPropagation();
     }
 
+
+
     whileDraggingConnector(module: ModuleClass, event: MouseEvent) {
 
         var toElem: HTMLInterfaceContainer = <HTMLInterfaceContainer>event.target;
 
         // Get cursor position with respect to the page.
-        var x: number = event.clientX + window.scrollX;
-        var y: number = event.clientY + window.scrollY;
-	
+        var x1: number = this.cursorStartX;
+        var y1: number = this.cursorStartY;
+        var x2: number = event.clientX + window.scrollX;
+        var y2: number = event.clientY + window.scrollY;
+        var d: string;
+        if (!this.originIsInput) {
+            d = this.setCurvePath(x1, y1, x2, y2, this.calculBezier1(x1, x2), this.calculBezier2(x1, x2))
+        } else {
+            d = this.setCurvePath(x1, y1, x2, y2, this.calculBezier1(x1, x2), this.calculBezier2(x1, x2))
+        }
         // Move connector visual line
-        this.connector.connectorShape.setAttributeNS(null, "x2", String(x));
-        this.connector.connectorShape.setAttributeNS(null, "y2", String(y));
+        this.connector.connectorShape.setAttributeNS(null, "d", d);
+
 
 
         if (toElem.classList) {	// if we don't have class, we're not a node.
