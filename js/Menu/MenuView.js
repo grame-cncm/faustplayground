@@ -2,6 +2,7 @@
 var MenuView = (function () {
     function MenuView() {
         this.HTMLElementsMenu = [];
+        this.HTMLButtonsMenu = [];
     }
     MenuView.prototype.init = function (htmlContainer) {
         //create menu's buttons and there containers
@@ -25,6 +26,12 @@ var MenuView = (function () {
         buttonsMenu.appendChild(libraryButtonMenu);
         buttonsMenu.appendChild(exportButtonMenu);
         buttonsMenu.appendChild(helpButtonMenu);
+        this.HTMLButtonsMenu.push(libraryButtonMenu, exportButtonMenu, helpButtonMenu);
+        var myScene = document.createElement("div");
+        myScene.id = "PatchName";
+        myScene.className = "sceneTitle";
+        myScene.textContent = "Patch";
+        buttonsMenu.appendChild(myScene);
         //create menu's Contents and there containers
         var contentsMenu = document.createElement("div");
         contentsMenu.id = "contentsMenu";

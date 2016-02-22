@@ -170,7 +170,7 @@ var App = (function () {
             e = window.event;
         }
         var alreadyInNode = false;
-        var modules = this.scenes[App.currentScene].getModules();
+        var modules = App.scene.getModules();
         for (var i = 0; i < modules.length; i++) {
             if (modules[i].moduleView.isPointInNode(e.clientX, e.clientY)) {
                 alreadyInNode = true;

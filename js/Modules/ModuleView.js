@@ -12,6 +12,7 @@
     ===================*/
 var ModuleView = (function () {
     function ModuleView() {
+        this.inputOutputNodeDimension = 32;
     }
     ModuleView.prototype.createModuleView = function (ID, x, y, name, htmlParent, module) {
         var self = this;

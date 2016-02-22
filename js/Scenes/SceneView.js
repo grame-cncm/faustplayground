@@ -33,12 +33,7 @@ var SceneView = (function () {
         var head = document.createElement("header");
         head.id = "header";
         container.appendChild(head);
-        var myScene = document.createElement("div");
-        myScene.id = "PatchName";
-        myScene.className = "sceneTitle";
-        //myScene.style.contentEditable = "true";
-        myScene.textContent = "Patch";
-        head.appendChild(myScene);
+        //head.appendChild(myScene);
         var uploadDiv = document.createElement("div");
         uploadDiv.id = "upload";
         uploadDiv.className = "uploading";

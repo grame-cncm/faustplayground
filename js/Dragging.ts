@@ -100,8 +100,8 @@ class Drag {
         if (module.moduleFaust.getInputConnections() != null) {	// update any lines that point in here.
 
             var offset: HTMLElement = module.moduleView.getInputNode();
-	        x = window.scrollX + 12;
-	        y = window.scrollY + 12;
+            x = window.scrollX + module.moduleView.inputOutputNodeDimension/2;
+            y = window.scrollY + module.moduleView.inputOutputNodeDimension / 2;
 
             while (offset) {
 		
@@ -129,8 +129,8 @@ class Drag {
 		    
 
             var offset = module.moduleView.getOutputNode();
-	        x = window.scrollX + 12;
-	        y = window.scrollY + 12;
+            x = window.scrollX + module.moduleView.inputOutputNodeDimension / 2;
+            y = window.scrollY + module.moduleView.inputOutputNodeDimension / 2;
 
             while (offset) {
                 x += offset.offsetLeft;
@@ -200,8 +200,8 @@ class Drag {
 
         // Get the position of the originating connector with respect to the page.
         var offset: HTMLElement = target;
-        var x: number = window.scrollX + 12;
-        var y: number = window.scrollY + 12;
+        var x: number = window.scrollX + module.moduleView.inputOutputNodeDimension / 2;
+        var y: number = window.scrollY + module.moduleView.inputOutputNodeDimension / 2;
 
         while (offset) {
             x += offset.offsetLeft;
@@ -228,6 +228,8 @@ class Drag {
         curve.setAttributeNS(null, "stroke", "black");
         curve.setAttributeNS(null, "stroke-width", "5");
         curve.setAttributeNS(null, "fill", "none");
+        //curve.setAttributeNS(null, "stroke-location", "center");
+
 
         var shape: SVGElement = <SVGElement>document.createElementNS(svgns, "line");
 	    shape.setAttributeNS(null, "x1", String(x));
@@ -267,8 +269,8 @@ class Drag {
 	
 
 	    // Get the position of the originating connector with respect to the page.			
-		    x = window.scrollX + 12;
-		    y = window.scrollY + 12;
+            x = window.scrollX + destination.moduleView.inputOutputNodeDimension / 2;
+            y = window.scrollY + destination.moduleView.inputOutputNodeDimension / 2;
 
             while (offset) {
                 x += offset.offsetLeft;

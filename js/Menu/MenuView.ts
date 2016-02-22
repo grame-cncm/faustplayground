@@ -10,6 +10,7 @@ class MenuView {
     contentsMenu: HTMLElement;
     closeButton: HTMLElement;
     HTMLElementsMenu: HTMLElement[] = [];
+    HTMLButtonsMenu: HTMLElement[]=[]
     libraryView: LibraryView;
     exportView: ExportView;
     helpView: HelpView;
@@ -41,6 +42,14 @@ class MenuView {
         buttonsMenu.appendChild(libraryButtonMenu);
         buttonsMenu.appendChild(exportButtonMenu);
         buttonsMenu.appendChild(helpButtonMenu);
+
+        this.HTMLButtonsMenu.push(libraryButtonMenu, exportButtonMenu, helpButtonMenu);
+
+        var myScene: HTMLDivElement = document.createElement("div");
+        myScene.id = "PatchName";
+        myScene.className = "sceneTitle";
+        myScene.textContent = "Patch";
+        buttonsMenu.appendChild(myScene);
 
         //create menu's Contents and there containers
 

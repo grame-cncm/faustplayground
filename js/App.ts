@@ -241,7 +241,7 @@ class App {
 
         var alreadyInNode: Boolean = false;
 
-        var modules: ModuleClass[] = this.scenes[App.currentScene].getModules();
+        var modules: ModuleClass[] = App.scene.getModules();
 
         for (var i = 0; i < modules.length; i++) {
             if (modules[i].moduleView.isPointInNode(e.clientX, e.clientY)) {

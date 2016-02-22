@@ -81,7 +81,8 @@ a:hover {
  *	:: Raw elements
  *	-------------------------------------------------------------------------*/
 body {
-    background: url('../img/body-bkg.gif');
+    background-image: url(../img/pseudoRandomFilter.png),url(../img/body-bkg.png),url(../img/blueFilter.png);
+    background-size: 600px,20px,1px;
 
 	/*background: url('../img/test2.png');*/
 	-moz-user-select: -moz-none;

@@ -1,14 +1,4 @@
-.sceneTitle{
-	color:white;
-	position:relative;
-	margin-left:auto;
-	margin-right:auto;
-	text-align:center;
-	font-size:36px;
-	top:10px;
-	background-color:transparent;
-	/*z-index:0;*/
-}
+
 
 .sceneTitle:focus { 
 	outline: 0px solid transparent; 

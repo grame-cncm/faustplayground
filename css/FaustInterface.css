@@ -31,8 +31,8 @@
 }
 /* Module Output*/
 #moduleOutput>.content {
-    padding-top: 0.4em;
-    padding-bottom: 0.4em;
+    padding-top: 0.6em;
+    padding-bottom: 0.6em;
     min-width: 3em;
     background:url("../img/ico-speaker.png");
     background-repeat:no-repeat!important;
@@ -48,7 +48,7 @@
 /* Modules */
 .moduleFaust {
 	background-color: rgba(255, 255, 255, 0.8);
-	color:orange;
+	color:##FF0016;
 	/*border-radius: 5px;*/
 	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.4);
 	display: inline-block;
@@ -94,16 +94,18 @@
 
 /* Module close */
 .moduleFaust .close {
-	background: url('../img/ico-close.gif') 0 0 no-repeat;
-	height: 8px;
-	text-indent: -999em;
-	position: absolute;
-	right: 8px;
-	top: 8px;
-	width: 9px;
+    background: url('../img/cross_close.png') 0 0 no-repeat;
+    background-size: 100%;
+    height: 15px;
+    text-indent: -999em;
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    width: 15px;
+    opacity: 0.8;
 }
 .moduleFaust .close:hover {
-	opacity: .8
+	opacity: 1
 }
 
 .moduleFaust.analyzer {
@@ -277,11 +279,12 @@ footer>img {
 	width: 24px;
 }
 .node-input span {
-	background: #67a90d;
+	background: #24d711;
 }
+
 .node-output span {
-	background: #ec2f13;
-}
+	background: #ff3030;
+}*/
 .node:hover {
 	box-shadow: 0 0 3px rgba(0,0,0, 1);
 }
@@ -477,21 +480,36 @@ input[type="range"] {
 	margin-bottom: 15px;
 	width: 100%;
 }
-
+input[type=range]::-moz-range-track {
+    	background-color: #303030;
+	height: 1px;
+    border-style:none;
+	display: block;
+	margin-top: 5px;
+	margin-bottom: 15px;
+	width: 100%;
+}
 input[type="range"]::-webkit-slider-thumb {
+    background-color: rgb(255, 0, 50);
+    box-shadow: 0px 4px 5px rgba(0, 0, 0, 0.61);
 	-webkit-appearance: none;
 	position: relative;
 	top: 0px;
-	/*z-index: 1;*/
-	width: 20px;
 	height: 20px;
+    width: 20px;
 	cursor: pointer;
-	-webkit-box-shadow: 0px 6px 5px 0px rgba(0,0,0,0.6);
-	-moz-box-shadow: 0px 6px 5px 0px rgba(0,0,0,0.6);
-	box-shadow: 0px 6px 5px 0px rgba(0,0,0,0.6);
-	-webkit-border-radius: 40px;
-	-moz-border-radius: 40px;
 	border-radius: 40px;
-	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ff7373), color-stop(50%,#a00000), color-stop(51%,#700000), color-stop(100%,#ff7373));
+}
+
+input[type=range]::-moz-range-thumb {
+    background-color: rgb(255, 0, 50);
+    box-shadow: 0px 4px 5px rgba(0, 0, 0, 0.61);
+	position: relative;
+	top: 0px;
+	height: 20px;
+    width: 20px;
+	cursor: pointer;
+	border-radius: 40px;
+    border-style:hidden;
 }
 

@@ -1,31 +1,45 @@
 ﻿/*Menu.css*/
 
+
+
+/*layout menu general*/
+
 div#menuContainer {
     width: 100%;
-    display: inline-flex;
-    /*z-index: 1;*/
+
 }
 
 div#closeButtonContainer {
-    height: 50px;
+    height: 25px;
 }
 
 div#closeButton {
     background: url(../img/cross_close.png);
-    width: 50px;
-    height: 50px;
+    width: 25px;
+    height: 25px;
     background-repeat: no-repeat;
     background-position: 50%;
     float: right;
-    cursor:pointer;
+    cursor: pointer;
+    background-size: 100%;
+    opacity: 0.8;
 }
+div#closeButton:hover{
+    opacity:1;
 
-
+}
+.sceneTitle{
+    color: white;
+    position: relative;
+    float: right;
+    margin-right: 8px;
+    font-size: 25px;
+}
 div#buttonsMenu {
     float: left;
     position: relative;
-    width: 75px;
-    cursor:pointer;
+    width: 100%;
+    box-shadow: 0 0 20px rgba(255, 0, 64, 0.65);
 }
 
 div#contentsMenu {
@@ -38,6 +52,29 @@ div#contentsMenu {
     padding-bottom: 10px;
 
 }
+.buttonsMenu {
+    border-style: solid;
+    border-width: 0px 1px 0 0;
+    border-color: rgb(0, 168, 255);
+    /* box-shadow: 0 0 1px black; */
+    cursor: pointer;
+    float: left;
+    line-height: 40px;
+    text-align: center;
+    height: 40px;
+    background-color: rgba(0, 90, 255, 0.58);
+    /* margin-bottom: 10px; */
+    font-weight: 600;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.9);
+    width: 139px;
+}
+.buttonsMenu:hover {
+    color:white;
+    background-color: rgba(12, 0, 238, 0.53)!important;   
+}
+
+/*layout menu library*/
 
 .submenuLibraryContent {
     float: left;
@@ -50,22 +87,63 @@ div#contentsMenu {
     overflow-x: hidden;
 }
 
-.buttonsMenu {
-    line-height: 70px;
-    text-align: center;
-    width: 75px;
-    height: 75px;
-    background-color: rgba(0, 65, 238, 0.66);
-    margin-bottom: 10px;
-    font-weight: 600;
-    text-transform: uppercase;
-    color: white;
-}
-.buttonsMenu:hover {
 
-    background-color: rgba(0, 65, 238, 1);
-   
+
+
+.libraryTitles {
+
+    width: 100%;
+    display: inline-block;
+    text-align: center;
+
 }
+ul.librarySelects {
+    padding: 0.5em 1em;
+    margin: 5%;
+    position: relative;
+    background-color: rgba(206, 159, 0, 0.2);
+    list-style: none;
+}
+.librarySelects.ps-container > .ps-scrollbar-x-rail,
+.librarySelects.ps-container > .ps-scrollbar-y-rail
+{
+    opacity:0.6;
+
+}
+.librarySelects.ps-container > .ps-scrollbar-x-rail,
+.librarySelects.ps-container > .ps-scrollbar-y-rail:hover
+{
+    opacity:0.6;
+
+}
+li {
+    font-size: 1.2em;
+    line-height: 1.5em;
+    padding: 0em 0.2em;
+}
+li>a {
+    display: block;
+    padding-left: 1em;
+}
+
+li>a:hover {
+    color: #000;
+    text-decoration: none;
+    background-color: #FFDF4D;
+}
+/*perfect scroll bar theme*/
+
+.ps-container > .ps-scrollbar-y-rail > .ps-scrollbar-y {
+    border-radius:0px!important;
+    background-color: #73FFEA;
+
+}
+.ps-container > .ps-scrollbar-y-rail  {
+    border-radius:0px!important;
+
+}
+/*layout menu export*/
+
 
 .exportSubmenu {
     width: 33%;
@@ -94,20 +172,5 @@ span#rulesName {
     display: block;
     opacity: 0.6;
 }
-ul.librarySelects {
-    height: 80%;
-    position: relative;
-    width: 75%;
-}
-.librarySelects.ps-container > .ps-scrollbar-x-rail,
-.librarySelects.ps-container > .ps-scrollbar-y-rail
-{
-    opacity:0.6;
 
-}
-.librarySelects.ps-container > .ps-scrollbar-x-rail,
-.librarySelects.ps-container > .ps-scrollbar-y-rail:hover
-{
-    opacity:0.6;
 
-}

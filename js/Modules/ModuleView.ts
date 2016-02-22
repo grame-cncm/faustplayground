@@ -24,6 +24,7 @@ interface HTMLInterfaceContainer extends HTMLDivElement {
 }
 
 class ModuleView {
+    inputOutputNodeDimension: number = 32;
     fModuleContainer: HTMLElement;
     fName: string;
     fInterfaceContainer: HTMLInterfaceContainer;

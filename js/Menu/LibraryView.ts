@@ -29,7 +29,7 @@ class LibraryView  {
         var intrumentLibrarySelect: HTMLUListElement = document.createElement("ul");
         intrumentLibrarySelect.id = "instrumentLibrarySelect";
         intrumentLibrarySelect.className = "librarySelects";
-        Ps.initialize(intrumentLibrarySelect)
+        Ps.initialize(intrumentLibrarySelect, { suppressScrollX: true, theme: 'my-theme-name' })
         this.intrumentLibrarySelect = intrumentLibrarySelect;
 
         instrumentLibraryContent.appendChild(instrumentLibraryTitle);
@@ -47,7 +47,7 @@ class LibraryView  {
         var effetLibrarySelect: HTMLUListElement = document.createElement("ul");
         effetLibrarySelect.id = "effetLibrarySelect";
         effetLibrarySelect.className = "librarySelects";
-        Ps.initialize(effetLibrarySelect)
+        Ps.initialize(effetLibrarySelect, { suppressScrollX: true, theme: 'my-theme-name'})
         this.effetLibrarySelect = effetLibrarySelect;
 
         effetLibraryContent.appendChild(effetLibraryTitle);
@@ -66,7 +66,7 @@ class LibraryView  {
         var exempleLibrarySelect: HTMLUListElement = document.createElement("ul");
         exempleLibrarySelect.id = "exempleLibrarySelect";
         exempleLibrarySelect.className = "librarySelects";
-        Ps.initialize(exempleLibrarySelect);
+        Ps.initialize(exempleLibrarySelect, { suppressScrollX: true, theme: 'my-theme-name' });
         this.exempleLibrarySelect = exempleLibrarySelect;
 
 

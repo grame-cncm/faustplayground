@@ -36,12 +36,8 @@ class SceneView{
         head.id = "header";
         container.appendChild(head);
 
-        var myScene: HTMLDivElement = document.createElement("div");
-        myScene.id = "PatchName";
-        myScene.className = "sceneTitle";
-        //myScene.style.contentEditable = "true";
-        myScene.textContent = "Patch";
-        head.appendChild(myScene);
+
+        //head.appendChild(myScene);
 
         var uploadDiv: HTMLDivElement = document.createElement("div");
         uploadDiv.id = "upload";
