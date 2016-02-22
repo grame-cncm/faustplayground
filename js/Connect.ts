@@ -12,6 +12,7 @@
 /// <reference path="Modules/ModuleClass.ts"/>
 /// <reference path="Dragging.ts"/>
 /// <reference path="main.ts"/>
+/// <reference path="App.ts"/>
 
 "use strict";
 

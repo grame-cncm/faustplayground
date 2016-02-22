@@ -25,7 +25,10 @@ DEPENDENCIES:
     */
 /// <reference path="Scenes/SceneClass.ts"/>
 /// <reference path="Modules/ModuleClass.ts"/>
+/// <reference path="Modules/ModuleView.ts"/>
+/// <reference path="Modules/ModuleFaust.ts"/>
 /// <reference path="Connect.ts"/>
+/// <reference path="Error.ts"/>
 /// <reference path="Dragging.ts"/>
 /// <reference path="webaudio-asm-wrapper.d.ts"/>
 /// <reference path="Modules/FaustInterface.ts"/>
@@ -34,10 +37,18 @@ DEPENDENCIES:
 /// <reference path="Scenes/Pedagogie.ts"/>
 /// <reference path="Scenes/SceneView.ts"/>
 /// <reference path="Menu/Export.ts"/>
+/// <reference path="Menu/ExportView.ts"/>
+/// <reference path="Menu/Library.ts"/>
+/// <reference path="Menu/LibraryView.ts"/>
+/// <reference path="Menu/Menu.ts"/>
+/// <reference path="Menu/MenuView.ts"/>
+/// <reference path="Menu/Help.ts"/>
+/// <reference path="Menu/HelpView.ts"/>
 /// <reference path="ExportLib.ts"/>
 /// <reference path="EquivalentFaust.ts"/>
 /// <reference path="Pedagogie/Tooltips.ts"/>
 /// <reference path="qrcode.d.ts"/>
+/// <reference path="Lib/perfectScrollBar/js/perfect-ScrollBar.min.d.ts"/>
 
 
 

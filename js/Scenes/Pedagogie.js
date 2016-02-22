@@ -115,4 +115,3 @@ var ScenePedagogieView = (function () {
     };
     return ScenePedagogieView;
 })();
-//# sourceMappingURL=Pedagogie.js.map

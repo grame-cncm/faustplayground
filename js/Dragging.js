@@ -10,6 +10,8 @@
         
 */
 /// <reference path="Connect.ts"/>
+/// <reference path="App.ts"/>
+/// <reference path="main.ts"/>
 /// <reference path="Modules/ModuleClass.ts"/>
 /// <reference path="Pedagogie/Tooltips.ts"/>
 "use strict";
@@ -343,4 +345,3 @@ var Drag = (function () {
     };
     return Drag;
 })();
-//# sourceMappingURL=Dragging.js.map

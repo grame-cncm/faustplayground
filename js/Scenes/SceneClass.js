@@ -253,4 +253,3 @@ var Scene = (function () {
     Scene.sceneName = "Patch";
     return Scene;
 })();
-//# sourceMappingURL=SceneClass.js.map

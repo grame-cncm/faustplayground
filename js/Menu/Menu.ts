@@ -1,7 +1,15 @@
 ﻿//Menu.ts  Menu class which handles the menu behaviours and contains the MenuView
 
+	/// <reference path="Library.ts"/>
+	/// <reference path="LibraryView.ts"/>
+	/// <reference path="Export.ts"/>
+	/// <reference path="ExportView.ts"/>
+	/// <reference path="Help.ts"/>
+	/// <reference path="HelpView.ts"/>
 
-enum MenuChoices {library,export,help,kids,null}
+
+enum MenuChoices { library, export, help, kids, null }
+
 class Menu {
     menuChoices: MenuChoices;
     currentMenuChoices: MenuChoices = MenuChoices.null;

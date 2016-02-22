@@ -1,4 +1,10 @@
 //Menu.ts  Menu class which handles the menu behaviours and contains the MenuView
+/// <reference path="Library.ts"/>
+/// <reference path="LibraryView.ts"/>
+/// <reference path="Export.ts"/>
+/// <reference path="ExportView.ts"/>
+/// <reference path="Help.ts"/>
+/// <reference path="HelpView.ts"/>
 var MenuChoices;
 (function (MenuChoices) {
     MenuChoices[MenuChoices["library"] = 0] = "library";
@@ -117,4 +123,3 @@ var Menu = (function () {
     };
     return Menu;
 })();
-//# sourceMappingURL=Menu.js.map
