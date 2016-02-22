@@ -117,9 +117,6 @@ class Scene {
     }
 
     private integrateAudioOutput(factory: Factory, scene: Scene): void {
-        if (App.isPedagogie) {
-            scene = scene.parent.scenes[1];
-        }
         if (scene.fAudioOutput) {
             scene.fAudioOutput.moduleFaust.setSource("process=_,_;");
             scene.fAudioOutput.createDSP(factory);

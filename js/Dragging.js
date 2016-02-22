@@ -247,9 +247,6 @@ var Drag = (function () {
                 connector.saveConnection(src, dst, this.connector.connectorShape);
                 this.connector.connectorShape.onclick = function () { connector.deleteConnection(drag); };
                 //this.connectorShape = null;
-                ;
-                if (App.isTooltipEnabled)
-                    Tooltips.toolTipForConnections(src.sceneParent);
                 return;
             }
         }
@@ -345,3 +342,4 @@ var Drag = (function () {
     };
     return Drag;
 })();
+//# sourceMappingURL=Dragging.js.map

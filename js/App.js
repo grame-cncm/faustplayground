@@ -32,9 +32,6 @@ DEPENDENCIES:
 /// <reference path="Dragging.ts"/>
 /// <reference path="webaudio-asm-wrapper.d.ts"/>
 /// <reference path="Modules/FaustInterface.ts"/>
-/// <reference path="Scenes/Accueil.ts"/>
-/// <reference path="Scenes/Finish.ts"/>
-/// <reference path="Scenes/Pedagogie.ts"/>
 /// <reference path="Scenes/SceneView.ts"/>
 /// <reference path="Menu/Export.ts"/>
 /// <reference path="Menu/ExportView.ts"/>
@@ -46,7 +43,6 @@ DEPENDENCIES:
 /// <reference path="Menu/HelpView.ts"/>
 /// <reference path="ExportLib.ts"/>
 /// <reference path="EquivalentFaust.ts"/>
-/// <reference path="Pedagogie/Tooltips.ts"/>
 /// <reference path="qrcode.d.ts"/>
 /// <reference path="Lib/perfectScrollBar/js/perfect-ScrollBar.min.d.ts"/>
 var App = (function () {
@@ -56,47 +52,11 @@ var App = (function () {
         App.scene.showScene();
     };
     App.prototype.createAllScenes = function () {
-        this.scenes = [];
-        if (App.isPedagogie) {
-            this.scenes[0] = new Scene("Accueil", this);
-            SceneAccueilView.initWelcomeScene(this.scenes[0]);
-            App.scene = this.scenes[0];
-            this.scenes[1] = new Scene("Pedagogie", this, ScenePedagogieView.onloadPedagogieScene, ScenePedagogieView.onunloadPedagogieScene);
-            ScenePedagogieView.initPedagogieScene(this.scenes[1]);
-            var sceneExportView = new SceneExportView();
-            this.scenes[2] = new Scene("Export", this, function (scene) { sceneExportView.onloadExportScene(scene, sceneExportView); }, sceneExportView.onunloadExportScene);
-        }
-        else {
-            var sceneView = new SceneView();
-            this.scenes[0] = new Scene("Normal", this, sceneView.onloadNormalScene, sceneView.onunloadNormalScene, sceneView);
-            App.scene = this.scenes[0];
-            App.scene.sceneView = sceneView;
-            sceneView.initNormalScene(this.scenes[0]);
-        }
+        var sceneView = new SceneView();
+        App.scene = new Scene("Normal", this, sceneView.onloadNormalScene, sceneView.onunloadNormalScene, sceneView);
+        App.scene.sceneView = sceneView;
+        sceneView.initNormalScene(this.scenes[0]);
         App.currentScene = 0;
-    };
-    /********************************************************************
-    **********************  NAVIGATION BETWEEN SCENES *******************
-    ********************************************************************/
-    App.prototype.nextScene = function () {
-        var index = App.currentScene;
-        this.scenes[index].hideScene();
-        this.scenes[index].unloadScene();
-        App.scene = this.scenes[index + 1];
-        App.currentScene = index + 1;
-        console.log("WINDOW CURRENT SCENE");
-        console.log(this.scenes[index + 1].getSceneContainer());
-        this.scenes[index + 1].showScene();
-        this.scenes[index + 1].loadScene();
-    };
-    App.prototype.previousScene = function () {
-        var index = App.currentScene;
-        this.scenes[index].hideScene();
-        this.scenes[index].unloadScene();
-        this.scenes[index - 1].showScene();
-        this.scenes[index - 1].loadScene();
-        App.scene = this.scenes[index - 1];
-        App.currentScene = index - 1;
     };
     /********************************************************************
     **********************  ACTIVATE PHYSICAL IN/OUTPUT *****************
@@ -203,8 +163,6 @@ var App = (function () {
     App.prototype.terminateUpload = function () {
         var uploadTitle = document.getElementById("upload");
         uploadTitle.textContent = "";
-        if (App.isTooltipEnabled && Tooltips.sceneHasInstrumentAndEffect(this.scenes[App.currentScene]))
-            Tooltips.toolTipForConnections(this.scenes[App.currentScene]);
     };
     //-- Finds out if the drop was on an existing module or creating a new one
     App.prototype.uploadFile = function (e) {
@@ -375,3 +333,4 @@ var App = (function () {
     App.baseImg = "img/";
     return App;
 })();
+//# sourceMappingURL=App.js.map

@@ -39,3 +39,4 @@ var ModuleFaust = (function () {
     };
     return ModuleFaust;
 })();
+//# sourceMappingURL=ModuleFaust.js.map

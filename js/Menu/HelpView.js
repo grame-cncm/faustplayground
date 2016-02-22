@@ -21,3 +21,4 @@ var HelpView = (function () {
     };
     return HelpView;
 })();
+//# sourceMappingURL=HelpView.js.map

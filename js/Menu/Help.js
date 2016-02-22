@@ -7,3 +7,4 @@ var Help = (function () {
     };
     return Help;
 })();
+//# sourceMappingURL=Help.js.map

@@ -137,10 +137,6 @@ var Library = (function () {
                     var div = document.createElement("ul");
                     div.className = "ulElem";
                     document.getElementById("library").appendChild(div);
-                    if (App.isTooltipEnabled) {
-                        var tooltip = this.toolTipForLibrary(section);
-                        div.appendChild(tooltip);
-                    }
                     var sel1 = document.createElement("li");
                     sel1.id = "generalSection";
                     sel1.className = "sections";
@@ -232,3 +228,4 @@ var Library = (function () {
     };
     return Library;
 })();
+//# sourceMappingURL=Library.js.map

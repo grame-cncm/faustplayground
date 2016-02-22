@@ -255,3 +255,4 @@ var ModuleClass = (function () {
     };
     return ModuleClass;
 })();
+//# sourceMappingURL=ModuleClass.js.map

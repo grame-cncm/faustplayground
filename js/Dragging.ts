@@ -341,9 +341,8 @@ class Drag {
                 this.connector.connectorShape.onclick = function () { connector.deleteConnection(drag) };
 
 			    //this.connectorShape = null;
-                ;
-                if (App.isTooltipEnabled)
-                    Tooltips.toolTipForConnections(src.sceneParent);
+                
+                
 
 			    return;
 		    }

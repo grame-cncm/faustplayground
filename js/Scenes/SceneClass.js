@@ -89,9 +89,6 @@ var Scene = (function () {
         callBackKeepGoingOnWithInit();
     };
     Scene.prototype.integrateAudioOutput = function (factory, scene) {
-        if (App.isPedagogie) {
-            scene = scene.parent.scenes[1];
-        }
         if (scene.fAudioOutput) {
             scene.fAudioOutput.moduleFaust.setSource("process=_,_;");
             scene.fAudioOutput.createDSP(factory);
@@ -253,3 +250,4 @@ var Scene = (function () {
     Scene.sceneName = "Patch";
     return Scene;
 })();
+//# sourceMappingURL=SceneClass.js.map

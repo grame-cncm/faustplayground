@@ -29,7 +29,6 @@ function init():void {
     } catch(e) {
         alert('The Web Audio API is apparently not supported in this browser.');
     }
-    App.isPedagogie = App.isAppPedagogique();
     app.createAllScenes();
     App.hideFullPageLoading();
 	app.showFirstScene();

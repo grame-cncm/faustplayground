@@ -205,11 +205,6 @@ class Library{
                     div.className = "ulElem";
                     document.getElementById("library").appendChild(div);
 
-                    if (App.isTooltipEnabled) {
-					    var tooltip = this.toolTipForLibrary(section);
-					    div.appendChild(tooltip);
-				    }
-
                     var sel1: HTMLLIElement = document.createElement("li");
 				    sel1.id = "generalSection";
 				    sel1.className="sections";
