@@ -55,7 +55,7 @@ var App = (function () {
         var sceneView = new SceneView();
         App.scene = new Scene("Normal", this, sceneView.onloadNormalScene, sceneView.onunloadNormalScene, sceneView);
         App.scene.sceneView = sceneView;
-        sceneView.initNormalScene(this.scenes[0]);
+        sceneView.initNormalScene(App.scene);
         App.currentScene = 0;
     };
     /********************************************************************
@@ -100,7 +100,7 @@ var App = (function () {
         this.tempModuleSourceCode = sourcecode;
         this.tempModuleX = x;
         this.tempModuleY = y;
-        var currentScene = this.scenes[App.currentScene];
+        var currentScene = App.scene;
         // To Avoid click during compilation
         if (currentScene) {
             currentScene.muteScene();

@@ -28,4 +28,4 @@ var PositionModule = (function () {
     }
     return PositionModule;
 })();
-//# sourceMappingURL=Main.js.map
+//# sourceMappingURL=main.js.map

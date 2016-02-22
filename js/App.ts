@@ -88,7 +88,7 @@ class App {
         var sceneView: SceneView = new SceneView();
         App.scene = new Scene("Normal", this, sceneView.onloadNormalScene, sceneView.onunloadNormalScene, sceneView);
         App.scene.sceneView = sceneView;
-        sceneView.initNormalScene(this.scenes[0]);
+        sceneView.initNormalScene(App.scene);
             
 
         
@@ -151,7 +151,7 @@ class App {
         this.tempModuleX = x;
         this.tempModuleY = y;
 
-        var currentScene: Scene = this.scenes[App.currentScene];
+        var currentScene: Scene = App.scene;
 
         // To Avoid click during compilation
         if (currentScene) { currentScene.muteScene() };

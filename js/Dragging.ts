@@ -443,7 +443,7 @@ class Drag {
 		    }
 	    }	
 
-        if (!arrivingNode) {
+        if (!arrivingNode && arrivingHTMLParentNode != undefined) {
             var outputModule = module.sceneParent.getAudioOutput();
             var inputModule = module.sceneParent.getAudioInput();
             if ((this.originIsInput && outputModule.moduleView.isPointInOutput(event.clientX, event.clientY)) || outputModule.moduleView.isPointInInput(event.clientX, event.clientY) || arrivingHTMLParentNode.offsetParent.getAttribute("id") == "moduleOutput") {

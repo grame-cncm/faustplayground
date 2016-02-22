@@ -44,11 +44,15 @@ var Scene = (function () {
     /*********************** MUTE/UNMUTE SCENE ***************************/
     Scene.prototype.muteScene = function () {
         var out = document.getElementById("audioOutput");
-        out.audioNode.context.suspend();
+        if (out != null) {
+            out.audioNode.context.suspend();
+        }
     };
     Scene.prototype.unmuteScene = function () {
         var out = document.getElementById("audioOutput");
-        out.audioNode.context.resume();
+        if (out != null) {
+            out.audioNode.context.resume();
+        }
     };
     /******************** HANDLE MODULES IN SCENE ************************/
     Scene.prototype.getModules = function () { return this.fModuleList; };
