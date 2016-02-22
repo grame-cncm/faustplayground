@@ -32,6 +32,7 @@ var Menu = (function () {
         this.expor.setEventListeners();
         this.help = new Help();
         this.help.helpView = this.menuView.helpView;
+        this.menuView.exportView.inputNameApp.onchange = function (e) { _this.updatePatchNameToInput(e); };
     }
     Menu.prototype.menuHandler = function (menuChoises) {
         this.help.stopVideo();
@@ -47,6 +48,7 @@ var Menu = (function () {
                 break;
             case MenuChoices.null:
                 this.closeMenu();
+                this.cleanMenu();
                 break;
         }
     };
@@ -131,6 +133,9 @@ var Menu = (function () {
         for (var i = 0; i < this.menuView.HTMLButtonsMenu.length; i++) {
             this.menuView.HTMLButtonsMenu[i].style.backgroundColor = "rgba(0, 90, 255, 0.58)";
         }
+    };
+    Menu.prototype.updatePatchNameToInput = function (e) {
+        this.menuView.patchNameScene.textContent = Scene.sceneName;
     };
     return Menu;
 })();

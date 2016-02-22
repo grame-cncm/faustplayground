@@ -195,10 +195,16 @@ class Export{
             Scene.sceneName = newName;
             this.exportView.dynamicName.textContent = Scene.sceneName;
             this.exportView.rulesName.style.opacity = "0.6";
-            this.exportView.inputNameApp.style.boxShadow = "0 0 0 green inset"
+            this.exportView.inputNameApp.style.boxShadow = "0 0 0 green inset";
+            this.exportView.inputNameApp.style.border = "none";
+            this.exportView.inputNameApp.value = Scene.sceneName;
+            var ev: Event;
+            this.exportView.inputNameApp.onchange(ev);
+
         } else {
             this.exportView.rulesName.style.opacity = "1";
-            this.exportView.inputNameApp.style.boxShadow ="0 0 6px red inset"
+            this.exportView.inputNameApp.style.boxShadow = "0 0 6px yellow inset";
+            this.exportView.inputNameApp.style.border = "3px solid red";
         }
        
     }

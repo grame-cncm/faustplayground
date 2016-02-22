@@ -32,6 +32,7 @@ var MenuView = (function () {
         myScene.className = "sceneTitle";
         myScene.textContent = "Patch";
         buttonsMenu.appendChild(myScene);
+        this.patchNameScene = myScene;
         //create menu's Contents and there containers
         var contentsMenu = document.createElement("div");
         contentsMenu.id = "contentsMenu";

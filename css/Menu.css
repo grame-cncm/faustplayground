@@ -146,12 +146,16 @@ li>a:hover {
 
 
 .exportSubmenu {
-    width: 33%;
-    min-width: 33%;
-    position: relative;
+    width: 29%;
+    margin: 0px 2%;
     float: left;
-}
 
+}
+.exportTitle {
+    text-align: center;
+    width: 100%;
+    display: block;
+}
 .selects {
     width: 100%;
     max-width:200px;
@@ -159,18 +163,35 @@ li>a:hover {
 
 
 input#inputNameApp {
+    display: block;
+    margin: 1em auto;
+    color: white;
+    border-style: none;
+    padding: 0.3em;
     width: 98%;
     max-width: 200px;
+    background-color: rgba(255, 255, 255, 0.3);
 }
 
 #buttonNameApp {
+    margin: 0 auto;
+    border: none;
     width: 98%;
     max-width: 200px;
+    display: block;
+    box-shadow:0 0 2px grey;
+    opacity: 0.8;
 }
+
+#buttonNameApp:hover {
+    box-shadow:0 0 5px black;
+    opacity: 1;
+    }
 span#rulesName {
     font-size: 0.8em;
     display: block;
     opacity: 0.6;
+    margin: 2em 0;
 }
 
 

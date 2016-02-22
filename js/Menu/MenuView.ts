@@ -10,7 +10,8 @@ class MenuView {
     contentsMenu: HTMLElement;
     closeButton: HTMLElement;
     HTMLElementsMenu: HTMLElement[] = [];
-    HTMLButtonsMenu: HTMLElement[]=[]
+    HTMLButtonsMenu: HTMLElement[] = []
+    patchNameScene: HTMLElement;
     libraryView: LibraryView;
     exportView: ExportView;
     helpView: HelpView;
@@ -50,6 +51,7 @@ class MenuView {
         myScene.className = "sceneTitle";
         myScene.textContent = "Patch";
         buttonsMenu.appendChild(myScene);
+        this.patchNameScene = myScene;
 
         //create menu's Contents and there containers
 

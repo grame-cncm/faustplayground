@@ -34,6 +34,7 @@ class Menu {
         this.expor.setEventListeners();
         this.help = new Help();
         this.help.helpView = this.menuView.helpView;
+        this.menuView.exportView.inputNameApp.onchange = (e) => { this.updatePatchNameToInput(e) }
 
     }
 
@@ -52,6 +53,7 @@ class Menu {
                 break;
             case MenuChoices.null:
                 this.closeMenu();
+                this.cleanMenu();
                 break;
         }
     }
@@ -142,5 +144,7 @@ class Menu {
             this.menuView.HTMLButtonsMenu[i].style.backgroundColor = "rgba(0, 90, 255, 0.58)";
         }
     }
-
+    updatePatchNameToInput(e: Event) {
+        this.menuView.patchNameScene.textContent = Scene.sceneName;
+    }
 }
