@@ -18,7 +18,7 @@ var ExportView = (function () {
         /////////////////////////////////  name App
         var nameAppTitle = document.createElement("span");
         nameAppTitle.id = "nameAppTitle";
-        nameAppTitle.textContent = "Nom de l'application est : ";
+        nameAppTitle.textContent = " le nom de l'application est : ";
         nameAppTitle.className = "exportTitle";
         var dynamicName = document.createElement("span");
         dynamicName.id = "dynamicName";
@@ -35,7 +35,8 @@ var ExportView = (function () {
         var button = document.createElement("button");
         button.type = "button";
         button.id = "buttonNameApp";
-        button.textContent = "Enregistrer le nom de d'application";
+        button.className = "button";
+        button.textContent = "Modifier le nom de d'application";
         nameAppContainer.appendChild(nameAppTitle);
         nameAppContainer.appendChild(rulesName);
         nameAppContainer.appendChild(input);
@@ -73,8 +74,8 @@ var ExportView = (function () {
         var exportButton = document.createElement("input");
         exportButton.id = "exportButton";
         exportButton.type = "submit";
-        exportButton.className = "grayButton";
-        exportButton.value = "Export";
+        exportButton.className = "button";
+        exportButton.value = "Exporter";
         this.exportButton = exportButton;
         subfooter.appendChild(exportButton);
         exportOptionContainer.appendChild(exportOptionTitle);
@@ -83,7 +84,7 @@ var ExportView = (function () {
         //////////////////////////// export Result
         var exportResultTitle = document.createElement("span");
         exportResultTitle.id = "exportResultTitle";
-        exportResultTitle.textContent = "Téléchragement";
+        exportResultTitle.textContent = "Téléchargement";
         exportResultTitle.className = "exportTitle";
         exportResultContainer.appendChild(exportResultTitle);
         exportContainer.appendChild(nameAppContainer);

@@ -101,8 +101,10 @@ ul.librarySelects {
     padding: 0.5em 1em;
     margin: 5%;
     position: relative;
-    background-color: rgba(206, 159, 0, 0.2);
+    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.29);
     list-style: none;
+    height:75%
+
 }
 .librarySelects.ps-container > .ps-scrollbar-x-rail,
 .librarySelects.ps-container > .ps-scrollbar-y-rail
@@ -129,7 +131,9 @@ li>a {
 li>a:hover {
     color: #000;
     text-decoration: none;
-    background-color: #FFDF4D;
+    background-color: rgba(255, 223, 77, 0.5);
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.49);
+    border-radius: 5px;
 }
 /*perfect scroll bar theme*/
 
@@ -144,11 +148,14 @@ li>a:hover {
 }
 /*layout menu export*/
 
-
+div#exportContent {
+    height: 300px;
+}
 .exportSubmenu {
     width: 29%;
-    margin: 0px 2%;
+    padding: 0px 2%;
     float: left;
+        height: 100%;
 
 }
 .exportTitle {
@@ -157,33 +164,48 @@ li>a:hover {
     display: block;
 }
 .selects {
+        margin-bottom: 1em;
+    padding: 0.3em;
     width: 100%;
-    max-width:200px;
+    max-width: 200px;
+    border: none;
+    /* color: white; */
+    background-color: rgba(255, 255, 255, 0.49);
+    cursor:pointer;
 }
 
 
+div#nameAppContainer {
+    border-right-color: rgba(0, 0, 0, 0.35);
+    border-right-style: solid;
+    border-right-width: 2px;
+}
 input#inputNameApp {
     display: block;
     margin: 1em auto;
+    margin-bottom: 2em;
     color: white;
     border-style: none;
     padding: 0.3em;
-    width: 98%;
-    max-width: 200px;
+    width: 95%;
+    max-width: 300px;
     background-color: rgba(255, 255, 255, 0.3);
 }
 
-#buttonNameApp {
-    margin: 0 auto;
+.button {
     border: none;
+    background-color: #CF3459;
+    margin: 0 auto;
     width: 98%;
     max-width: 200px;
     display: block;
-    box-shadow:0 0 2px grey;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.52);
     opacity: 0.8;
+    color: white;
+    min-height:40px;
 }
 
-#buttonNameApp:hover {
+.button:hover {
     box-shadow:0 0 5px black;
     opacity: 1;
     }
@@ -192,6 +214,106 @@ span#rulesName {
     display: block;
     opacity: 0.6;
     margin: 2em 0;
+    text-align:justify;
 }
 
+div#nameAppContainer {
+    border-right-color: rgba(0, 0, 0, 0.2);
+    border-right-style: solid;
+    border-right-width: 2px;
+}
+div#exportOptionContainer{
+    border-right-color: rgba(0, 0, 0, 0.2);
+    border-right-style: solid;
+    border-right-width: 2px;
+}
 
+#faustweburl {
+    color: rgba(255, 255, 255, 0.6);
+    padding-bottom: 4em;
+    display: block;
+    margin: 0 auto;
+    border: 0px;
+    text-align: center;
+    font-size: 12px;
+    background-color: transparent;
+    outline: 0px solid transparent;
+    text-align: center;
+    position: relative;
+}
+#refreshButton {
+    position: relative;
+    width: 30%;
+    float: left;
+    cursor:pointer;
+    opacity:0.8;
+}
+#refreshButton:hover{
+    opacity:1;
+}
+
+#selectDiv{
+	position:relative; 
+    width: 70%;
+    float:left;
+}
+
+#plateforms{
+
+	display:block; 
+	margin-bottom:5px; 
+}
+
+#architectures{
+
+	display:block; 
+	margin-bottom:3em; 
+}
+
+#exportButton{
+
+}
+
+/*téléchargement*/
+
+a#linkDownload {
+    display: block;
+    text-align: center;
+    font-size: 1em;
+    line-height: 3em;
+    margin-top: 2em;
+}
+a#linkDownload:hover{
+    color:white;
+}
+
+#loadingImg {
+    border: 0;
+    width: 75px;
+    display: block;
+    margin: 3em auto;
+    -ms-interpolation-mode: bicubic;
+    vertical-align: middle;
+}
+
+#loadingText{
+    display: block;
+    width: 26%;
+    margin: 0 auto;
+}
+
+#qrcodeDiv{
+	position: relative; 
+    margin-top: 2.5em;
+}
+
+#qrcodeDiv>div {
+    box-shadow: 0 0 5px black;
+}
+
+/*help menu*/
+
+div#videoContainer {
+    margin: 0 auto;
+    width: 600px;
+}

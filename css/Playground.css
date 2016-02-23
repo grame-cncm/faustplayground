@@ -7,66 +7,14 @@
 	/*z-index:-1;*/
 }
 
-#faustweburl{
-	border:0px; 
-	text-align:center; 
-	font-size:12px; 
-	background-color:transparent; 
-	outline: 0px solid transparent; 
-	text-align:center;
-    position:relative;
-}
+
 #optionExportContainer{
     position:relative;
     width:100%
 }
-#refreshButton{
-	position:relative; 
-    width: 30%;
-    float:left;
-}
 
-#selectDiv{
-	position:relative; 
-    width: 70%;
-    float:left;
-}
 
-#plateforms{
 
-	display:block; 
-	margin-bottom:5px; 
-}
-
-#architectures{
-
-	display:block; 
-	margin-bottom:15px; 
-}
-
-#exportButton{
-	position:relative; 
-    margin:0 auto;
-    text-align: center;
-    border: solid white 0;
-    border-radius: 0px;
-    color: #fafafc;
-    padding-top: 10px;
-    padding-right: 10px;
-    padding-bottom: 5px;
-    padding-left: 10px;
-    text-transform: uppercase;
-    font-size: 20px;
-    box-shadow: 0 0 5px #424242;
-    width:100%;
-    max-width:200px;
-}
-#exportButton:hover {
-    box-shadow: 0 0 5px black;
-    color: black;
-
-	background: #1D4CBF;
-}
 
 #ChrisLine{
 	position:fixed;
@@ -86,13 +34,5 @@
 	margin-right : auto; 
 }
 
-#qrcodeDiv{
-	position: relative; 
-    margin-top: 15px;
-}
 
-#qrcodeDiv>a>div {
-    padding: 0!important;
-    box-shadow: 0 0 3px grey;
-}
 

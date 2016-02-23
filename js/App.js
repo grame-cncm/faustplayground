@@ -303,7 +303,8 @@ var App = (function () {
         loadingImg.src = App.baseImg + "logoAnim.gif";
         loadingImg.id = "loadingImg";
         var loadingText = document.createElement("span");
-        loadingText.textContent = "Chargement...";
+        loadingText.textContent = "Compilation en cours...";
+        loadingText.id = "loadingText";
         loadingDiv.appendChild(loadingImg);
         loadingDiv.appendChild(loadingText);
         document.getElementById(divTarget).appendChild(loadingDiv);

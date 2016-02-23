@@ -34,7 +34,7 @@ class ExportView {
 
         var nameAppTitle: HTMLSpanElement = document.createElement("span");
         nameAppTitle.id = "nameAppTitle";
-        nameAppTitle.textContent = "Nom de l'application est : ";
+        nameAppTitle.textContent = " le nom de l'application est : ";
         nameAppTitle.className = "exportTitle";
 
         var dynamicName: HTMLSpanElement = document.createElement("span");
@@ -55,7 +55,8 @@ class ExportView {
         var button: HTMLButtonElement = document.createElement("button");
         button.type = "button";
         button.id = "buttonNameApp";
-        button.textContent = "Enregistrer le nom de d'application";
+        button.className="button"
+        button.textContent = "Modifier le nom de d'application";
 
         nameAppContainer.appendChild(nameAppTitle);
         nameAppContainer.appendChild(rulesName);
@@ -108,8 +109,8 @@ class ExportView {
         var exportButton: HTMLInputElement = document.createElement("input");
         exportButton.id = "exportButton";
         exportButton.type = "submit";
-        exportButton.className = "grayButton";
-        exportButton.value = "Export";
+        exportButton.className = "button";
+        exportButton.value = "Exporter";
         this.exportButton = exportButton;
         subfooter.appendChild(exportButton);
 
@@ -121,7 +122,7 @@ class ExportView {
 //////////////////////////// export Result
         var exportResultTitle: HTMLSpanElement = document.createElement("span");
         exportResultTitle.id = "exportResultTitle";
-        exportResultTitle.textContent = "Téléchragement";
+        exportResultTitle.textContent = "Téléchargement";
         exportResultTitle.className = "exportTitle";
 
 

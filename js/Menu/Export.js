@@ -68,7 +68,9 @@ var Export = (function () {
             qrDiv.appendChild(myWhiteDiv);
             var linkDownload = document.createElement('a');
             linkDownload.href = serverUrl + "/" + shaKey + "/" + plateforme + "/" + architecture + "/" + appType;
-            linkDownload.textContent = "télécharger";
+            linkDownload.id = "linkDownload";
+            linkDownload.className = "button";
+            linkDownload.textContent = "Télécharger";
             document.getElementById("exportResultContainer").appendChild(disposableExportDiv);
             disposableExportDiv.appendChild(linkDownload);
             disposableExportDiv.appendChild(qrDiv);
