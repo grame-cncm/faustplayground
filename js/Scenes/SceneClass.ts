@@ -67,14 +67,18 @@ class Scene {
     /*********************** MUTE/UNMUTE SCENE ***************************/
     muteScene(): void {
         var out: IHTMLDivElementOut = <IHTMLDivElementOut>document.getElementById("audioOutput");
+        
         if (out != null) {
             out.audioNode.context.suspend();
+            
         }
     }
     unmuteScene(): void {
         var out: IHTMLDivElementOut = <IHTMLDivElementOut>document.getElementById("audioOutput");
         if (out != null) {
-            out.audioNode.context.resume();
+            if (out.audioNode.context.resume != undefined) {
+                out.audioNode.context.resume();
+            }
         }
     }
     /******************** HANDLE MODULES IN SCENE ************************/

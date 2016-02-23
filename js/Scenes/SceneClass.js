@@ -51,7 +51,9 @@ var Scene = (function () {
     Scene.prototype.unmuteScene = function () {
         var out = document.getElementById("audioOutput");
         if (out != null) {
-            out.audioNode.context.resume();
+            if (out.audioNode.context.resume != undefined) {
+                out.audioNode.context.resume();
+            }
         }
     };
     /******************** HANDLE MODULES IN SCENE ************************/
