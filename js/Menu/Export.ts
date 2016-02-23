@@ -25,10 +25,13 @@ class Export{
 
     //------ Handle Combo Boxes
     setEventListeners() {
-        this.exportView.refreshButton.onclick = this.uploadTargets;
+        this.exportView.refreshButton.onclick = () => { this.uploadTargets() };
         this.exportView.selectPlatform.onchange = () => { this.updateArchitectures() };
+        this.exportView.inputServerUrl.onkeypress = (e: KeyboardEvent) => { if (e.which == 13) { this.uploadTargets()} };
         this.exportView.exportButton.onclick = (event) => { this.exportPatch(event, this) };
         this.exportView.buttonNameApp.onclick = () => { this.renameScene() };
+        this.exportView.inputNameApp.onkeypress = (e: KeyboardEvent) => { if (e.which == 13) { this.renameScene() } };
+
     }
     addItem(id: string, itemText:string):void
     {
@@ -83,7 +86,7 @@ class Export{
 	    this.clearComboBox('platforms');
 	    this.clearComboBox('architectures');
         var input: HTMLInputElement = <HTMLInputElement>document.getElementById("faustweburl")
-        App.exportURL = input.value;
+        Export.targetsUrl = input.value+"/targets";
 
         App.getXHR(Export.targetsUrl, (json: string) => { this.uploadTargetCallback(json) }, (errorMessage: string) => { ErrorFaust.errorCallBack(errorMessage) });
         //ExportLib.getTargets(App.exportURL, (json: string) => { this.uploadTargetCallback },  (json: string)=> {alert('Impossible to get FaustWeb targets')});
@@ -157,15 +160,18 @@ class Export{
         qrDiv.id = "qrcodeDiv";
         var myWhiteDiv: HTMLElement = ExportLib.getQrCode(serverUrl, shaKey, plateforme, architecture, appType, 120);
         qrDiv.appendChild(myWhiteDiv);
-        var linkDownload: HTMLAnchorElement = document.createElement('a');
-        linkDownload.href = serverUrl + "/" + shaKey + "/" + plateforme + "/" + architecture + "/" + appType;
+        var linkDownload: HTMLButtonElement = document.createElement('button');
+        linkDownload.value = serverUrl + "/" + shaKey + "/" + plateforme + "/" + architecture + "/" + appType;
         linkDownload.id = "linkDownload";
         linkDownload.className = "button";
         linkDownload.textContent = "Télécharger";
+        this.exportView.downloadButton = linkDownload;
+        this.exportView.downloadButton.onclick = () => { window.location.href = this.exportView.downloadButton.value };
 
         document.getElementById("exportResultContainer").appendChild(disposableExportDiv);
-        disposableExportDiv.appendChild(linkDownload);
         disposableExportDiv.appendChild(qrDiv);
+        disposableExportDiv.appendChild(linkDownload);
+
 
         App.removeLoadingLogo();
 

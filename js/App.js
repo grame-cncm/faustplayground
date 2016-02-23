@@ -187,8 +187,6 @@ var App = (function () {
         App.showFullPageLoading();
         //worker.postMessage("go");
         this.preventDefaultAction(e);
-        var uploadTitle = document.getElementById("upload");
-        uploadTitle.textContent = "CHARGEMENT EN COURS ...";
         // CASE 1 : THE DROPPED OBJECT IS A URL TO SOME FAUST CODE
         if (e.dataTransfer.getData('URL') && e.dataTransfer.getData('URL').split(':').shift() != "file") {
             var url = e.dataTransfer.getData('URL');

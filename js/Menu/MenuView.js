@@ -3,6 +3,8 @@ var MenuView = (function () {
     function MenuView() {
         this.HTMLElementsMenu = [];
         this.HTMLButtonsMenu = [];
+        this.menuColorDefault = "rgba(227, 64, 80, 0.73)";
+        this.menuColorSelected = "rgb(234, 37, 58)";
     }
     MenuView.prototype.init = function (htmlContainer) {
         //create menu's buttons and there containers
@@ -42,7 +44,7 @@ var MenuView = (function () {
         this.closeButton = closeButton;
         var CloseButtonContainer = document.createElement("div");
         CloseButtonContainer.id = "closeButtonContainer";
-        CloseButtonContainer.appendChild(closeButton);
+        //CloseButtonContainer.appendChild(closeButton);
         var libraryView = new LibraryView();
         var libraryContent = libraryView.initLibraryView();
         libraryContent.style.display = "none";

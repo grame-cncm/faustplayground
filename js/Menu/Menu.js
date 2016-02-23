@@ -58,18 +58,18 @@ var Menu = (function () {
                 this.menuView.contentsMenu.style.display = "block";
                 this.menuView.libraryContent.style.display = "block";
                 this.currentMenuChoices = MenuChoices.library;
-                this.menuView.libraryButtonMenu.style.backgroundColor = "rgba(255, 0, 0, 0.63)";
+                this.menuView.libraryButtonMenu.style.backgroundColor = this.menuView.menuColorSelected;
                 this.library.initScroll();
                 break;
             case MenuChoices.library:
                 this.menuView.contentsMenu.style.display = "none";
                 this.menuView.libraryContent.style.display = "none";
                 this.currentMenuChoices = MenuChoices.null;
-                this.menuView.libraryButtonMenu.style.backgroundColor = "rgba(0, 90, 255, 0.58)";
+                this.menuView.libraryButtonMenu.style.backgroundColor = this.menuView.menuColorDefault;
                 break;
             default:
                 this.cleanMenu();
-                this.menuView.libraryButtonMenu.style.backgroundColor = "rgba(255, 0, 0, 0.63)";
+                this.menuView.libraryButtonMenu.style.backgroundColor = this.menuView.menuColorSelected;
                 this.menuView.libraryContent.style.display = "block";
                 this.currentMenuChoices = MenuChoices.library;
                 break;
@@ -81,17 +81,17 @@ var Menu = (function () {
                 this.menuView.contentsMenu.style.display = "block";
                 this.menuView.exportContent.style.display = "block";
                 this.currentMenuChoices = MenuChoices.export;
-                this.menuView.exportButtonMenu.style.backgroundColor = "rgba(255, 0, 0, 0.63)";
+                this.menuView.exportButtonMenu.style.backgroundColor = this.menuView.menuColorSelected;
                 break;
             case MenuChoices.export:
                 this.menuView.contentsMenu.style.display = "none";
                 this.menuView.exportContent.style.display = "none";
                 this.currentMenuChoices = MenuChoices.null;
-                this.menuView.exportButtonMenu.style.backgroundColor = "rgba(0, 90, 255, 0.58)";
+                this.menuView.exportButtonMenu.style.backgroundColor = this.menuView.menuColorDefault;
                 break;
             default:
                 this.cleanMenu();
-                this.menuView.exportButtonMenu.style.backgroundColor = "rgba(255, 0, 0, 0.63)";
+                this.menuView.exportButtonMenu.style.backgroundColor = this.menuView.menuColorSelected;
                 this.menuView.exportContent.style.display = "block";
                 this.currentMenuChoices = MenuChoices.export;
                 break;
@@ -102,18 +102,18 @@ var Menu = (function () {
             case MenuChoices.null:
                 this.menuView.contentsMenu.style.display = "block";
                 this.menuView.helpContent.style.display = "block";
-                this.menuView.helpButtonMenu.style.backgroundColor = "rgba(255, 0, 0, 0.63)";
+                this.menuView.helpButtonMenu.style.backgroundColor = this.menuView.menuColorSelected;
                 this.currentMenuChoices = MenuChoices.help;
                 break;
             case MenuChoices.help:
                 this.menuView.contentsMenu.style.display = "none";
                 this.menuView.helpContent.style.display = "none";
                 this.currentMenuChoices = MenuChoices.null;
-                this.menuView.helpButtonMenu.style.backgroundColor = "rgba(0, 90, 255, 0.58)";
+                this.menuView.helpButtonMenu.style.backgroundColor = this.menuView.menuColorDefault;
                 break;
             default:
                 this.cleanMenu();
-                this.menuView.helpButtonMenu.style.backgroundColor = "rgba(255, 0, 0, 0.63)";
+                this.menuView.helpButtonMenu.style.backgroundColor = this.menuView.menuColorSelected;
                 this.menuView.helpContent.style.display = "block";
                 this.currentMenuChoices = MenuChoices.help;
                 break;
@@ -131,7 +131,7 @@ var Menu = (function () {
             this.menuView.HTMLElementsMenu[i].style.display = "none";
         }
         for (var i = 0; i < this.menuView.HTMLButtonsMenu.length; i++) {
-            this.menuView.HTMLButtonsMenu[i].style.backgroundColor = "rgba(0, 90, 255, 0.58)";
+            this.menuView.HTMLButtonsMenu[i].style.backgroundColor = this.menuView.menuColorDefault;
         }
     };
     Menu.prototype.updatePatchNameToInput = function (e) {

@@ -5,9 +5,11 @@ class ExportView {
     selectPlatform: HTMLElement;
     refreshButton: HTMLElement;
     inputNameApp: HTMLInputElement;
+    inputServerUrl: HTMLInputElement;
     buttonNameApp: HTMLButtonElement;
     dynamicName: HTMLSpanElement;
     rulesName: HTMLSpanElement;
+    downloadButton: HTMLButtonElement;
 
     initExportView(): HTMLElement {
 
@@ -50,6 +52,7 @@ class ExportView {
 
         var input: HTMLInputElement = document.createElement("input");
         input.id = "inputNameApp";
+        input.className = "inputExport";
         input.value = Scene.sceneName;
 
         var button: HTMLButtonElement = document.createElement("button");
@@ -69,6 +72,10 @@ class ExportView {
 
 /////////////////////////////////  export Options
 
+        var urlDiv: HTMLElement = document.createElement("div");
+        urlDiv.id = "inputExport";
+
+
         var exportOptionTitle: HTMLSpanElement = document.createElement("span");
         exportOptionTitle.id = "exportOptionTitle";
         exportOptionTitle.textContent = "Choix de l'export";
@@ -76,23 +83,25 @@ class ExportView {
 
         var fwurl: HTMLInputElement = document.createElement("input");
         fwurl.id = "faustweburl";
-
+        fwurl.className = "inputExport";
         fwurl.value = "http://faustservice.grame.fr";
+        this.inputServerUrl = fwurl;
 
+        urlDiv.appendChild(fwurl);
 
-        var subfooter: HTMLDivElement = document.createElement('div');
-        subfooter.id = "optionExportContainer"
+        var exportChoiceDiv: HTMLDivElement = document.createElement('div');
+        exportChoiceDiv.id = "optionExportContainer"
 
-        var refreshButton: HTMLDivElement = document.createElement("div");
+        var refreshButton: HTMLButtonElement = document.createElement("button");
+        refreshButton.textContent="Rafraîchir le serveur"
         refreshButton.id = "refreshButton";
-        refreshButton.innerHTML = '<svg version="1.0" id="svgRefreshButton" xmlns="http://www.w3.org/2000/svg" width="50.000000pt" height="50.000000pt" viewBox="0 0 50.000000 50.000000" preserveAspectRatio="xMidYMid meet"><g transform="translate(0.000000,50.000000) scale(0.100000,-0.100000)" fill="#000000" stroke="none"> <path d="M186 309 c-37 -29 -37 -89 0 -118 28 -22 69 -27 93 -12 23 15 3 30 -33 24 -29 -4 -37 -1 -51 21 -16 24 -16 28 -1 51 18 27 63 34 84 13 17 -17 15 -31 -3 -24 -20 7 -19 1 6 -28 l22 -25 18 24 c20 25 25 40 9 30 -5 -3 -16 7 -24 23 -25 47 -75 56 -120 21z"/></g></svg>';
-        subfooter.appendChild(refreshButton);
+        refreshButton.className = "button";
         this.refreshButton = refreshButton;
-
+        urlDiv.appendChild(refreshButton);
 
         var selectDiv: HTMLDivElement = document.createElement("div");
         selectDiv.id = "selectDiv"
-        subfooter.appendChild(selectDiv);
+        exportChoiceDiv.appendChild(selectDiv);
 
         var selectPlatform: HTMLSelectElement = document.createElement("select");
         selectPlatform.id = "platforms";
@@ -112,11 +121,12 @@ class ExportView {
         exportButton.className = "button";
         exportButton.value = "Exporter";
         this.exportButton = exportButton;
-        subfooter.appendChild(exportButton);
+        exportChoiceDiv.appendChild(exportButton);
 
         exportOptionContainer.appendChild(exportOptionTitle);
-        exportOptionContainer.appendChild(fwurl);
-        exportOptionContainer.appendChild(subfooter);
+        exportOptionContainer.appendChild(urlDiv);
+        exportOptionContainer.appendChild(exportChoiceDiv);
+        exportOptionContainer.appendChild(exportButton);
 
 
 //////////////////////////// export Result

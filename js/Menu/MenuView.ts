@@ -15,6 +15,8 @@ class MenuView {
     libraryView: LibraryView;
     exportView: ExportView;
     helpView: HelpView;
+    menuColorDefault: string = "rgba(227, 64, 80, 0.73)";
+    menuColorSelected: string = "rgb(234, 37, 58)";
 
 
     init(htmlContainer: HTMLElement): void {
@@ -65,7 +67,7 @@ class MenuView {
 
         var CloseButtonContainer: HTMLElement = document.createElement("div");
         CloseButtonContainer.id = "closeButtonContainer";
-        CloseButtonContainer.appendChild(closeButton);
+        //CloseButtonContainer.appendChild(closeButton);
 
         var libraryView: LibraryView = new LibraryView();
         var libraryContent: HTMLElement = libraryView.initLibraryView();

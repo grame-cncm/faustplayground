@@ -39,7 +39,7 @@ var Export = (function () {
             _this.clearComboBox('platforms');
             _this.clearComboBox('architectures');
             var input = document.getElementById("faustweburl");
-            App.exportURL = input.value;
+            Export.targetsUrl = input.value + "/targets";
             App.getXHR(Export.targetsUrl, function (json) { _this.uploadTargetCallback(json); }, function (errorMessage) { ErrorFaust.errorCallBack(errorMessage); });
             //ExportLib.getTargets(App.exportURL, (json: string) => { this.uploadTargetCallback },  (json: string)=> {alert('Impossible to get FaustWeb targets')});
         };
@@ -66,24 +66,32 @@ var Export = (function () {
             qrDiv.id = "qrcodeDiv";
             var myWhiteDiv = ExportLib.getQrCode(serverUrl, shaKey, plateforme, architecture, appType, 120);
             qrDiv.appendChild(myWhiteDiv);
-            var linkDownload = document.createElement('a');
-            linkDownload.href = serverUrl + "/" + shaKey + "/" + plateforme + "/" + architecture + "/" + appType;
+            var linkDownload = document.createElement('button');
+            linkDownload.value = serverUrl + "/" + shaKey + "/" + plateforme + "/" + architecture + "/" + appType;
             linkDownload.id = "linkDownload";
             linkDownload.className = "button";
             linkDownload.textContent = "Télécharger";
+            _this.exportView.downloadButton = linkDownload;
+            _this.exportView.downloadButton.onclick = function () { window.location.href = _this.exportView.downloadButton.value; };
             document.getElementById("exportResultContainer").appendChild(disposableExportDiv);
-            disposableExportDiv.appendChild(linkDownload);
             disposableExportDiv.appendChild(qrDiv);
+            disposableExportDiv.appendChild(linkDownload);
             App.removeLoadingLogo();
         };
     }
     //------ Handle Combo Boxes
     Export.prototype.setEventListeners = function () {
         var _this = this;
-        this.exportView.refreshButton.onclick = this.uploadTargets;
+        this.exportView.refreshButton.onclick = function () { _this.uploadTargets(); };
         this.exportView.selectPlatform.onchange = function () { _this.updateArchitectures(); };
+        this.exportView.inputServerUrl.onkeypress = function (e) { if (e.which == 13) {
+            _this.uploadTargets();
+        } };
         this.exportView.exportButton.onclick = function (event) { _this.exportPatch(event, _this); };
         this.exportView.buttonNameApp.onclick = function () { _this.renameScene(); };
+        this.exportView.inputNameApp.onkeypress = function (e) { if (e.which == 13) {
+            _this.renameScene();
+        } };
     };
     Export.prototype.addItem = function (id, itemText) {
         var platformsSelect = document.getElementById(id);
