@@ -117,10 +117,12 @@ class App {
         if (navigatorLoc.getUserMedia) {
 
             navigatorLoc.getUserMedia({ audio: true }, function (mediaStream) { app.getDevice(mediaStream, app) }, function (e) {
-                alert('Error getting audio input');
+                App.scene.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)"
+                App.scene.fAudioInput.moduleView.fInterfaceContainer.title = "Error getting audio input";
             });
         } else {
-            alert('Audio input API not available');
+            App.scene.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)"
+            App.scene.fAudioInput.moduleView.fInterfaceContainer.title = "Audio input API not available";
         }
     }
 
@@ -422,6 +424,8 @@ class App {
         body.appendChild(loadingPage);
         document.getElementById("Normal").style.filter = "blur(2px)"
         document.getElementById("Normal").style.webkitFilter = "blur(2px)"
+        document.getElementById("menuContainer").style.filter = "blur(2px)"
+        document.getElementById("menuContainer").style.webkitFilter = "blur(2px)"
 
 
 
@@ -431,6 +435,8 @@ class App {
         document.getElementById("loadingPage").remove();
         document.getElementById("Normal").style.filter = "none"
         document.getElementById("Normal").style.webkitFilter = "none"
+        document.getElementById("menuContainer").style.filter = "none"
+        document.getElementById("menuContainer").style.webkitFilter = "none"
 
 
     }

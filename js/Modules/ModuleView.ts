@@ -32,6 +32,7 @@ class ModuleView {
     fTitle: HTMLElement;
     fInputNode: HTMLDivElement;
     fOutputNode: HTMLDivElement;
+    contentModule: HTMLElement;
     x: number;
     y: number;
 
@@ -58,6 +59,7 @@ class ModuleView {
         fInterfaceContainer.className = "content";
         fModuleContainer.appendChild(fInterfaceContainer);
         //var eventHandler = function (event) { self.dragCallback(event, self) }
+        this.fInterfaceContainer = fInterfaceContainer;
         fModuleContainer.addEventListener("mousedown", module.eventDraggingHandler, true);
 
         if (name == "input") {

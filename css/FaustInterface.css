@@ -27,7 +27,7 @@
 
 }
 #moduleInput {
-
+    height:88px;
 }
 /* Module Output*/
 #moduleOutput>.content {
@@ -42,6 +42,7 @@
 
 }
 #moduleOutput {
+    height:88px;
 }
     
 

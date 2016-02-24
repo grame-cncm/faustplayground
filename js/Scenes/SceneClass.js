@@ -15,6 +15,7 @@
 "use strict";
 var Scene = (function () {
     function Scene(identifiant, parent, onload, onunload, sceneView) {
+        this.isMute = false;
         //-- Modules contained in the scene
         this.fModuleList = [];
         this.parent = parent;
@@ -46,6 +47,8 @@ var Scene = (function () {
         var out = document.getElementById("audioOutput");
         if (out != null) {
             out.audioNode.context.suspend();
+            this.isMute = true;
+            this.getAudioOutput().moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-speaker-mute.png)";
         }
     };
     Scene.prototype.unmuteScene = function () {
@@ -53,6 +56,8 @@ var Scene = (function () {
         if (out != null) {
             if (out.audioNode.context.resume != undefined) {
                 out.audioNode.context.resume();
+                this.isMute = false;
+                this.getAudioOutput().moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-speaker.png)";
             }
         }
     };
@@ -89,6 +94,7 @@ var Scene = (function () {
         var positionOutput = this.positionOutputModule();
         var scene = this;
         this.fAudioOutput = new ModuleClass(App.idX++, positionOutput.x, positionOutput.y, "output", this, this.sceneView.inputOutputModuleContainer, this.removeModule);
+        this.setMuteOutputListner(this.fAudioOutput);
         //this.fAudioOutput.hideModule()
         this.parent.compileFaust("output", "process=_,_;", positionOutput.x, positionOutput.y, function callback(factory, scene) { scene.integrateAudioOutput(factory, scene); });
         this.fAudioOutput.addInputOutputNodes();
@@ -248,6 +254,17 @@ var Scene = (function () {
         position.x = window.innerWidth - 98;
         position.y = window.innerHeight / 2;
         return position;
+    };
+    Scene.prototype.setMuteOutputListner = function (moduleOutput) {
+        var _this = this;
+        moduleOutput.moduleView.fModuleContainer.ondblclick = function () {
+            if (!_this.isMute) {
+                _this.muteScene();
+            }
+            else {
+                _this.unmuteScene();
+            }
+        };
     };
     Scene.sceneName = "Patch";
     return Scene;

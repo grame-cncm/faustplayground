@@ -21,6 +21,7 @@
 class Scene {
 
     parent: App;
+    isMute: boolean = false;
     //-- Audio Input/Output
     fAudioOutput: ModuleClass;
     fAudioInput: ModuleClass;
@@ -69,6 +70,8 @@ class Scene {
         
         if (out != null) {
             out.audioNode.context.suspend();
+            this.isMute = true;
+            this.getAudioOutput().moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-speaker-mute.png)"
             
         }
     }
@@ -77,6 +80,9 @@ class Scene {
         if (out != null) {
             if (out.audioNode.context.resume != undefined) {
                 out.audioNode.context.resume();
+                this.isMute = false;
+                this.getAudioOutput().moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-speaker.png)"
+
             }
         }
     }
@@ -116,7 +122,7 @@ class Scene {
         var positionOutput: PositionModule = this.positionOutputModule();
         var scene: Scene = this;
         this.fAudioOutput = new ModuleClass(App.idX++, positionOutput.x, positionOutput.y, "output", this, this.sceneView.inputOutputModuleContainer, this.removeModule);
-        
+        this.setMuteOutputListner(this.fAudioOutput);
         //this.fAudioOutput.hideModule()
         this.parent.compileFaust("output", "process=_,_;", positionOutput.x, positionOutput.y, function callback(factory, scene) { scene.integrateAudioOutput(factory, scene) });
         this.fAudioOutput.addInputOutputNodes();
@@ -315,6 +321,15 @@ class Scene {
         position.x = window.innerWidth - 98;
         position.y = window.innerHeight / 2;
         return position
+    }
+    setMuteOutputListner(moduleOutput: ModuleClass) {
+        moduleOutput.moduleView.fModuleContainer.ondblclick = () => {
+            if (!this.isMute) {
+                this.muteScene()
+            } else {
+                this.unmuteScene()
+            }
+        }
     }
 }
 
