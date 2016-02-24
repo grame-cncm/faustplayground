@@ -15,9 +15,10 @@ div#closeButtonContainer {
 }
 
 div#closeButton {
-    background: url(../img/cross_close.png);
-    width: 25px;
-    height: 25px;
+    background: url(../img/cross_close_menu.png);
+    width: 15px;
+    height: 15px;
+    margin: 5px;
     background-repeat: no-repeat;
     background-position: 50%;
     float: right;

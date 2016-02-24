@@ -46,7 +46,7 @@ var MenuView = (function () {
         this.closeButton = closeButton;
         var CloseButtonContainer = document.createElement("div");
         CloseButtonContainer.id = "closeButtonContainer";
-        //CloseButtonContainer.appendChild(closeButton);
+        CloseButtonContainer.appendChild(closeButton);
         var libraryView = new LibraryView();
         var libraryContent = libraryView.initLibraryView();
         libraryContent.style.display = "none";

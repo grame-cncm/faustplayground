@@ -70,7 +70,7 @@ class MenuView {
 
         var CloseButtonContainer: HTMLElement = document.createElement("div");
         CloseButtonContainer.id = "closeButtonContainer";
-        //CloseButtonContainer.appendChild(closeButton);
+        CloseButtonContainer.appendChild(closeButton);
 
         var libraryView: LibraryView = new LibraryView();
         var libraryContent: HTMLElement = libraryView.initLibraryView();
