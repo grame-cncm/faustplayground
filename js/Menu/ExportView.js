@@ -33,17 +33,20 @@ var ExportView = (function () {
         input.id = "inputNameApp";
         input.className = "inputExport";
         input.value = Scene.sceneName;
-        var button = document.createElement("button");
-        button.type = "button";
-        button.id = "buttonNameApp";
-        button.className = "button";
-        button.textContent = "Modifier le nom de d'application";
+        var renameBottomButtonContainer = document.createElement("div");
+        renameBottomButtonContainer.className = "bottomButtonContainer";
+        var renameButton = document.createElement("button");
+        renameButton.type = "button";
+        renameButton.id = "buttonNameApp";
+        renameButton.className = "button";
+        renameButton.textContent = "Modifier le nom de d'application";
+        renameBottomButtonContainer.appendChild(renameButton);
         nameAppContainer.appendChild(nameAppTitle);
         nameAppContainer.appendChild(rulesName);
         nameAppContainer.appendChild(input);
-        nameAppContainer.appendChild(button);
+        nameAppContainer.appendChild(renameBottomButtonContainer);
         this.inputNameApp = input;
-        this.buttonNameApp = button;
+        this.buttonNameApp = renameButton;
         /////////////////////////////////  export Options
         var urlDiv = document.createElement("div");
         urlDiv.id = "inputExport";
@@ -84,11 +87,13 @@ var ExportView = (function () {
         exportButton.className = "button";
         exportButton.value = "Exporter";
         this.exportButton = exportButton;
-        exportChoiceDiv.appendChild(exportButton);
+        var exportBottomButtonContainer = document.createElement("div");
+        exportBottomButtonContainer.className = "bottomButtonContainer";
+        exportBottomButtonContainer.appendChild(exportButton);
         exportOptionContainer.appendChild(exportOptionTitle);
         exportOptionContainer.appendChild(urlDiv);
         exportOptionContainer.appendChild(exportChoiceDiv);
-        exportOptionContainer.appendChild(exportButton);
+        exportOptionContainer.appendChild(exportBottomButtonContainer);
         //////////////////////////// export Result
         var exportResultTitle = document.createElement("span");
         exportResultTitle.id = "exportResultTitle";

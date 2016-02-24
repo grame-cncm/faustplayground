@@ -29,7 +29,6 @@ class Scene {
     //-- Graphical Scene container
     private fSceneContainer: HTMLDivElement;
     sceneView: SceneView;
-    menu: Menu;
     static sceneName: string = "Patch";
 
     
@@ -142,11 +141,7 @@ class Scene {
     getAudioOutput(): ModuleClass { return this.fAudioOutput; }
     getAudioInput(): ModuleClass { return this.fAudioInput; }
      
-    /*********************** INITIALISE MENU *****************************/
-    initMenu(menuContainer) {
-        this.menu = new Menu(menuContainer);
 
-    }
 
     /*********************** SAVE/RECALL SCENE ***************************/
     ///////////////////////////////////////////////////

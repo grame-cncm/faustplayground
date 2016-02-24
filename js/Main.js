@@ -20,6 +20,7 @@ function init() {
         alert('The Web Audio API is apparently not supported in this browser.');
     }
     app.createAllScenes();
+    app.createMenu();
     App.hideFullPageLoading();
     app.showFirstScene();
 }
@@ -28,4 +29,4 @@ var PositionModule = (function () {
     }
     return PositionModule;
 })();
-//# sourceMappingURL=Main.js.map
+//# sourceMappingURL=main.js.map

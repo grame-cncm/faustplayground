@@ -45,12 +45,14 @@ var ModuleView = (function () {
             fModuleContainer.id = "module" + ID;
             var fCloseButton = document.createElement("a");
             fCloseButton.href = "#";
+            fCloseButton.draggable = false;
             fCloseButton.className = "close";
             fCloseButton.onclick = function () { module.deleteModule(); };
             fModuleContainer.appendChild(fCloseButton);
             var fEditImg = document.createElement("img");
             fEditImg.src = App.baseImg + "edit.png";
             fEditImg.onclick = function () { module.edit(module); };
+            fEditImg.draggable = false;
             fFooter.appendChild(fEditImg);
             fModuleContainer.appendChild(fFooter);
         }

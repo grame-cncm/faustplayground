@@ -56,3 +56,7 @@
 	top:200px;
 	box-shadow: 2px 2px 2px 2px black;
 }
+div#sceneSensor {
+    width: 100%;
+    height: 100%;
+}

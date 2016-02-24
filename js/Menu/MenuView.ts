@@ -20,6 +20,9 @@ class MenuView {
 
 
     init(htmlContainer: HTMLElement): void {
+        var menuContainer: HTMLElement = document.createElement('div');
+        menuContainer.id = "menuContainer";
+
         //create menu's buttons and there containers
         var buttonsMenu: HTMLElement = document.createElement("div");
         buttonsMenu.id = "buttonsMenu";
@@ -89,8 +92,10 @@ class MenuView {
         contentsMenu.appendChild(exportContent);
         contentsMenu.appendChild(helpContent);
 
-        htmlContainer.appendChild(buttonsMenu);
-        htmlContainer.appendChild(contentsMenu);
+        menuContainer.appendChild(buttonsMenu);
+        menuContainer.appendChild(contentsMenu);
+
+        htmlContainer.appendChild(menuContainer);
         this.HTMLElementsMenu.push(libraryContent, exportContent, helpContent)
 
         this.libraryContent = libraryContent;

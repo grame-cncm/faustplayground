@@ -6,7 +6,8 @@
 
 div#menuContainer {
     width: 100%;
-
+    position: absolute;
+    top: 0;
 }
 
 div#closeButtonContainer {
@@ -149,14 +150,14 @@ li>a:hover {
 /*layout menu export*/
 
 div#exportContent {
-    /*height: 300px;*/
+    height: 100%;
 }
 .exportSubmenu {
     width: 29%;
     padding: 0px 2%;
     float: left;
-        height: 100%;
-
+    height: 100%;
+    margin-bottom: 1.5em;
 }
 .exportTitle {
     text-align: center;
@@ -175,7 +176,12 @@ div#exportContent {
     background-color: rgba(255, 255, 255, 0.49);
     cursor:pointer;
 }
-
+.bottomButtonContainer {
+    bottom: 0;
+    position: absolute;
+    width: calc(100%/3.45);
+    margin-bottom: 1em;
+}
 
 div#nameAppContainer {
     border-right-color: rgba(0, 0, 0, 0.35);

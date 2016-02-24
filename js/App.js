@@ -58,6 +58,14 @@ var App = (function () {
         sceneView.initNormalScene(App.scene);
         App.currentScene = 0;
     };
+    App.prototype.createMenu = function () {
+        var _this = this;
+        this.menu = new Menu(document.getElementsByTagName('body')[0]);
+        App.scene.sceneView.sceneSensor.onclick = function () {
+            _this.menu.menuChoices = MenuChoices.null;
+            _this.menu.menuHandler(_this.menu.menuChoices);
+        };
+    };
     /********************************************************************
     **********************  ACTIVATE PHYSICAL IN/OUTPUT *****************
     ********************************************************************/

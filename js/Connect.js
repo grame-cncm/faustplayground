@@ -74,7 +74,8 @@ var Connector = (function () {
         drag.startDraggingConnection(source, outtarget);
         drag.stopDraggingConnection(source, destination);
     };
-    Connector.prototype.deleteConnection = function (drag) {
+    Connector.prototype.deleteConnection = function (event, drag) {
+        event.stopPropagation();
         this.breakSingleInputConnection(this.source, this.destination, this);
         return true;
     };

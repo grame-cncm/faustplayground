@@ -340,7 +340,7 @@ class Drag {
                 this.connector.source = src;
                 var drag: Drag = this
                 connector.saveConnection(src, dst, this.connector.connectorShape);
-                this.connector.connectorShape.onclick = function () { connector.deleteConnection(drag) };
+                this.connector.connectorShape.onclick = function (event) { connector.deleteConnection(event,drag) };
 
 			    //this.connectorShape = null;
                 

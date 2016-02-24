@@ -79,7 +79,7 @@ var Menu = (function () {
         switch (this.currentMenuChoices) {
             case MenuChoices.null:
                 this.menuView.contentsMenu.style.display = "block";
-                this.menuView.exportContent.style.display = "block";
+                this.menuView.exportContent.style.display = "inline-table";
                 this.currentMenuChoices = MenuChoices.export;
                 this.menuView.exportButtonMenu.style.backgroundColor = this.menuView.menuColorSelected;
                 break;
@@ -92,7 +92,7 @@ var Menu = (function () {
             default:
                 this.cleanMenu();
                 this.menuView.exportButtonMenu.style.backgroundColor = this.menuView.menuColorSelected;
-                this.menuView.exportContent.style.display = "block";
+                this.menuView.exportContent.style.display = "inline-table";
                 this.currentMenuChoices = MenuChoices.export;
                 break;
         }

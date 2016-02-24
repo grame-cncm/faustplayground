@@ -7,6 +7,8 @@ var MenuView = (function () {
         this.menuColorSelected = "rgb(234, 37, 58)";
     }
     MenuView.prototype.init = function (htmlContainer) {
+        var menuContainer = document.createElement('div');
+        menuContainer.id = "menuContainer";
         //create menu's buttons and there containers
         var buttonsMenu = document.createElement("div");
         buttonsMenu.id = "buttonsMenu";
@@ -61,8 +63,9 @@ var MenuView = (function () {
         contentsMenu.appendChild(libraryContent);
         contentsMenu.appendChild(exportContent);
         contentsMenu.appendChild(helpContent);
-        htmlContainer.appendChild(buttonsMenu);
-        htmlContainer.appendChild(contentsMenu);
+        menuContainer.appendChild(buttonsMenu);
+        menuContainer.appendChild(contentsMenu);
+        htmlContainer.appendChild(menuContainer);
         this.HTMLElementsMenu.push(libraryContent, exportContent, helpContent);
         this.libraryContent = libraryContent;
         this.exportContent = exportContent;

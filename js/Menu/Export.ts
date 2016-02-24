@@ -160,17 +160,22 @@ class Export{
         qrDiv.id = "qrcodeDiv";
         var myWhiteDiv: HTMLElement = ExportLib.getQrCode(serverUrl, shaKey, plateforme, architecture, appType, 120);
         qrDiv.appendChild(myWhiteDiv);
+
+        var downloadBottomButtonContainer: HTMLElement = document.createElement("div");
+        downloadBottomButtonContainer.className = "bottomButtonContainer";
+
         var linkDownload: HTMLButtonElement = document.createElement('button');
         linkDownload.value = serverUrl + "/" + shaKey + "/" + plateforme + "/" + architecture + "/" + appType;
         linkDownload.id = "linkDownload";
         linkDownload.className = "button";
         linkDownload.textContent = "Télécharger";
+        downloadBottomButtonContainer.appendChild(linkDownload);
         this.exportView.downloadButton = linkDownload;
         this.exportView.downloadButton.onclick = () => { window.location.href = this.exportView.downloadButton.value };
 
         document.getElementById("exportResultContainer").appendChild(disposableExportDiv);
         disposableExportDiv.appendChild(qrDiv);
-        disposableExportDiv.appendChild(linkDownload);
+        disposableExportDiv.appendChild(downloadBottomButtonContainer);
 
 
         App.removeLoadingLogo();

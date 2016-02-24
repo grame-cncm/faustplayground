@@ -87,7 +87,7 @@ class Menu {
         switch (this.currentMenuChoices) {
             case MenuChoices.null:
                 this.menuView.contentsMenu.style.display = "block";
-                this.menuView.exportContent.style.display = "block";
+                this.menuView.exportContent.style.display = "inline-table";
                 this.currentMenuChoices = MenuChoices.export;
                 this.menuView.exportButtonMenu.style.backgroundColor = this.menuView.menuColorSelected;
 
@@ -102,7 +102,7 @@ class Menu {
             default:
                 this.cleanMenu();
                 this.menuView.exportButtonMenu.style.backgroundColor = this.menuView.menuColorSelected;
-                this.menuView.exportContent.style.display = "block";
+                this.menuView.exportContent.style.display = "inline-table";
                 this.currentMenuChoices = MenuChoices.export;
                 break;
         }

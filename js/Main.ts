@@ -30,6 +30,7 @@ function init():void {
         alert('The Web Audio API is apparently not supported in this browser.');
     }
     app.createAllScenes();
+    app.createMenu();
     App.hideFullPageLoading();
 	app.showFirstScene();
 }

@@ -70,6 +70,7 @@ class ModuleView {
             fModuleContainer.id = "module" + ID;
             var fCloseButton: HTMLAnchorElement = document.createElement("a");
             fCloseButton.href = "#";
+            fCloseButton.draggable = false;
             fCloseButton.className = "close";
             fCloseButton.onclick = function () { module.deleteModule(); };
             fModuleContainer.appendChild(fCloseButton);
@@ -77,6 +78,7 @@ class ModuleView {
             fEditImg.src = App.baseImg + "edit.png";
 
             fEditImg.onclick = function () { module.edit(module); };
+            fEditImg.draggable = false;
             fFooter.appendChild(fEditImg);
             fModuleContainer.appendChild(fFooter);
 

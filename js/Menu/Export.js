@@ -66,16 +66,19 @@ var Export = (function () {
             qrDiv.id = "qrcodeDiv";
             var myWhiteDiv = ExportLib.getQrCode(serverUrl, shaKey, plateforme, architecture, appType, 120);
             qrDiv.appendChild(myWhiteDiv);
+            var downloadBottomButtonContainer = document.createElement("div");
+            downloadBottomButtonContainer.className = "bottomButtonContainer";
             var linkDownload = document.createElement('button');
             linkDownload.value = serverUrl + "/" + shaKey + "/" + plateforme + "/" + architecture + "/" + appType;
             linkDownload.id = "linkDownload";
             linkDownload.className = "button";
             linkDownload.textContent = "Télécharger";
+            downloadBottomButtonContainer.appendChild(linkDownload);
             _this.exportView.downloadButton = linkDownload;
             _this.exportView.downloadButton.onclick = function () { window.location.href = _this.exportView.downloadButton.value; };
             document.getElementById("exportResultContainer").appendChild(disposableExportDiv);
             disposableExportDiv.appendChild(qrDiv);
-            disposableExportDiv.appendChild(linkDownload);
+            disposableExportDiv.appendChild(downloadBottomButtonContainer);
             App.removeLoadingLogo();
         };
     }

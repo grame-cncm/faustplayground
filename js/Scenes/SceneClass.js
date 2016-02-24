@@ -110,10 +110,6 @@ var Scene = (function () {
     };
     Scene.prototype.getAudioOutput = function () { return this.fAudioOutput; };
     Scene.prototype.getAudioInput = function () { return this.fAudioInput; };
-    /*********************** INITIALISE MENU *****************************/
-    Scene.prototype.initMenu = function (menuContainer) {
-        this.menu = new Menu(menuContainer);
-    };
     /*********************** SAVE/RECALL SCENE ***************************/
     ///////////////////////////////////////////////////
     //not used for now and not seriously typescripted//

@@ -102,8 +102,8 @@ class Connector {
 
 
 
-    deleteConnection(drag: Drag): boolean {
-
+    deleteConnection(event: MouseEvent, drag: Drag): boolean {
+        event.stopPropagation();
         this.breakSingleInputConnection(this.source, this.destination, this);
         return true;
     }

@@ -65,7 +65,7 @@ class App {
     private static currentScene: number;
     private static src: IHTMLDivElementSrc;
     private static out: IHTMLDivElementOut;
-
+    menu: Menu
 
     private tempModuleName: string;
     scenes: Scene[];
@@ -95,7 +95,13 @@ class App {
         App.currentScene = 0;
     }
 
-
+    createMenu(): void {
+        this.menu = new Menu(document.getElementsByTagName('body')[0])
+        App.scene.sceneView.sceneSensor.onclick = () => {
+            this.menu.menuChoices = MenuChoices.null
+            this.menu.menuHandler(this.menu.menuChoices)
+        };
+    }
 
     /********************************************************************
     **********************  ACTIVATE PHYSICAL IN/OUTPUT *****************

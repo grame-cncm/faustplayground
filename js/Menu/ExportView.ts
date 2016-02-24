@@ -55,19 +55,26 @@ class ExportView {
         input.className = "inputExport";
         input.value = Scene.sceneName;
 
-        var button: HTMLButtonElement = document.createElement("button");
-        button.type = "button";
-        button.id = "buttonNameApp";
-        button.className="button"
-        button.textContent = "Modifier le nom de d'application";
+        var renameBottomButtonContainer: HTMLElement = document.createElement("div");
+        renameBottomButtonContainer.className = "bottomButtonContainer";
+
+
+        var renameButton: HTMLButtonElement = document.createElement("button");
+        renameButton.type = "button";
+        renameButton.id = "buttonNameApp";
+        renameButton.className="button"
+        renameButton.textContent = "Modifier le nom de d'application";
+
+        renameBottomButtonContainer.appendChild(renameButton)
+
 
         nameAppContainer.appendChild(nameAppTitle);
         nameAppContainer.appendChild(rulesName);
         nameAppContainer.appendChild(input);
-        nameAppContainer.appendChild(button);
+        nameAppContainer.appendChild(renameBottomButtonContainer);
 
         this.inputNameApp = input;
-        this.buttonNameApp = button;
+        this.buttonNameApp = renameButton;
 
 
 /////////////////////////////////  export Options
@@ -91,6 +98,8 @@ class ExportView {
 
         var exportChoiceDiv: HTMLDivElement = document.createElement('div');
         exportChoiceDiv.id = "optionExportContainer"
+
+
 
         var refreshButton: HTMLButtonElement = document.createElement("button");
         refreshButton.textContent="Rafraîchir le serveur"
@@ -121,12 +130,19 @@ class ExportView {
         exportButton.className = "button";
         exportButton.value = "Exporter";
         this.exportButton = exportButton;
-        exportChoiceDiv.appendChild(exportButton);
+
+
+        var exportBottomButtonContainer: HTMLElement = document.createElement("div");
+        exportBottomButtonContainer.className = "bottomButtonContainer";
+
+        exportBottomButtonContainer.appendChild(exportButton);
+
+
 
         exportOptionContainer.appendChild(exportOptionTitle);
         exportOptionContainer.appendChild(urlDiv);
         exportOptionContainer.appendChild(exportChoiceDiv);
-        exportOptionContainer.appendChild(exportButton);
+        exportOptionContainer.appendChild(exportBottomButtonContainer);
 
 
 //////////////////////////// export Result
