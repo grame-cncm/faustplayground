@@ -203,6 +203,7 @@ var App = (function () {
             var filename = url.toString().split('/').pop();
             filename = filename.toString().split('.').shift();
             var xmlhttp = new XMLHttpRequest;
+            xmlhttp.overrideMimeType('text/plain; charset=utf-8');
             xmlhttp.onreadystatechange = function () {
                 if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
                     var dsp_code = "process = vgroup(\"" + filename + "\",environment{" + xmlhttp.responseText + "}.process);";

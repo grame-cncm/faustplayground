@@ -278,6 +278,8 @@ class App {
             filename = filename.toString().split('.').shift();
 
             var xmlhttp: XMLHttpRequest = new XMLHttpRequest
+            xmlhttp.overrideMimeType('text/plain; charset=utf-8')
+
             xmlhttp.onreadystatechange = function () {
                 if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
                     var dsp_code: string = "process = vgroup(\"" + filename + "\",environment{" + xmlhttp.responseText + "}.process);";
