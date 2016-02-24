@@ -59,7 +59,7 @@ div#contentsMenu {
     position:relative;
     border-style: solid;
     border-width: 0px 1px 0 0;
-    border-color: rgb(0, 168, 255);
+    border-color: rgba(0, 168, 255,0.4);
     /* box-shadow: 0 0 1px black; */
     cursor: pointer;
     float: left;
@@ -160,7 +160,7 @@ div#exportContent {
     padding: 0px 2%;
     float: left;
     height: 100%;
-    margin-bottom: 1.5em;
+    margin-bottom: 2.5em;
 }
 .exportTitle {
     text-align: center;
