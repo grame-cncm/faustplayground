@@ -41,7 +41,7 @@ div.link {
 div.link a {
 	color: white;
 	font: inherit;
-	text-decoration: underline;
+	text-decoration: none;
 }
 
 path {

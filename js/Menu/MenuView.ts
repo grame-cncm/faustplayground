@@ -16,7 +16,7 @@ class MenuView {
     exportView: ExportView;
     helpView: HelpView;
     menuColorDefault: string = "rgba(227, 64, 80, 0.73)";
-    menuColorSelected: string = "rgb(234, 37, 58)";
+    menuColorSelected: string = "rgb(209, 64, 80)";
 
 
     init(htmlContainer: HTMLElement): void {

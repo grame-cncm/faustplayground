@@ -4,7 +4,7 @@ var MenuView = (function () {
         this.HTMLElementsMenu = [];
         this.HTMLButtonsMenu = [];
         this.menuColorDefault = "rgba(227, 64, 80, 0.73)";
-        this.menuColorSelected = "rgb(234, 37, 58)";
+        this.menuColorSelected = "rgb(209, 64, 80)";
     }
     MenuView.prototype.init = function (htmlContainer) {
         var menuContainer = document.createElement('div');

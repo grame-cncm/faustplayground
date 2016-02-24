@@ -59,6 +59,7 @@ var Menu = (function () {
                 this.menuView.libraryContent.style.display = "block";
                 this.currentMenuChoices = MenuChoices.library;
                 this.menuView.libraryButtonMenu.style.backgroundColor = this.menuView.menuColorSelected;
+                this.menuView.libraryButtonMenu.style.zIndex = "1";
                 this.library.initScroll();
                 break;
             case MenuChoices.library:
@@ -66,10 +67,12 @@ var Menu = (function () {
                 this.menuView.libraryContent.style.display = "none";
                 this.currentMenuChoices = MenuChoices.null;
                 this.menuView.libraryButtonMenu.style.backgroundColor = this.menuView.menuColorDefault;
+                this.menuView.libraryButtonMenu.style.zIndex = "0";
                 break;
             default:
                 this.cleanMenu();
                 this.menuView.libraryButtonMenu.style.backgroundColor = this.menuView.menuColorSelected;
+                this.menuView.libraryButtonMenu.style.zIndex = "1";
                 this.menuView.libraryContent.style.display = "block";
                 this.currentMenuChoices = MenuChoices.library;
                 break;
@@ -82,16 +85,19 @@ var Menu = (function () {
                 this.menuView.exportContent.style.display = "inline-table";
                 this.currentMenuChoices = MenuChoices.export;
                 this.menuView.exportButtonMenu.style.backgroundColor = this.menuView.menuColorSelected;
+                this.menuView.exportButtonMenu.style.zIndex = "1";
                 break;
             case MenuChoices.export:
                 this.menuView.contentsMenu.style.display = "none";
                 this.menuView.exportContent.style.display = "none";
                 this.currentMenuChoices = MenuChoices.null;
                 this.menuView.exportButtonMenu.style.backgroundColor = this.menuView.menuColorDefault;
+                this.menuView.exportButtonMenu.style.zIndex = "0";
                 break;
             default:
                 this.cleanMenu();
                 this.menuView.exportButtonMenu.style.backgroundColor = this.menuView.menuColorSelected;
+                this.menuView.exportButtonMenu.style.zIndex = "1";
                 this.menuView.exportContent.style.display = "inline-table";
                 this.currentMenuChoices = MenuChoices.export;
                 break;
@@ -103,6 +109,7 @@ var Menu = (function () {
                 this.menuView.contentsMenu.style.display = "block";
                 this.menuView.helpContent.style.display = "block";
                 this.menuView.helpButtonMenu.style.backgroundColor = this.menuView.menuColorSelected;
+                this.menuView.helpButtonMenu.style.zIndex = "1";
                 this.currentMenuChoices = MenuChoices.help;
                 break;
             case MenuChoices.help:
@@ -110,10 +117,12 @@ var Menu = (function () {
                 this.menuView.helpContent.style.display = "none";
                 this.currentMenuChoices = MenuChoices.null;
                 this.menuView.helpButtonMenu.style.backgroundColor = this.menuView.menuColorDefault;
+                this.menuView.helpButtonMenu.style.zIndex = "0";
                 break;
             default:
                 this.cleanMenu();
                 this.menuView.helpButtonMenu.style.backgroundColor = this.menuView.menuColorSelected;
+                this.menuView.helpButtonMenu.style.zIndex = "1";
                 this.menuView.helpContent.style.display = "block";
                 this.currentMenuChoices = MenuChoices.help;
                 break;
@@ -132,6 +141,7 @@ var Menu = (function () {
         }
         for (var i = 0; i < this.menuView.HTMLButtonsMenu.length; i++) {
             this.menuView.HTMLButtonsMenu[i].style.backgroundColor = this.menuView.menuColorDefault;
+            this.menuView.HTMLButtonsMenu[i].style.zIndex = "0";
         }
     };
     Menu.prototype.updatePatchNameToInput = function (e) {
