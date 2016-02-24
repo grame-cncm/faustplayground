@@ -51,7 +51,8 @@ interface jsonObjectLibrary {
 
 class Library{
     libraryView: LibraryView;
-
+    isLibraryTouch: boolean;
+    previousTouchUrl: string;
     fillLibrary() {
         var url: string = "faust-modules/index.json"
         App.getXHR(url, (json: string) => { this.fillLibraryCallBack(json) }, (errorMessage: string) => { ErrorFaust.errorCallBack(errorMessage)});
@@ -83,14 +84,24 @@ class Library{
             a.href = options[i];
             a.draggable = true;
             a.onclick = App.preventdefault;
-            
+            a.ondblclick = () => { alert() }
             //option.ondrag = this.selectDrag;
             a.text = this.cleanNameElement(options[i], stringStructureRemoved);
             subMenu.appendChild(li)
 
         }
     }
+    dbleTouchMenu(touchEvent: TouchEvent) {
+        var anchor: HTMLAnchorElement = <HTMLAnchorElement>touchEvent.target;
+        if (!this.isLibraryTouch) {
+            this.isLibraryTouch = true;
+        } else if (anchor.href == this.previousTouchUrl) {
+            this.isLibraryTouch = false;
+        } else {
+            this.isLibraryTouch = false;
+        }
 
+    }
     initScroll() {
         this.libraryView.effetLibrarySelect.scrollTop += 1;
         this.libraryView.exempleLibrarySelect.scrollTop += 1;
