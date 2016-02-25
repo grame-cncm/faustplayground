@@ -77,12 +77,12 @@ class App {
     outputs: any[];
     params: any[];
     factory: Factory;
-    isDragging: boolean;
 
     constructor() {
+        document.ondragstart = () => { this.modulesStyleOnDragStart() };
+        document.ondragenter = () => { this.modulesStyleOnDragStart() };
+        document.ondrop = () => { this.modulesStyleOnDragEnd()}
 
-        document.ondragstart = () => { this.isDragging = true }
-        document.ondragend = () => { this.isDragging = false }
     }
 
     showFirstScene(): void {
@@ -204,13 +204,20 @@ class App {
         module.createDSP(factory);
         module.createFaustInterface();
         module.addInputOutputNodes();
-        module.moduleView.fModuleContainer.onmouseover = () => { console.log(app.isDragging); if (app.isDragging) { module.moduleView.fModuleContainer.style.boxShadow = "box-shadow: 0px 0px 40px red;" } }
-        module.moduleView.fModuleContainer.onmouseout = () => { module.moduleView.fModuleContainer.style.boxShadow = "none" }
         if (app.tempModuleName != "input" && app.tempModuleName != "output") {
             module.moduleView.fModuleContainer.ondrop = (e) => {
                 e.stopPropagation();
+                app.modulesStyleOnDragEnd()
                 app.uploadOn(app, module, 0, 0, e)
             };
+        }
+        module.moduleView.fModuleContainer.ondragover = () => {
+            module.moduleView.fModuleContainer.style.opacity = "1";
+            module.moduleView.fModuleContainer.style.boxShadow = "0 0 40px rgb(255, 0, 0)";
+        }
+        module.moduleView.fModuleContainer.ondragleave = () => {
+            module.moduleView.fModuleContainer.style.opacity = "0.5";
+            module.moduleView.fModuleContainer.style.boxShadow = "0 5px 10px rgba(0, 0, 0, 0.4)";
         }
         scene.addModule(module);
         App.hideFullPageLoading()
@@ -453,5 +460,17 @@ class App {
         document.getElementById("menuContainer").style.webkitFilter = "none"
     }
 
-
+    modulesStyleOnDragStart() {
+        var modules: ModuleClass[] = App.scene.getModules();
+        for (var i = 0; i < modules.length; i++) {
+            modules[i].moduleView.fModuleContainer.style.opacity="0.5"
+        }
+    }
+    modulesStyleOnDragEnd() {
+        var modules: ModuleClass[] = App.scene.getModules();
+        for (var i = 0; i < modules.length; i++) {
+            modules[i].moduleView.fModuleContainer.style.opacity = "1";
+            modules[i].moduleView.fModuleContainer.style.boxShadow ="0 5px 10px rgba(0, 0, 0, 0.4)"
+        }
+    }
 }

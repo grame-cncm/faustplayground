@@ -55,6 +55,7 @@ var Library = (function () {
             li.appendChild(a);
             a.href = options[i];
             a.draggable = true;
+            a.title = "Drag me ! Cliquez, glissez, d�posez !";
             a.onclick = App.preventdefault;
             a.ondblclick = function () { alert(); };
             a.ondragstart = function (e) { };

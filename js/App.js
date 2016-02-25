@@ -48,8 +48,9 @@ DEPENDENCIES:
 var App = (function () {
     function App() {
         var _this = this;
-        document.ondragstart = function () { _this.isDragging = true; };
-        document.ondragend = function () { _this.isDragging = false; };
+        document.ondragstart = function () { _this.modulesStyleOnDragStart(); };
+        document.ondragenter = function () { _this.modulesStyleOnDragStart(); };
+        document.ondrop = function () { _this.modulesStyleOnDragEnd(); };
     }
     App.prototype.showFirstScene = function () {
         App.scene.showScene();
@@ -148,16 +149,21 @@ var App = (function () {
         module.createDSP(factory);
         module.createFaustInterface();
         module.addInputOutputNodes();
-        module.moduleView.fModuleContainer.onmouseover = function () { console.log(app.isDragging); if (app.isDragging) {
-            module.moduleView.fModuleContainer.style.boxShadow = "box-shadow: 0px 0px 40px red;";
-        } };
-        module.moduleView.fModuleContainer.onmouseout = function () { module.moduleView.fModuleContainer.style.boxShadow = "none"; };
         if (app.tempModuleName != "input" && app.tempModuleName != "output") {
             module.moduleView.fModuleContainer.ondrop = function (e) {
                 e.stopPropagation();
+                app.modulesStyleOnDragEnd();
                 app.uploadOn(app, module, 0, 0, e);
             };
         }
+        module.moduleView.fModuleContainer.ondragover = function () {
+            module.moduleView.fModuleContainer.style.opacity = "1";
+            module.moduleView.fModuleContainer.style.boxShadow = "0 0 40px rgb(255, 0, 0)";
+        };
+        module.moduleView.fModuleContainer.ondragleave = function () {
+            module.moduleView.fModuleContainer.style.opacity = "0.5";
+            module.moduleView.fModuleContainer.style.boxShadow = "0 5px 10px rgba(0, 0, 0, 0.4)";
+        };
         scene.addModule(module);
         App.hideFullPageLoading();
     };
@@ -351,6 +357,19 @@ var App = (function () {
         document.getElementById("Normal").style.webkitFilter = "none";
         document.getElementById("menuContainer").style.filter = "none";
         document.getElementById("menuContainer").style.webkitFilter = "none";
+    };
+    App.prototype.modulesStyleOnDragStart = function () {
+        var modules = App.scene.getModules();
+        for (var i = 0; i < modules.length; i++) {
+            modules[i].moduleView.fModuleContainer.style.opacity = "0.5";
+        }
+    };
+    App.prototype.modulesStyleOnDragEnd = function () {
+        var modules = App.scene.getModules();
+        for (var i = 0; i < modules.length; i++) {
+            modules[i].moduleView.fModuleContainer.style.opacity = "1";
+            modules[i].moduleView.fModuleContainer.style.boxShadow = "0 5px 10px rgba(0, 0, 0, 0.4)";
+        }
     };
     App.idX = 0;
     App.baseImg = "img/";

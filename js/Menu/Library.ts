@@ -1,4 +1,4 @@
-/*				LIBRARY.JS
+ï»¿/*				LIBRARY.JS
 	Creates Graphical Library of Faust Modules
 	Connects with faust.grame.fr to receive the json description of available modules
 
@@ -83,6 +83,7 @@ class Library{
             li.appendChild(a);
             a.href = options[i];
             a.draggable = true;
+            a.title="Drag me ! Cliquez, glissez, déposez !"
             a.onclick = App.preventdefault;
             a.ondblclick = () => { alert() }
             a.ondragstart = (e) => { }
