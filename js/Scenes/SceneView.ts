@@ -27,15 +27,15 @@ class SceneView{
         var container: HTMLDivElement = scene.getSceneContainer();
 
 
-        var sceneSensor: HTMLDivElement = document.createElement("div");
-        sceneSensor.id = "sceneSensor";
-        this.sceneSensor = sceneSensor;
+        //var sceneSensor: HTMLDivElement = document.createElement("div");
+        //sceneSensor.id = "sceneSensor";
+        //this.sceneSensor = sceneSensor;
 
         var svgCanvas = <SVGElement>document.createElementNS("http://www.w3.org/2000/svg", "svg");
         svgCanvas.id = "svgCanvas";
         //svgCanvas.version="1.1";
-        sceneSensor.appendChild(svgCanvas);
-        container.appendChild(sceneSensor);
+        container.appendChild(svgCanvas);
+        //container.appendChild(sceneSensor);
 
         //--------- HEADER
         var head: HTMLElement = document.createElement("header");

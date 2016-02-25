@@ -25,14 +25,14 @@ var SceneView = (function () {
     }
     SceneView.prototype.initNormalScene = function (scene) {
         var container = scene.getSceneContainer();
-        var sceneSensor = document.createElement("div");
-        sceneSensor.id = "sceneSensor";
-        this.sceneSensor = sceneSensor;
+        //var sceneSensor: HTMLDivElement = document.createElement("div");
+        //sceneSensor.id = "sceneSensor";
+        //this.sceneSensor = sceneSensor;
         var svgCanvas = document.createElementNS("http://www.w3.org/2000/svg", "svg");
         svgCanvas.id = "svgCanvas";
         //svgCanvas.version="1.1";
-        sceneSensor.appendChild(svgCanvas);
-        container.appendChild(sceneSensor);
+        container.appendChild(svgCanvas);
+        //container.appendChild(sceneSensor);
         //--------- HEADER
         var head = document.createElement("header");
         head.id = "header";

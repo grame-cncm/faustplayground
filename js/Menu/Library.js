@@ -57,6 +57,9 @@ var Library = (function () {
             a.draggable = true;
             a.onclick = App.preventdefault;
             a.ondblclick = function () { alert(); };
+            a.ondragstart = function (e) { };
+            a.ondragend = function (e) { };
+            //a.ondrag = (e) => { console.log(e.clientX) }
             //option.ondrag = this.selectDrag;
             a.text = this.cleanNameElement(options[i], stringStructureRemoved);
             subMenu.appendChild(li);

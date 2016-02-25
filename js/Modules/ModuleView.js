@@ -57,10 +57,10 @@ var ModuleView = (function () {
             fFooter.appendChild(fEditImg);
             fModuleContainer.appendChild(fFooter);
         }
-        fModuleContainer.ondrop = function (e) {
-            module.sceneParent.parent.uploadOn(module.sceneParent.parent, module, 0, 0, e);
-            return true;
-        };
+        //fModuleContainer.ondrop = function (e) {
+        //    module.sceneParent.parent.uploadOn(module.sceneParent.parent, module, 0, 0, e);
+        //    return true;
+        //};
         // add the node into the soundfield
         htmlParent.appendChild(fModuleContainer);
         //---- Redirect drop to main.js
@@ -94,10 +94,14 @@ var ModuleView = (function () {
         this.fModuleContainer.appendChild(this.fOutputNode);
     };
     ModuleView.prototype.deleteInputOutputNodes = function () {
-        if (this.fInputNode)
+        if (this.fInputNode) {
             this.fModuleContainer.removeChild(this.fInputNode);
-        if (this.fOutputNode)
+            this.fInputNode = null;
+        }
+        if (this.fOutputNode) {
             this.fModuleContainer.removeChild(this.fOutputNode);
+            this.fOutputNode = null;
+        }
     };
     ModuleView.prototype.isPointInOutput = function (x, y) {
         if (this.fOutputNode && this.fOutputNode.getBoundingClientRect().left < x && x < this.fOutputNode.getBoundingClientRect().right && this.fOutputNode.getBoundingClientRect().top < y && y < this.fOutputNode.getBoundingClientRect().bottom) {

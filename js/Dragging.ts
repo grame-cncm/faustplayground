@@ -362,8 +362,8 @@ class Drag {
         module.addCnxListener(<HTMLElement>event.target, "mousemove", module);
         module.addCnxListener(<HTMLElement>event.target, "mouseup",module);
 
-        event.preventDefault();
-	    event.stopPropagation();
+        //event.preventDefault();
+	    //event.stopPropagation();
     }
 
 

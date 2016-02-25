@@ -85,12 +85,18 @@ class Library{
             a.draggable = true;
             a.onclick = App.preventdefault;
             a.ondblclick = () => { alert() }
+            a.ondragstart = (e) => { }
+            a.ondragend = (e) => { }
+            //a.ondrag = (e) => { console.log(e.clientX) }
             //option.ondrag = this.selectDrag;
             a.text = this.cleanNameElement(options[i], stringStructureRemoved);
             subMenu.appendChild(li)
 
         }
     }
+
+
+
     dbleTouchMenu(touchEvent: TouchEvent) {
         var anchor: HTMLAnchorElement = <HTMLAnchorElement>touchEvent.target;
         if (!this.isLibraryTouch) {

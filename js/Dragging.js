@@ -260,8 +260,8 @@ var Drag = (function () {
         // Capture mousemove and mouseup events on the page.
         module.addCnxListener(event.target, "mousemove", module);
         module.addCnxListener(event.target, "mouseup", module);
-        event.preventDefault();
-        event.stopPropagation();
+        //event.preventDefault();
+        //event.stopPropagation();
     };
     Drag.prototype.whileDraggingConnector = function (module, event) {
         var toElem = event.target;

@@ -86,6 +86,16 @@ class Scene {
             }
         }
     }
+    //add listner on the output module to give the user the possibility to mute/onmute the scene
+    addMuteOutputListner(moduleOutput: ModuleClass) {
+        moduleOutput.moduleView.fModuleContainer.ondblclick = () => {
+            if (!this.isMute) {
+                this.muteScene()
+            } else {
+                this.unmuteScene()
+            }
+        }
+    }
     /******************** HANDLE MODULES IN SCENE ************************/
     getModules(): ModuleClass[] { return this.fModuleList; }
     addModule(module: ModuleClass): void { this.fModuleList.push(module); }
@@ -112,7 +122,6 @@ class Scene {
     integrateInput(callBackIntegrateOutput: () => void) {
         var positionInput: PositionModule = this.positionInputModule();
         this.fAudioInput = new ModuleClass(App.idX++, positionInput.x, positionInput.y, "input", this, this.sceneView.inputOutputModuleContainer, this.removeModule);
-        //this.fAudioInput.hideModule();
         var scene: Scene = this;
         this.parent.compileFaust("input", "process=_,_;", positionInput.x, positionInput.y, function callback(factory, scene) { scene.integrateAudioInput(factory, scene) });
         this.fAudioInput.addInputOutputNodes();
@@ -122,8 +131,7 @@ class Scene {
         var positionOutput: PositionModule = this.positionOutputModule();
         var scene: Scene = this;
         this.fAudioOutput = new ModuleClass(App.idX++, positionOutput.x, positionOutput.y, "output", this, this.sceneView.inputOutputModuleContainer, this.removeModule);
-        this.setMuteOutputListner(this.fAudioOutput);
-        //this.fAudioOutput.hideModule()
+        this.addMuteOutputListner(this.fAudioOutput);
         this.parent.compileFaust("output", "process=_,_;", positionOutput.x, positionOutput.y, function callback(factory, scene) { scene.integrateAudioOutput(factory, scene) });
         this.fAudioOutput.addInputOutputNodes();
         callBackKeepGoingOnWithInit();
@@ -310,6 +318,8 @@ class Scene {
             }
         }
     }
+
+    /***************** SET POSITION OF INPUT OUTPUT MODULE ***************/
     positionInputModule(): PositionModule {
         var position: PositionModule = new PositionModule();
         position.x = 10;
@@ -322,14 +332,8 @@ class Scene {
         position.y = window.innerHeight / 2;
         return position
     }
-    setMuteOutputListner(moduleOutput: ModuleClass) {
-        moduleOutput.moduleView.fModuleContainer.ondblclick = () => {
-            if (!this.isMute) {
-                this.muteScene()
-            } else {
-                this.unmuteScene()
-            }
-        }
-    }
+
+
+
 }
 
