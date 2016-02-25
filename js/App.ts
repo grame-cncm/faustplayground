@@ -460,13 +460,22 @@ class App {
         document.getElementById("menuContainer").style.webkitFilter = "none"
     }
 
+    static createDropAreaGraph() {
+        
+    }
+
     modulesStyleOnDragStart() {
+
+        App.scene.sceneView.dropElementScene.style.display = "block";
+        App.scene.getSceneContainer().style.boxShadow = "0 0 200px #00f inset";
         var modules: ModuleClass[] = App.scene.getModules();
         for (var i = 0; i < modules.length; i++) {
             modules[i].moduleView.fModuleContainer.style.opacity="0.5"
         }
     }
     modulesStyleOnDragEnd() {
+        App.scene.sceneView.dropElementScene.style.display = "none";
+        App.scene.getSceneContainer().style.boxShadow = "none";
         var modules: ModuleClass[] = App.scene.getModules();
         for (var i = 0; i < modules.length; i++) {
             modules[i].moduleView.fModuleContainer.style.opacity = "1";

@@ -73,6 +73,15 @@ var SceneView = (function () {
         imageLogo.className = "logoGrame";
         imageLogo.src = "img/grame.png";
         imageDiv.appendChild(imageLogo);
+        var dropElementScene = document.createElement("div");
+        dropElementScene.className = "dropElementGraph";
+        dropElementScene.style.display = "none";
+        this.dropElementScene = dropElementScene;
+        var dropElementText = document.createElement("div");
+        dropElementText.textContent = "deposer ici";
+        dropElementText.className = "dropElementText";
+        dropElementScene.appendChild(dropElementText);
+        container.appendChild(dropElementScene);
         scene.integrateSceneInBody();
         var playgroundView = this;
         scene.integrateInput(function () {

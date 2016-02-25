@@ -358,13 +358,19 @@ var App = (function () {
         document.getElementById("menuContainer").style.filter = "none";
         document.getElementById("menuContainer").style.webkitFilter = "none";
     };
+    App.createDropAreaGraph = function () {
+    };
     App.prototype.modulesStyleOnDragStart = function () {
+        App.scene.sceneView.dropElementScene.style.display = "block";
+        App.scene.getSceneContainer().style.boxShadow = "0 0 200px #00f inset";
         var modules = App.scene.getModules();
         for (var i = 0; i < modules.length; i++) {
             modules[i].moduleView.fModuleContainer.style.opacity = "0.5";
         }
     };
     App.prototype.modulesStyleOnDragEnd = function () {
+        App.scene.sceneView.dropElementScene.style.display = "none";
+        App.scene.getSceneContainer().style.boxShadow = "none";
         var modules = App.scene.getModules();
         for (var i = 0; i < modules.length; i++) {
             modules[i].moduleView.fModuleContainer.style.opacity = "1";
