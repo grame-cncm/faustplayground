@@ -76,9 +76,16 @@ class Scene {
         }
     }
     unmuteScene(): void {
+        console.log("timeIn");
+        window.setTimeout(() => { this.delayedUnmuteScene() }, 1000)
+    }
+
+    delayedUnmuteScene() {//because of probable Firefox bug with audioContext.resume() when resume to close from suspend
+        console.log("timeout")
         var out: IHTMLDivElementOut = <IHTMLDivElementOut>document.getElementById("audioOutput");
+
         if (out != null) {
-            if (out.audioNode.context.resume != undefined) {
+            if (out.audioNode.context.resume != undefined) {//because of Edge not supporting audioContext.resume() yet
                 out.audioNode.context.resume();
                 this.isMute = false;
                 this.getAudioOutput().moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-speaker.png)"

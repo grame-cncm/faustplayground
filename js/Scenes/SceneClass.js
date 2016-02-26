@@ -52,6 +52,12 @@ var Scene = (function () {
         }
     };
     Scene.prototype.unmuteScene = function () {
+        var _this = this;
+        console.log("timeIn");
+        window.setTimeout(function () { _this.delayedUnmuteScene(); }, 1000);
+    };
+    Scene.prototype.delayedUnmuteScene = function () {
+        console.log("timeout");
         var out = document.getElementById("audioOutput");
         if (out != null) {
             if (out.audioNode.context.resume != undefined) {
