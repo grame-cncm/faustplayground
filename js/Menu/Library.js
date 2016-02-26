@@ -55,10 +55,27 @@ var Library = (function () {
             li.appendChild(a);
             a.href = options[i];
             a.draggable = true;
+            a.title = "Drag me ! Cliquez, glissez, d�posez !";
             a.onclick = App.preventdefault;
+            a.ondblclick = function () { alert(); };
+            a.ondragstart = function (e) { };
+            a.ondragend = function (e) { };
+            //a.ondrag = (e) => { console.log(e.clientX) }
             //option.ondrag = this.selectDrag;
             a.text = this.cleanNameElement(options[i], stringStructureRemoved);
             subMenu.appendChild(li);
+        }
+    };
+    Library.prototype.dbleTouchMenu = function (touchEvent) {
+        var anchor = touchEvent.target;
+        if (!this.isLibraryTouch) {
+            this.isLibraryTouch = true;
+        }
+        else if (anchor.href == this.previousTouchUrl) {
+            this.isLibraryTouch = false;
+        }
+        else {
+            this.isLibraryTouch = false;
         }
     };
     Library.prototype.initScroll = function () {

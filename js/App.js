@@ -47,6 +47,10 @@ DEPENDENCIES:
 /// <reference path="Lib/perfectScrollBar/js/perfect-ScrollBar.min.d.ts"/>
 var App = (function () {
     function App() {
+        var _this = this;
+        document.ondragstart = function () { _this.modulesStyleOnDragStart(); };
+        document.ondragenter = function () { _this.modulesStyleOnDragStart(); };
+        document.ondrop = function () { _this.modulesStyleOnDragEnd(); };
     }
     App.prototype.showFirstScene = function () {
         App.scene.showScene();
@@ -61,7 +65,7 @@ var App = (function () {
     App.prototype.createMenu = function () {
         var _this = this;
         this.menu = new Menu(document.getElementsByTagName('body')[0]);
-        App.scene.sceneView.sceneSensor.onclick = function () {
+        App.scene.getSceneContainer().onmousedown = function () {
             _this.menu.menuChoices = MenuChoices.null;
             _this.menu.menuHandler(_this.menu.menuChoices);
         };
@@ -145,6 +149,21 @@ var App = (function () {
         module.createDSP(factory);
         module.createFaustInterface();
         module.addInputOutputNodes();
+        if (app.tempModuleName != "input" && app.tempModuleName != "output") {
+            module.moduleView.fModuleContainer.ondrop = function (e) {
+                e.stopPropagation();
+                app.modulesStyleOnDragEnd();
+                app.uploadOn(app, module, 0, 0, e);
+            };
+        }
+        module.moduleView.fModuleContainer.ondragover = function () {
+            module.moduleView.fModuleContainer.style.opacity = "1";
+            module.moduleView.fModuleContainer.style.boxShadow = "0 0 40px rgb(255, 0, 0)";
+        };
+        module.moduleView.fModuleContainer.ondragleave = function () {
+            module.moduleView.fModuleContainer.style.opacity = "0.5";
+            module.moduleView.fModuleContainer.style.boxShadow = "0 5px 10px rgba(0, 0, 0, 0.4)";
+        };
         scene.addModule(module);
         App.hideFullPageLoading();
     };
@@ -153,11 +172,13 @@ var App = (function () {
     ********************************************************************/
     //-- Init drag and drop reactions
     App.prototype.setGeneralDragAndDrop = function (app) {
+        var _this = this;
         window.ondragover = function () { this.className = 'hover'; return false; };
         window.ondragend = function () { this.className = ''; return false; };
         window.ondrop = function (e) {
-            app.uploadFile(e);
-            return true;
+            var x = e.clientX;
+            var y = e.clientY;
+            _this.uploadOn(_this, null, x, y, e);
         };
     };
     //-- Init drag and drop reactions
@@ -175,23 +196,6 @@ var App = (function () {
         uploadTitle.textContent = "";
     };
     //-- Finds out if the drop was on an existing module or creating a new one
-    App.prototype.uploadFile = function (e) {
-        if (!e) {
-            e = window.event;
-        }
-        var alreadyInNode = false;
-        var modules = App.scene.getModules();
-        for (var i = 0; i < modules.length; i++) {
-            if (modules[i].moduleView.isPointInNode(e.clientX, e.clientY)) {
-                alreadyInNode = true;
-            }
-        }
-        if (!alreadyInNode) {
-            var x = e.clientX;
-            var y = e.clientY;
-            this.uploadOn(this, null, x, y, e);
-        }
-    };
     //-- Upload content dropped on the page and create a Faust DSP with it
     App.prototype.uploadOn = function (app, module, x, y, e) {
         App.showFullPageLoading();
@@ -199,40 +203,13 @@ var App = (function () {
         this.preventDefaultAction(e);
         // CASE 1 : THE DROPPED OBJECT IS A URL TO SOME FAUST CODE
         if (e.dataTransfer.getData('URL') && e.dataTransfer.getData('URL').split(':').shift() != "file") {
-            var url = e.dataTransfer.getData('URL');
-            var filename = url.toString().split('/').pop();
-            filename = filename.toString().split('.').shift();
-            var xmlhttp = new XMLHttpRequest;
-            xmlhttp.overrideMimeType('text/plain; charset=utf-8');
-            xmlhttp.onreadystatechange = function () {
-                if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-                    var dsp_code = "process = vgroup(\"" + filename + "\",environment{" + xmlhttp.responseText + "}.process);";
-                    if (module == null) {
-                        app.compileFaust(filename, dsp_code, x, y, app.createModule);
-                    }
-                    else {
-                        module.update(filename, dsp_code);
-                    }
-                }
-                app.terminateUpload();
-            };
-            xmlhttp.open("GET", url);
-            // 	Avoid error "mal formé" on firefox
-            xmlhttp.overrideMimeType('text/html');
-            xmlhttp.send();
+            this.uploadUrl(app, module, x, y, e);
         }
         else if (e.dataTransfer.getData('URL').split(':').shift() != "file") {
             var dsp_code = e.dataTransfer.getData('text');
             // CASE 2 : THE DROPPED OBJECT IS SOME FAUST CODE
             if (dsp_code) {
-                dsp_code = "process = vgroup(\"" + "TEXT" + "\",environment{" + dsp_code + "}.process);";
-                if (!module) {
-                    app.compileFaust("TEXT", dsp_code, x, y, app.createModule);
-                }
-                else {
-                    module.update("TEXT", dsp_code);
-                }
-                app.terminateUpload();
+                this.uploadCodeFaust(app, module, x, y, e, dsp_code);
             }
             else {
                 var files = e.dataTransfer.files; //e.target.files ||
@@ -278,6 +255,42 @@ var App = (function () {
             window.alert("THIS OBJECT IS NOT FAUST COMPILABLE");
         }
     };
+    //Upload Url
+    App.prototype.uploadUrl = function (app, module, x, y, e) {
+        var url = e.dataTransfer.getData('URL');
+        var filename = url.toString().split('/').pop();
+        filename = filename.toString().split('.').shift();
+        var xmlhttp = new XMLHttpRequest;
+        xmlhttp.overrideMimeType('text/plain; charset=utf-8');
+        xmlhttp.onreadystatechange = function () {
+            if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                var dsp_code = "process = vgroup(\"" + filename + "\",environment{" + xmlhttp.responseText + "}.process);";
+                if (module == null) {
+                    app.compileFaust(filename, dsp_code, x, y, app.createModule);
+                }
+                else {
+                    module.update(filename, dsp_code);
+                }
+            }
+            app.terminateUpload();
+        };
+        xmlhttp.open("GET", url);
+        // 	Avoid error "mal formé" on firefox
+        xmlhttp.overrideMimeType('text/html');
+        xmlhttp.send();
+    };
+    App.prototype.uploadCodeFaust = function (app, module, x, y, e, dsp_code) {
+        dsp_code = "process = vgroup(\"" + "TEXT" + "\",environment{" + dsp_code + "}.process);";
+        if (!module) {
+            app.compileFaust("TEXT", dsp_code, x, y, app.createModule);
+        }
+        else {
+            module.update("TEXT", dsp_code);
+        }
+        app.terminateUpload();
+    };
+    App.prototype.uploadFile2 = function (app, module, x, y, e, dsp_code) {
+    };
     //Check in Url if the app should be for kids
     App.isAppPedagogique = function () {
         if (window.location.href.indexOf("kids.html") > -1) {
@@ -305,6 +318,8 @@ var App = (function () {
     App.preventdefault = function (e) {
         e.preventDefault();
     };
+    ////////////////////////////// LOADINGS //////////////////////////////////////
+    //add loading logo and text on export
     App.addLoadingLogo = function (divTarget) {
         var loadingDiv = document.createElement("div");
         loadingDiv.id = "loadingDiv";
@@ -342,6 +357,25 @@ var App = (function () {
         document.getElementById("Normal").style.webkitFilter = "none";
         document.getElementById("menuContainer").style.filter = "none";
         document.getElementById("menuContainer").style.webkitFilter = "none";
+    };
+    App.createDropAreaGraph = function () {
+    };
+    App.prototype.modulesStyleOnDragStart = function () {
+        App.scene.sceneView.dropElementScene.style.display = "block";
+        App.scene.getSceneContainer().style.boxShadow = "0 0 200px #00f inset";
+        var modules = App.scene.getModules();
+        for (var i = 0; i < modules.length; i++) {
+            modules[i].moduleView.fModuleContainer.style.opacity = "0.5";
+        }
+    };
+    App.prototype.modulesStyleOnDragEnd = function () {
+        App.scene.sceneView.dropElementScene.style.display = "none";
+        App.scene.getSceneContainer().style.boxShadow = "none";
+        var modules = App.scene.getModules();
+        for (var i = 0; i < modules.length; i++) {
+            modules[i].moduleView.fModuleContainer.style.opacity = "1";
+            modules[i].moduleView.fModuleContainer.style.boxShadow = "0 5px 10px rgba(0, 0, 0, 0.4)";
+        }
     };
     App.idX = 0;
     App.baseImg = "img/";

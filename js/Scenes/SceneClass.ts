@@ -76,13 +76,30 @@ class Scene {
         }
     }
     unmuteScene(): void {
+        console.log("timeIn");
+        window.setTimeout(() => { this.delayedUnmuteScene() }, 1000)
+    }
+
+    delayedUnmuteScene() {//because of probable Firefox bug with audioContext.resume() when resume to close from suspend
+        console.log("timeout")
         var out: IHTMLDivElementOut = <IHTMLDivElementOut>document.getElementById("audioOutput");
+
         if (out != null) {
-            if (out.audioNode.context.resume != undefined) {
+            if (out.audioNode.context.resume != undefined) {//because of Edge not supporting audioContext.resume() yet
                 out.audioNode.context.resume();
                 this.isMute = false;
                 this.getAudioOutput().moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-speaker.png)"
 
+            }
+        }
+    }
+    //add listner on the output module to give the user the possibility to mute/onmute the scene
+    addMuteOutputListner(moduleOutput: ModuleClass) {
+        moduleOutput.moduleView.fModuleContainer.ondblclick = () => {
+            if (!this.isMute) {
+                this.muteScene()
+            } else {
+                this.unmuteScene()
             }
         }
     }
@@ -112,7 +129,6 @@ class Scene {
     integrateInput(callBackIntegrateOutput: () => void) {
         var positionInput: PositionModule = this.positionInputModule();
         this.fAudioInput = new ModuleClass(App.idX++, positionInput.x, positionInput.y, "input", this, this.sceneView.inputOutputModuleContainer, this.removeModule);
-        //this.fAudioInput.hideModule();
         var scene: Scene = this;
         this.parent.compileFaust("input", "process=_,_;", positionInput.x, positionInput.y, function callback(factory, scene) { scene.integrateAudioInput(factory, scene) });
         this.fAudioInput.addInputOutputNodes();
@@ -122,8 +138,7 @@ class Scene {
         var positionOutput: PositionModule = this.positionOutputModule();
         var scene: Scene = this;
         this.fAudioOutput = new ModuleClass(App.idX++, positionOutput.x, positionOutput.y, "output", this, this.sceneView.inputOutputModuleContainer, this.removeModule);
-        this.setMuteOutputListner(this.fAudioOutput);
-        //this.fAudioOutput.hideModule()
+        this.addMuteOutputListner(this.fAudioOutput);
         this.parent.compileFaust("output", "process=_,_;", positionOutput.x, positionOutput.y, function callback(factory, scene) { scene.integrateAudioOutput(factory, scene) });
         this.fAudioOutput.addInputOutputNodes();
         callBackKeepGoingOnWithInit();
@@ -310,6 +325,8 @@ class Scene {
             }
         }
     }
+
+    /***************** SET POSITION OF INPUT OUTPUT MODULE ***************/
     positionInputModule(): PositionModule {
         var position: PositionModule = new PositionModule();
         position.x = 10;
@@ -322,14 +339,8 @@ class Scene {
         position.y = window.innerHeight / 2;
         return position
     }
-    setMuteOutputListner(moduleOutput: ModuleClass) {
-        moduleOutput.moduleView.fModuleContainer.ondblclick = () => {
-            if (!this.isMute) {
-                this.muteScene()
-            } else {
-                this.unmuteScene()
-            }
-        }
-    }
+
+
+
 }
 

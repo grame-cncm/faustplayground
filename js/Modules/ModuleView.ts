@@ -86,10 +86,10 @@ class ModuleView {
 
         }
         
-        fModuleContainer.ondrop = function (e) {
-            module.sceneParent.parent.uploadOn(module.sceneParent.parent, module, 0, 0, e);
-            return true;
-        };
+        //fModuleContainer.ondrop = function (e) {
+        //    module.sceneParent.parent.uploadOn(module.sceneParent.parent, module, 0, 0, e);
+        //    return true;
+        //};
         // add the node into the soundfield
         htmlParent.appendChild(fModuleContainer);
         
@@ -127,11 +127,16 @@ class ModuleView {
         this.fModuleContainer.appendChild(this.fOutputNode);
     }
     deleteInputOutputNodes(): void {
-        if (this.fInputNode)
+        if (this.fInputNode) {
             this.fModuleContainer.removeChild(this.fInputNode);
+            this.fInputNode = null;
+        }
 
-        if (this.fOutputNode)
+        if (this.fOutputNode) {
             this.fModuleContainer.removeChild(this.fOutputNode);
+            this.fOutputNode = null;
+
+        }
     }
 
 
@@ -152,10 +157,12 @@ class ModuleView {
     }
 
     isPointInNode(x: number, y: number): boolean {
-
+        
         if (this.fModuleContainer && this.fModuleContainer.getBoundingClientRect().left < x && x < this.fModuleContainer.getBoundingClientRect().right && this.fModuleContainer.getBoundingClientRect().top < y && y < this.fModuleContainer.getBoundingClientRect().bottom) {
+            console.log("isInNode")
             return true;
         }
+        console.log(x)
         return false;
     }
 }

@@ -1,4 +1,4 @@
-/*				PLAYGROUND.JS
+﻿/*				PLAYGROUND.JS
 	Init Normal Scene with all its graphical elements
 
 	This is the unique scene of the Normal Playground
@@ -22,20 +22,21 @@ class SceneView{
     //expor: Export = new Export()
     inputOutputModuleContainer: HTMLDivElement;
     sceneSensor: HTMLDivElement;
+    dropElementScene: HTMLElement;
 
     initNormalScene(scene: Scene) {
         var container: HTMLDivElement = scene.getSceneContainer();
 
 
-        var sceneSensor: HTMLDivElement = document.createElement("div");
-        sceneSensor.id = "sceneSensor";
-        this.sceneSensor = sceneSensor;
+        //var sceneSensor: HTMLDivElement = document.createElement("div");
+        //sceneSensor.id = "sceneSensor";
+        //this.sceneSensor = sceneSensor;
 
         var svgCanvas = <SVGElement>document.createElementNS("http://www.w3.org/2000/svg", "svg");
         svgCanvas.id = "svgCanvas";
         //svgCanvas.version="1.1";
-        sceneSensor.appendChild(svgCanvas);
-        container.appendChild(sceneSensor);
+        container.appendChild(svgCanvas);
+        //container.appendChild(sceneSensor);
 
         //--------- HEADER
         var head: HTMLElement = document.createElement("header");
@@ -93,9 +94,20 @@ class SceneView{
         imageDiv.appendChild(imageLogo);
 
 
-
-
         
+
+        var dropElementScene = document.createElement("div");
+        dropElementScene.className = "dropElementGraph";
+        dropElementScene.style.display = "none";
+        this.dropElementScene = dropElementScene;
+
+        var dropElementText = document.createElement("div");
+        dropElementText.textContent = "deposer ici";
+        dropElementText.className = "dropElementText";
+        dropElementScene.appendChild(dropElementText);
+        
+
+        container.appendChild(dropElementScene);
         scene.integrateSceneInBody();
         var playgroundView: SceneView = this;
         scene.integrateInput(function () {

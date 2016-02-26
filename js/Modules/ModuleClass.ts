@@ -64,6 +64,7 @@ class ModuleClass implements IModule {
         self.moduleView = new ModuleView();
         self.moduleView.createModuleView(id, x, y, name, htmlElementModuleContainer, self);
         self.moduleFaust = new ModuleFaust(name);
+        
     }
 
     /***************  PRIVATE METHODS  ******************************/
@@ -90,7 +91,7 @@ class ModuleClass implements IModule {
         }
     }
 
-
+    
 
 
 
@@ -160,6 +161,8 @@ class ModuleClass implements IModule {
                     connector.createConnection(saveInCnx[i].source, saveInCnx[i].source.moduleView.getOutputNode(), module, module.moduleView.getInputNode());
             }
         }
+        App.hideFullPageLoading()
+
     }
 
     private deleteDSP(todelete: IfDSP): void {

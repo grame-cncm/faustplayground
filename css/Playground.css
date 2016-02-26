@@ -35,5 +35,22 @@
 	margin-right : auto; 
 }
 
+.dropElementGraph {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    z-index: -1;
+}
+.dropElementText {
+    position: absolute;
+    bottom: 0px;
+    font-size: 500%;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.28);
+    color: rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 100%;
+}
+
 
 

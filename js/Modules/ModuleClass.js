@@ -109,6 +109,7 @@ var ModuleClass = (function () {
                     connector.createConnection(saveInCnx[i].source, saveInCnx[i].source.moduleView.getOutputNode(), module, module.moduleView.getInputNode());
             }
         }
+        App.hideFullPageLoading();
     };
     ModuleClass.prototype.deleteDSP = function (todelete) {
         // 	TO DO SAFELY --> FOR NOW CRASHES SOMETIMES
