@@ -367,6 +367,7 @@ var App = (function () {
     };
     // manage style during a drag and drop event
     App.prototype.styleOnDragStart = function () {
+        this.menu.menuView.menuContainer.style.opacity = "0.5";
         App.scene.sceneView.dropElementScene.style.display = "block";
         App.scene.getSceneContainer().style.boxShadow = "0 0 200px #00f inset";
         var modules = App.scene.getModules();
@@ -375,6 +376,10 @@ var App = (function () {
         }
     };
     App.prototype.styleOnDragEnd = function () {
+        //var body: HTMLBodyElement = <HTMLBodyElement>document.getElementById("body")[0];
+        //body.removeEventListener("ondragleave");
+        //document.getElementById("body")[0].style.zIndex = "100";
+        this.menu.menuView.menuContainer.style.opacity = "1";
         App.scene.sceneView.dropElementScene.style.display = "none";
         App.scene.getSceneContainer().style.boxShadow = "none";
         var modules = App.scene.getModules();

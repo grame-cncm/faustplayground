@@ -82,6 +82,7 @@ class App {
         document.ondragstart = () => { this.styleOnDragStart() };
         document.ondragenter = () => { this.styleOnDragStart() };
         document.ondrop = () => { this.styleOnDragEnd() }
+        
         document.onscroll = () => { this.checkRealWindowSize() };
         var body: HTMLBodyElement = document.getElementsByTagName("body")[0]
         body.onresize= () => { this.checkRealWindowSize() };
@@ -471,6 +472,7 @@ class App {
     // manage style during a drag and drop event
     styleOnDragStart() {
 
+        this.menu.menuView.menuContainer.style.opacity = "0.5";
         App.scene.sceneView.dropElementScene.style.display = "block";
         App.scene.getSceneContainer().style.boxShadow = "0 0 200px #00f inset";
         var modules: ModuleClass[] = App.scene.getModules();
@@ -479,6 +481,10 @@ class App {
         }
     }
     styleOnDragEnd() {
+        //var body: HTMLBodyElement = <HTMLBodyElement>document.getElementById("body")[0];
+        //body.removeEventListener("ondragleave");
+        //document.getElementById("body")[0].style.zIndex = "100";
+        this.menu.menuView.menuContainer.style.opacity = "1";
         App.scene.sceneView.dropElementScene.style.display = "none";
         App.scene.getSceneContainer().style.boxShadow = "none";
         var modules: ModuleClass[] = App.scene.getModules();

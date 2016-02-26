@@ -9,6 +9,7 @@ var MenuView = (function () {
     MenuView.prototype.init = function (htmlContainer) {
         var menuContainer = document.createElement('div');
         menuContainer.id = "menuContainer";
+        this.menuContainer = menuContainer;
         //create menu's buttons and there containers
         var buttonsMenu = document.createElement("div");
         buttonsMenu.id = "buttonsMenu";

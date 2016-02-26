@@ -53,6 +53,8 @@ class Library{
     libraryView: LibraryView;
     isLibraryTouch: boolean;
     previousTouchUrl: string;
+    isSmaller: boolean = false;
+
     fillLibrary() {
         var url: string = "faust-modules/index.json"
         App.getXHR(url, (json: string) => { this.fillLibraryCallBack(json) }, (errorMessage: string) => { ErrorFaust.errorCallBack(errorMessage)});
@@ -83,10 +85,10 @@ class Library{
             li.appendChild(a);
             a.href = options[i];
             a.draggable = true;
-            a.title="Drag me ! Cliquez, glissez, déposez !"
+            a.title="Drag me ! Cliquez, glissez, dï¿½posez !"
             a.onclick = App.preventdefault;
             a.ondblclick = () => { alert() }
-            a.ondragstart = (e) => { }
+            a.ondragstart = (e) => { this.lowerMenu() }
             a.ondragend = (e) => { }
             //a.ondrag = (e) => { console.log(e.clientX) }
             //option.ondrag = this.selectDrag;
@@ -119,6 +121,17 @@ class Library{
         return elementComplete.replace(stringStructureRemoved, "").replace(".dsp", "");
     }
 
+    lowerMenu() {
+        this.libraryView.effetLibrary.style.height = "150px";
+        this.libraryView.exempleLibrary.style.height = "150px";
+        this.libraryView.intrumentLibrary.style.height = "150px";
+    }
+
+    raiseMenu() {
+        this.libraryView.effetLibrary.style.height = "300px";
+        this.libraryView.exempleLibrary.style.height = "300px";
+        this.libraryView.intrumentLibrary.style.height = "300px";
+    }
     
 
 

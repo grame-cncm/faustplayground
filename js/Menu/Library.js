@@ -28,6 +28,7 @@
 /// <reference path="../Main.ts"/>
 var Library = (function () {
     function Library() {
+        this.isSmaller = false;
     }
     Library.prototype.fillLibrary = function () {
         var _this = this;
@@ -47,6 +48,7 @@ var Library = (function () {
         this.fillSubMenu(jsonObject.exemples, jsonObject.exemple, jsonObject.exempleSupprStructure);
     };
     Library.prototype.fillSubMenu = function (options, subMenuId, stringStructureRemoved) {
+        var _this = this;
         var subMenu = document.getElementById(subMenuId);
         //subMenu.ondrag = App.preventdefault;
         for (var i = 0; i < options.length; i++) {
@@ -58,7 +60,7 @@ var Library = (function () {
             a.title = "Drag me ! Cliquez, glissez, d�posez !";
             a.onclick = App.preventdefault;
             a.ondblclick = function () { alert(); };
-            a.ondragstart = function (e) { };
+            a.ondragstart = function (e) { _this.lowerMenu(); };
             a.ondragend = function (e) { };
             //a.ondrag = (e) => { console.log(e.clientX) }
             //option.ondrag = this.selectDrag;
@@ -85,6 +87,16 @@ var Library = (function () {
     };
     Library.prototype.cleanNameElement = function (elementComplete, stringStructureRemoved) {
         return elementComplete.replace(stringStructureRemoved, "").replace(".dsp", "");
+    };
+    Library.prototype.lowerMenu = function () {
+        this.libraryView.effetLibrary.style.height = "150px";
+        this.libraryView.exempleLibrary.style.height = "150px";
+        this.libraryView.intrumentLibrary.style.height = "150px";
+    };
+    Library.prototype.raiseMenu = function () {
+        this.libraryView.effetLibrary.style.height = "300px";
+        this.libraryView.exempleLibrary.style.height = "300px";
+        this.libraryView.intrumentLibrary.style.height = "300px";
     };
     return Library;
 })();

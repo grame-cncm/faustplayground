@@ -1,6 +1,7 @@
 ﻿//MenuView.ts : MenuView Class which contains all the graphical parts of the menu
 
 class MenuView {
+    menuContainer: HTMLElement;
     libraryButtonMenu: HTMLElement;
     exportButtonMenu: HTMLElement;
     helpButtonMenu: HTMLElement;
@@ -22,6 +23,7 @@ class MenuView {
     init(htmlContainer: HTMLElement): void {
         var menuContainer: HTMLElement = document.createElement('div');
         menuContainer.id = "menuContainer";
+        this.menuContainer = menuContainer;
 
         //create menu's buttons and there containers
         var buttonsMenu: HTMLElement = document.createElement("div");

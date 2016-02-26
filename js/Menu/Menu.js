@@ -33,6 +33,7 @@ var Menu = (function () {
         this.help = new Help();
         this.help.helpView = this.menuView.helpView;
         this.menuView.exportView.inputNameApp.onchange = function (e) { _this.updatePatchNameToInput(e); };
+        this.menuView.contentsMenu.onmouseover = function () { _this.library.raiseMenu(); };
     }
     Menu.prototype.menuHandler = function (menuChoises) {
         this.help.stopVideo();
@@ -68,6 +69,7 @@ var Menu = (function () {
                 this.currentMenuChoices = MenuChoices.null;
                 this.menuView.libraryButtonMenu.style.backgroundColor = this.menuView.menuColorDefault;
                 this.menuView.libraryButtonMenu.style.zIndex = "0";
+                this.library.raiseMenu();
                 break;
             default:
                 this.cleanMenu();
@@ -132,6 +134,7 @@ var Menu = (function () {
         for (var i = 0; i < this.menuView.HTMLElementsMenu.length; i++) {
             this.menuView.HTMLElementsMenu[i].style.display = "none";
         }
+        this.library.raiseMenu();
         this.menuView.contentsMenu.style.display = "none";
         this.currentMenuChoices = MenuChoices.null;
     };
@@ -142,6 +145,7 @@ var Menu = (function () {
         for (var i = 0; i < this.menuView.HTMLButtonsMenu.length; i++) {
             this.menuView.HTMLButtonsMenu[i].style.backgroundColor = this.menuView.menuColorDefault;
             this.menuView.HTMLButtonsMenu[i].style.zIndex = "0";
+            this.library.raiseMenu();
         }
     };
     Menu.prototype.updatePatchNameToInput = function (e) {

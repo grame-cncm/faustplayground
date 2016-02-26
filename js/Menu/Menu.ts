@@ -36,6 +36,7 @@ class Menu {
         this.help = new Help();
         this.help.helpView = this.menuView.helpView;
         this.menuView.exportView.inputNameApp.onchange = (e) => { this.updatePatchNameToInput(e) }
+        this.menuView.contentsMenu.onmouseover = () => { this.library.raiseMenu() }
 
     }
 
@@ -75,6 +76,7 @@ class Menu {
                 this.currentMenuChoices = MenuChoices.null;
                 this.menuView.libraryButtonMenu.style.backgroundColor = this.menuView.menuColorDefault;
                 this.menuView.libraryButtonMenu.style.zIndex = "0";
+                this.library.raiseMenu();
 
                 break;
             default:
@@ -149,6 +151,7 @@ class Menu {
         for (var i = 0; i < this.menuView.HTMLElementsMenu.length; i++) {
             this.menuView.HTMLElementsMenu[i].style.display = "none";
         }
+        this.library.raiseMenu();
         this.menuView.contentsMenu.style.display = "none";
         this.currentMenuChoices = MenuChoices.null;
     }
@@ -159,6 +162,7 @@ class Menu {
         for (var i = 0; i < this.menuView.HTMLButtonsMenu.length; i++){
             this.menuView.HTMLButtonsMenu[i].style.backgroundColor = this.menuView.menuColorDefault;
             this.menuView.HTMLButtonsMenu[i].style.zIndex = "0";
+            this.library.raiseMenu();
         }
     }
     updatePatchNameToInput(e: Event) {
