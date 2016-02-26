@@ -44,16 +44,16 @@ var ModuleView = (function () {
             var fFooter = document.createElement("footer");
             fFooter.id = "moduleFooter";
             fModuleContainer.id = "module" + ID;
-            var fCloseButton = document.createElement("a");
-            fCloseButton.href = "#";
+            var fCloseButton = document.createElement("div");
             fCloseButton.draggable = false;
             fCloseButton.className = "close";
             fCloseButton.onclick = function () { module.deleteModule(); };
             fModuleContainer.appendChild(fCloseButton);
-            var fEditImg = document.createElement("img");
-            fEditImg.src = App.baseImg + "edit.png";
+            var fEditImg = document.createElement("div");
+            fEditImg.className = "edit";
             fEditImg.onclick = function () { module.edit(module); };
             fEditImg.draggable = false;
+            this.fEditImg = fEditImg;
             fFooter.appendChild(fEditImg);
             fModuleContainer.appendChild(fFooter);
         }

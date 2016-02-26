@@ -61,6 +61,8 @@ var Drag = (function () {
     Drag.prototype.whileDraggingModule = function (event, module) {
         var x, y;
         var moduleContainer = module.moduleView.getModuleContainer();
+        //console.log(window.innerHeight);
+        console.log(window.pageYOffset);
         // Get cursor position with respect to the page.
         x = event.clientX + window.scrollX;
         y = event.clientY + window.scrollY;

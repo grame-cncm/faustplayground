@@ -183,7 +183,8 @@ class ModuleClass implements IModule {
         textArea.value = this.moduleFaust.fSource;
         module.moduleView.fInterfaceContainer.appendChild(textArea);
 
-        module.moduleView.fEditImg.src = App.baseImg + "enter.png";
+        //module.moduleView.fEditImg.src = App.baseImg + "enter.png";
+        module.moduleView.fEditImg.style.backgroundImage = "url(" +App.baseImg + "enter.png)";
         module.moduleView.fEditImg.onclick = function (event) { module.recompileSource(event, module) };
         module.moduleView.fEditImg.area = textArea;
     }
@@ -191,7 +192,7 @@ class ModuleClass implements IModule {
     //---- Update ModuleClass with new name/code source
     update(name: string, code: string): void {
 
-
+        
         this.moduleFaust.fTempName = name;
         this.moduleFaust.fTempSource = code;
         var module: ModuleClass = this;
@@ -200,13 +201,14 @@ class ModuleClass implements IModule {
 	
     //---- React to recompilation triggered by click on icon
     private recompileSource(event: MouseEvent, module: ModuleClass): void {
+        App.showFullPageLoading();
         var buttonImage: HTMLfEdit = <HTMLfEdit>event.target;
         var dsp_code: string = buttonImage.area.value;
 
         module.update(this.moduleView.fTitle.textContent, dsp_code);
         module.recallInterfaceParams();
 
-        module.moduleView.fEditImg.src = App.baseImg + "edit.png";
+        module.moduleView.fEditImg.style.backgroundImage = "url("+App.baseImg + "edit.png)";
         module.moduleView.fEditImg.onclick = function () { module.edit(module) };
     }
 	

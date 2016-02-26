@@ -125,7 +125,8 @@ var ModuleClass = (function () {
         textArea.cols = 60;
         textArea.value = this.moduleFaust.fSource;
         module.moduleView.fInterfaceContainer.appendChild(textArea);
-        module.moduleView.fEditImg.src = App.baseImg + "enter.png";
+        //module.moduleView.fEditImg.src = App.baseImg + "enter.png";
+        module.moduleView.fEditImg.style.backgroundImage = "url(" + App.baseImg + "enter.png)";
         module.moduleView.fEditImg.onclick = function (event) { module.recompileSource(event, module); };
         module.moduleView.fEditImg.area = textArea;
     };
@@ -138,11 +139,12 @@ var ModuleClass = (function () {
     };
     //---- React to recompilation triggered by click on icon
     ModuleClass.prototype.recompileSource = function (event, module) {
+        App.showFullPageLoading();
         var buttonImage = event.target;
         var dsp_code = buttonImage.area.value;
         module.update(this.moduleView.fTitle.textContent, dsp_code);
         module.recallInterfaceParams();
-        module.moduleView.fEditImg.src = App.baseImg + "edit.png";
+        module.moduleView.fEditImg.style.backgroundImage = "url(" + App.baseImg + "edit.png)";
         module.moduleView.fEditImg.onclick = function () { module.edit(module); };
     };
     /***************** CREATE/DELETE the DSP Interface ********************/

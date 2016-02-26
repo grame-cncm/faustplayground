@@ -104,6 +104,7 @@
     top: 8px;
     width: 15px;
     opacity: 0.8;
+    cursor: pointer;
 }
 .moduleFaust .close:hover {
 	opacity: 1
@@ -150,7 +151,13 @@
 footer>img {
     cursor: pointer;
 }
-
+.edit {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    margin-bottom: 2px;
+    background: url(../img/edit.png) no-repeat 100%;
+}
 
 /*	---------------------------------------------------------------------------
  *	:: Global classes and styles

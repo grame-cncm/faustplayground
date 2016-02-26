@@ -79,9 +79,10 @@ class App {
     factory: Factory;
 
     constructor() {
-        document.ondragstart = () => { this.modulesStyleOnDragStart() };
-        document.ondragenter = () => { this.modulesStyleOnDragStart() };
-        document.ondrop = () => { this.modulesStyleOnDragEnd()}
+        document.ondragstart = () => { this.styleOnDragStart() };
+        document.ondragenter = () => { this.styleOnDragStart() };
+        document.ondrop = () => { this.styleOnDragEnd() }
+        document.onscroll = () => { this.checkRealWindowSize() };
 
     }
 
@@ -207,7 +208,7 @@ class App {
         if (app.tempModuleName != "input" && app.tempModuleName != "output") {
             module.moduleView.fModuleContainer.ondrop = (e) => {
                 e.stopPropagation();
-                app.modulesStyleOnDragEnd()
+                app.styleOnDragEnd()
                 app.uploadOn(app, module, 0, 0, e)
             };
         }
@@ -453,18 +454,20 @@ class App {
         //App.addLoadingLogo(loadingPage.id);
     }
     static hideFullPageLoading() {
-        document.getElementById("loadingPage").remove();
-        document.getElementById("Normal").style.filter = "none"
-        document.getElementById("Normal").style.webkitFilter = "none"
-        document.getElementById("menuContainer").style.filter = "none"
-        document.getElementById("menuContainer").style.webkitFilter = "none"
+        if (document.getElementById("loadingPage") != null) {
+            document.getElementById("loadingPage").remove();
+            document.getElementById("Normal").style.filter = "none"
+            document.getElementById("Normal").style.webkitFilter = "none"
+            document.getElementById("menuContainer").style.filter = "none"
+            document.getElementById("menuContainer").style.webkitFilter = "none"
+        }
     }
 
     static createDropAreaGraph() {
         
     }
-
-    modulesStyleOnDragStart() {
+    // manage style during a drag and drop event
+    styleOnDragStart() {
 
         App.scene.sceneView.dropElementScene.style.display = "block";
         App.scene.getSceneContainer().style.boxShadow = "0 0 200px #00f inset";
@@ -473,7 +476,7 @@ class App {
             modules[i].moduleView.fModuleContainer.style.opacity="0.5"
         }
     }
-    modulesStyleOnDragEnd() {
+    styleOnDragEnd() {
         App.scene.sceneView.dropElementScene.style.display = "none";
         App.scene.getSceneContainer().style.boxShadow = "none";
         var modules: ModuleClass[] = App.scene.getModules();
@@ -481,5 +484,20 @@ class App {
             modules[i].moduleView.fModuleContainer.style.opacity = "1";
             modules[i].moduleView.fModuleContainer.style.boxShadow ="0 5px 10px rgba(0, 0, 0, 0.4)"
         }
+    }
+
+    //manage the window size
+    checkRealWindowSize() {
+        
+        //if (window.scrollX > 0) {
+        //    console.log(document.getElementsByTagName("html")[0]);
+        //    document.getElementsByTagName("html")[0].style.width = window.innerWidth + window.scrollX + "px";
+        //    document.getElementById("svgCanvas").style.left = + window.scrollX+ "px";
+        //}
+        //if (window.scrollY > 0) {
+        //    document.getElementsByTagName("html")[0].style.height = window.innerHeight + window.scrollY + "px";
+        //    document.getElementById("svgCanvas").style.top = + window.scrollY + "px";
+        //}
+        
     }
 }

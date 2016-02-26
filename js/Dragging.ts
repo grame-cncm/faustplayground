@@ -88,7 +88,9 @@ class Drag {
         var x: number, y: number;
 
         var moduleContainer = module.moduleView.getModuleContainer();
-	
+        //console.log(window.innerHeight);
+        console.log(window.pageYOffset)
+
 	    // Get cursor position with respect to the page.
         x = event.clientX + window.scrollX;
         y = event.clientY + window.scrollY;

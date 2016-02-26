@@ -12,7 +12,7 @@
     IMG --> fEditImg
 	===================*/
 
-interface HTMLfEdit extends HTMLImageElement {
+interface HTMLfEdit extends HTMLDivElement {
     area: HTMLTextAreaElement;
 }
 interface HTMLinterfaceElement extends HTMLElement {
@@ -70,17 +70,16 @@ class ModuleView {
             var fFooter: HTMLElement = document.createElement("footer");
             fFooter.id = "moduleFooter";
             fModuleContainer.id = "module" + ID;
-            var fCloseButton: HTMLAnchorElement = document.createElement("a");
-            fCloseButton.href = "#";
+            var fCloseButton: HTMLDivElement = document.createElement("div");
             fCloseButton.draggable = false;
             fCloseButton.className = "close";
             fCloseButton.onclick = function () { module.deleteModule(); };
             fModuleContainer.appendChild(fCloseButton);
-            var fEditImg = <HTMLfEdit>document.createElement("img");
-            fEditImg.src = App.baseImg + "edit.png";
-
+            var fEditImg = <HTMLfEdit>document.createElement("div");
+            fEditImg.className = "edit"
             fEditImg.onclick = function () { module.edit(module); };
             fEditImg.draggable = false;
+            this.fEditImg = fEditImg;
             fFooter.appendChild(fEditImg);
             fModuleContainer.appendChild(fFooter);
 
