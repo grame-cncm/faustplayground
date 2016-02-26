@@ -83,6 +83,8 @@ class App {
         document.ondragenter = () => { this.styleOnDragStart() };
         document.ondrop = () => { this.styleOnDragEnd() }
         document.onscroll = () => { this.checkRealWindowSize() };
+        var body: HTMLBodyElement = document.getElementsByTagName("body")[0]
+        body.onresize= () => { this.checkRealWindowSize() };
 
     }
 
@@ -489,15 +491,26 @@ class App {
     //manage the window size
     checkRealWindowSize() {
         
-        //if (window.scrollX > 0) {
-        //    console.log(document.getElementsByTagName("html")[0]);
-        //    document.getElementsByTagName("html")[0].style.width = window.innerWidth + window.scrollX + "px";
-        //    document.getElementById("svgCanvas").style.left = + window.scrollX+ "px";
-        //}
-        //if (window.scrollY > 0) {
-        //    document.getElementsByTagName("html")[0].style.height = window.innerHeight + window.scrollY + "px";
-        //    document.getElementById("svgCanvas").style.top = + window.scrollY + "px";
-        //}
+        if (window.scrollX > 0) {
+            console.log(document.getElementsByTagName("html")[0]);
+            document.getElementsByTagName("html")[0].style.width = window.innerWidth + window.scrollX + "px";
+            document.getElementById("svgCanvas").style.width = window.innerWidth + window.scrollX + "px";
+            document.getElementById("menuContainer").style.width = window.innerWidth + window.scrollX + "px";
+        } else {
+
+            document.getElementsByTagName("html")[0].style.width = "100%";
+            document.getElementById("svgCanvas").style.width = "100%";
+            document.getElementById("menuContainer").style.width = "100%";
+        }
+        if (window.scrollY > 0) {
+            document.getElementsByTagName("html")[0].style.height = window.innerHeight + window.scrollY + "px";
+            document.getElementById("svgCanvas").style.height = window.innerHeight + window.scrollY + "px";
+        } else {
+            document.getElementsByTagName("html")[0].style.height = "100%";
+            document.getElementById("svgCanvas").style.height = "100%";
+        }
+
+       
         
     }
 }

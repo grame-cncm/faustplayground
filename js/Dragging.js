@@ -71,8 +71,8 @@ var Drag = (function () {
         moduleContainer.style.top = (this.elementStartTop + y - this.cursorStartY) + "px";
         if (module.moduleFaust.getInputConnections() != null) {
             var offset = module.moduleView.getInputNode();
-            x = window.scrollX + module.moduleView.inputOutputNodeDimension / 2;
-            y = window.scrollY + module.moduleView.inputOutputNodeDimension / 2;
+            x = module.moduleView.inputOutputNodeDimension / 2; // + window.scrollX ;
+            y = module.moduleView.inputOutputNodeDimension / 2; // + window.scrollY;
             while (offset) {
                 x += offset.offsetLeft;
                 y += offset.offsetTop;
@@ -91,8 +91,8 @@ var Drag = (function () {
         }
         if (module.moduleFaust.getOutputConnections() != null) {
             var offset = module.moduleView.getOutputNode();
-            x = window.scrollX + module.moduleView.inputOutputNodeDimension / 2;
-            y = window.scrollY + module.moduleView.inputOutputNodeDimension / 2;
+            x = module.moduleView.inputOutputNodeDimension / 2;
+            y = module.moduleView.inputOutputNodeDimension / 2;
             while (offset) {
                 x += offset.offsetLeft;
                 y += offset.offsetTop;
@@ -145,8 +145,8 @@ var Drag = (function () {
             target = target.parentNode;
         // Get the position of the originating connector with respect to the page.
         var offset = target;
-        var x = window.scrollX + module.moduleView.inputOutputNodeDimension / 2;
-        var y = window.scrollY + module.moduleView.inputOutputNodeDimension / 2;
+        var x = module.moduleView.inputOutputNodeDimension / 2;
+        var y = module.moduleView.inputOutputNodeDimension / 2;
         while (offset) {
             x += offset.offsetLeft;
             y += offset.offsetTop;
@@ -200,8 +200,8 @@ var Drag = (function () {
                 offset = destination.moduleView.getOutputNode();
             var toElem = offset;
             // Get the position of the originating connector with respect to the page.			
-            x = window.scrollX + destination.moduleView.inputOutputNodeDimension / 2;
-            y = window.scrollY + destination.moduleView.inputOutputNodeDimension / 2;
+            x = destination.moduleView.inputOutputNodeDimension / 2;
+            y = destination.moduleView.inputOutputNodeDimension / 2;
             while (offset) {
                 x += offset.offsetLeft;
                 y += offset.offsetTop;

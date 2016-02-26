@@ -28,6 +28,7 @@ interface ConnectorShape extends SVGElement {
 }
 
 class Connector {
+
     connectorShape: ConnectorShape;
     source: ModuleClass;
     destination: ModuleClass;

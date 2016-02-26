@@ -102,8 +102,8 @@ class Drag {
         if (module.moduleFaust.getInputConnections() != null) {	// update any lines that point in here.
 
             var offset: HTMLElement = module.moduleView.getInputNode();
-            x = window.scrollX + module.moduleView.inputOutputNodeDimension/2;
-            y = window.scrollY + module.moduleView.inputOutputNodeDimension / 2;
+            x = module.moduleView.inputOutputNodeDimension/2// + window.scrollX ;
+            y = module.moduleView.inputOutputNodeDimension/2// + window.scrollY;
 
             while (offset) {
 		
@@ -131,8 +131,8 @@ class Drag {
 		    
 
             var offset = module.moduleView.getOutputNode();
-            x = window.scrollX + module.moduleView.inputOutputNodeDimension / 2;
-            y = window.scrollY + module.moduleView.inputOutputNodeDimension / 2;
+            x =  module.moduleView.inputOutputNodeDimension / 2;
+            y =  module.moduleView.inputOutputNodeDimension / 2;
 
             while (offset) {
                 x += offset.offsetLeft;
@@ -200,8 +200,8 @@ class Drag {
 
         // Get the position of the originating connector with respect to the page.
         var offset: HTMLElement = target;
-        var x: number = window.scrollX + module.moduleView.inputOutputNodeDimension / 2;
-        var y: number = window.scrollY + module.moduleView.inputOutputNodeDimension / 2;
+        var x: number = module.moduleView.inputOutputNodeDimension / 2;
+        var y: number = module.moduleView.inputOutputNodeDimension / 2;
 
         while (offset) {
             x += offset.offsetLeft;
@@ -275,8 +275,8 @@ class Drag {
 	
 
 	    // Get the position of the originating connector with respect to the page.			
-            x = window.scrollX + destination.moduleView.inputOutputNodeDimension / 2;
-            y = window.scrollY + destination.moduleView.inputOutputNodeDimension / 2;
+            x = destination.moduleView.inputOutputNodeDimension / 2;
+            y = destination.moduleView.inputOutputNodeDimension / 2;
 
             while (offset) {
                 x += offset.offsetLeft;
