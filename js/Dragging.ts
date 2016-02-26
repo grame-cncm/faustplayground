@@ -35,7 +35,7 @@ class Drag {
     cursorStartY: number;
     elementStartLeft: number;
     elementStartTop: number;
-    originIsInput: boolean;
+    isOriginInput: boolean;
     connector: Connector = new Connector();
     elemNode: HTMLElement;
 
@@ -151,8 +151,6 @@ class Drag {
                     currentConnectorShape.setAttributeNS(null, "d", d);
                     this.updateConnectorShapePath(currentConnectorShape,x1, x2, y1, y2);
 
-                    //module.moduleFaust.getOutputConnections()[c].connectorShape.setAttributeNS(null, "x2", String(x));
-                    //module.moduleFaust.getOutputConnections()[c].connectorShape.setAttributeNS(null, "y2", String(y));
 			    }
 		    }
 	    }
@@ -214,7 +212,7 @@ class Drag {
   	    this.cursorStartY = y;
 
 	    // remember if this is an input or output node, so we can match
-	    this.originIsInput = target.classList.contains("node-input");
+        this.isOriginInput = target.classList.contains("node-input");
 
         module.moduleView.getInterfaceContainer().unlitClassname = module.moduleView.getInterfaceContainer().className;
         module.moduleView.getInterfaceContainer().className += " canConnect";
@@ -228,6 +226,8 @@ class Drag {
         curve.setAttributeNS(null, "stroke", "black");
         curve.setAttributeNS(null, "stroke-width", "5");
         curve.setAttributeNS(null, "fill", "none");
+        //curve.setAttributeNS(null, "opacity", "0.5");
+
         //curve.setAttributeNS(null, "stroke-location", "center");
 
 
@@ -244,23 +244,27 @@ class Drag {
         //document.getElementById("svgCanvas").appendChild(shape);
     }
 
-    stopDraggingConnection(sourceModule: ModuleClass, destination: ModuleClass):void {
+    stopDraggingConnection(sourceModule: ModuleClass, destination: ModuleClass, event?: MouseEvent): void {
 
 
         if (sourceModule.moduleView.getInterfaceContainer().lastLit) {
             sourceModule.moduleView.getInterfaceContainer().lastLit.className = sourceModule.moduleView.getInterfaceContainer().lastLit.unlitClassname;
             sourceModule.moduleView.getInterfaceContainer().lastLit = null;
-	    }
+        }
+        var resultIsConnectionValid: boolean = true;
+        if (event!=null) {
+            resultIsConnectionValid = this.isConnectionValid(event);
+        }
 
         sourceModule.moduleView.getInterfaceContainer().className = sourceModule.moduleView.getInterfaceContainer().unlitClassname;
 
         var x: number, y: number
-        if (destination) {	
+        if (destination && destination != sourceModule && this.isConnectionUnique(sourceModule, destination) && resultIsConnectionValid) {	
 
 		    // Get the position of the originating connector with respect to the page.
 
             var offset: HTMLElement;
-            if (!this.originIsInput)
+            if (!this.isOriginInput)
                 offset = destination.moduleView.getInputNode();
             else
                 offset = destination.moduleView.getOutputNode();
@@ -286,13 +290,10 @@ class Drag {
             this.connector.connectorShape.setAttributeNS(null, "d", d);
             this.updateConnectorShapePath(this.connector.connectorShape, x1, x2, y1, y2);
 
-            //this.connector.connectorShape.setAttributeNS(null, "x2", String(x));
-            //this.connector.connectorShape.setAttributeNS(null, "y2", String(y));
-
             var src: ModuleClass, dst: ModuleClass;
 
 		    // If connecting from output to input
-		    if (this.originIsInput) {
+            if (this.isOriginInput) {
 		
 			    if (toElem.classList.contains("node-output")) {
 				    src = destination;
@@ -306,16 +307,6 @@ class Drag {
                     var d = this.setCurvePath(x2, y2, x1, y1, this.calculBezier1(x1, x2), this.calculBezier2(x1, x2))
                     this.connector.connectorShape.setAttributeNS(null, "d", d);
                     this.updateConnectorShapePath(this.connector.connectorShape,x2, x1, y2, y1);
-
-
-        //            var shape: ConnectorShape = this.connector.connectorShape;
-				    //x = parseFloat(shape.getAttributeNS(null, "x2"));
-        //            y = parseFloat(shape.getAttributeNS(null, "y2"));
-			     //   shape.setAttributeNS(null, "x2", shape.getAttributeNS(null, "x1"));
-	    		 //   shape.setAttributeNS(null, "y2", shape.getAttributeNS(null, "y1"));
-				    //shape.setAttributeNS(null, "x1", String(x));
-        //            shape.setAttributeNS(null, "y1", String(y));
-
 
 				
 				    // can connect!
@@ -378,7 +369,7 @@ class Drag {
         var x2: number = event.clientX + window.scrollX;
         var y2: number = event.clientY + window.scrollY;
         var d: string;
-        if (!this.originIsInput) {
+        if (!this.isOriginInput) {
             d = this.setCurvePath(x1, y1, x2, y2, this.calculBezier1(x1, x2), this.calculBezier2(x1, x2))
         } else {
             d = this.setCurvePath(x1, y1, x2, y2, this.calculBezier1(x1, x2), this.calculBezier2(x1, x2))
@@ -407,7 +398,7 @@ class Drag {
 		    // light up connector point underneath, if any
 		    if (toElem.classList.contains("node")) {
 			    if (!this.lastLit || (this.lastLit != toElem )) {
-				    if (this.originIsInput) {
+                    if (this.isOriginInput) {
 					    if (toElem.classList.contains("node-output")) {
 						    toElem.unlitClassname = toElem.className;
 						    toElem.className += " canConnect";
@@ -439,7 +430,7 @@ class Drag {
         var modules: ModuleClass[] = module.sceneParent.getModules();
 
         for (var i = 0; i < modules.length; i++){
-            if ((this.originIsInput && modules[i].moduleView.isPointInOutput(event.clientX, event.clientY)) || modules[i].moduleView.isPointInInput(event.clientX, event.clientY)) {
+            if ((this.isOriginInput && modules[i].moduleView.isPointInOutput(event.clientX, event.clientY)) || modules[i].moduleView.isPointInInput(event.clientX, event.clientY)) {
 			    arrivingNode = modules[i];
 			    break;
 		    }
@@ -448,14 +439,46 @@ class Drag {
         if (!arrivingNode && arrivingHTMLParentNode != undefined) {
             var outputModule = module.sceneParent.getAudioOutput();
             var inputModule = module.sceneParent.getAudioInput();
-            if ((this.originIsInput && outputModule.moduleView.isPointInOutput(event.clientX, event.clientY)) || outputModule.moduleView.isPointInInput(event.clientX, event.clientY) || arrivingHTMLParentNode.offsetParent.getAttribute("id") == "moduleOutput") {
+            if ((this.isOriginInput && outputModule.moduleView.isPointInOutput(event.clientX, event.clientY)) || outputModule.moduleView.isPointInInput(event.clientX, event.clientY) || arrivingHTMLParentNode.offsetParent.getAttribute("id") == "moduleOutput") {
                 arrivingNode = outputModule;
-            } else if ((!this.originIsInput && inputModule.moduleView.isPointInInput(event.clientX, event.clientY)) || inputModule.moduleView.isPointInOutput(event.clientX, event.clientY) || arrivingHTMLParentNode.offsetParent.getAttribute("id") == "moduleInput") {
+            } else if ((!this.isOriginInput && inputModule.moduleView.isPointInInput(event.clientX, event.clientY)) || inputModule.moduleView.isPointInOutput(event.clientX, event.clientY) || arrivingHTMLParentNode.offsetParent.getAttribute("id") == "moduleInput") {
                 arrivingNode = inputModule;
             }
         }
-        module.drag.stopDraggingConnection(module, arrivingNode);
+        module.drag.stopDraggingConnection(module, arrivingNode, event);
     }
-
+    isConnectionValid(event: MouseEvent): boolean {
+        var target: HTMLElement = <HTMLElement>event.target;
+        if (target.classList.contains("node-button")) {
+            target = <HTMLElement>target.parentNode;
+        }
+        if (target.classList.contains("node-input") && this.isOriginInput) {
+            return false;
+        } else if (target.classList.contains("node-output") && !this.isOriginInput) {
+            return false;
+        } else {
+            return true
+        }
+    }
+    isConnectionUnique(moduleSource: ModuleClass, moduleDestination: ModuleClass): boolean {
+        if (this.isOriginInput) {
+            for (var i = 0; i < moduleSource.moduleFaust.fInputConnections.length; i++) {
+                for (var j = 0; j < moduleDestination.moduleFaust.fOutputConnections.length; j++) {
+                    if (moduleSource.moduleFaust.fInputConnections[i] == moduleDestination.moduleFaust.fOutputConnections[j]) {
+                        return false
+                    }
+                }
+            }
+        } else {
+            for (var i = 0; i < moduleSource.moduleFaust.fOutputConnections.length; i++) {
+                for (var j = 0; j < moduleDestination.moduleFaust.fInputConnections.length; j++) {
+                    if (moduleSource.moduleFaust.fOutputConnections[i] == moduleDestination.moduleFaust.fInputConnections[j]) {
+                        return false
+                    }
+                }
+            }
+        }
+        return true
+    }
 }
 
