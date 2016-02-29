@@ -42,15 +42,19 @@ var ModuleClass = (function () {
     }
     /***************  PRIVATE METHODS  ******************************/
     ModuleClass.prototype.dragCallback = function (event, module) {
-        if (event.type == "mousedown") {
+        if (event.type == "mousedown" || event.type == "touchstart") {
             module.drag.startDraggingModule(event, module);
         }
-        else if (event.type == "mouseup") {
+        else if (event.type == "mouseup" || event.type == "touchend") {
             module.drag.stopDraggingModule(event, module);
         }
-        else if (event.type == "mousemove") {
+        else if (event.type == "mousemove" || event.type == "touchmove") {
             module.drag.whileDraggingModule(event, module);
         }
+        //else if (event.type == "touchstart") {
+        //    module.drag.startDraggingModule(event, module);
+        //} else if (event.type == "touchmove") {
+        //}else if (event.type=="touchend")
     };
     ModuleClass.prototype.dragCnxCallback = function (event, module) {
         if (event.type == "mousedown") {

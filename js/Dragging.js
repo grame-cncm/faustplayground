@@ -56,6 +56,8 @@ var Drag = (function () {
         // Capture mousemove and mouseup events on the page.
         module.addListener("mousemove", module);
         module.addListener("mouseup", module);
+        module.addListener("touchmove", module);
+        module.addListener("touchend", module);
         event.preventDefault();
     };
     Drag.prototype.whileDraggingModule = function (event, module) {
@@ -117,6 +119,8 @@ var Drag = (function () {
         // Stop capturing mousemove and mouseup events.
         module.removeListener("mousemove", null, document);
         module.removeListener("mouseup", null, document);
+        module.removeListener("touchmove", null, document);
+        module.removeListener("touchend", null, document);
     };
     /************************************************************************************/
     /*** Connector Dragging - these are used for dragging the connectors between nodes***/

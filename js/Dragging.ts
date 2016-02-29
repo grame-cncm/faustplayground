@@ -80,6 +80,8 @@ class Drag {
         // Capture mousemove and mouseup events on the page.
         module.addListener("mousemove", module);
         module.addListener("mouseup", module);
+        module.addListener("touchmove", module);
+        module.addListener("touchend", module);
 
         event.preventDefault();
     }
@@ -164,6 +166,8 @@ class Drag {
       // Stop capturing mousemove and mouseup events.
         module.removeListener("mousemove", null, document);
         module.removeListener("mouseup", null, document);
+        module.removeListener("touchmove", null, document);
+        module.removeListener("touchend", null, document);
     }
 
     /************************************************************************************/
