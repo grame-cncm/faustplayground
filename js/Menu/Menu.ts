@@ -17,7 +17,9 @@ class Menu {
     library: Library;
     expor: Export;
     help: Help;
-    
+    mouseOverLowerMenu: (event: MouseEvent) => void;
+    isMenuLow: boolean = false;
+
 
     constructor(htmlContainer: HTMLElement) {
         this.menuView = new MenuView();
@@ -36,7 +38,7 @@ class Menu {
         this.help = new Help();
         this.help.helpView = this.menuView.helpView;
         this.menuView.exportView.inputNameApp.onchange = (e) => { this.updatePatchNameToInput(e) }
-        this.menuView.contentsMenu.onmouseover = () => { this.library.raiseMenu() }
+        this.mouseOverLowerMenu = (event: MouseEvent) => { this.raiseLibraryMenuEvent(event) }
 
     }
 
@@ -76,7 +78,7 @@ class Menu {
                 this.currentMenuChoices = MenuChoices.null;
                 this.menuView.libraryButtonMenu.style.backgroundColor = this.menuView.menuColorDefault;
                 this.menuView.libraryButtonMenu.style.zIndex = "0";
-                this.library.raiseMenu();
+                this.raiseLibraryMenu();
 
                 break;
             default:
@@ -87,7 +89,7 @@ class Menu {
                 this.currentMenuChoices = MenuChoices.library;
                 break;
         }
-        
+
     }
     exportMenu() {
         switch (this.currentMenuChoices) {
@@ -151,7 +153,7 @@ class Menu {
         for (var i = 0; i < this.menuView.HTMLElementsMenu.length; i++) {
             this.menuView.HTMLElementsMenu[i].style.display = "none";
         }
-        this.library.raiseMenu();
+        this.raiseLibraryMenu();
         this.menuView.contentsMenu.style.display = "none";
         this.currentMenuChoices = MenuChoices.null;
     }
@@ -159,13 +161,34 @@ class Menu {
         for (var i = 0; i < this.menuView.HTMLElementsMenu.length; i++) {
             this.menuView.HTMLElementsMenu[i].style.display = "none";
         }
-        for (var i = 0; i < this.menuView.HTMLButtonsMenu.length; i++){
+        for (var i = 0; i < this.menuView.HTMLButtonsMenu.length; i++) {
             this.menuView.HTMLButtonsMenu[i].style.backgroundColor = this.menuView.menuColorDefault;
             this.menuView.HTMLButtonsMenu[i].style.zIndex = "0";
-            this.library.raiseMenu();
+            this.raiseLibraryMenu();
         }
     }
     updatePatchNameToInput(e: Event) {
         this.menuView.patchNameScene.textContent = Scene.sceneName;
+    }
+
+    lowerLibraryMenu() {
+        this.library.libraryView.effetLibrary.style.height = "150px";
+        this.library.libraryView.exempleLibrary.style.height = "150px";
+        this.library.libraryView.intrumentLibrary.style.height = "150px";
+    }
+
+    raiseLibraryMenuEvent(event: MouseEvent) {
+        //event.preventDefault();
+        this.raiseLibraryMenu();
+    }
+    raiseLibraryMenu() {
+        console.log("mouse over menu")
+        if (this.isMenuLow) {
+            this.library.libraryView.effetLibrary.style.height = "300px";
+            this.library.libraryView.exempleLibrary.style.height = "300px";
+            this.library.libraryView.intrumentLibrary.style.height = "300px";
+            this.menuView.menuContainer.removeEventListener("mouseover", this.mouseOverLowerMenu)
+            this.isMenuLow = false;
+        }
     }
 }

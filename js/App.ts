@@ -79,13 +79,7 @@ class App {
     factory: Factory;
 
     constructor() {
-        document.ondragstart = () => { this.styleOnDragStart() };
-        document.ondragenter = () => { this.styleOnDragStart() };
-        document.ondrop = () => { this.styleOnDragEnd() }
         
-        document.onscroll = () => { this.checkRealWindowSize() };
-        var body: HTMLBodyElement = document.getElementsByTagName("body")[0]
-        body.onresize= () => { this.checkRealWindowSize() };
 
     }
 
@@ -237,12 +231,19 @@ class App {
 
         window.ondragover = function () { this.className = 'hover'; return false; };
         window.ondragend = function () { this.className = ''; return false; };
+        document.ondragstart = () => { this.styleOnDragStart() };
+        document.ondragenter = () => { this.styleOnDragStart() };
 
-        window.ondrop = (e)=> {
+        document.onscroll = () => { this.checkRealWindowSize() };
+        var body: HTMLBodyElement = document.getElementsByTagName("body")[0]
+        body.onresize = () => { this.checkRealWindowSize() };
+
+        window.ondrop = (e) => {
+            this.styleOnDragEnd()
             var x = e.clientX;
             var y = e.clientY;
             this.uploadOn(this, null, x, y, e);
-
+            this.menu.isMenuLow = true;
         };
     }
 
@@ -280,8 +281,7 @@ class App {
         // CASE 1 : THE DROPPED OBJECT IS A URL TO SOME FAUST CODE
         if (e.dataTransfer.getData('URL') && e.dataTransfer.getData('URL').split(':').shift() != "file") {
             this.uploadUrl(app, module, x, y, e);
-        }
-        else if (e.dataTransfer.getData('URL').split(':').shift() != "file") {
+        }else if (e.dataTransfer.getData('URL').split(':').shift() != "file") {
 
             var dsp_code: string = e.dataTransfer.getData('text');
 
@@ -291,53 +291,11 @@ class App {
             }
             // CASE 3 : THE DROPPED OBJECT IS A FILE CONTAINING SOME FAUST CODE
             else {
-                var files: FileList = e.dataTransfer.files;//e.target.files ||
-
-                var file: File = files[0];
-
-                if (location.host.indexOf("sitepointstatic") >= 0) { return }
-
-                var request: XMLHttpRequest = new XMLHttpRequest();
-                if (request.upload) {
-
-                    var reader: FileReader = new FileReader();
-
-                    var ext: string = file.name.toString().split('.').pop();
-
-                    var filename: string = file.name.toString().split('.').shift();
-
-                    var type: string;
-
-                    if (ext == "dsp") {
-                        type = "dsp";
-                        reader.readAsText(file);
-                    }
-                    else if (ext == "json") {
-                        type = "json";
-                        reader.readAsText(file);
-                    } else {
-                        this.terminateUpload();
-                    }
-
-                    reader.onloadend = function (e) {
-                        dsp_code = "process = vgroup(\"" + filename + "\",environment{" + reader.result + "}.process);";
-
-                        if (!module && type == "dsp") {
-                            app.compileFaust(filename, dsp_code, x, y, app.createModule);
-                        } else if (type == "dsp") {
-                            module.update(filename, dsp_code);
-                        } else if (type == "json") {
-                            app.scenes[App.currentScene].recallScene(reader.result);
-                        }
-                        app.terminateUpload();
-                    };
-                }
+                this.uploadFile2(app, module, x, y, e, dsp_code)
             }
-        }
-        // CASE 4 : ANY OTHER STRANGE THING
-        else {
-            app.terminateUpload();
-            window.alert("THIS OBJECT IS NOT FAUST COMPILABLE");
+        } else { // CASE 4 : ANY OTHER STRANGE THING
+            //app.terminateUpload();
+            //window.alert("THIS OBJECT IS NOT FAUST COMPILABLE");
         }
     }
     //Upload Url
@@ -382,7 +340,47 @@ class App {
     }
 
     uploadFile2(app: App, module: ModuleClass, x: number, y: number, e: DragEvent, dsp_code: string) {
+        var files: FileList = e.dataTransfer.files;//e.target.files ||
 
+        var file: File = files[0];
+
+        if (location.host.indexOf("sitepointstatic") >= 0) { return }
+
+        var request: XMLHttpRequest = new XMLHttpRequest();
+        if (request.upload) {
+
+            var reader: FileReader = new FileReader();
+
+            var ext: string = file.name.toString().split('.').pop();
+
+            var filename: string = file.name.toString().split('.').shift();
+
+            var type: string;
+
+            if (ext == "dsp") {
+                type = "dsp";
+                reader.readAsText(file);
+            }
+            else if (ext == "json") {
+                type = "json";
+                reader.readAsText(file);
+            } else {
+                this.terminateUpload();
+            }
+
+            reader.onloadend = function (e) {
+                dsp_code = "process = vgroup(\"" + filename + "\",environment{" + reader.result + "}.process);";
+
+                if (!module && type == "dsp") {
+                    app.compileFaust(filename, dsp_code, x, y, app.createModule);
+                } else if (type == "dsp") {
+                    module.update(filename, dsp_code);
+                } else if (type == "json") {
+                    app.scenes[App.currentScene].recallScene(reader.result);
+                }
+                app.terminateUpload();
+            };
+        }
     }
 
 
@@ -471,7 +469,6 @@ class App {
     }
     // manage style during a drag and drop event
     styleOnDragStart() {
-
         this.menu.menuView.menuContainer.style.opacity = "0.5";
         App.scene.sceneView.dropElementScene.style.display = "block";
         App.scene.getSceneContainer().style.boxShadow = "0 0 200px #00f inset";
@@ -484,6 +481,7 @@ class App {
         //var body: HTMLBodyElement = <HTMLBodyElement>document.getElementById("body")[0];
         //body.removeEventListener("ondragleave");
         //document.getElementById("body")[0].style.zIndex = "100";
+        this.menu.lowerLibraryMenu();
         this.menu.menuView.menuContainer.style.opacity = "1";
         App.scene.sceneView.dropElementScene.style.display = "none";
         App.scene.getSceneContainer().style.boxShadow = "none";
@@ -492,6 +490,7 @@ class App {
             modules[i].moduleView.fModuleContainer.style.opacity = "1";
             modules[i].moduleView.fModuleContainer.style.boxShadow ="0 5px 10px rgba(0, 0, 0, 0.4)"
         }
+        this.menu.menuView.menuContainer.addEventListener("mouseover", this.menu.mouseOverLowerMenu);
     }
 
     //manage the window size

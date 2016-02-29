@@ -88,8 +88,8 @@ class Library{
             a.title="Drag me ! Cliquez, glissez, d�posez !"
             a.onclick = App.preventdefault;
             a.ondblclick = () => { alert() }
-            a.ondragstart = (e) => { this.lowerMenu() }
-            a.ondragend = (e) => { }
+            //a.ondragstart = (e) => { this.lowerMenu() }
+            //a.ondragend = (e) => { }
             //a.ondrag = (e) => { console.log(e.clientX) }
             //option.ondrag = this.selectDrag;
             a.text = this.cleanNameElement(options[i], stringStructureRemoved);
@@ -121,17 +121,7 @@ class Library{
         return elementComplete.replace(stringStructureRemoved, "").replace(".dsp", "");
     }
 
-    lowerMenu() {
-        this.libraryView.effetLibrary.style.height = "150px";
-        this.libraryView.exempleLibrary.style.height = "150px";
-        this.libraryView.intrumentLibrary.style.height = "150px";
-    }
 
-    raiseMenu() {
-        this.libraryView.effetLibrary.style.height = "300px";
-        this.libraryView.exempleLibrary.style.height = "300px";
-        this.libraryView.intrumentLibrary.style.height = "300px";
-    }
     
 
 

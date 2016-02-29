@@ -46,9 +46,11 @@ var Scene = (function () {
     Scene.prototype.muteScene = function () {
         var out = document.getElementById("audioOutput");
         if (out != null) {
-            out.audioNode.context.suspend();
-            this.isMute = true;
-            this.getAudioOutput().moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-speaker-mute.png)";
+            if (out.audioNode.context.suspend != undefined) {
+                out.audioNode.context.suspend();
+                this.isMute = true;
+                this.getAudioOutput().moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-speaker-mute.png)";
+            }
         }
     };
     Scene.prototype.unmuteScene = function () {

@@ -47,13 +47,6 @@ DEPENDENCIES:
 /// <reference path="Lib/perfectScrollBar/js/perfect-ScrollBar.min.d.ts"/>
 var App = (function () {
     function App() {
-        var _this = this;
-        document.ondragstart = function () { _this.styleOnDragStart(); };
-        document.ondragenter = function () { _this.styleOnDragStart(); };
-        document.ondrop = function () { _this.styleOnDragEnd(); };
-        document.onscroll = function () { _this.checkRealWindowSize(); };
-        var body = document.getElementsByTagName("body")[0];
-        body.onresize = function () { _this.checkRealWindowSize(); };
     }
     App.prototype.showFirstScene = function () {
         App.scene.showScene();
@@ -178,10 +171,17 @@ var App = (function () {
         var _this = this;
         window.ondragover = function () { this.className = 'hover'; return false; };
         window.ondragend = function () { this.className = ''; return false; };
+        document.ondragstart = function () { _this.styleOnDragStart(); };
+        document.ondragenter = function () { _this.styleOnDragStart(); };
+        document.onscroll = function () { _this.checkRealWindowSize(); };
+        var body = document.getElementsByTagName("body")[0];
+        body.onresize = function () { _this.checkRealWindowSize(); };
         window.ondrop = function (e) {
+            _this.styleOnDragEnd();
             var x = e.clientX;
             var y = e.clientY;
             _this.uploadOn(_this, null, x, y, e);
+            _this.menu.isMenuLow = true;
         };
     };
     //-- Init drag and drop reactions
@@ -215,47 +215,10 @@ var App = (function () {
                 this.uploadCodeFaust(app, module, x, y, e, dsp_code);
             }
             else {
-                var files = e.dataTransfer.files; //e.target.files ||
-                var file = files[0];
-                if (location.host.indexOf("sitepointstatic") >= 0) {
-                    return;
-                }
-                var request = new XMLHttpRequest();
-                if (request.upload) {
-                    var reader = new FileReader();
-                    var ext = file.name.toString().split('.').pop();
-                    var filename = file.name.toString().split('.').shift();
-                    var type;
-                    if (ext == "dsp") {
-                        type = "dsp";
-                        reader.readAsText(file);
-                    }
-                    else if (ext == "json") {
-                        type = "json";
-                        reader.readAsText(file);
-                    }
-                    else {
-                        this.terminateUpload();
-                    }
-                    reader.onloadend = function (e) {
-                        dsp_code = "process = vgroup(\"" + filename + "\",environment{" + reader.result + "}.process);";
-                        if (!module && type == "dsp") {
-                            app.compileFaust(filename, dsp_code, x, y, app.createModule);
-                        }
-                        else if (type == "dsp") {
-                            module.update(filename, dsp_code);
-                        }
-                        else if (type == "json") {
-                            app.scenes[App.currentScene].recallScene(reader.result);
-                        }
-                        app.terminateUpload();
-                    };
-                }
+                this.uploadFile2(app, module, x, y, e, dsp_code);
             }
         }
         else {
-            app.terminateUpload();
-            window.alert("THIS OBJECT IS NOT FAUST COMPILABLE");
         }
     };
     //Upload Url
@@ -293,6 +256,42 @@ var App = (function () {
         app.terminateUpload();
     };
     App.prototype.uploadFile2 = function (app, module, x, y, e, dsp_code) {
+        var files = e.dataTransfer.files; //e.target.files ||
+        var file = files[0];
+        if (location.host.indexOf("sitepointstatic") >= 0) {
+            return;
+        }
+        var request = new XMLHttpRequest();
+        if (request.upload) {
+            var reader = new FileReader();
+            var ext = file.name.toString().split('.').pop();
+            var filename = file.name.toString().split('.').shift();
+            var type;
+            if (ext == "dsp") {
+                type = "dsp";
+                reader.readAsText(file);
+            }
+            else if (ext == "json") {
+                type = "json";
+                reader.readAsText(file);
+            }
+            else {
+                this.terminateUpload();
+            }
+            reader.onloadend = function (e) {
+                dsp_code = "process = vgroup(\"" + filename + "\",environment{" + reader.result + "}.process);";
+                if (!module && type == "dsp") {
+                    app.compileFaust(filename, dsp_code, x, y, app.createModule);
+                }
+                else if (type == "dsp") {
+                    module.update(filename, dsp_code);
+                }
+                else if (type == "json") {
+                    app.scenes[App.currentScene].recallScene(reader.result);
+                }
+                app.terminateUpload();
+            };
+        }
     };
     //Check in Url if the app should be for kids
     App.isAppPedagogique = function () {
@@ -379,6 +378,7 @@ var App = (function () {
         //var body: HTMLBodyElement = <HTMLBodyElement>document.getElementById("body")[0];
         //body.removeEventListener("ondragleave");
         //document.getElementById("body")[0].style.zIndex = "100";
+        this.menu.lowerLibraryMenu();
         this.menu.menuView.menuContainer.style.opacity = "1";
         App.scene.sceneView.dropElementScene.style.display = "none";
         App.scene.getSceneContainer().style.boxShadow = "none";
@@ -387,6 +387,7 @@ var App = (function () {
             modules[i].moduleView.fModuleContainer.style.opacity = "1";
             modules[i].moduleView.fModuleContainer.style.boxShadow = "0 5px 10px rgba(0, 0, 0, 0.4)";
         }
+        this.menu.menuView.menuContainer.addEventListener("mouseover", this.menu.mouseOverLowerMenu);
     };
     //manage the window size
     App.prototype.checkRealWindowSize = function () {
