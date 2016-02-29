@@ -167,7 +167,7 @@ var App = (function () {
     ***********************  HANDLE DRAG AND DROP ***********************
     ********************************************************************/
     //-- Init drag and drop reactions
-    App.prototype.setGeneralDragAndDrop = function (app) {
+    App.prototype.setGeneralAppListener = function (app) {
         var _this = this;
         window.ondragover = function () { this.className = 'hover'; return false; };
         window.ondragend = function () { this.className = ''; return false; };
@@ -183,6 +183,7 @@ var App = (function () {
             _this.uploadOn(_this, null, x, y, e);
             _this.menu.isMenuLow = true;
         };
+        document.addEventListener("dbltouchlib", function (e) { _this.dblTouchUpload(e); });
     };
     //-- Init drag and drop reactions
     App.prototype.resetGeneralDragAndDrop = function (div) {
@@ -206,7 +207,8 @@ var App = (function () {
         this.preventDefaultAction(e);
         // CASE 1 : THE DROPPED OBJECT IS A URL TO SOME FAUST CODE
         if (e.dataTransfer.getData('URL') && e.dataTransfer.getData('URL').split(':').shift() != "file") {
-            this.uploadUrl(app, module, x, y, e);
+            var url = e.dataTransfer.getData('URL');
+            this.uploadUrl(app, module, x, y, url);
         }
         else if (e.dataTransfer.getData('URL').split(':').shift() != "file") {
             var dsp_code = e.dataTransfer.getData('text');
@@ -222,8 +224,7 @@ var App = (function () {
         }
     };
     //Upload Url
-    App.prototype.uploadUrl = function (app, module, x, y, e) {
-        var url = e.dataTransfer.getData('URL');
+    App.prototype.uploadUrl = function (app, module, x, y, url) {
         var filename = url.toString().split('/').pop();
         filename = filename.toString().split('.').shift();
         var xmlhttp = new XMLHttpRequest;
@@ -292,6 +293,11 @@ var App = (function () {
                 app.terminateUpload();
             };
         }
+    };
+    App.prototype.dblTouchUpload = function (e) {
+        App.showFullPageLoading();
+        var position = App.scene.positionDblTapModule();
+        this.uploadUrl(this, null, position.x, position.y, e.detail);
     };
     //Check in Url if the app should be for kids
     App.isAppPedagogique = function () {

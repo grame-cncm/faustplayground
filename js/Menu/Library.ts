@@ -54,6 +54,7 @@ class Library{
     isLibraryTouch: boolean;
     previousTouchUrl: string;
     isSmaller: boolean = false;
+    isDblTouch: boolean = false;
 
     fillLibrary() {
         var url: string = "faust-modules/index.json"
@@ -78,16 +79,19 @@ class Library{
     fillSubMenu(options: string[], subMenuId: string, stringStructureRemoved: string) {
         var subMenu: HTMLUListElement = <HTMLUListElement>document.getElementById(subMenuId);
         //subMenu.ondrag = App.preventdefault;
+        
         for (var i = 0; i < options.length; i++) {
 
             var li: HTMLLIElement = document.createElement("li");
             var a: HTMLAnchorElement = document.createElement("a");
             li.appendChild(a);
             a.href = options[i];
+            
             a.draggable = true;
-            a.title="Drag me ! Cliquez, glissez, d�posez !"
+            a.title = "Drag me ! Cliquez, glissez, d�posez !";
             a.onclick = App.preventdefault;
-            a.ondblclick = () => { alert() }
+            //a.ondblclick = App.preventdefault;
+            a.ontouchstart = (e) => { this.dbleTouchMenu(e) }
             //a.ondragstart = (e) => { this.lowerMenu() }
             //a.ondragend = (e) => { }
             //a.ondrag = (e) => { console.log(e.clientX) }
@@ -104,13 +108,20 @@ class Library{
         var anchor: HTMLAnchorElement = <HTMLAnchorElement>touchEvent.target;
         if (!this.isLibraryTouch) {
             this.isLibraryTouch = true;
+            this.previousTouchUrl = anchor.href;
+            window.setTimeout(()=>{ this.isLibraryTouch = false;this.previousTouchUrl = "" },300)
         } else if (anchor.href == this.previousTouchUrl) {
+            this.dispatchEventLibrary(anchor.href);
             this.isLibraryTouch = false;
         } else {
             this.isLibraryTouch = false;
         }
-
     }
+    dispatchEventLibrary(url: string) {
+        var event: CustomEvent = new CustomEvent("dbltouchlib", { 'detail': url })
+        document.dispatchEvent(event);
+    }
+
     initScroll() {
         this.libraryView.effetLibrarySelect.scrollTop += 1;
         this.libraryView.exempleLibrarySelect.scrollTop += 1;

@@ -340,6 +340,12 @@ class Scene {
         position.y = window.innerHeight / 2;
         return position
     }
+    positionDblTapModule(): PositionModule {
+        var position: PositionModule = new PositionModule();
+        position.x = window.innerWidth / 2;
+        position.y = window.innerHeight / 2;
+        return position
+    }
 
 
 

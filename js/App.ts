@@ -227,7 +227,7 @@ class App {
     ********************************************************************/
 
     //-- Init drag and drop reactions
-    setGeneralDragAndDrop(app: App): void {
+    setGeneralAppListener(app: App): void {
 
         window.ondragover = function () { this.className = 'hover'; return false; };
         window.ondragend = function () { this.className = ''; return false; };
@@ -245,6 +245,8 @@ class App {
             this.uploadOn(this, null, x, y, e);
             this.menu.isMenuLow = true;
         };
+
+        document.addEventListener("dbltouchlib", (e: CustomEvent) => { this.dblTouchUpload(e) });
     }
 
     //-- Init drag and drop reactions
@@ -280,7 +282,8 @@ class App {
 
         // CASE 1 : THE DROPPED OBJECT IS A URL TO SOME FAUST CODE
         if (e.dataTransfer.getData('URL') && e.dataTransfer.getData('URL').split(':').shift() != "file") {
-            this.uploadUrl(app, module, x, y, e);
+            var url = e.dataTransfer.getData('URL');
+            this.uploadUrl(app, module, x, y, url);
         }else if (e.dataTransfer.getData('URL').split(':').shift() != "file") {
 
             var dsp_code: string = e.dataTransfer.getData('text');
@@ -299,8 +302,7 @@ class App {
         }
     }
     //Upload Url
-    uploadUrl(app: App, module: ModuleClass, x: number, y: number, e: DragEvent) {
-        var url: string = e.dataTransfer.getData('URL');
+    uploadUrl(app: App, module: ModuleClass, x: number, y: number, url: string) {
         var filename: string = url.toString().split('/').pop();
         filename = filename.toString().split('.').shift();
 
@@ -383,6 +385,12 @@ class App {
         }
     }
 
+    dblTouchUpload(e: CustomEvent) {
+        App.showFullPageLoading();
+        var position: PositionModule = App.scene.positionDblTapModule();
+        this.uploadUrl(this, null, position.x, position.y, e.detail);
+
+    }
 
     //Check in Url if the app should be for kids
     static isAppPedagogique(): boolean {

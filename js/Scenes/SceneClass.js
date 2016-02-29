@@ -274,6 +274,12 @@ var Scene = (function () {
         position.y = window.innerHeight / 2;
         return position;
     };
+    Scene.prototype.positionDblTapModule = function () {
+        var position = new PositionModule();
+        position.x = window.innerWidth / 2;
+        position.y = window.innerHeight / 2;
+        return position;
+    };
     Scene.sceneName = "Patch";
     return Scene;
 })();

@@ -29,6 +29,7 @@
 var Library = (function () {
     function Library() {
         this.isSmaller = false;
+        this.isDblTouch = false;
     }
     Library.prototype.fillLibrary = function () {
         var _this = this;
@@ -48,6 +49,7 @@ var Library = (function () {
         this.fillSubMenu(jsonObject.exemples, jsonObject.exemple, jsonObject.exempleSupprStructure);
     };
     Library.prototype.fillSubMenu = function (options, subMenuId, stringStructureRemoved) {
+        var _this = this;
         var subMenu = document.getElementById(subMenuId);
         //subMenu.ondrag = App.preventdefault;
         for (var i = 0; i < options.length; i++) {
@@ -58,7 +60,8 @@ var Library = (function () {
             a.draggable = true;
             a.title = "Drag me ! Cliquez, glissez, d�posez !";
             a.onclick = App.preventdefault;
-            a.ondblclick = function () { alert(); };
+            //a.ondblclick = App.preventdefault;
+            a.ontouchstart = function (e) { _this.dbleTouchMenu(e); };
             //a.ondragstart = (e) => { this.lowerMenu() }
             //a.ondragend = (e) => { }
             //a.ondrag = (e) => { console.log(e.clientX) }
@@ -68,16 +71,24 @@ var Library = (function () {
         }
     };
     Library.prototype.dbleTouchMenu = function (touchEvent) {
+        var _this = this;
         var anchor = touchEvent.target;
         if (!this.isLibraryTouch) {
             this.isLibraryTouch = true;
+            this.previousTouchUrl = anchor.href;
+            window.setTimeout(function () { _this.isLibraryTouch = false; _this.previousTouchUrl = ""; }, 300);
         }
         else if (anchor.href == this.previousTouchUrl) {
+            this.dispatchEventLibrary(anchor.href);
             this.isLibraryTouch = false;
         }
         else {
             this.isLibraryTouch = false;
         }
+    };
+    Library.prototype.dispatchEventLibrary = function (url) {
+        var event = new CustomEvent("dbltouchlib", { 'detail': url });
+        document.dispatchEvent(event);
     };
     Library.prototype.initScroll = function () {
         this.libraryView.effetLibrarySelect.scrollTop += 1;

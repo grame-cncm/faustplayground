@@ -135,8 +135,8 @@ class SceneView{
     }
 
 // On Load And UnLoad Playground Scene
-    onloadNormalScene(scene: Scene):void {
-        scene.parent.setGeneralDragAndDrop(scene.parent);
+    onloadNormalScene(scene: Scene): void {
+        scene.parent.setGeneralAppListener(scene.parent);
 	    scene.unmuteScene();
     }
 
