@@ -18,12 +18,14 @@ var Menu = (function () {
         var _this = this;
         this.currentMenuChoices = MenuChoices.null;
         this.isMenuLow = false;
+        this.isFullScreen = false;
         this.menuView = new MenuView();
         this.menuView.init(htmlContainer);
         this.menuView.libraryButtonMenu.onclick = function () { _this.menuHandler(_this.menuChoices = MenuChoices.library); };
         this.menuView.exportButtonMenu.onclick = function () { _this.menuHandler(_this.menuChoices = MenuChoices.export); };
         this.menuView.helpButtonMenu.onclick = function () { _this.menuHandler(_this.menuChoices = MenuChoices.help); };
         this.menuView.closeButton.onclick = function () { _this.menuHandler(_this.menuChoices = MenuChoices.null); };
+        this.menuView.fullScreenButton.addEventListener("click", function () { _this.fullScreen(); });
         this.library = new Library();
         this.library.libraryView = this.menuView.libraryView;
         this.library.fillLibrary();
@@ -169,6 +171,33 @@ var Menu = (function () {
             this.library.libraryView.intrumentLibrary.style.height = "300px";
             this.menuView.menuContainer.removeEventListener("mouseover", this.mouseOverLowerMenu);
             this.isMenuLow = false;
+        }
+    };
+    Menu.prototype.fullScreen = function () {
+        var body = document.getElementsByTagName("body")[0];
+        if (this.isFullScreen) {
+            if (document.cancelFullScreen) {
+                document.cancelFullScreen();
+            }
+            else if (document.webkitCancelFullScreen) {
+                document.webkitCancelFullScreen();
+            }
+            else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            }
+            this.isFullScreen = false;
+        }
+        else {
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen();
+            }
+            else if (document.documentElement.webkitRequestFullscreen) {
+                document.documentElement.webkitRequestFullscreen();
+            }
+            else if (document.documentElement.mozRequestFullScreen) {
+                document.documentElement.mozRequestFullScreen();
+            }
+            this.isFullScreen = true;
         }
     };
     return Menu;

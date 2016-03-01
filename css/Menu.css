@@ -325,3 +325,16 @@ div#videoContainer {
     margin: 0 auto;
     width: 600px;
 }
+
+/*fullscreen button*/
+.buttonsLittleMenu {
+    height: 40px;
+    cursor: pointer;
+    margin: 0 1%;
+    width: 40px;
+    float: left;
+}
+div#fullScreenButton {
+    background: url("../img/fullscreen.png") no-repeat 50%;
+    background-size: 80%;
+}

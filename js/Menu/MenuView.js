@@ -28,9 +28,14 @@ var MenuView = (function () {
         helpButtonMenu.className = "buttonsMenu";
         helpButtonMenu.appendChild(document.createTextNode("Aide"));
         this.helpButtonMenu = helpButtonMenu;
+        var fullScreenButton = document.createElement("div");
+        fullScreenButton.id = "fullScreenButton";
+        fullScreenButton.className = "buttonsLittleMenu";
+        this.fullScreenButton = fullScreenButton;
         buttonsMenu.appendChild(libraryButtonMenu);
         buttonsMenu.appendChild(exportButtonMenu);
         buttonsMenu.appendChild(helpButtonMenu);
+        buttonsMenu.appendChild(fullScreenButton);
         this.HTMLButtonsMenu.push(libraryButtonMenu, exportButtonMenu, helpButtonMenu);
         var myScene = document.createElement("div");
         myScene.id = "PatchName";

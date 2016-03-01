@@ -5,8 +5,15 @@
 	/// <reference path="Export.ts"/>
 	/// <reference path="ExportView.ts"/>
 	/// <reference path="Help.ts"/>
-	/// <reference path="HelpView.ts"/>
+/// <reference path="HelpView.ts"/>
+interface Document {
+    cancelFullScreen: () => any;
+    mozCancelFullScreen: () => any;
+}
 
+interface HTMLElement {
+    mozRequestFullScreen: () => any;
+}
 
 enum MenuChoices { library, export, help, kids, null }
 
@@ -19,7 +26,7 @@ class Menu {
     help: Help;
     mouseOverLowerMenu: (event: MouseEvent) => void;
     isMenuLow: boolean = false;
-
+    isFullScreen: boolean = false;
 
     constructor(htmlContainer: HTMLElement) {
         this.menuView = new MenuView();
@@ -28,6 +35,7 @@ class Menu {
         this.menuView.exportButtonMenu.onclick = () => { this.menuHandler(this.menuChoices = MenuChoices.export) };
         this.menuView.helpButtonMenu.onclick = () => { this.menuHandler(this.menuChoices = MenuChoices.help) };
         this.menuView.closeButton.onclick = () => { this.menuHandler(this.menuChoices = MenuChoices.null) };
+        this.menuView.fullScreenButton.addEventListener("click", () => { this.fullScreen() });
         this.library = new Library();
         this.library.libraryView = this.menuView.libraryView;
         this.library.fillLibrary();
@@ -190,5 +198,29 @@ class Menu {
             this.menuView.menuContainer.removeEventListener("mouseover", this.mouseOverLowerMenu)
             this.isMenuLow = false;
         }
+    }
+    fullScreen() {
+        var body = <HTMLBodyElement>document.getElementsByTagName("body")[0];
+        if (this.isFullScreen) {
+            if (document.cancelFullScreen) {
+                document.cancelFullScreen()
+            } else if (document.webkitCancelFullScreen) {
+                document.webkitCancelFullScreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            }
+
+            this.isFullScreen = false;
+        } else {
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen();
+            } else if (document.documentElement.webkitRequestFullscreen) {
+                document.documentElement.webkitRequestFullscreen();
+            } else if (document.documentElement.mozRequestFullScreen) {
+                document.documentElement.mozRequestFullScreen()
+            }
+            this.isFullScreen = true;
+        }
+
     }
 }
