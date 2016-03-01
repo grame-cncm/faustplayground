@@ -117,13 +117,23 @@ class ModuleView {
     setInputNode(): void {
         this.fInputNode = document.createElement("div");
         this.fInputNode.className = "node node-input";
-        this.fInputNode.innerHTML = "<span class='node-button'>&nbsp;</span>";
+        this.fInputNode.draggable = false;
+        //this.fInputNode.innerHTML = "<span class='node-button'>&nbsp;</span>";
+        var spanNode: HTMLSpanElement = document.createElement("span");
+        spanNode.draggable = false;
+        spanNode.className = "node-button";
+        this.fInputNode.appendChild(spanNode);
         this.fModuleContainer.appendChild(this.fInputNode);
     }
     setOutputNode():void{
         this.fOutputNode = document.createElement("div");
         this.fOutputNode.className = "node node-output";
-        this.fOutputNode.innerHTML = "<span class='node-button'>&nbsp;</span>";
+        this.fOutputNode.draggable = false;
+        //this.fOutputNode.innerHTML = "<span class='node-button'>&nbsp;</span>";
+        var spanNode: HTMLSpanElement = document.createElement("span");
+        spanNode.draggable = false;
+        spanNode.className = "node-button";
+        this.fOutputNode.appendChild(spanNode);
         this.fModuleContainer.appendChild(this.fOutputNode);
     }
     deleteInputOutputNodes(): void {

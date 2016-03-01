@@ -232,18 +232,25 @@ class App {
         window.ondragover = function () { this.className = 'hover'; return false; };
         window.ondragend = function () { this.className = ''; return false; };
         document.ondragstart = () => { this.styleOnDragStart() };
-        document.ondragenter = () => { this.styleOnDragStart() };
+        document.ondragenter = (e) => {
+            var srcElement = <HTMLElement>e.srcElement
+            if (srcElement.className != null && srcElement.className == "node-button") {
+            } else {
+                this.styleOnDragStart()
+            }
+        };
 
         document.onscroll = () => { this.checkRealWindowSize() };
         var body: HTMLBodyElement = document.getElementsByTagName("body")[0]
         body.onresize = () => { this.checkRealWindowSize() };
 
         window.ondrop = (e) => {
+            var target = <HTMLElement>e.target;
             this.styleOnDragEnd()
             var x = e.clientX;
             var y = e.clientY;
             this.uploadOn(this, null, x, y, e);
-            this.menu.isMenuLow = true;
+            this.menu.isMenuLow = true;            
         };
 
         document.addEventListener("dbltouchlib", (e: CustomEvent) => { this.dblTouchUpload(e) });
@@ -278,10 +285,13 @@ class App {
         App.showFullPageLoading();
         //worker.postMessage("go");
         this.preventDefaultAction(e);
+        // CASE 0 : THE DROPPED OBJECT IS NOT WHAT WE WANT
+        if (e.dataTransfer.getData('URL') == "") {
 
+        }
 
         // CASE 1 : THE DROPPED OBJECT IS A URL TO SOME FAUST CODE
-        if (e.dataTransfer.getData('URL') && e.dataTransfer.getData('URL').split(':').shift() != "file") {
+        else if (e.dataTransfer.getData('URL') && e.dataTransfer.getData('URL').split(':').shift() != "file") {
             var url = e.dataTransfer.getData('URL');
             this.uploadUrl(app, module, x, y, url);
         }else if (e.dataTransfer.getData('URL').split(':').shift() != "file") {
@@ -297,8 +307,8 @@ class App {
                 this.uploadFile2(app, module, x, y, e, dsp_code)
             }
         } else { // CASE 4 : ANY OTHER STRANGE THING
-            //app.terminateUpload();
-            //window.alert("THIS OBJECT IS NOT FAUST COMPILABLE");
+            app.terminateUpload();
+            window.alert("THIS OBJECT IS NOT FAUST COMPILABLE");
         }
     }
     //Upload Url

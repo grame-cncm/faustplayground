@@ -172,11 +172,19 @@ var App = (function () {
         window.ondragover = function () { this.className = 'hover'; return false; };
         window.ondragend = function () { this.className = ''; return false; };
         document.ondragstart = function () { _this.styleOnDragStart(); };
-        document.ondragenter = function () { _this.styleOnDragStart(); };
+        document.ondragenter = function (e) {
+            var srcElement = e.srcElement;
+            if (srcElement.className != null && srcElement.className == "node-button") {
+            }
+            else {
+                _this.styleOnDragStart();
+            }
+        };
         document.onscroll = function () { _this.checkRealWindowSize(); };
         var body = document.getElementsByTagName("body")[0];
         body.onresize = function () { _this.checkRealWindowSize(); };
         window.ondrop = function (e) {
+            var target = e.target;
             _this.styleOnDragEnd();
             var x = e.clientX;
             var y = e.clientY;
@@ -205,8 +213,10 @@ var App = (function () {
         App.showFullPageLoading();
         //worker.postMessage("go");
         this.preventDefaultAction(e);
-        // CASE 1 : THE DROPPED OBJECT IS A URL TO SOME FAUST CODE
-        if (e.dataTransfer.getData('URL') && e.dataTransfer.getData('URL').split(':').shift() != "file") {
+        // CASE 0 : THE DROPPED OBJECT IS NOT WHAT WE WANT
+        if (e.dataTransfer.getData('URL') == "") {
+        }
+        else if (e.dataTransfer.getData('URL') && e.dataTransfer.getData('URL').split(':').shift() != "file") {
             var url = e.dataTransfer.getData('URL');
             this.uploadUrl(app, module, x, y, url);
         }
@@ -221,6 +231,8 @@ var App = (function () {
             }
         }
         else {
+            app.terminateUpload();
+            window.alert("THIS OBJECT IS NOT FAUST COMPILABLE");
         }
     };
     //Upload Url

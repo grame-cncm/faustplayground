@@ -46,13 +46,13 @@ class Drag {
 
 
     getDraggingMouseEvent(mouseEvent: MouseEvent, module: ModuleClass, draggingFunction: (el: HTMLElement, x: number, y: number, module: ModuleClass) => void) {
-        //mouseEvent.preventDefault()
-        //mouseEvent.stopPropagation();
+        
         var el = <HTMLElement>mouseEvent.target;
         var x = mouseEvent.clientX + window.scrollX;
         var y = mouseEvent.clientY + window.scrollY;
         draggingFunction(el, x, y, module);
-
+        mouseEvent.preventDefault()
+        //mouseEvent.stopPropagation();
     }
 
     getDraggingTouchEvent(touchEvent: TouchEvent, module: ModuleClass, draggingFunction: (el: HTMLElement, x: number, y: number, module: ModuleClass) => void) {

@@ -22,12 +22,12 @@ var Drag = (function () {
         this.isDragConnector = false;
     }
     Drag.prototype.getDraggingMouseEvent = function (mouseEvent, module, draggingFunction) {
-        //mouseEvent.preventDefault()
-        //mouseEvent.stopPropagation();
         var el = mouseEvent.target;
         var x = mouseEvent.clientX + window.scrollX;
         var y = mouseEvent.clientY + window.scrollY;
         draggingFunction(el, x, y, module);
+        mouseEvent.preventDefault();
+        //mouseEvent.stopPropagation();
     };
     Drag.prototype.getDraggingTouchEvent = function (touchEvent, module, draggingFunction) {
         //touchEvent.preventDefault()
