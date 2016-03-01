@@ -180,7 +180,9 @@ var App = (function () {
                 _this.styleOnDragStart();
             }
         };
-        document.onscroll = function () { _this.checkRealWindowSize(); };
+        document.onscroll = function () {
+            _this.checkRealWindowSize();
+        };
         var body = document.getElementsByTagName("body")[0];
         body.onresize = function () { _this.checkRealWindowSize(); };
         window.ondrop = function (e) {

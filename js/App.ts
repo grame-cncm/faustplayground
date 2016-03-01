@@ -240,7 +240,9 @@ class App {
             }
         };
 
-        document.onscroll = () => { this.checkRealWindowSize() };
+        document.onscroll = () => {
+            this.checkRealWindowSize()
+        };
         var body: HTMLBodyElement = document.getElementsByTagName("body")[0]
         body.onresize = () => { this.checkRealWindowSize() };
 

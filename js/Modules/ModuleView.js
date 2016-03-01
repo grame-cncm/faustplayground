@@ -48,11 +48,13 @@ var ModuleView = (function () {
             var fCloseButton = document.createElement("div");
             fCloseButton.draggable = false;
             fCloseButton.className = "close";
-            fCloseButton.onclick = function () { module.deleteModule(); };
+            fCloseButton.addEventListener("click", function () { module.deleteModule(); });
+            fCloseButton.addEventListener("touchend", function () { module.deleteModule(); });
             fModuleContainer.appendChild(fCloseButton);
             var fEditImg = document.createElement("div");
             fEditImg.className = "edit";
-            fEditImg.onclick = function () { module.edit(module); };
+            fEditImg.addEventListener("click", function () { module.edit(module); });
+            fEditImg.addEventListener("touchend", function () { module.edit(module); });
             fEditImg.draggable = false;
             this.fEditImg = fEditImg;
             fFooter.appendChild(fEditImg);

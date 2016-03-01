@@ -55,6 +55,7 @@ var Drag = (function () {
         else {
             draggingFunction(null, null, null, module);
         }
+        touchEvent.preventDefault();
     };
     Drag.prototype.startDraggingModule = function (el, x, y, module) {
         //   Avoid dragging ModuleClass when it's a Connector that needs dragging
@@ -298,8 +299,8 @@ var Drag = (function () {
         // Get cursor position with respect to the page.
         var x1 = this.cursorStartX;
         var y1 = this.cursorStartY;
-        var x2 = x + window.scrollX;
-        var y2 = y + window.scrollY;
+        var x2 = x; //+ window.scrollX;
+        var y2 = y; //+ window.scrollY;
         var d;
         if (!this.isOriginInput) {
             d = this.setCurvePath(x1, y1, x2, y2, this.calculBezier1(x1, x2), this.calculBezier2(x1, x2));
@@ -361,7 +362,7 @@ var Drag = (function () {
                 break;
             }
         }
-        if (arrivingHTMLParentNode.classList.contains("node")) {
+        if (arrivingHTMLParentNode != undefined && arrivingHTMLParentNode.classList.contains("node")) {
             var outputModule = module.sceneParent.getAudioOutput();
             var inputModule = module.sceneParent.getAudioInput();
             if ((this.isOriginInput && outputModule.moduleView.isPointInOutput(x, y)) || outputModule.moduleView.isPointInInput(x, y) || arrivingHTMLParentNode.offsetParent.getAttribute("id") == "moduleOutput") {

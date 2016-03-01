@@ -79,6 +79,7 @@ class Drag {
         } else {
             draggingFunction(null, null, null, module);
         }
+        touchEvent.preventDefault();
     }
 
     startDraggingModule(el: HTMLElement, x: number, y: number, module: ModuleClass): void {
@@ -411,8 +412,8 @@ class Drag {
         // Get cursor position with respect to the page.
         var x1: number = this.cursorStartX;
         var y1: number = this.cursorStartY;
-        var x2: number = x + window.scrollX;
-        var y2: number = y + window.scrollY;
+        var x2: number = x //+ window.scrollX;
+        var y2: number = y //+ window.scrollY;
         var d: string;
         if (!this.isOriginInput) {
             d = this.setCurvePath(x1, y1, x2, y2, this.calculBezier1(x1, x2), this.calculBezier2(x1, x2))
@@ -483,7 +484,7 @@ class Drag {
 		    }
 	    }	
 
-        if (arrivingHTMLParentNode.classList.contains("node")) {
+        if (arrivingHTMLParentNode!=undefined&&arrivingHTMLParentNode.classList.contains("node")) {
             var outputModule = module.sceneParent.getAudioOutput();
             var inputModule = module.sceneParent.getAudioInput();
             if ((this.isOriginInput && outputModule.moduleView.isPointInOutput(x, y)) || outputModule.moduleView.isPointInInput(x, y) || arrivingHTMLParentNode.offsetParent.getAttribute("id") == "moduleOutput") {

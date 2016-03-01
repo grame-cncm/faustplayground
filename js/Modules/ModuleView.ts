@@ -74,11 +74,13 @@ class ModuleView {
             var fCloseButton: HTMLDivElement = document.createElement("div");
             fCloseButton.draggable = false;
             fCloseButton.className = "close";
-            fCloseButton.onclick = function () { module.deleteModule(); };
+            fCloseButton.addEventListener("click", ()=> { module.deleteModule(); });
+            fCloseButton.addEventListener("touchend", () => { module.deleteModule(); });
             fModuleContainer.appendChild(fCloseButton);
             var fEditImg = <HTMLfEdit>document.createElement("div");
             fEditImg.className = "edit"
-            fEditImg.onclick = function () { module.edit(module); };
+            fEditImg.addEventListener("click", () => { module.edit(module) });
+            fEditImg.addEventListener("touchend", () => { module.edit(module) });
             fEditImg.draggable = false;
             this.fEditImg = fEditImg;
             fFooter.appendChild(fEditImg);
