@@ -69,30 +69,39 @@ class ModuleClass implements IModule {
 
     /***************  PRIVATE METHODS  ******************************/
 
-    private dragCallback(event: MouseEvent, module: ModuleClass): void {
+    private dragCallback(event: Event, module: ModuleClass): void {
 
-        if (event.type == "mousedown" || event.type == "touchstart") {
-            module.drag.startDraggingModule(event, module);
-        } else if (event.type == "mouseup" || event.type == "touchend") {
-            module.drag.stopDraggingModule(event, module);
-        } else if (event.type == "mousemove" || event.type == "touchmove") {
-            module.drag.whileDraggingModule(event, module);
+        if (event.type == "mousedown") {
+            module.drag.getDraggingMouseEvent(<MouseEvent>event, module, (el, x, y, module) => { module.drag.startDraggingModule(el, x, y, module) });
+        } else if (event.type == "mouseup" ) {
+            module.drag.getDraggingMouseEvent(<MouseEvent>event, module, (el, x, y, module) => { module.drag.stopDraggingModule(el, x, y, module) });
+        } else if (event.type == "mousemove") {
+            module.drag.getDraggingMouseEvent(<MouseEvent>event, module, (el, x, y, module) => { module.drag.whileDraggingModule(el, x, y, module) });
+        } else if (event.type == "touchstart") {
+            module.drag.getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module) => { module.drag.startDraggingModule(el, x, y, module) });
+        } else if (event.type == "touchmove") {
+            module.drag.getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module) => { module.drag.whileDraggingModule(el, x, y, module) })
+        } else if (event.type == "touchend") {
+            module.drag.getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module) => { module.drag.stopDraggingModule(el, x, y, module) });
         }
-        //else if (event.type == "touchstart") {
-        //    module.drag.startDraggingModule(event, module);
-        //} else if (event.type == "touchmove") {
-        //}else if (event.type=="touchend")
         
     }
 
-    private dragCnxCallback(event: MouseEvent, module: ModuleClass): void {
+    private dragCnxCallback(event: Event, module: ModuleClass): void {
 
         if (event.type == "mousedown") {
-            module.drag.startDraggingConnector(module, event);
+            module.drag.getDraggingMouseEvent(<MouseEvent>event, module, (el, x, y, module) => { module.drag.startDraggingConnector(el, x, y, module) });
         } else if (event.type == "mouseup") {
-            module.drag.stopDraggingConnector(module, event);
+            module.drag.getDraggingMouseEvent(<MouseEvent>event, module, (el, x, y, module) => { module.drag.stopDraggingConnector(el, x, y, module) });
         } else if (event.type == "mousemove") {
-            module.drag.whileDraggingConnector(module, event);
+            module.drag.getDraggingMouseEvent(<MouseEvent>event, module, (el, x, y, module) => { module.drag.whileDraggingConnector(el, x, y, module) });
+        }
+        else if (event.type == "touchstart") {
+            module.drag.getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module) => { module.drag.startDraggingConnector(el, x, y, module) });
+        } else if (event.type == "touchmove") {
+            module.drag.getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module) => { module.drag.whileDraggingConnector(el, x, y, module) })
+        } else if (event.type == "touchend") {
+            module.drag.getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module) => { module.drag.stopDraggingConnector(el, x, y, module) });
         }
     }
 
@@ -311,11 +320,13 @@ class ModuleClass implements IModule {
         if (this.moduleFaust.fDSP.getNumInputs() > 0 && this.moduleView.fName != "input") {
             this.moduleView.setInputNode();
             this.addCnxListener(this.moduleView.fInputNode, "mousedown", module);
+            this.addCnxListener(this.moduleView.fInputNode, "touchstart", module);
 		}
 
         if (this.moduleFaust.fDSP.getNumOutputs() > 0 && this.moduleView.fName != "output") {
             this.moduleView.setOutputNode();
             this.addCnxListener(this.moduleView.fOutputNode, "mousedown", module);
+            this.addCnxListener(this.moduleView.fOutputNode, "touchstart", module);
 		}		
     }
 
@@ -323,12 +334,16 @@ class ModuleClass implements IModule {
     setInputOutputNodes(input: HTMLDivElement, output: HTMLDivElement): void{
         var module: ModuleClass = this;
         this.moduleView.fInputNode = input;
-        if (this.moduleView.fInputNode)
+        if (this.moduleView.fInputNode) {
             this.addCnxListener(this.moduleView.fInputNode, "mousedown", module);
+            this.addCnxListener(this.moduleView.fInputNode, "touchstart", module);
+        }
 
         this.moduleView.fOutputNode = output;
-        if (this.moduleView.fOutputNode)
+        if (this.moduleView.fOutputNode) {
             this.addCnxListener(this.moduleView.fOutputNode, "mousedown", module);
+            this.addCnxListener(this.moduleView.fOutputNode, "touchstart", module);
+        }
     }
 	
     /****************** ADD/REMOVE ACTION LISTENERS **********************/
@@ -344,7 +359,7 @@ class ModuleClass implements IModule {
         }
     }
     addCnxListener(div: HTMLElement, type: string, module: ModuleClass): void {
-        if (type == "mousedown") {
+        if (type == "mousedown" || type == "touchstart") {
             div.addEventListener(type, module.eventConnectorHandler, true);
         } else {
             document.addEventListener(type, module.eventConnectorHandler, true);
