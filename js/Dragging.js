@@ -22,23 +22,25 @@ var Drag = (function () {
         this.isDragConnector = false;
     }
     Drag.prototype.getDraggingMouseEvent = function (mouseEvent, module, draggingFunction) {
+        var event = mouseEvent;
         var el = mouseEvent.target;
         var x = mouseEvent.clientX + window.scrollX;
         var y = mouseEvent.clientY + window.scrollY;
-        draggingFunction(el, x, y, module);
-        mouseEvent.preventDefault();
+        draggingFunction(el, x, y, module, event);
+        //mouseEvent.preventDefault()
         //mouseEvent.stopPropagation();
     };
     Drag.prototype.getDraggingTouchEvent = function (touchEvent, module, draggingFunction) {
         //touchEvent.preventDefault()
         //touchEvent.stopPropagation();
+        var event = touchEvent;
         if (touchEvent.touches.length > 0) {
             for (var i = 0; i < touchEvent.touches.length; i++) {
                 var touch = touchEvent.touches[i];
                 var el = touch.target;
                 var x = touch.clientX + window.scrollX;
                 var y = touch.clientY + window.scrollY;
-                draggingFunction(el, x, y, module);
+                draggingFunction(el, x, y, module, event);
                 this.isDragConnector = true;
             }
         }
@@ -47,17 +49,17 @@ var Drag = (function () {
                 var touch = touchEvent.changedTouches[i];
                 var x = touch.clientX + window.scrollX;
                 var y = touch.clientY + window.scrollY;
-                var el = document.elementFromPoint(x, y);
-                draggingFunction(el, x, y, module);
+                var el = document.elementFromPoint(x - scrollX, y - scrollY);
+                draggingFunction(el, x, y, module, event);
             }
             this.isDragConnector = true;
         }
         else {
-            draggingFunction(null, null, null, module);
+            draggingFunction(null, null, null, module, event);
         }
-        touchEvent.preventDefault();
+        //touchEvent.preventDefault();
     };
-    Drag.prototype.startDraggingModule = function (el, x, y, module) {
+    Drag.prototype.startDraggingModule = function (el, x, y, module, event) {
         //   Avoid dragging ModuleClass when it's a Connector that needs dragging
         if (el.tagName == "SELECT" || el.classList.contains("node-button"))
             return;
@@ -88,9 +90,9 @@ var Drag = (function () {
         module.addListener("mouseup", module);
         module.addListener("touchmove", module);
         module.addListener("touchend", module);
-        //event.preventDefault();
+        event.preventDefault();
     };
-    Drag.prototype.whileDraggingModule = function (el, x, y, module) {
+    Drag.prototype.whileDraggingModule = function (el, x, y, module, event) {
         var moduleContainer = module.moduleView.getModuleContainer();
         //console.log(window.innerHeight);
         console.log(window.pageYOffset);
@@ -142,7 +144,7 @@ var Drag = (function () {
         }
         //event.preventDefault();
     };
-    Drag.prototype.stopDraggingModule = function (el, x, y, module) {
+    Drag.prototype.stopDraggingModule = function (el, x, y, module, event) {
         // Stop capturing mousemove and mouseup events.
         module.removeListener("mousemove", null, document);
         module.removeListener("mouseup", null, document);
@@ -284,17 +286,17 @@ var Drag = (function () {
         this.connector.connectorShape.parentNode.removeChild(this.connector.connectorShape);
         this.connector.connectorShape = null;
     };
-    Drag.prototype.startDraggingConnector = function (target, x, y, module) {
+    Drag.prototype.startDraggingConnector = function (target, x, y, module, event) {
         this.startDraggingConnection(module, target);
         // Capture mousemove and mouseup events on the page.
         module.addCnxListener(target, "mousemove", module);
         module.addCnxListener(target, "mouseup", module);
         module.addCnxListener(target, "touchmove", module);
         module.addCnxListener(target, "touchend", module);
-        //event.preventDefault();
+        event.preventDefault();
         //event.stopPropagation();
     };
-    Drag.prototype.whileDraggingConnector = function (target, x, y, module) {
+    Drag.prototype.whileDraggingConnector = function (target, x, y, module, event) {
         var toElem = target;
         // Get cursor position with respect to the page.
         var x1 = this.cursorStartX;
@@ -343,7 +345,7 @@ var Drag = (function () {
                 }
             }
         }
-        //event.preventDefault();
+        event.preventDefault();
         //event.stopPropagation();
     };
     Drag.prototype.stopDraggingConnector = function (target, x, y, module) {

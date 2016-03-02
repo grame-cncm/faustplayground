@@ -45,26 +45,28 @@ class Drag {
     isDragConnector: boolean=false;
 
 
-    getDraggingMouseEvent(mouseEvent: MouseEvent, module: ModuleClass, draggingFunction: (el: HTMLElement, x: number, y: number, module: ModuleClass) => void) {
-        
+    getDraggingMouseEvent(mouseEvent: MouseEvent, module: ModuleClass, draggingFunction: (el: HTMLElement, x: number, y: number, module: ModuleClass, event: Event) => void) {
+        var event = <Event>mouseEvent;
         var el = <HTMLElement>mouseEvent.target;
         var x = mouseEvent.clientX + window.scrollX;
         var y = mouseEvent.clientY + window.scrollY;
-        draggingFunction(el, x, y, module);
-        mouseEvent.preventDefault()
+        draggingFunction(el, x, y, module,event);
+        //mouseEvent.preventDefault()
         //mouseEvent.stopPropagation();
     }
 
-    getDraggingTouchEvent(touchEvent: TouchEvent, module: ModuleClass, draggingFunction: (el: HTMLElement, x: number, y: number, module: ModuleClass) => void) {
+    getDraggingTouchEvent(touchEvent: TouchEvent, module: ModuleClass, draggingFunction: (el: HTMLElement, x: number, y: number, module: ModuleClass, event: Event) => void) {
         //touchEvent.preventDefault()
         //touchEvent.stopPropagation();
+        var event = <Event>touchEvent;
+
         if (touchEvent.touches.length > 0) {
             for (var i = 0; i < touchEvent.touches.length; i++) {
                 var touch: Touch = touchEvent.touches[i];
                 var el = <HTMLElement>touch.target;
                 var x = touch.clientX + window.scrollX;
                 var y = touch.clientY + window.scrollY;
-                draggingFunction(el, x, y, module);
+                draggingFunction(el, x, y, module,event);
                 this.isDragConnector = true
             }
         } else if (this.isDragConnector) {
@@ -72,17 +74,18 @@ class Drag {
                 var touch: Touch = touchEvent.changedTouches[i];
                 var x = touch.clientX + window.scrollX;
                 var y = touch.clientY + window.scrollY;
-                var el = <HTMLElement>document.elementFromPoint(x, y);
-                draggingFunction(el, x, y, module);
+                var el = <HTMLElement>document.elementFromPoint(x - scrollX, y - scrollY);
+
+                draggingFunction(el, x, y, module,event);
             }
             this.isDragConnector = true
         } else {
-            draggingFunction(null, null, null, module);
+            draggingFunction(null, null, null, module,event);
         }
-        touchEvent.preventDefault();
+        //touchEvent.preventDefault();
     }
 
-    startDraggingModule(el: HTMLElement, x: number, y: number, module: ModuleClass): void {
+    startDraggingModule(el: HTMLElement, x: number, y: number, module: ModuleClass, event: Event): void {
 
   	
     //   Avoid dragging ModuleClass when it's a Connector that needs dragging
@@ -123,10 +126,10 @@ class Drag {
         module.addListener("touchmove", module);
         module.addListener("touchend", module);
 
-        //event.preventDefault();
+        event.preventDefault();
     }
 
-    whileDraggingModule(el: HTMLElement, x: number, y: number, module: ModuleClass): void {
+    whileDraggingModule(el: HTMLElement, x: number, y: number, module: ModuleClass,event:Event): void {
 
 
         var moduleContainer = module.moduleView.getModuleContainer();
@@ -201,7 +204,7 @@ class Drag {
         //event.preventDefault();
     }
 
-    stopDraggingModule(el: HTMLElement, x: number, y: number, module: ModuleClass):void {
+    stopDraggingModule(el: HTMLElement, x: number, y: number, module: ModuleClass, event: Event): void {
       // Stop capturing mousemove and mouseup events.
         module.removeListener("mousemove", null, document);
         module.removeListener("mouseup", null, document);
@@ -390,7 +393,7 @@ class Drag {
         this.connector.connectorShape = null;
     }
 
-    startDraggingConnector(target: HTMLElement, x: number, y: number, module: ModuleClass): void {
+    startDraggingConnector(target: HTMLElement, x: number, y: number, module: ModuleClass, event: Event): void {
         this.startDraggingConnection(module,target);
 
         // Capture mousemove and mouseup events on the page.
@@ -399,13 +402,13 @@ class Drag {
         module.addCnxListener(target, "touchmove", module);
         module.addCnxListener(target, "touchend", module);
 
-        //event.preventDefault();
+        event.preventDefault();
 	    //event.stopPropagation();
     }
 
 
 
-    whileDraggingConnector(target: HTMLElement, x: number, y: number, module: ModuleClass) {
+    whileDraggingConnector(target: HTMLElement, x: number, y: number, module: ModuleClass,event:Event) {
 
         var toElem: HTMLInterfaceContainer = <HTMLInterfaceContainer>target;
 
@@ -460,7 +463,7 @@ class Drag {
 			    }
 		    }
 	    }
-        //event.preventDefault();
+        event.preventDefault();
 	    //event.stopPropagation();
     }
 
