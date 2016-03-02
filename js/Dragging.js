@@ -347,6 +347,8 @@ var Drag = (function () {
         //event.stopPropagation();
     };
     Drag.prototype.stopDraggingConnector = function (target, x, y, module) {
+        x = x - window.scrollX;
+        y = y - window.scrollY;
         // Stop capturing mousemove and mouseup events.
         module.removeCnxListener(target, "mousemove", module);
         module.removeCnxListener(target, "mouseup", module);
