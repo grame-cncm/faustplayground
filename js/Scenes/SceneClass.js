@@ -14,27 +14,24 @@
 /// <reference path="../App.ts"/>
 "use strict";
 var Scene = (function () {
-    function Scene(identifiant, parent, onload, onunload, sceneView) {
+    function Scene(identifiant, parent, /*onload?: (s: Scene) => void, onunload?: (s: Scene) => void, */ sceneView) {
         this.isMute = false;
         //-- Modules contained in the scene
         this.fModuleList = [];
         this.parent = parent;
-        this.fSceneContainer = document.createElement("div");
-        this.fSceneContainer.id = identifiant;
-        if (onload) {
-            this.onload = onload;
-        }
-        if (onunload) {
-            this.onunload = onunload;
-        }
+        this.sceneView = new SceneView();
+        this.sceneView.initNormalScene(this);
+        this.integrateSceneInBody();
+        this.integrateInput();
+        this.integrateOutput();
     }
     /******************CALLBACKS FOR LOADING/UNLOADING SCENE **************/
     Scene.prototype.onload = function (s) { };
     Scene.prototype.onunload = function (s) { };
-    Scene.prototype.getSceneContainer = function () { return this.fSceneContainer; };
+    Scene.prototype.getSceneContainer = function () { return this.sceneView.fSceneContainer; };
     /************************* SHOW/HIDE SCENE ***************************/
-    Scene.prototype.showScene = function () { this.fSceneContainer.style.visibility = "visible"; };
-    Scene.prototype.hideScene = function () { this.fSceneContainer.style.visibility = "hidden"; };
+    Scene.prototype.showScene = function () { this.sceneView.fSceneContainer.style.visibility = "visible"; };
+    Scene.prototype.hideScene = function () { this.sceneView.fSceneContainer.style.visibility = "hidden"; };
     /*********************** LOAD/UNLOAD SCENE ***************************/
     Scene.prototype.loadScene = function () {
         this.onload(this);
@@ -98,38 +95,36 @@ var Scene = (function () {
         this.muteScene();
     };
     Scene.prototype.integrateSceneInBody = function () {
-        document.body.appendChild(this.fSceneContainer);
+        document.body.appendChild(this.sceneView.fSceneContainer);
     };
     /*************** ACTIONS ON AUDIO IN/OUTPUT ***************************/
-    Scene.prototype.integrateInput = function (callBackIntegrateOutput) {
+    Scene.prototype.integrateInput = function () {
         var positionInput = this.positionInputModule();
         this.fAudioInput = new ModuleClass(App.idX++, positionInput.x, positionInput.y, "input", this, this.sceneView.inputOutputModuleContainer, this.removeModule);
         var scene = this;
-        this.parent.compileFaust("input", "process=_,_;", positionInput.x, positionInput.y, function callback(factory, scene) { scene.integrateAudioInput(factory, scene); });
+        this.parent.compileFaust("input", "process=_,_;", positionInput.x, positionInput.y, function (factory) { scene.integrateAudioInput(factory); });
         this.fAudioInput.addInputOutputNodes();
-        callBackIntegrateOutput();
     };
-    Scene.prototype.integrateOutput = function (callBackKeepGoingOnWithInit) {
+    Scene.prototype.integrateOutput = function () {
         var positionOutput = this.positionOutputModule();
         var scene = this;
         this.fAudioOutput = new ModuleClass(App.idX++, positionOutput.x, positionOutput.y, "output", this, this.sceneView.inputOutputModuleContainer, this.removeModule);
         this.addMuteOutputListner(this.fAudioOutput);
-        this.parent.compileFaust("output", "process=_,_;", positionOutput.x, positionOutput.y, function callback(factory, scene) { scene.integrateAudioOutput(factory, scene); });
+        this.parent.compileFaust("output", "process=_,_;", positionOutput.x, positionOutput.y, function (factory) { scene.integrateAudioOutput(factory); });
         this.fAudioOutput.addInputOutputNodes();
-        callBackKeepGoingOnWithInit();
     };
-    Scene.prototype.integrateAudioOutput = function (factory, scene) {
-        if (scene.fAudioOutput) {
-            scene.fAudioOutput.moduleFaust.setSource("process=_,_;");
-            scene.fAudioOutput.createDSP(factory);
-            scene.parent.activateAudioOutput(scene.fAudioOutput);
+    Scene.prototype.integrateAudioOutput = function (factory) {
+        if (this.fAudioOutput) {
+            this.fAudioOutput.moduleFaust.setSource("process=_,_;");
+            this.fAudioOutput.createDSP(factory);
+            this.parent.activateAudioOutput(this.fAudioOutput);
         }
     };
-    Scene.prototype.integrateAudioInput = function (factory, scene) {
-        if (scene.fAudioInput) {
-            scene.fAudioInput.moduleFaust.setSource("process=_,_;");
-            scene.fAudioInput.createDSP(factory);
-            scene.parent.activateAudioInput(scene.parent);
+    Scene.prototype.integrateAudioInput = function (factory) {
+        if (this.fAudioInput) {
+            this.fAudioInput.moduleFaust.setSource("process=_,_;");
+            this.fAudioInput.createDSP(factory);
+            this.parent.activateAudioInput(this);
         }
     };
     Scene.prototype.getAudioOutput = function () { return this.fAudioOutput; };

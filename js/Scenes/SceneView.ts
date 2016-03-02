@@ -23,10 +23,13 @@ class SceneView{
     inputOutputModuleContainer: HTMLDivElement;
     sceneSensor: HTMLDivElement;
     dropElementScene: HTMLElement;
+    fSceneContainer: HTMLDivElement;
+
 
     initNormalScene(scene: Scene) {
-        var container: HTMLDivElement = scene.getSceneContainer();
-
+        var container = document.createElement("div");
+        container.id = "Normal";
+        
 
         //var sceneSensor: HTMLDivElement = document.createElement("div");
         //sceneSensor.id = "sceneSensor";
@@ -108,16 +111,16 @@ class SceneView{
         
 
         container.appendChild(dropElementScene);
-        scene.integrateSceneInBody();
+        this.fSceneContainer = container;
         var playgroundView: SceneView = this;
-        scene.integrateInput(function () {
-            scene.integrateOutput(function () {
-                //scene.getAudioOutput().setInputOutputNodes(node, null);
+        //scene.integrateInput(function () {
+        //    scene.integrateOutput(function () {
+        //        //scene.getAudioOutput().setInputOutputNodes(node, null);
 
-                playgroundView.onloadNormalScene(scene);
-                //playgroundView.expor.uploadTargets();
-            });
-        });
+        //        playgroundView.onloadNormalScene(scene);
+        //        //playgroundView.expor.uploadTargets();
+        //    });
+        //});
 
 
 
@@ -135,14 +138,12 @@ class SceneView{
     }
 
 // On Load And UnLoad Playground Scene
-    onloadNormalScene(scene: Scene): void {
-        scene.parent.setGeneralAppListener(scene.parent);
-	    scene.unmuteScene();
-    }
+    //onloadNormalScene(scene: Scene): void {
+    //    scene.parent.setGeneralAppListener(scene.parent);
+	   // scene.unmuteScene();
+    //}
 
-    onunloadNormalScene(scene:Scene):void{
-	    scene.muteScene();
-    }
+
 
 }
 

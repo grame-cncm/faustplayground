@@ -53,9 +53,10 @@ var App = (function () {
     };
     App.prototype.createAllScenes = function () {
         var sceneView = new SceneView();
-        App.scene = new Scene("Normal", this, sceneView.onloadNormalScene, sceneView.onunloadNormalScene, sceneView);
-        App.scene.sceneView = sceneView;
-        sceneView.initNormalScene(App.scene);
+        App.scene = new Scene("Normal", this, sceneView);
+        //App.scene.sceneView = sceneView;
+        this.setGeneralAppListener(this);
+        //sceneView.initNormalScene(App.scene);
         App.currentScene = 0;
     };
     App.prototype.createMenu = function () {
@@ -69,20 +70,21 @@ var App = (function () {
     /********************************************************************
     **********************  ACTIVATE PHYSICAL IN/OUTPUT *****************
     ********************************************************************/
-    App.prototype.activateAudioInput = function (app) {
+    App.prototype.activateAudioInput = function (scene) {
+        var _this = this;
         var navigatorLoc = navigator;
         if (!navigatorLoc.getUserMedia) {
             navigatorLoc.getUserMedia = navigatorLoc.webkitGetUserMedia || navigatorLoc.mozGetUserMedia;
         }
         if (navigatorLoc.getUserMedia) {
-            navigatorLoc.getUserMedia({ audio: true }, function (mediaStream) { app.getDevice(mediaStream, app); }, function (e) {
-                App.scene.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)";
-                App.scene.fAudioInput.moduleView.fInterfaceContainer.title = "Error getting audio input";
+            navigatorLoc.getUserMedia({ audio: true }, function (mediaStream) { _this.getDevice(mediaStream, _this); }, function (e) {
+                scene.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)";
+                scene.fAudioInput.moduleView.fInterfaceContainer.title = "Error getting audio input";
             });
         }
         else {
-            App.scene.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)";
-            App.scene.fAudioInput.moduleView.fInterfaceContainer.title = "Audio input API not available";
+            scene.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)";
+            scene.fAudioInput.moduleView.fInterfaceContainer.title = "Audio input API not available";
         }
     };
     App.prototype.getDevice = function (device, app) {
@@ -124,32 +126,34 @@ var App = (function () {
         //    sourcecode, args
         //})
         //worker.postMessage(messageJson)
-        this.factory = faust.createDSPFactory(sourcecode, args);
-        callback(this.factory, App.scene, this);
+        this.factory = faust.createDSPFactory(sourcecode, args /*, (factory) => { callback(factory, App.scene, this) }*/);
+        ;
+        callback(this.factory);
         if (currentScene) {
             currentScene.unmuteScene();
         }
         ;
     };
-    App.prototype.createModule = function (factory, scene, app) {
+    App.prototype.createModule = function (factory) {
+        var _this = this;
         if (!factory) {
             alert(faust.getErrorMessage());
             return null;
         }
         // can't it be just window.scenes[window.currentScene] ???
         //if (App.isTooltipEnabled)
-        var module = new ModuleClass(App.idX++, app.tempModuleX, app.tempModuleY, app.tempModuleName, scene, document.getElementById("modules"), scene.removeModule);
+        var module = new ModuleClass(App.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, App.scene, document.getElementById("modules"), App.scene.removeModule);
         //else
         //    faustModule = new ModuleClass(this.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), this.scenes[0].removeModule);
-        module.moduleFaust.setSource(app.tempModuleSourceCode);
+        module.moduleFaust.setSource(this.tempModuleSourceCode);
         module.createDSP(factory);
         module.createFaustInterface();
         module.addInputOutputNodes();
-        if (app.tempModuleName != "input" && app.tempModuleName != "output") {
+        if (this.tempModuleName != "input" && this.tempModuleName != "output") {
             module.moduleView.fModuleContainer.ondrop = function (e) {
                 e.stopPropagation();
-                app.styleOnDragEnd();
-                app.uploadOn(app, module, 0, 0, e);
+                _this.styleOnDragEnd();
+                _this.uploadOn(_this, module, 0, 0, e);
             };
         }
         module.moduleView.fModuleContainer.ondragover = function () {
@@ -160,7 +164,7 @@ var App = (function () {
             module.moduleView.fModuleContainer.style.opacity = "0.5";
             module.moduleView.fModuleContainer.style.boxShadow = "0 5px 10px rgba(0, 0, 0, 0.4)";
         };
-        scene.addModule(module);
+        App.scene.addModule(module);
         App.hideFullPageLoading();
     };
     /********************************************************************
@@ -247,7 +251,7 @@ var App = (function () {
             if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
                 var dsp_code = "process = vgroup(\"" + filename + "\",environment{" + xmlhttp.responseText + "}.process);";
                 if (module == null) {
-                    app.compileFaust(filename, dsp_code, x, y, app.createModule);
+                    app.compileFaust(filename, dsp_code, x, y, function (factory) { app.createModule(factory); });
                 }
                 else {
                     module.update(filename, dsp_code);
@@ -263,7 +267,7 @@ var App = (function () {
     App.prototype.uploadCodeFaust = function (app, module, x, y, e, dsp_code) {
         dsp_code = "process = vgroup(\"" + "TEXT" + "\",environment{" + dsp_code + "}.process);";
         if (!module) {
-            app.compileFaust("TEXT", dsp_code, x, y, app.createModule);
+            app.compileFaust("TEXT", dsp_code, x, y, function (factory) { app.createModule(factory); });
         }
         else {
             module.update("TEXT", dsp_code);
@@ -296,7 +300,7 @@ var App = (function () {
             reader.onloadend = function (e) {
                 dsp_code = "process = vgroup(\"" + filename + "\",environment{" + reader.result + "}.process);";
                 if (!module && type == "dsp") {
-                    app.compileFaust(filename, dsp_code, x, y, app.createModule);
+                    app.compileFaust(filename, dsp_code, x, y, function (factory) { app.createModule(factory); });
                 }
                 else if (type == "dsp") {
                     module.update(filename, dsp_code);

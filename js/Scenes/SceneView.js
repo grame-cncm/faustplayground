@@ -24,7 +24,8 @@ var SceneView = (function () {
         };
     }
     SceneView.prototype.initNormalScene = function (scene) {
-        var container = scene.getSceneContainer();
+        var container = document.createElement("div");
+        container.id = "Normal";
         //var sceneSensor: HTMLDivElement = document.createElement("div");
         //sceneSensor.id = "sceneSensor";
         //this.sceneSensor = sceneSensor;
@@ -82,23 +83,15 @@ var SceneView = (function () {
         dropElementText.className = "dropElementText";
         dropElementScene.appendChild(dropElementText);
         container.appendChild(dropElementScene);
-        scene.integrateSceneInBody();
+        this.fSceneContainer = container;
         var playgroundView = this;
-        scene.integrateInput(function () {
-            scene.integrateOutput(function () {
-                //scene.getAudioOutput().setInputOutputNodes(node, null);
-                playgroundView.onloadNormalScene(scene);
-                //playgroundView.expor.uploadTargets();
-            });
-        });
-    };
-    // On Load And UnLoad Playground Scene
-    SceneView.prototype.onloadNormalScene = function (scene) {
-        scene.parent.setGeneralAppListener(scene.parent);
-        scene.unmuteScene();
-    };
-    SceneView.prototype.onunloadNormalScene = function (scene) {
-        scene.muteScene();
+        //scene.integrateInput(function () {
+        //    scene.integrateOutput(function () {
+        //        //scene.getAudioOutput().setInputOutputNodes(node, null);
+        //        playgroundView.onloadNormalScene(scene);
+        //        //playgroundView.expor.uploadTargets();
+        //    });
+        //});
     };
     return SceneView;
 })();
