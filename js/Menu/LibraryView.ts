@@ -6,6 +6,9 @@ class LibraryView  {
     intrumentLibrarySelect: HTMLUListElement
     effetLibrarySelect: HTMLUListElement
     exempleLibrarySelect: HTMLUListElement
+    intrumentLibrary: HTMLElement
+    effetLibrary: HTMLElement
+    exempleLibrary: HTMLElement
 
 
     initLibraryView(): HTMLElement {
@@ -19,6 +22,7 @@ class LibraryView  {
         var instrumentLibraryContent: HTMLElement = document.createElement("div");
         instrumentLibraryContent.id = "instrumentLibraryContent";
         instrumentLibraryContent.className = "submenuLibraryContent";
+        this.intrumentLibrary = instrumentLibraryContent;
 
         var instrumentLibraryTitle: HTMLSpanElement = document.createElement("span");
         instrumentLibraryTitle.id = "instrumentLibraryTitle";
@@ -38,6 +42,7 @@ class LibraryView  {
         var effetLibraryContent: HTMLElement = document.createElement("div");
         effetLibraryContent.id = "effetLibraryContent";
         effetLibraryContent.className = "submenuLibraryContent";
+        this.effetLibrary = effetLibraryContent;
 
         var effetLibraryTitle: HTMLSpanElement = document.createElement("span");
         effetLibraryTitle.id = "effetLibraryTitle";
@@ -56,6 +61,7 @@ class LibraryView  {
         var exempleLibraryContent: HTMLElement = document.createElement("div");
         exempleLibraryContent.id = "exempleLibraryContent";
         exempleLibraryContent.className = "submenuLibraryContent";
+        this.exempleLibrary = exempleLibraryContent;
 
         var exempleLibraryTitle: HTMLSpanElement = document.createElement("span");
         exempleLibraryTitle.id = "exempleLibraryTitle";

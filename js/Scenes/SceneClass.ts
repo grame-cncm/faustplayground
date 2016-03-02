@@ -69,10 +69,11 @@ class Scene {
         var out: IHTMLDivElementOut = <IHTMLDivElementOut>document.getElementById("audioOutput");
         
         if (out != null) {
-            out.audioNode.context.suspend();
-            this.isMute = true;
-            this.getAudioOutput().moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-speaker-mute.png)"
-            
+            if (out.audioNode.context.suspend != undefined) {//because of Edge not supporting audioContext.suspend() yet
+                out.audioNode.context.suspend();
+                this.isMute = true;
+                this.getAudioOutput().moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-speaker-mute.png)"
+            }
         }
     }
     unmuteScene(): void {
@@ -336,6 +337,12 @@ class Scene {
     positionOutputModule(): PositionModule {
         var position: PositionModule = new PositionModule();
         position.x = window.innerWidth - 98;
+        position.y = window.innerHeight / 2;
+        return position
+    }
+    positionDblTapModule(): PositionModule {
+        var position: PositionModule = new PositionModule();
+        position.x = window.innerWidth / 2;
         position.y = window.innerHeight / 2;
         return position
     }

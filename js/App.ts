@@ -79,9 +79,7 @@ class App {
     factory: Factory;
 
     constructor() {
-        document.ondragstart = () => { this.modulesStyleOnDragStart() };
-        document.ondragenter = () => { this.modulesStyleOnDragStart() };
-        document.ondrop = () => { this.modulesStyleOnDragEnd()}
+        
 
     }
 
@@ -207,7 +205,7 @@ class App {
         if (app.tempModuleName != "input" && app.tempModuleName != "output") {
             module.moduleView.fModuleContainer.ondrop = (e) => {
                 e.stopPropagation();
-                app.modulesStyleOnDragEnd()
+                app.styleOnDragEnd()
                 app.uploadOn(app, module, 0, 0, e)
             };
         }
@@ -229,17 +227,35 @@ class App {
     ********************************************************************/
 
     //-- Init drag and drop reactions
-    setGeneralDragAndDrop(app: App): void {
+    setGeneralAppListener(app: App): void {
 
         window.ondragover = function () { this.className = 'hover'; return false; };
         window.ondragend = function () { this.className = ''; return false; };
+        document.ondragstart = () => { this.styleOnDragStart() };
+        document.ondragenter = (e) => {
+            var srcElement = <HTMLElement>e.srcElement
+            if (srcElement.className != null && srcElement.className == "node-button") {
+            } else {
+                this.styleOnDragStart()
+            }
+        };
 
-        window.ondrop = (e)=> {
+        document.onscroll = () => {
+            this.checkRealWindowSize()
+        };
+        var body: HTMLBodyElement = document.getElementsByTagName("body")[0]
+        body.onresize = () => { this.checkRealWindowSize() };
+
+        window.ondrop = (e) => {
+            var target = <HTMLElement>e.target;
+            this.styleOnDragEnd()
             var x = e.clientX;
             var y = e.clientY;
             this.uploadOn(this, null, x, y, e);
-
+            this.menu.isMenuLow = true;            
         };
+
+        document.addEventListener("dbltouchlib", (e: CustomEvent) => { this.dblTouchUpload(e) });
     }
 
     //-- Init drag and drop reactions
@@ -271,13 +287,16 @@ class App {
         App.showFullPageLoading();
         //worker.postMessage("go");
         this.preventDefaultAction(e);
+        // CASE 0 : THE DROPPED OBJECT IS NOT WHAT WE WANT
+        if (e.dataTransfer.getData('URL') == "") {
 
+        }
 
         // CASE 1 : THE DROPPED OBJECT IS A URL TO SOME FAUST CODE
-        if (e.dataTransfer.getData('URL') && e.dataTransfer.getData('URL').split(':').shift() != "file") {
-            this.uploadUrl(app, module, x, y, e);
-        }
-        else if (e.dataTransfer.getData('URL').split(':').shift() != "file") {
+        else if (e.dataTransfer.getData('URL') && e.dataTransfer.getData('URL').split(':').shift() != "file") {
+            var url = e.dataTransfer.getData('URL');
+            this.uploadUrl(app, module, x, y, url);
+        }else if (e.dataTransfer.getData('URL').split(':').shift() != "file") {
 
             var dsp_code: string = e.dataTransfer.getData('text');
 
@@ -287,58 +306,15 @@ class App {
             }
             // CASE 3 : THE DROPPED OBJECT IS A FILE CONTAINING SOME FAUST CODE
             else {
-                var files: FileList = e.dataTransfer.files;//e.target.files ||
-
-                var file: File = files[0];
-
-                if (location.host.indexOf("sitepointstatic") >= 0) { return }
-
-                var request: XMLHttpRequest = new XMLHttpRequest();
-                if (request.upload) {
-
-                    var reader: FileReader = new FileReader();
-
-                    var ext: string = file.name.toString().split('.').pop();
-
-                    var filename: string = file.name.toString().split('.').shift();
-
-                    var type: string;
-
-                    if (ext == "dsp") {
-                        type = "dsp";
-                        reader.readAsText(file);
-                    }
-                    else if (ext == "json") {
-                        type = "json";
-                        reader.readAsText(file);
-                    } else {
-                        this.terminateUpload();
-                    }
-
-                    reader.onloadend = function (e) {
-                        dsp_code = "process = vgroup(\"" + filename + "\",environment{" + reader.result + "}.process);";
-
-                        if (!module && type == "dsp") {
-                            app.compileFaust(filename, dsp_code, x, y, app.createModule);
-                        } else if (type == "dsp") {
-                            module.update(filename, dsp_code);
-                        } else if (type == "json") {
-                            app.scenes[App.currentScene].recallScene(reader.result);
-                        }
-                        app.terminateUpload();
-                    };
-                }
+                this.uploadFile2(app, module, x, y, e, dsp_code)
             }
-        }
-        // CASE 4 : ANY OTHER STRANGE THING
-        else {
+        } else { // CASE 4 : ANY OTHER STRANGE THING
             app.terminateUpload();
             window.alert("THIS OBJECT IS NOT FAUST COMPILABLE");
         }
     }
     //Upload Url
-    uploadUrl(app: App, module: ModuleClass, x: number, y: number, e: DragEvent) {
-        var url: string = e.dataTransfer.getData('URL');
+    uploadUrl(app: App, module: ModuleClass, x: number, y: number, url: string) {
         var filename: string = url.toString().split('/').pop();
         filename = filename.toString().split('.').shift();
 
@@ -378,9 +354,55 @@ class App {
     }
 
     uploadFile2(app: App, module: ModuleClass, x: number, y: number, e: DragEvent, dsp_code: string) {
+        var files: FileList = e.dataTransfer.files;//e.target.files ||
 
+        var file: File = files[0];
+
+        if (location.host.indexOf("sitepointstatic") >= 0) { return }
+
+        var request: XMLHttpRequest = new XMLHttpRequest();
+        if (request.upload) {
+
+            var reader: FileReader = new FileReader();
+
+            var ext: string = file.name.toString().split('.').pop();
+
+            var filename: string = file.name.toString().split('.').shift();
+
+            var type: string;
+
+            if (ext == "dsp") {
+                type = "dsp";
+                reader.readAsText(file);
+            }
+            else if (ext == "json") {
+                type = "json";
+                reader.readAsText(file);
+            } else {
+                this.terminateUpload();
+            }
+
+            reader.onloadend = function (e) {
+                dsp_code = "process = vgroup(\"" + filename + "\",environment{" + reader.result + "}.process);";
+
+                if (!module && type == "dsp") {
+                    app.compileFaust(filename, dsp_code, x, y, app.createModule);
+                } else if (type == "dsp") {
+                    module.update(filename, dsp_code);
+                } else if (type == "json") {
+                    app.scenes[App.currentScene].recallScene(reader.result);
+                }
+                app.terminateUpload();
+            };
+        }
     }
 
+    dblTouchUpload(e: CustomEvent) {
+        App.showFullPageLoading();
+        var position: PositionModule = App.scene.positionDblTapModule();
+        this.uploadUrl(this, null, position.x, position.y, e.detail);
+
+    }
 
     //Check in Url if the app should be for kids
     static isAppPedagogique(): boolean {
@@ -453,19 +475,21 @@ class App {
         //App.addLoadingLogo(loadingPage.id);
     }
     static hideFullPageLoading() {
-        document.getElementById("loadingPage").remove();
-        document.getElementById("Normal").style.filter = "none"
-        document.getElementById("Normal").style.webkitFilter = "none"
-        document.getElementById("menuContainer").style.filter = "none"
-        document.getElementById("menuContainer").style.webkitFilter = "none"
+        if (document.getElementById("loadingPage") != null) {
+            document.getElementById("loadingPage").remove();
+            document.getElementById("Normal").style.filter = "none"
+            document.getElementById("Normal").style.webkitFilter = "none"
+            document.getElementById("menuContainer").style.filter = "none"
+            document.getElementById("menuContainer").style.webkitFilter = "none"
+        }
     }
 
     static createDropAreaGraph() {
         
     }
-
-    modulesStyleOnDragStart() {
-
+    // manage style during a drag and drop event
+    styleOnDragStart() {
+        this.menu.menuView.menuContainer.style.opacity = "0.5";
         App.scene.sceneView.dropElementScene.style.display = "block";
         App.scene.getSceneContainer().style.boxShadow = "0 0 200px #00f inset";
         var modules: ModuleClass[] = App.scene.getModules();
@@ -473,7 +497,12 @@ class App {
             modules[i].moduleView.fModuleContainer.style.opacity="0.5"
         }
     }
-    modulesStyleOnDragEnd() {
+    styleOnDragEnd() {
+        //var body: HTMLBodyElement = <HTMLBodyElement>document.getElementById("body")[0];
+        //body.removeEventListener("ondragleave");
+        //document.getElementById("body")[0].style.zIndex = "100";
+        this.menu.lowerLibraryMenu();
+        this.menu.menuView.menuContainer.style.opacity = "1";
         App.scene.sceneView.dropElementScene.style.display = "none";
         App.scene.getSceneContainer().style.boxShadow = "none";
         var modules: ModuleClass[] = App.scene.getModules();
@@ -481,5 +510,32 @@ class App {
             modules[i].moduleView.fModuleContainer.style.opacity = "1";
             modules[i].moduleView.fModuleContainer.style.boxShadow ="0 5px 10px rgba(0, 0, 0, 0.4)"
         }
+        this.menu.menuView.menuContainer.addEventListener("mouseover", this.menu.mouseOverLowerMenu);
+    }
+
+    //manage the window size
+    checkRealWindowSize() {
+        
+        if (window.scrollX > 0) {
+            console.log(document.getElementsByTagName("html")[0]);
+            document.getElementsByTagName("html")[0].style.width = window.innerWidth + window.scrollX + "px";
+            document.getElementById("svgCanvas").style.width = window.innerWidth + window.scrollX + "px";
+            document.getElementById("menuContainer").style.width = window.innerWidth + window.scrollX + "px";
+        } else {
+
+            document.getElementsByTagName("html")[0].style.width = "100%";
+            document.getElementById("svgCanvas").style.width = "100%";
+            document.getElementById("menuContainer").style.width = "100%";
+        }
+        if (window.scrollY > 0) {
+            document.getElementsByTagName("html")[0].style.height = window.innerHeight + window.scrollY + "px";
+            document.getElementById("svgCanvas").style.height = window.innerHeight + window.scrollY + "px";
+        } else {
+            document.getElementsByTagName("html")[0].style.height = "100%";
+            document.getElementById("svgCanvas").style.height = "100%";
+        }
+
+       
+        
     }
 }

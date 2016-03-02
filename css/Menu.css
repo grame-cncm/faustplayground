@@ -107,7 +107,7 @@ ul.librarySelects {
     position: relative;
     box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.29);
     list-style: none;
-    height:75%
+    height:calc(100% - 4em)
 
 }
 .librarySelects.ps-container > .ps-scrollbar-x-rail,
@@ -324,4 +324,17 @@ a#linkDownload:hover{
 div#videoContainer {
     margin: 0 auto;
     width: 600px;
+}
+
+/*fullscreen button*/
+.buttonsLittleMenu {
+    height: 40px;
+    cursor: pointer;
+    margin: 0 1%;
+    width: 40px;
+    float: left;
+}
+div#fullScreenButton {
+    background: url("../img/fullscreen.png") no-repeat 50%;
+    background-size: 80%;
 }

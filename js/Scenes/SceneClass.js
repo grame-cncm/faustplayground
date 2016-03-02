@@ -46,9 +46,11 @@ var Scene = (function () {
     Scene.prototype.muteScene = function () {
         var out = document.getElementById("audioOutput");
         if (out != null) {
-            out.audioNode.context.suspend();
-            this.isMute = true;
-            this.getAudioOutput().moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-speaker-mute.png)";
+            if (out.audioNode.context.suspend != undefined) {
+                out.audioNode.context.suspend();
+                this.isMute = true;
+                this.getAudioOutput().moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-speaker-mute.png)";
+            }
         }
     };
     Scene.prototype.unmuteScene = function () {
@@ -269,6 +271,12 @@ var Scene = (function () {
     Scene.prototype.positionOutputModule = function () {
         var position = new PositionModule();
         position.x = window.innerWidth - 98;
+        position.y = window.innerHeight / 2;
+        return position;
+    };
+    Scene.prototype.positionDblTapModule = function () {
+        var position = new PositionModule();
+        position.x = window.innerWidth / 2;
         position.y = window.innerHeight / 2;
         return position;
     };

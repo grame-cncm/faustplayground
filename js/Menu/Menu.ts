@@ -5,8 +5,15 @@
 	/// <reference path="Export.ts"/>
 	/// <reference path="ExportView.ts"/>
 	/// <reference path="Help.ts"/>
-	/// <reference path="HelpView.ts"/>
+/// <reference path="HelpView.ts"/>
+interface Document {
+    cancelFullScreen: () => any;
+    mozCancelFullScreen: () => any;
+}
 
+interface HTMLElement {
+    mozRequestFullScreen: () => any;
+}
 
 enum MenuChoices { library, export, help, kids, null }
 
@@ -17,7 +24,9 @@ class Menu {
     library: Library;
     expor: Export;
     help: Help;
-    
+    mouseOverLowerMenu: (event: MouseEvent) => void;
+    isMenuLow: boolean = false;
+    isFullScreen: boolean = false;
 
     constructor(htmlContainer: HTMLElement) {
         this.menuView = new MenuView();
@@ -26,6 +35,7 @@ class Menu {
         this.menuView.exportButtonMenu.onclick = () => { this.menuHandler(this.menuChoices = MenuChoices.export) };
         this.menuView.helpButtonMenu.onclick = () => { this.menuHandler(this.menuChoices = MenuChoices.help) };
         this.menuView.closeButton.onclick = () => { this.menuHandler(this.menuChoices = MenuChoices.null) };
+        this.menuView.fullScreenButton.addEventListener("click", () => { this.fullScreen() });
         this.library = new Library();
         this.library.libraryView = this.menuView.libraryView;
         this.library.fillLibrary();
@@ -36,6 +46,7 @@ class Menu {
         this.help = new Help();
         this.help.helpView = this.menuView.helpView;
         this.menuView.exportView.inputNameApp.onchange = (e) => { this.updatePatchNameToInput(e) }
+        this.mouseOverLowerMenu = (event: MouseEvent) => { this.raiseLibraryMenuEvent(event) }
 
     }
 
@@ -75,6 +86,7 @@ class Menu {
                 this.currentMenuChoices = MenuChoices.null;
                 this.menuView.libraryButtonMenu.style.backgroundColor = this.menuView.menuColorDefault;
                 this.menuView.libraryButtonMenu.style.zIndex = "0";
+                this.raiseLibraryMenu();
 
                 break;
             default:
@@ -85,7 +97,7 @@ class Menu {
                 this.currentMenuChoices = MenuChoices.library;
                 break;
         }
-        
+
     }
     exportMenu() {
         switch (this.currentMenuChoices) {
@@ -149,6 +161,7 @@ class Menu {
         for (var i = 0; i < this.menuView.HTMLElementsMenu.length; i++) {
             this.menuView.HTMLElementsMenu[i].style.display = "none";
         }
+        this.raiseLibraryMenu();
         this.menuView.contentsMenu.style.display = "none";
         this.currentMenuChoices = MenuChoices.null;
     }
@@ -156,12 +169,58 @@ class Menu {
         for (var i = 0; i < this.menuView.HTMLElementsMenu.length; i++) {
             this.menuView.HTMLElementsMenu[i].style.display = "none";
         }
-        for (var i = 0; i < this.menuView.HTMLButtonsMenu.length; i++){
+        for (var i = 0; i < this.menuView.HTMLButtonsMenu.length; i++) {
             this.menuView.HTMLButtonsMenu[i].style.backgroundColor = this.menuView.menuColorDefault;
             this.menuView.HTMLButtonsMenu[i].style.zIndex = "0";
+            this.raiseLibraryMenu();
         }
     }
     updatePatchNameToInput(e: Event) {
         this.menuView.patchNameScene.textContent = Scene.sceneName;
+    }
+
+    lowerLibraryMenu() {
+        this.library.libraryView.effetLibrary.style.height = "150px";
+        this.library.libraryView.exempleLibrary.style.height = "150px";
+        this.library.libraryView.intrumentLibrary.style.height = "150px";
+    }
+
+    raiseLibraryMenuEvent(event: MouseEvent) {
+        //event.preventDefault();
+        this.raiseLibraryMenu();
+    }
+    raiseLibraryMenu() {
+        console.log("mouse over menu")
+        if (this.isMenuLow) {
+            this.library.libraryView.effetLibrary.style.height = "300px";
+            this.library.libraryView.exempleLibrary.style.height = "300px";
+            this.library.libraryView.intrumentLibrary.style.height = "300px";
+            this.menuView.menuContainer.removeEventListener("mouseover", this.mouseOverLowerMenu)
+            this.isMenuLow = false;
+        }
+    }
+    fullScreen() {
+        var body = <HTMLBodyElement>document.getElementsByTagName("body")[0];
+        if (this.isFullScreen) {
+            if (document.cancelFullScreen) {
+                document.cancelFullScreen()
+            } else if (document.webkitCancelFullScreen) {
+                document.webkitCancelFullScreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            }
+
+            this.isFullScreen = false;
+        } else {
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen();
+            } else if (document.documentElement.webkitRequestFullscreen) {
+                document.documentElement.webkitRequestFullscreen();
+            } else if (document.documentElement.mozRequestFullScreen) {
+                document.documentElement.mozRequestFullScreen()
+            }
+            this.isFullScreen = true;
+        }
+
     }
 }

@@ -47,10 +47,6 @@ DEPENDENCIES:
 /// <reference path="Lib/perfectScrollBar/js/perfect-ScrollBar.min.d.ts"/>
 var App = (function () {
     function App() {
-        var _this = this;
-        document.ondragstart = function () { _this.modulesStyleOnDragStart(); };
-        document.ondragenter = function () { _this.modulesStyleOnDragStart(); };
-        document.ondrop = function () { _this.modulesStyleOnDragEnd(); };
     }
     App.prototype.showFirstScene = function () {
         App.scene.showScene();
@@ -152,7 +148,7 @@ var App = (function () {
         if (app.tempModuleName != "input" && app.tempModuleName != "output") {
             module.moduleView.fModuleContainer.ondrop = function (e) {
                 e.stopPropagation();
-                app.modulesStyleOnDragEnd();
+                app.styleOnDragEnd();
                 app.uploadOn(app, module, 0, 0, e);
             };
         }
@@ -171,15 +167,33 @@ var App = (function () {
     ***********************  HANDLE DRAG AND DROP ***********************
     ********************************************************************/
     //-- Init drag and drop reactions
-    App.prototype.setGeneralDragAndDrop = function (app) {
+    App.prototype.setGeneralAppListener = function (app) {
         var _this = this;
         window.ondragover = function () { this.className = 'hover'; return false; };
         window.ondragend = function () { this.className = ''; return false; };
+        document.ondragstart = function () { _this.styleOnDragStart(); };
+        document.ondragenter = function (e) {
+            var srcElement = e.srcElement;
+            if (srcElement.className != null && srcElement.className == "node-button") {
+            }
+            else {
+                _this.styleOnDragStart();
+            }
+        };
+        document.onscroll = function () {
+            _this.checkRealWindowSize();
+        };
+        var body = document.getElementsByTagName("body")[0];
+        body.onresize = function () { _this.checkRealWindowSize(); };
         window.ondrop = function (e) {
+            var target = e.target;
+            _this.styleOnDragEnd();
             var x = e.clientX;
             var y = e.clientY;
             _this.uploadOn(_this, null, x, y, e);
+            _this.menu.isMenuLow = true;
         };
+        document.addEventListener("dbltouchlib", function (e) { _this.dblTouchUpload(e); });
     };
     //-- Init drag and drop reactions
     App.prototype.resetGeneralDragAndDrop = function (div) {
@@ -201,9 +215,12 @@ var App = (function () {
         App.showFullPageLoading();
         //worker.postMessage("go");
         this.preventDefaultAction(e);
-        // CASE 1 : THE DROPPED OBJECT IS A URL TO SOME FAUST CODE
-        if (e.dataTransfer.getData('URL') && e.dataTransfer.getData('URL').split(':').shift() != "file") {
-            this.uploadUrl(app, module, x, y, e);
+        // CASE 0 : THE DROPPED OBJECT IS NOT WHAT WE WANT
+        if (e.dataTransfer.getData('URL') == "") {
+        }
+        else if (e.dataTransfer.getData('URL') && e.dataTransfer.getData('URL').split(':').shift() != "file") {
+            var url = e.dataTransfer.getData('URL');
+            this.uploadUrl(app, module, x, y, url);
         }
         else if (e.dataTransfer.getData('URL').split(':').shift() != "file") {
             var dsp_code = e.dataTransfer.getData('text');
@@ -212,42 +229,7 @@ var App = (function () {
                 this.uploadCodeFaust(app, module, x, y, e, dsp_code);
             }
             else {
-                var files = e.dataTransfer.files; //e.target.files ||
-                var file = files[0];
-                if (location.host.indexOf("sitepointstatic") >= 0) {
-                    return;
-                }
-                var request = new XMLHttpRequest();
-                if (request.upload) {
-                    var reader = new FileReader();
-                    var ext = file.name.toString().split('.').pop();
-                    var filename = file.name.toString().split('.').shift();
-                    var type;
-                    if (ext == "dsp") {
-                        type = "dsp";
-                        reader.readAsText(file);
-                    }
-                    else if (ext == "json") {
-                        type = "json";
-                        reader.readAsText(file);
-                    }
-                    else {
-                        this.terminateUpload();
-                    }
-                    reader.onloadend = function (e) {
-                        dsp_code = "process = vgroup(\"" + filename + "\",environment{" + reader.result + "}.process);";
-                        if (!module && type == "dsp") {
-                            app.compileFaust(filename, dsp_code, x, y, app.createModule);
-                        }
-                        else if (type == "dsp") {
-                            module.update(filename, dsp_code);
-                        }
-                        else if (type == "json") {
-                            app.scenes[App.currentScene].recallScene(reader.result);
-                        }
-                        app.terminateUpload();
-                    };
-                }
+                this.uploadFile2(app, module, x, y, e, dsp_code);
             }
         }
         else {
@@ -256,8 +238,7 @@ var App = (function () {
         }
     };
     //Upload Url
-    App.prototype.uploadUrl = function (app, module, x, y, e) {
-        var url = e.dataTransfer.getData('URL');
+    App.prototype.uploadUrl = function (app, module, x, y, url) {
         var filename = url.toString().split('/').pop();
         filename = filename.toString().split('.').shift();
         var xmlhttp = new XMLHttpRequest;
@@ -290,6 +271,47 @@ var App = (function () {
         app.terminateUpload();
     };
     App.prototype.uploadFile2 = function (app, module, x, y, e, dsp_code) {
+        var files = e.dataTransfer.files; //e.target.files ||
+        var file = files[0];
+        if (location.host.indexOf("sitepointstatic") >= 0) {
+            return;
+        }
+        var request = new XMLHttpRequest();
+        if (request.upload) {
+            var reader = new FileReader();
+            var ext = file.name.toString().split('.').pop();
+            var filename = file.name.toString().split('.').shift();
+            var type;
+            if (ext == "dsp") {
+                type = "dsp";
+                reader.readAsText(file);
+            }
+            else if (ext == "json") {
+                type = "json";
+                reader.readAsText(file);
+            }
+            else {
+                this.terminateUpload();
+            }
+            reader.onloadend = function (e) {
+                dsp_code = "process = vgroup(\"" + filename + "\",environment{" + reader.result + "}.process);";
+                if (!module && type == "dsp") {
+                    app.compileFaust(filename, dsp_code, x, y, app.createModule);
+                }
+                else if (type == "dsp") {
+                    module.update(filename, dsp_code);
+                }
+                else if (type == "json") {
+                    app.scenes[App.currentScene].recallScene(reader.result);
+                }
+                app.terminateUpload();
+            };
+        }
+    };
+    App.prototype.dblTouchUpload = function (e) {
+        App.showFullPageLoading();
+        var position = App.scene.positionDblTapModule();
+        this.uploadUrl(this, null, position.x, position.y, e.detail);
     };
     //Check in Url if the app should be for kids
     App.isAppPedagogique = function () {
@@ -352,15 +374,19 @@ var App = (function () {
         //App.addLoadingLogo(loadingPage.id);
     };
     App.hideFullPageLoading = function () {
-        document.getElementById("loadingPage").remove();
-        document.getElementById("Normal").style.filter = "none";
-        document.getElementById("Normal").style.webkitFilter = "none";
-        document.getElementById("menuContainer").style.filter = "none";
-        document.getElementById("menuContainer").style.webkitFilter = "none";
+        if (document.getElementById("loadingPage") != null) {
+            document.getElementById("loadingPage").remove();
+            document.getElementById("Normal").style.filter = "none";
+            document.getElementById("Normal").style.webkitFilter = "none";
+            document.getElementById("menuContainer").style.filter = "none";
+            document.getElementById("menuContainer").style.webkitFilter = "none";
+        }
     };
     App.createDropAreaGraph = function () {
     };
-    App.prototype.modulesStyleOnDragStart = function () {
+    // manage style during a drag and drop event
+    App.prototype.styleOnDragStart = function () {
+        this.menu.menuView.menuContainer.style.opacity = "0.5";
         App.scene.sceneView.dropElementScene.style.display = "block";
         App.scene.getSceneContainer().style.boxShadow = "0 0 200px #00f inset";
         var modules = App.scene.getModules();
@@ -368,13 +394,41 @@ var App = (function () {
             modules[i].moduleView.fModuleContainer.style.opacity = "0.5";
         }
     };
-    App.prototype.modulesStyleOnDragEnd = function () {
+    App.prototype.styleOnDragEnd = function () {
+        //var body: HTMLBodyElement = <HTMLBodyElement>document.getElementById("body")[0];
+        //body.removeEventListener("ondragleave");
+        //document.getElementById("body")[0].style.zIndex = "100";
+        this.menu.lowerLibraryMenu();
+        this.menu.menuView.menuContainer.style.opacity = "1";
         App.scene.sceneView.dropElementScene.style.display = "none";
         App.scene.getSceneContainer().style.boxShadow = "none";
         var modules = App.scene.getModules();
         for (var i = 0; i < modules.length; i++) {
             modules[i].moduleView.fModuleContainer.style.opacity = "1";
             modules[i].moduleView.fModuleContainer.style.boxShadow = "0 5px 10px rgba(0, 0, 0, 0.4)";
+        }
+        this.menu.menuView.menuContainer.addEventListener("mouseover", this.menu.mouseOverLowerMenu);
+    };
+    //manage the window size
+    App.prototype.checkRealWindowSize = function () {
+        if (window.scrollX > 0) {
+            console.log(document.getElementsByTagName("html")[0]);
+            document.getElementsByTagName("html")[0].style.width = window.innerWidth + window.scrollX + "px";
+            document.getElementById("svgCanvas").style.width = window.innerWidth + window.scrollX + "px";
+            document.getElementById("menuContainer").style.width = window.innerWidth + window.scrollX + "px";
+        }
+        else {
+            document.getElementsByTagName("html")[0].style.width = "100%";
+            document.getElementById("svgCanvas").style.width = "100%";
+            document.getElementById("menuContainer").style.width = "100%";
+        }
+        if (window.scrollY > 0) {
+            document.getElementsByTagName("html")[0].style.height = window.innerHeight + window.scrollY + "px";
+            document.getElementById("svgCanvas").style.height = window.innerHeight + window.scrollY + "px";
+        }
+        else {
+            document.getElementsByTagName("html")[0].style.height = "100%";
+            document.getElementById("svgCanvas").style.height = "100%";
         }
     };
     App.idX = 0;

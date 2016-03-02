@@ -34,6 +34,7 @@ var ModuleView = (function () {
         //var eventHandler = function (event) { self.dragCallback(event, self) }
         this.fInterfaceContainer = fInterfaceContainer;
         fModuleContainer.addEventListener("mousedown", module.eventDraggingHandler, true);
+        fModuleContainer.addEventListener("touchstart", module.eventDraggingHandler, true);
         if (name == "input") {
             fModuleContainer.id = "moduleInput";
         }
@@ -44,16 +45,18 @@ var ModuleView = (function () {
             var fFooter = document.createElement("footer");
             fFooter.id = "moduleFooter";
             fModuleContainer.id = "module" + ID;
-            var fCloseButton = document.createElement("a");
-            fCloseButton.href = "#";
+            var fCloseButton = document.createElement("div");
             fCloseButton.draggable = false;
             fCloseButton.className = "close";
-            fCloseButton.onclick = function () { module.deleteModule(); };
+            fCloseButton.addEventListener("click", function () { module.deleteModule(); });
+            fCloseButton.addEventListener("touchend", function () { module.deleteModule(); });
             fModuleContainer.appendChild(fCloseButton);
-            var fEditImg = document.createElement("img");
-            fEditImg.src = App.baseImg + "edit.png";
-            fEditImg.onclick = function () { module.edit(module); };
+            var fEditImg = document.createElement("div");
+            fEditImg.className = "edit";
+            fEditImg.addEventListener("click", function () { module.edit(module); });
+            fEditImg.addEventListener("touchend", function () { module.edit(module); });
             fEditImg.draggable = false;
+            this.fEditImg = fEditImg;
             fFooter.appendChild(fEditImg);
             fModuleContainer.appendChild(fFooter);
         }
@@ -84,13 +87,23 @@ var ModuleView = (function () {
     ModuleView.prototype.setInputNode = function () {
         this.fInputNode = document.createElement("div");
         this.fInputNode.className = "node node-input";
-        this.fInputNode.innerHTML = "<span class='node-button'>&nbsp;</span>";
+        this.fInputNode.draggable = false;
+        //this.fInputNode.innerHTML = "<span class='node-button'>&nbsp;</span>";
+        var spanNode = document.createElement("span");
+        spanNode.draggable = false;
+        spanNode.className = "node-button";
+        this.fInputNode.appendChild(spanNode);
         this.fModuleContainer.appendChild(this.fInputNode);
     };
     ModuleView.prototype.setOutputNode = function () {
         this.fOutputNode = document.createElement("div");
         this.fOutputNode.className = "node node-output";
-        this.fOutputNode.innerHTML = "<span class='node-button'>&nbsp;</span>";
+        this.fOutputNode.draggable = false;
+        //this.fOutputNode.innerHTML = "<span class='node-button'>&nbsp;</span>";
+        var spanNode = document.createElement("span");
+        spanNode.draggable = false;
+        spanNode.className = "node-button";
+        this.fOutputNode.appendChild(spanNode);
         this.fModuleContainer.appendChild(this.fOutputNode);
     };
     ModuleView.prototype.deleteInputOutputNodes = function () {

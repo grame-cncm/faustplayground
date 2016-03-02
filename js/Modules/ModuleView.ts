@@ -12,7 +12,7 @@
     IMG --> fEditImg
 	===================*/
 
-interface HTMLfEdit extends HTMLImageElement {
+interface HTMLfEdit extends HTMLDivElement {
     area: HTMLTextAreaElement;
 }
 interface HTMLinterfaceElement extends HTMLElement {
@@ -61,6 +61,7 @@ class ModuleView {
         //var eventHandler = function (event) { self.dragCallback(event, self) }
         this.fInterfaceContainer = fInterfaceContainer;
         fModuleContainer.addEventListener("mousedown", module.eventDraggingHandler, true);
+        fModuleContainer.addEventListener("touchstart", module.eventDraggingHandler, true);
 
         if (name == "input") {
             fModuleContainer.id = "moduleInput";
@@ -70,17 +71,18 @@ class ModuleView {
             var fFooter: HTMLElement = document.createElement("footer");
             fFooter.id = "moduleFooter";
             fModuleContainer.id = "module" + ID;
-            var fCloseButton: HTMLAnchorElement = document.createElement("a");
-            fCloseButton.href = "#";
+            var fCloseButton: HTMLDivElement = document.createElement("div");
             fCloseButton.draggable = false;
             fCloseButton.className = "close";
-            fCloseButton.onclick = function () { module.deleteModule(); };
+            fCloseButton.addEventListener("click", ()=> { module.deleteModule(); });
+            fCloseButton.addEventListener("touchend", () => { module.deleteModule(); });
             fModuleContainer.appendChild(fCloseButton);
-            var fEditImg = <HTMLfEdit>document.createElement("img");
-            fEditImg.src = App.baseImg + "edit.png";
-
-            fEditImg.onclick = function () { module.edit(module); };
+            var fEditImg = <HTMLfEdit>document.createElement("div");
+            fEditImg.className = "edit"
+            fEditImg.addEventListener("click", () => { module.edit(module) });
+            fEditImg.addEventListener("touchend", () => { module.edit(module) });
             fEditImg.draggable = false;
+            this.fEditImg = fEditImg;
             fFooter.appendChild(fEditImg);
             fModuleContainer.appendChild(fFooter);
 
@@ -117,13 +119,23 @@ class ModuleView {
     setInputNode(): void {
         this.fInputNode = document.createElement("div");
         this.fInputNode.className = "node node-input";
-        this.fInputNode.innerHTML = "<span class='node-button'>&nbsp;</span>";
+        this.fInputNode.draggable = false;
+        //this.fInputNode.innerHTML = "<span class='node-button'>&nbsp;</span>";
+        var spanNode: HTMLSpanElement = document.createElement("span");
+        spanNode.draggable = false;
+        spanNode.className = "node-button";
+        this.fInputNode.appendChild(spanNode);
         this.fModuleContainer.appendChild(this.fInputNode);
     }
     setOutputNode():void{
         this.fOutputNode = document.createElement("div");
         this.fOutputNode.className = "node node-output";
-        this.fOutputNode.innerHTML = "<span class='node-button'>&nbsp;</span>";
+        this.fOutputNode.draggable = false;
+        //this.fOutputNode.innerHTML = "<span class='node-button'>&nbsp;</span>";
+        var spanNode: HTMLSpanElement = document.createElement("span");
+        spanNode.draggable = false;
+        spanNode.className = "node-button";
+        this.fOutputNode.appendChild(spanNode);
         this.fModuleContainer.appendChild(this.fOutputNode);
     }
     deleteInputOutputNodes(): void {

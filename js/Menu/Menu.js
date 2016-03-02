@@ -17,12 +17,15 @@ var Menu = (function () {
     function Menu(htmlContainer) {
         var _this = this;
         this.currentMenuChoices = MenuChoices.null;
+        this.isMenuLow = false;
+        this.isFullScreen = false;
         this.menuView = new MenuView();
         this.menuView.init(htmlContainer);
         this.menuView.libraryButtonMenu.onclick = function () { _this.menuHandler(_this.menuChoices = MenuChoices.library); };
         this.menuView.exportButtonMenu.onclick = function () { _this.menuHandler(_this.menuChoices = MenuChoices.export); };
         this.menuView.helpButtonMenu.onclick = function () { _this.menuHandler(_this.menuChoices = MenuChoices.help); };
         this.menuView.closeButton.onclick = function () { _this.menuHandler(_this.menuChoices = MenuChoices.null); };
+        this.menuView.fullScreenButton.addEventListener("click", function () { _this.fullScreen(); });
         this.library = new Library();
         this.library.libraryView = this.menuView.libraryView;
         this.library.fillLibrary();
@@ -33,6 +36,7 @@ var Menu = (function () {
         this.help = new Help();
         this.help.helpView = this.menuView.helpView;
         this.menuView.exportView.inputNameApp.onchange = function (e) { _this.updatePatchNameToInput(e); };
+        this.mouseOverLowerMenu = function (event) { _this.raiseLibraryMenuEvent(event); };
     }
     Menu.prototype.menuHandler = function (menuChoises) {
         this.help.stopVideo();
@@ -68,6 +72,7 @@ var Menu = (function () {
                 this.currentMenuChoices = MenuChoices.null;
                 this.menuView.libraryButtonMenu.style.backgroundColor = this.menuView.menuColorDefault;
                 this.menuView.libraryButtonMenu.style.zIndex = "0";
+                this.raiseLibraryMenu();
                 break;
             default:
                 this.cleanMenu();
@@ -132,6 +137,7 @@ var Menu = (function () {
         for (var i = 0; i < this.menuView.HTMLElementsMenu.length; i++) {
             this.menuView.HTMLElementsMenu[i].style.display = "none";
         }
+        this.raiseLibraryMenu();
         this.menuView.contentsMenu.style.display = "none";
         this.currentMenuChoices = MenuChoices.null;
     };
@@ -142,10 +148,57 @@ var Menu = (function () {
         for (var i = 0; i < this.menuView.HTMLButtonsMenu.length; i++) {
             this.menuView.HTMLButtonsMenu[i].style.backgroundColor = this.menuView.menuColorDefault;
             this.menuView.HTMLButtonsMenu[i].style.zIndex = "0";
+            this.raiseLibraryMenu();
         }
     };
     Menu.prototype.updatePatchNameToInput = function (e) {
         this.menuView.patchNameScene.textContent = Scene.sceneName;
+    };
+    Menu.prototype.lowerLibraryMenu = function () {
+        this.library.libraryView.effetLibrary.style.height = "150px";
+        this.library.libraryView.exempleLibrary.style.height = "150px";
+        this.library.libraryView.intrumentLibrary.style.height = "150px";
+    };
+    Menu.prototype.raiseLibraryMenuEvent = function (event) {
+        //event.preventDefault();
+        this.raiseLibraryMenu();
+    };
+    Menu.prototype.raiseLibraryMenu = function () {
+        console.log("mouse over menu");
+        if (this.isMenuLow) {
+            this.library.libraryView.effetLibrary.style.height = "300px";
+            this.library.libraryView.exempleLibrary.style.height = "300px";
+            this.library.libraryView.intrumentLibrary.style.height = "300px";
+            this.menuView.menuContainer.removeEventListener("mouseover", this.mouseOverLowerMenu);
+            this.isMenuLow = false;
+        }
+    };
+    Menu.prototype.fullScreen = function () {
+        var body = document.getElementsByTagName("body")[0];
+        if (this.isFullScreen) {
+            if (document.cancelFullScreen) {
+                document.cancelFullScreen();
+            }
+            else if (document.webkitCancelFullScreen) {
+                document.webkitCancelFullScreen();
+            }
+            else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            }
+            this.isFullScreen = false;
+        }
+        else {
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen();
+            }
+            else if (document.documentElement.webkitRequestFullscreen) {
+                document.documentElement.webkitRequestFullscreen();
+            }
+            else if (document.documentElement.mozRequestFullScreen) {
+                document.documentElement.mozRequestFullScreen();
+            }
+            this.isFullScreen = true;
+        }
     };
     return Menu;
 })();

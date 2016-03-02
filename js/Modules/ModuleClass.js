@@ -43,24 +43,42 @@ var ModuleClass = (function () {
     /***************  PRIVATE METHODS  ******************************/
     ModuleClass.prototype.dragCallback = function (event, module) {
         if (event.type == "mousedown") {
-            module.drag.startDraggingModule(event, module);
+            module.drag.getDraggingMouseEvent(event, module, function (el, x, y, module) { module.drag.startDraggingModule(el, x, y, module); });
         }
         else if (event.type == "mouseup") {
-            module.drag.stopDraggingModule(event, module);
+            module.drag.getDraggingMouseEvent(event, module, function (el, x, y, module) { module.drag.stopDraggingModule(el, x, y, module); });
         }
         else if (event.type == "mousemove") {
-            module.drag.whileDraggingModule(event, module);
+            module.drag.getDraggingMouseEvent(event, module, function (el, x, y, module) { module.drag.whileDraggingModule(el, x, y, module); });
+        }
+        else if (event.type == "touchstart") {
+            module.drag.getDraggingTouchEvent(event, module, function (el, x, y, module) { module.drag.startDraggingModule(el, x, y, module); });
+        }
+        else if (event.type == "touchmove") {
+            module.drag.getDraggingTouchEvent(event, module, function (el, x, y, module) { module.drag.whileDraggingModule(el, x, y, module); });
+        }
+        else if (event.type == "touchend") {
+            module.drag.getDraggingTouchEvent(event, module, function (el, x, y, module) { module.drag.stopDraggingModule(el, x, y, module); });
         }
     };
     ModuleClass.prototype.dragCnxCallback = function (event, module) {
         if (event.type == "mousedown") {
-            module.drag.startDraggingConnector(module, event);
+            module.drag.getDraggingMouseEvent(event, module, function (el, x, y, module) { module.drag.startDraggingConnector(el, x, y, module); });
         }
         else if (event.type == "mouseup") {
-            module.drag.stopDraggingConnector(module, event);
+            module.drag.getDraggingMouseEvent(event, module, function (el, x, y, module) { module.drag.stopDraggingConnector(el, x, y, module); });
         }
         else if (event.type == "mousemove") {
-            module.drag.whileDraggingConnector(module, event);
+            module.drag.getDraggingMouseEvent(event, module, function (el, x, y, module) { module.drag.whileDraggingConnector(el, x, y, module); });
+        }
+        else if (event.type == "touchstart") {
+            module.drag.getDraggingTouchEvent(event, module, function (el, x, y, module) { module.drag.startDraggingConnector(el, x, y, module); });
+        }
+        else if (event.type == "touchmove") {
+            module.drag.getDraggingTouchEvent(event, module, function (el, x, y, module) { module.drag.whileDraggingConnector(el, x, y, module); });
+        }
+        else if (event.type == "touchend") {
+            module.drag.getDraggingTouchEvent(event, module, function (el, x, y, module) { module.drag.stopDraggingConnector(el, x, y, module); });
         }
     };
     /*******************************  PUBLIC METHODS  **********************************/
@@ -125,7 +143,8 @@ var ModuleClass = (function () {
         textArea.cols = 60;
         textArea.value = this.moduleFaust.fSource;
         module.moduleView.fInterfaceContainer.appendChild(textArea);
-        module.moduleView.fEditImg.src = App.baseImg + "enter.png";
+        //module.moduleView.fEditImg.src = App.baseImg + "enter.png";
+        module.moduleView.fEditImg.style.backgroundImage = "url(" + App.baseImg + "enter.png)";
         module.moduleView.fEditImg.onclick = function (event) { module.recompileSource(event, module); };
         module.moduleView.fEditImg.area = textArea;
     };
@@ -138,11 +157,12 @@ var ModuleClass = (function () {
     };
     //---- React to recompilation triggered by click on icon
     ModuleClass.prototype.recompileSource = function (event, module) {
+        App.showFullPageLoading();
         var buttonImage = event.target;
         var dsp_code = buttonImage.area.value;
         module.update(this.moduleView.fTitle.textContent, dsp_code);
         module.recallInterfaceParams();
-        module.moduleView.fEditImg.src = App.baseImg + "edit.png";
+        module.moduleView.fEditImg.style.backgroundImage = "url(" + App.baseImg + "edit.png)";
         module.moduleView.fEditImg.onclick = function () { module.edit(module); };
     };
     /***************** CREATE/DELETE the DSP Interface ********************/
@@ -214,21 +234,27 @@ var ModuleClass = (function () {
         if (this.moduleFaust.fDSP.getNumInputs() > 0 && this.moduleView.fName != "input") {
             this.moduleView.setInputNode();
             this.addCnxListener(this.moduleView.fInputNode, "mousedown", module);
+            this.addCnxListener(this.moduleView.fInputNode, "touchstart", module);
         }
         if (this.moduleFaust.fDSP.getNumOutputs() > 0 && this.moduleView.fName != "output") {
             this.moduleView.setOutputNode();
             this.addCnxListener(this.moduleView.fOutputNode, "mousedown", module);
+            this.addCnxListener(this.moduleView.fOutputNode, "touchstart", module);
         }
     };
     // Added for physical Input and Output which are create outside of ModuleClass (--> see Playground.js or Pedagogie.js)
     ModuleClass.prototype.setInputOutputNodes = function (input, output) {
         var module = this;
         this.moduleView.fInputNode = input;
-        if (this.moduleView.fInputNode)
+        if (this.moduleView.fInputNode) {
             this.addCnxListener(this.moduleView.fInputNode, "mousedown", module);
+            this.addCnxListener(this.moduleView.fInputNode, "touchstart", module);
+        }
         this.moduleView.fOutputNode = output;
-        if (this.moduleView.fOutputNode)
+        if (this.moduleView.fOutputNode) {
             this.addCnxListener(this.moduleView.fOutputNode, "mousedown", module);
+            this.addCnxListener(this.moduleView.fOutputNode, "touchstart", module);
+        }
     };
     /****************** ADD/REMOVE ACTION LISTENERS **********************/
     ModuleClass.prototype.addListener = function (type, module) {
@@ -244,7 +270,7 @@ var ModuleClass = (function () {
         }
     };
     ModuleClass.prototype.addCnxListener = function (div, type, module) {
-        if (type == "mousedown") {
+        if (type == "mousedown" || type == "touchstart") {
             div.addEventListener(type, module.eventConnectorHandler, true);
         }
         else {

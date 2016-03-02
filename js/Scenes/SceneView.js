@@ -94,7 +94,7 @@ var SceneView = (function () {
     };
     // On Load And UnLoad Playground Scene
     SceneView.prototype.onloadNormalScene = function (scene) {
-        scene.parent.setGeneralDragAndDrop(scene.parent);
+        scene.parent.setGeneralAppListener(scene.parent);
         scene.unmuteScene();
     };
     SceneView.prototype.onunloadNormalScene = function (scene) {

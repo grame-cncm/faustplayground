@@ -1,9 +1,11 @@
 ﻿//MenuView.ts : MenuView Class which contains all the graphical parts of the menu
 
 class MenuView {
+    menuContainer: HTMLElement;
     libraryButtonMenu: HTMLElement;
     exportButtonMenu: HTMLElement;
     helpButtonMenu: HTMLElement;
+    fullScreenButton: HTMLElement;
     libraryContent: HTMLElement;
     exportContent: HTMLElement;
     helpContent: HTMLElement;
@@ -22,6 +24,7 @@ class MenuView {
     init(htmlContainer: HTMLElement): void {
         var menuContainer: HTMLElement = document.createElement('div');
         menuContainer.id = "menuContainer";
+        this.menuContainer = menuContainer;
 
         //create menu's buttons and there containers
         var buttonsMenu: HTMLElement = document.createElement("div");
@@ -45,9 +48,15 @@ class MenuView {
         helpButtonMenu.appendChild(document.createTextNode("Aide"));
         this.helpButtonMenu = helpButtonMenu;
 
+        var fullScreenButton: HTMLElement = document.createElement("div");
+        fullScreenButton.id = "fullScreenButton";
+        fullScreenButton.className = "buttonsLittleMenu";
+        this.fullScreenButton = fullScreenButton;
+
         buttonsMenu.appendChild(libraryButtonMenu);
         buttonsMenu.appendChild(exportButtonMenu);
         buttonsMenu.appendChild(helpButtonMenu);
+        buttonsMenu.appendChild(fullScreenButton);
 
         this.HTMLButtonsMenu.push(libraryButtonMenu, exportButtonMenu, helpButtonMenu);
 

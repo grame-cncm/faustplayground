@@ -26,6 +26,10 @@
 /****** Node Dragging - these are used for dragging the audio modules interface*****/
 /***********************************************************************************/
 
+interface TouchEvent {
+    target: HTMLElement;
+
+}
 
 class Drag {
 
@@ -38,11 +42,48 @@ class Drag {
     isOriginInput: boolean;
     connector: Connector = new Connector();
     elemNode: HTMLElement;
+    isDragConnector: boolean=false;
 
-    startDraggingModule(event: MouseEvent, module: ModuleClass):void {
 
-        var el: HTMLElement = <HTMLElement>event.target;
-        var x: number, y: number;
+    getDraggingMouseEvent(mouseEvent: MouseEvent, module: ModuleClass, draggingFunction: (el: HTMLElement, x: number, y: number, module: ModuleClass) => void) {
+        
+        var el = <HTMLElement>mouseEvent.target;
+        var x = mouseEvent.clientX + window.scrollX;
+        var y = mouseEvent.clientY + window.scrollY;
+        draggingFunction(el, x, y, module);
+        mouseEvent.preventDefault()
+        //mouseEvent.stopPropagation();
+    }
+
+    getDraggingTouchEvent(touchEvent: TouchEvent, module: ModuleClass, draggingFunction: (el: HTMLElement, x: number, y: number, module: ModuleClass) => void) {
+        //touchEvent.preventDefault()
+        //touchEvent.stopPropagation();
+        if (touchEvent.touches.length > 0) {
+            for (var i = 0; i < touchEvent.touches.length; i++) {
+                var touch: Touch = touchEvent.touches[i];
+                var el = <HTMLElement>touch.target;
+                var x = touch.clientX + window.scrollX;
+                var y = touch.clientY + window.scrollY;
+                draggingFunction(el, x, y, module);
+                this.isDragConnector = true
+            }
+        } else if (this.isDragConnector) {
+            for (var i = 0; i < touchEvent.changedTouches.length; i++) {
+                var touch: Touch = touchEvent.changedTouches[i];
+                var x = touch.clientX + window.scrollX;
+                var y = touch.clientY + window.scrollY;
+                var el = <HTMLElement>document.elementFromPoint(x, y);
+                draggingFunction(el, x, y, module);
+            }
+            this.isDragConnector = true
+        } else {
+            draggingFunction(null, null, null, module);
+        }
+        touchEvent.preventDefault();
+    }
+
+    startDraggingModule(el: HTMLElement, x: number, y: number, module: ModuleClass): void {
+
   	
     //   Avoid dragging ModuleClass when it's a Connector that needs dragging
 	    if (el.tagName == "SELECT" || el.classList.contains("node-button"))
@@ -62,8 +103,7 @@ class Drag {
 
 
 	    // Get cursor position with respect to the page.
-        x = event.clientX + window.scrollX;
-        y = event.clientY + window.scrollY;
+       
 
   	    // Save starting positions of cursor and element.
         this.cursorStartX = x;
@@ -80,18 +120,21 @@ class Drag {
         // Capture mousemove and mouseup events on the page.
         module.addListener("mousemove", module);
         module.addListener("mouseup", module);
+        module.addListener("touchmove", module);
+        module.addListener("touchend", module);
 
-        event.preventDefault();
+        //event.preventDefault();
     }
 
-    whileDraggingModule(event: MouseEvent, module: ModuleClass): void {
-        var x: number, y: number;
+    whileDraggingModule(el: HTMLElement, x: number, y: number, module: ModuleClass): void {
+
 
         var moduleContainer = module.moduleView.getModuleContainer();
-	
+        //console.log(window.innerHeight);
+        console.log(window.pageYOffset)
+
 	    // Get cursor position with respect to the page.
-        x = event.clientX + window.scrollX;
-        y = event.clientY + window.scrollY;
+       
 
         // Move drag element by the same amount the cursor has moved.
         moduleContainer.style.left = (this.elementStartLeft + x - this.cursorStartX) + "px";
@@ -100,8 +143,8 @@ class Drag {
         if (module.moduleFaust.getInputConnections() != null) {	// update any lines that point in here.
 
             var offset: HTMLElement = module.moduleView.getInputNode();
-            x = window.scrollX + module.moduleView.inputOutputNodeDimension/2;
-            y = window.scrollY + module.moduleView.inputOutputNodeDimension / 2;
+            x = module.moduleView.inputOutputNodeDimension/2// + window.scrollX ;
+            y = module.moduleView.inputOutputNodeDimension/2// + window.scrollY;
 
             while (offset) {
 		
@@ -129,8 +172,8 @@ class Drag {
 		    
 
             var offset = module.moduleView.getOutputNode();
-            x = window.scrollX + module.moduleView.inputOutputNodeDimension / 2;
-            y = window.scrollY + module.moduleView.inputOutputNodeDimension / 2;
+            x =  module.moduleView.inputOutputNodeDimension / 2;
+            y =  module.moduleView.inputOutputNodeDimension / 2;
 
             while (offset) {
                 x += offset.offsetLeft;
@@ -155,13 +198,15 @@ class Drag {
 		    }
 	    }
 
-        event.preventDefault();
+        //event.preventDefault();
     }
 
-    stopDraggingModule(event: MouseEvent, module: ModuleClass):void {
+    stopDraggingModule(el: HTMLElement, x: number, y: number, module: ModuleClass):void {
       // Stop capturing mousemove and mouseup events.
         module.removeListener("mousemove", null, document);
         module.removeListener("mouseup", null, document);
+        module.removeListener("touchmove", null, document);
+        module.removeListener("touchend", null, document);
     }
 
     /************************************************************************************/
@@ -198,8 +243,8 @@ class Drag {
 
         // Get the position of the originating connector with respect to the page.
         var offset: HTMLElement = target;
-        var x: number = window.scrollX + module.moduleView.inputOutputNodeDimension / 2;
-        var y: number = window.scrollY + module.moduleView.inputOutputNodeDimension / 2;
+        var x: number = module.moduleView.inputOutputNodeDimension / 2;
+        var y: number = module.moduleView.inputOutputNodeDimension / 2;
 
         while (offset) {
             x += offset.offsetLeft;
@@ -244,7 +289,7 @@ class Drag {
         //document.getElementById("svgCanvas").appendChild(shape);
     }
 
-    stopDraggingConnection(sourceModule: ModuleClass, destination: ModuleClass, event?: MouseEvent): void {
+    stopDraggingConnection(sourceModule: ModuleClass, destination: ModuleClass, target?: HTMLElement): void {
 
 
         if (sourceModule.moduleView.getInterfaceContainer().lastLit) {
@@ -252,10 +297,9 @@ class Drag {
             sourceModule.moduleView.getInterfaceContainer().lastLit = null;
         }
         var resultIsConnectionValid: boolean = true;
-        if (event!=null) {
-            resultIsConnectionValid = this.isConnectionValid(event);
+        if (target != null) {
+            resultIsConnectionValid = this.isConnectionValid(target);
         }
-
         sourceModule.moduleView.getInterfaceContainer().className = sourceModule.moduleView.getInterfaceContainer().unlitClassname;
 
         var x: number, y: number
@@ -273,8 +317,8 @@ class Drag {
 	
 
 	    // Get the position of the originating connector with respect to the page.			
-            x = window.scrollX + destination.moduleView.inputOutputNodeDimension / 2;
-            y = window.scrollY + destination.moduleView.inputOutputNodeDimension / 2;
+            x = destination.moduleView.inputOutputNodeDimension / 2;
+            y = destination.moduleView.inputOutputNodeDimension / 2;
 
             while (offset) {
                 x += offset.offsetLeft;
@@ -346,12 +390,14 @@ class Drag {
         this.connector.connectorShape = null;
     }
 
-    startDraggingConnector(module: ModuleClass, event: MouseEvent):void {
-        this.startDraggingConnection(module, <HTMLElement>event.target);
+    startDraggingConnector(target: HTMLElement, x: number, y: number, module: ModuleClass): void {
+        this.startDraggingConnection(module,target);
 
         // Capture mousemove and mouseup events on the page.
-        module.addCnxListener(<HTMLElement>event.target, "mousemove", module);
-        module.addCnxListener(<HTMLElement>event.target, "mouseup",module);
+        module.addCnxListener(target, "mousemove", module);
+        module.addCnxListener(target, "mouseup", module);
+        module.addCnxListener(target, "touchmove", module);
+        module.addCnxListener(target, "touchend", module);
 
         //event.preventDefault();
 	    //event.stopPropagation();
@@ -359,15 +405,15 @@ class Drag {
 
 
 
-    whileDraggingConnector(module: ModuleClass, event: MouseEvent) {
+    whileDraggingConnector(target: HTMLElement, x: number, y: number, module: ModuleClass) {
 
-        var toElem: HTMLInterfaceContainer = <HTMLInterfaceContainer>event.target;
+        var toElem: HTMLInterfaceContainer = <HTMLInterfaceContainer>target;
 
         // Get cursor position with respect to the page.
         var x1: number = this.cursorStartX;
         var y1: number = this.cursorStartY;
-        var x2: number = event.clientX + window.scrollX;
-        var y2: number = event.clientY + window.scrollY;
+        var x2: number = x //+ window.scrollX;
+        var y2: number = y //+ window.scrollY;
         var d: string;
         if (!this.isOriginInput) {
             d = this.setCurvePath(x1, y1, x2, y2, this.calculBezier1(x1, x2), this.calculBezier2(x1, x2))
@@ -414,41 +460,42 @@ class Drag {
 			    }
 		    }
 	    }
-        event.preventDefault();
-	    event.stopPropagation();
+        //event.preventDefault();
+	    //event.stopPropagation();
     }
 
-    stopDraggingConnector(module: ModuleClass, event:MouseEvent):void {
+    stopDraggingConnector(target: HTMLElement, x: number, y: number, module: ModuleClass): void {
 
-  	    // Stop capturing mousemove and mouseup events.
-        module.removeCnxListener(<HTMLElement>event.target, "mousemove",module);
-        module.removeCnxListener(<HTMLElement>event.target, "mouseup", module);
-        var arrivingHTMLNode: HTMLElement = <HTMLElement>event.target;
+        // Stop capturing mousemove and mouseup events.
+        module.removeCnxListener(target, "mousemove", module);
+        module.removeCnxListener(target, "mouseup", module);
+        module.removeCnxListener(target, "touchmove", module);
+        module.removeCnxListener(target, "touchend", module);
+        var arrivingHTMLNode: HTMLElement = target;
         var arrivingHTMLParentNode: HTMLElement = <HTMLElement>arrivingHTMLNode.offsetParent;
         var arrivingNode: ModuleClass;
 
         var modules: ModuleClass[] = module.sceneParent.getModules();
 
         for (var i = 0; i < modules.length; i++){
-            if ((this.isOriginInput && modules[i].moduleView.isPointInOutput(event.clientX, event.clientY)) || modules[i].moduleView.isPointInInput(event.clientX, event.clientY)) {
+            if ((this.isOriginInput && modules[i].moduleView.isPointInOutput(x, y)) || modules[i].moduleView.isPointInInput(x, y)) {
 			    arrivingNode = modules[i];
 			    break;
 		    }
 	    }	
 
-        if (!arrivingNode && arrivingHTMLParentNode != undefined) {
+        if (arrivingHTMLParentNode!=undefined&&arrivingHTMLParentNode.classList.contains("node")) {
             var outputModule = module.sceneParent.getAudioOutput();
             var inputModule = module.sceneParent.getAudioInput();
-            if ((this.isOriginInput && outputModule.moduleView.isPointInOutput(event.clientX, event.clientY)) || outputModule.moduleView.isPointInInput(event.clientX, event.clientY) || arrivingHTMLParentNode.offsetParent.getAttribute("id") == "moduleOutput") {
+            if ((this.isOriginInput && outputModule.moduleView.isPointInOutput(x, y)) || outputModule.moduleView.isPointInInput(x, y) || arrivingHTMLParentNode.offsetParent.getAttribute("id") == "moduleOutput") {
                 arrivingNode = outputModule;
-            } else if ((!this.isOriginInput && inputModule.moduleView.isPointInInput(event.clientX, event.clientY)) || inputModule.moduleView.isPointInOutput(event.clientX, event.clientY) || arrivingHTMLParentNode.offsetParent.getAttribute("id") == "moduleInput") {
+            } else if ((!this.isOriginInput && inputModule.moduleView.isPointInInput(x, y)) || inputModule.moduleView.isPointInOutput(x, y) || arrivingHTMLParentNode.offsetParent.getAttribute("id") == "moduleInput") {
                 arrivingNode = inputModule;
             }
         }
-        module.drag.stopDraggingConnection(module, arrivingNode, event);
+        module.drag.stopDraggingConnection(module, arrivingNode, target);
     }
-    isConnectionValid(event: MouseEvent): boolean {
-        var target: HTMLElement = <HTMLElement>event.target;
+    isConnectionValid(target: HTMLElement): boolean {
         if (target.classList.contains("node-button")) {
             target = <HTMLElement>target.parentNode;
         }
