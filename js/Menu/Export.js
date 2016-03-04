@@ -79,6 +79,8 @@ var Export = (function () {
             document.getElementById("exportResultContainer").appendChild(disposableExportDiv);
             disposableExportDiv.appendChild(qrDiv);
             disposableExportDiv.appendChild(downloadBottomButtonContainer);
+            _this.exportView.exportButton.addEventListener("click", _this.eventExport);
+            _this.exportView.exportButton.style.opacity = "1";
             App.removeLoadingLogo();
         };
     }
@@ -90,7 +92,8 @@ var Export = (function () {
         this.exportView.inputServerUrl.onkeypress = function (e) { if (e.which == 13) {
             _this.uploadTargets();
         } };
-        this.exportView.exportButton.onclick = function (event) { _this.exportPatch(event, _this); };
+        this.eventExport = function (event) { _this.exportPatch(event, _this); };
+        this.exportView.exportButton.addEventListener("click", this.eventExport);
         this.exportView.buttonNameApp.onclick = function () { _this.renameScene(); };
         this.exportView.inputNameApp.onkeypress = function (e) { if (e.which == 13) {
             _this.renameScene();
@@ -130,6 +133,8 @@ var Export = (function () {
     *********************  HANDLE POST TO FAUST WEB  ********************
     ********************************************************************/
     Export.prototype.exportPatch = function (event, expor) {
+        this.exportView.exportButton.removeEventListener("click", this.eventExport);
+        this.exportView.exportButton.style.opacity = "0.3";
         var sceneName = Scene.sceneName;
         if (sceneName == null || sceneName == "") {
             sceneName = "MonApplication";
