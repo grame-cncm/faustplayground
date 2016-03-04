@@ -79,6 +79,7 @@ var Library = (function () {
             window.setTimeout(function () { _this.isLibraryTouch = false; _this.previousTouchUrl = ""; }, 300);
         }
         else if (anchor.href == this.previousTouchUrl) {
+            App.showFullPageLoading();
             this.dispatchEventLibrary(anchor.href);
             this.isLibraryTouch = false;
         }

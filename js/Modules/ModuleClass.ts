@@ -88,7 +88,7 @@ class ModuleClass implements IModule {
     }
 
     private dragCnxCallback(event: Event, module: ModuleClass): void {
-
+        module.drag.isDragConnector = true;
         if (event.type == "mousedown") {
             module.drag.getDraggingMouseEvent(<MouseEvent>event, module, (el, x, y, module, e) => { module.drag.startDraggingConnector(el, x, y, module, e) });
         } else if (event.type == "mouseup") {
@@ -99,6 +99,7 @@ class ModuleClass implements IModule {
         else if (event.type == "touchstart") {
             module.drag.getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module, e) => { module.drag.startDraggingConnector(el, x, y, module, e) });
         } else if (event.type == "touchmove") {
+            console.log(module.drag.connector.connectorShape.id)
             module.drag.getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module, e) => { module.drag.whileDraggingConnector(el, x, y, module, e) })
         } else if (event.type == "touchend") {
             module.drag.getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module) => { module.drag.stopDraggingConnector(el, x, y, module) });

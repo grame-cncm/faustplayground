@@ -20,6 +20,7 @@ var Drag = (function () {
         this.zIndex = 0;
         this.connector = new Connector();
         this.isDragConnector = false;
+        this.moduleTouchList = [];
     }
     Drag.prototype.getDraggingMouseEvent = function (mouseEvent, module, draggingFunction) {
         var event = mouseEvent;
@@ -27,21 +28,26 @@ var Drag = (function () {
         var x = mouseEvent.clientX + window.scrollX;
         var y = mouseEvent.clientY + window.scrollY;
         draggingFunction(el, x, y, module, event);
-        //mouseEvent.preventDefault()
-        //mouseEvent.stopPropagation();
     };
     Drag.prototype.getDraggingTouchEvent = function (touchEvent, module, draggingFunction) {
-        //touchEvent.preventDefault()
-        //touchEvent.stopPropagation();
         var event = touchEvent;
-        if (touchEvent.touches.length > 0) {
+        if (touchEvent.touches.length == 1) {
+            var touch = touchEvent.touches[0];
+            var el = touch.target;
+            var x = touch.clientX + window.scrollX;
+            var y = touch.clientY + window.scrollY;
+            draggingFunction(el, x, y, module, event);
+        }
+        else if (touchEvent.touches.length > 1) {
             for (var i = 0; i < touchEvent.touches.length; i++) {
                 var touch = touchEvent.touches[i];
                 var el = touch.target;
                 var x = touch.clientX + window.scrollX;
                 var y = touch.clientY + window.scrollY;
-                draggingFunction(el, x, y, module, event);
-                this.isDragConnector = true;
+                if (module.moduleView.isPointInNode(x, y)) {
+                    //if (touchEvent.target != touchEvent.touches[i].target) {
+                    draggingFunction(el, x, y, module, event);
+                }
             }
         }
         else if (this.isDragConnector) {
@@ -50,9 +56,9 @@ var Drag = (function () {
                 var x = touch.clientX + window.scrollX;
                 var y = touch.clientY + window.scrollY;
                 var el = document.elementFromPoint(x - scrollX, y - scrollY);
+                this.isDragConnector = false;
                 draggingFunction(el, x, y, module, event);
             }
-            this.isDragConnector = true;
         }
         else {
             draggingFunction(null, null, null, module, event);
@@ -94,8 +100,7 @@ var Drag = (function () {
     };
     Drag.prototype.whileDraggingModule = function (el, x, y, module, event) {
         var moduleContainer = module.moduleView.getModuleContainer();
-        //console.log(window.innerHeight);
-        console.log(window.pageYOffset);
+        App.appTest++;
         // Get cursor position with respect to the page.
         // Move drag element by the same amount the cursor has moved.
         moduleContainer.style.left = (this.elementStartLeft + x - this.cursorStartX) + "px";
@@ -173,6 +178,7 @@ var Drag = (function () {
         return x2 + this.calculDistance(x1, x2);
     };
     Drag.prototype.startDraggingConnection = function (module, target) {
+        var _this = this;
         // if this is the green or red button, use its parent.
         if (target.classList.contains("node-button"))
             target = target.parentNode;
@@ -200,18 +206,12 @@ var Drag = (function () {
         curve.setAttributeNS(null, "stroke", "black");
         curve.setAttributeNS(null, "stroke-width", "5");
         curve.setAttributeNS(null, "fill", "none");
-        //curve.setAttributeNS(null, "opacity", "0.5");
-        //curve.setAttributeNS(null, "stroke-location", "center");
-        var shape = document.createElementNS(svgns, "line");
-        shape.setAttributeNS(null, "x1", String(x));
-        shape.setAttributeNS(null, "y1", String(y));
-        shape.setAttributeNS(null, "x2", String(x));
-        shape.setAttributeNS(null, "y2", String(y));
-        shape.setAttributeNS(null, "stroke", "black");
-        shape.setAttributeNS(null, "stroke-width", "5");
+        curve.id = String(Connector.connectorId);
+        Connector.connectorId++;
+        //console.log("connector Id = " + Connector.connectorId);
         this.connector.connectorShape = curve;
+        this.connector.connectorShape.onclick = function (event) { _this.connector.deleteConnection(event, _this); };
         document.getElementById("svgCanvas").appendChild(curve);
-        //document.getElementById("svgCanvas").appendChild(shape);
     };
     Drag.prototype.stopDraggingConnection = function (sourceModule, destination, target) {
         if (sourceModule.moduleView.getInterfaceContainer().lastLit) {
@@ -298,6 +298,7 @@ var Drag = (function () {
     };
     Drag.prototype.whileDraggingConnector = function (target, x, y, module, event) {
         var toElem = target;
+        //console.log(this.connector.connectorShape.id);
         // Get cursor position with respect to the page.
         var x1 = this.cursorStartX;
         var y1 = this.cursorStartY;

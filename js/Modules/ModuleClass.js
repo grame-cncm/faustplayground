@@ -62,6 +62,7 @@ var ModuleClass = (function () {
         }
     };
     ModuleClass.prototype.dragCnxCallback = function (event, module) {
+        module.drag.isDragConnector = true;
         if (event.type == "mousedown") {
             module.drag.getDraggingMouseEvent(event, module, function (el, x, y, module, e) { module.drag.startDraggingConnector(el, x, y, module, e); });
         }
@@ -75,6 +76,7 @@ var ModuleClass = (function () {
             module.drag.getDraggingTouchEvent(event, module, function (el, x, y, module, e) { module.drag.startDraggingConnector(el, x, y, module, e); });
         }
         else if (event.type == "touchmove") {
+            console.log(module.drag.connector.connectorShape.id);
             module.drag.getDraggingTouchEvent(event, module, function (el, x, y, module, e) { module.drag.whileDraggingConnector(el, x, y, module, e); });
         }
         else if (event.type == "touchend") {

@@ -104,6 +104,7 @@ var Connector = (function () {
                 this.breakSingleInputConnection(module.moduleFaust.getInputConnections()[0].source, module, module.moduleFaust.getInputConnections()[0]);
         }
     };
+    Connector.connectorId = 0;
     return Connector;
 })();
 //# sourceMappingURL=Connect.js.map

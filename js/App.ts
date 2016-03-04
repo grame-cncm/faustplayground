@@ -51,7 +51,7 @@ DEPENDENCIES:
 class App {
 
     //************* Fields
-
+    static appTest: number = 0;
     static audioContext: AudioContext;
     static idX: number=0;
     static scene: Scene;
@@ -471,18 +471,19 @@ class App {
     }
 
     static showFullPageLoading() {
-        document.getElementById("loadingPage").style.display = "block";
-        document.getElementById("Normal").style.filter = "blur(2px)"
-        document.getElementById("Normal").style.webkitFilter = "blur(2px)"
-        document.getElementById("menuContainer").style.filter = "blur(2px)"
-        document.getElementById("menuContainer").style.webkitFilter = "blur(2px)"
+        document.getElementById("loadingPage").style.visibility = "visible";
+        //too demanding for mobile firefox...
+        //document.getElementById("Normal").style.filter = "blur(2px)"
+        //document.getElementById("Normal").style.webkitFilter = "blur(2px)"
+        //document.getElementById("menuContainer").style.filter = "blur(2px)"
+        //document.getElementById("menuContainer").style.webkitFilter = "blur(2px)"
     }
     static hideFullPageLoading() {
-            document.getElementById("loadingPage").style.display="none";
-            document.getElementById("Normal").style.filter = "none"
-            document.getElementById("Normal").style.webkitFilter = "none"
-            document.getElementById("menuContainer").style.filter = "none"
-            document.getElementById("menuContainer").style.webkitFilter = "none"
+        document.getElementById("loadingPage").style.visibility = "hidden";
+            //document.getElementById("Normal").style.filter = "none"
+            //document.getElementById("Normal").style.webkitFilter = "none"
+            //document.getElementById("menuContainer").style.filter = "none"
+            //document.getElementById("menuContainer").style.webkitFilter = "none"
         
     }
 

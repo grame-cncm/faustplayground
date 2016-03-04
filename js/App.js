@@ -374,18 +374,19 @@ var App = (function () {
         loadingPage.style.display = "none";
     };
     App.showFullPageLoading = function () {
-        document.getElementById("loadingPage").style.display = "block";
-        document.getElementById("Normal").style.filter = "blur(2px)";
-        document.getElementById("Normal").style.webkitFilter = "blur(2px)";
-        document.getElementById("menuContainer").style.filter = "blur(2px)";
-        document.getElementById("menuContainer").style.webkitFilter = "blur(2px)";
+        document.getElementById("loadingPage").style.visibility = "visible";
+        //too demanding for mobile firefox...
+        //document.getElementById("Normal").style.filter = "blur(2px)"
+        //document.getElementById("Normal").style.webkitFilter = "blur(2px)"
+        //document.getElementById("menuContainer").style.filter = "blur(2px)"
+        //document.getElementById("menuContainer").style.webkitFilter = "blur(2px)"
     };
     App.hideFullPageLoading = function () {
-        document.getElementById("loadingPage").style.display = "none";
-        document.getElementById("Normal").style.filter = "none";
-        document.getElementById("Normal").style.webkitFilter = "none";
-        document.getElementById("menuContainer").style.filter = "none";
-        document.getElementById("menuContainer").style.webkitFilter = "none";
+        document.getElementById("loadingPage").style.visibility = "hidden";
+        //document.getElementById("Normal").style.filter = "none"
+        //document.getElementById("Normal").style.webkitFilter = "none"
+        //document.getElementById("menuContainer").style.filter = "none"
+        //document.getElementById("menuContainer").style.webkitFilter = "none"
     };
     App.createDropAreaGraph = function () {
     };
@@ -436,6 +437,8 @@ var App = (function () {
             document.getElementById("svgCanvas").style.height = "100%";
         }
     };
+    //************* Fields
+    App.appTest = 0;
     App.idX = 0;
     App.baseImg = "img/";
     return App;

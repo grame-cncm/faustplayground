@@ -130,10 +130,8 @@ var ModuleView = (function () {
     };
     ModuleView.prototype.isPointInNode = function (x, y) {
         if (this.fModuleContainer && this.fModuleContainer.getBoundingClientRect().left < x && x < this.fModuleContainer.getBoundingClientRect().right && this.fModuleContainer.getBoundingClientRect().top < y && y < this.fModuleContainer.getBoundingClientRect().bottom) {
-            console.log("isInNode");
             return true;
         }
-        console.log(x);
         return false;
     };
     return ModuleView;
