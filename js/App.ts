@@ -51,7 +51,7 @@ DEPENDENCIES:
 class App {
 
     //************* Fields
-
+    static appTest: number = 0;
     static audioContext: AudioContext;
     static idX: number=0;
     static scene: Scene;
@@ -91,9 +91,10 @@ class App {
 
 
         var sceneView: SceneView = new SceneView();
-        App.scene = new Scene("Normal", this, sceneView.onloadNormalScene, sceneView.onunloadNormalScene, sceneView);
-        App.scene.sceneView = sceneView;
-        sceneView.initNormalScene(App.scene);
+        App.scene = new Scene("Normal", this, sceneView);
+        //App.scene.sceneView = sceneView;
+        this.setGeneralAppListener(this);
+        //sceneView.initNormalScene(App.scene);
             
 
         
@@ -112,7 +113,7 @@ class App {
     **********************  ACTIVATE PHYSICAL IN/OUTPUT *****************
     ********************************************************************/
 
-    activateAudioInput(app: App): void {
+    activateAudioInput(scene: Scene): void {
 
         var navigatorLoc: Navigator = navigator;
         if (!navigatorLoc.getUserMedia) {
@@ -121,13 +122,13 @@ class App {
 
         if (navigatorLoc.getUserMedia) {
 
-            navigatorLoc.getUserMedia({ audio: true }, function (mediaStream) { app.getDevice(mediaStream, app) }, function (e) {
-                App.scene.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)"
-                App.scene.fAudioInput.moduleView.fInterfaceContainer.title = "Error getting audio input";
+            navigatorLoc.getUserMedia({ audio: true },  (mediaStream)=> { this.getDevice(mediaStream, this) }, function (e) {
+                scene.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)"
+                scene.fAudioInput.moduleView.fInterfaceContainer.title = "Error getting audio input";
             });
         } else {
-            App.scene.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)"
-            App.scene.fAudioInput.moduleView.fInterfaceContainer.title = "Audio input API not available";
+            scene.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)"
+            scene.fAudioInput.moduleView.fInterfaceContainer.title = "Audio input API not available";
         }
     }
 
@@ -156,7 +157,7 @@ class App {
     ****************  CREATE FAUST FACTORIES AND MODULES ****************
     ********************************************************************/
 
-    compileFaust(name: string, sourcecode: string, x: number, y: number, callback: (Factory: Factory, scene: Scene, app: App) => void) {
+    compileFaust(name: string, sourcecode: string, x: number, y: number, callback: (Factory: Factory) => void) {
 
         //  Temporarily Saving parameters of compilation
         this.tempModuleName = name;
@@ -177,14 +178,14 @@ class App {
         //    sourcecode, args
         //})
         //worker.postMessage(messageJson)
-        this.factory = faust.createDSPFactory(sourcecode, args);
-        callback(this.factory, App.scene, this);
-
+        this.factory = faust.createDSPFactory(sourcecode, args, (factory) => { callback(factory) });
+        
+        //callback(this.factory)
         if (currentScene) { currentScene.unmuteScene() };
 
     }
 
-    private createModule(factory: Factory, scene: Scene, app: App): void {
+    private createModule(factory: Factory): void {
 
         if (!factory) {
             alert(faust.getErrorMessage());
@@ -194,19 +195,19 @@ class App {
 
         // can't it be just window.scenes[window.currentScene] ???
         //if (App.isTooltipEnabled)
-        var module: ModuleClass = new ModuleClass(App.idX++, app.tempModuleX, app.tempModuleY, app.tempModuleName, scene, document.getElementById("modules"), scene.removeModule);
+        var module: ModuleClass = new ModuleClass(App.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, App.scene, document.getElementById("modules"), App.scene.removeModule);
         //else
         //    faustModule = new ModuleClass(this.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), this.scenes[0].removeModule);
 
-        module.moduleFaust.setSource(app.tempModuleSourceCode);
+        module.moduleFaust.setSource(this.tempModuleSourceCode);
         module.createDSP(factory);
         module.createFaustInterface();
         module.addInputOutputNodes();
-        if (app.tempModuleName != "input" && app.tempModuleName != "output") {
+        if (this.tempModuleName != "input" && this.tempModuleName != "output") {
             module.moduleView.fModuleContainer.ondrop = (e) => {
                 e.stopPropagation();
-                app.styleOnDragEnd()
-                app.uploadOn(app, module, 0, 0, e)
+                this.styleOnDragEnd()
+                this.uploadOn(this, module, 0, 0, e)
             };
         }
         module.moduleView.fModuleContainer.ondragover = () => {
@@ -217,8 +218,10 @@ class App {
             module.moduleView.fModuleContainer.style.opacity = "0.5";
             module.moduleView.fModuleContainer.style.boxShadow = "0 5px 10px rgba(0, 0, 0, 0.4)";
         }
-        scene.addModule(module);
-        App.hideFullPageLoading()
+        App.scene.addModule(module);
+        if (!App.scene.isInitLoading) {
+            App.hideFullPageLoading()
+        }
 
     }
 
@@ -287,13 +290,10 @@ class App {
         App.showFullPageLoading();
         //worker.postMessage("go");
         this.preventDefaultAction(e);
-        // CASE 0 : THE DROPPED OBJECT IS NOT WHAT WE WANT
-        if (e.dataTransfer.getData('URL') == "") {
 
-        }
 
         // CASE 1 : THE DROPPED OBJECT IS A URL TO SOME FAUST CODE
-        else if (e.dataTransfer.getData('URL') && e.dataTransfer.getData('URL').split(':').shift() != "file") {
+        if (e.dataTransfer.getData('URL') && e.dataTransfer.getData('URL').split(':').shift() != "file") {
             var url = e.dataTransfer.getData('URL');
             this.uploadUrl(app, module, x, y, url);
         }else if (e.dataTransfer.getData('URL').split(':').shift() != "file") {
@@ -326,7 +326,7 @@ class App {
                 var dsp_code: string = "process = vgroup(\"" + filename + "\",environment{" + xmlhttp.responseText + "}.process);";
 
                 if (module == null) {
-                    app.compileFaust(filename, dsp_code, x, y, app.createModule);
+                    app.compileFaust(filename, dsp_code, x, y, (factory) => { app.createModule(factory) });
                 } else {
                     module.update(filename, dsp_code);
                 }
@@ -345,7 +345,7 @@ class App {
         dsp_code = "process = vgroup(\"" + "TEXT" + "\",environment{" + dsp_code + "}.process);";
 
         if (!module) {
-            app.compileFaust("TEXT", dsp_code, x, y, app.createModule);
+            app.compileFaust("TEXT", dsp_code, x, y, (factory) => { app.createModule(factory) });
         } else {
             module.update("TEXT", dsp_code);
         }
@@ -386,7 +386,7 @@ class App {
                 dsp_code = "process = vgroup(\"" + filename + "\",environment{" + reader.result + "}.process);";
 
                 if (!module && type == "dsp") {
-                    app.compileFaust(filename, dsp_code, x, y, app.createModule);
+                    app.compileFaust(filename, dsp_code, x, y, (factory) => { app.createModule(factory) });
                 } else if (type == "dsp") {
                     module.update(filename, dsp_code);
                 } else if (type == "json") {
@@ -455,33 +455,36 @@ class App {
     static removeLoadingLogo() {
         document.getElementById("loadingDiv").remove();
     }
-    static showFullPageLoading() {
+
+    static addFullPageLoading() {
         
         var loadingPage = document.createElement("div");
         loadingPage.id = "loadingPage";
+        loadingPage.className = "loadingPage";
         var body = document.getElementsByTagName('body')[0];
         var loadingText = document.createElement("div");
         loadingText.id="loadingTextBig"
         loadingText.textContent = "Chargement en cours";
         loadingPage.appendChild(loadingText);
         body.appendChild(loadingPage);
-        document.getElementById("Normal").style.filter = "blur(2px)"
-        document.getElementById("Normal").style.webkitFilter = "blur(2px)"
-        document.getElementById("menuContainer").style.filter = "blur(2px)"
-        document.getElementById("menuContainer").style.webkitFilter = "blur(2px)"
+        loadingPage.style.display = "none"
+    }
 
-
-
-        //App.addLoadingLogo(loadingPage.id);
+    static showFullPageLoading() {
+        document.getElementById("loadingPage").style.visibility = "visible";
+        //too demanding for mobile firefox...
+        //document.getElementById("Normal").style.filter = "blur(2px)"
+        //document.getElementById("Normal").style.webkitFilter = "blur(2px)"
+        //document.getElementById("menuContainer").style.filter = "blur(2px)"
+        //document.getElementById("menuContainer").style.webkitFilter = "blur(2px)"
     }
     static hideFullPageLoading() {
-        if (document.getElementById("loadingPage") != null) {
-            document.getElementById("loadingPage").remove();
-            document.getElementById("Normal").style.filter = "none"
-            document.getElementById("Normal").style.webkitFilter = "none"
-            document.getElementById("menuContainer").style.filter = "none"
-            document.getElementById("menuContainer").style.webkitFilter = "none"
-        }
+        document.getElementById("loadingPage").style.visibility = "hidden";
+            //document.getElementById("Normal").style.filter = "none"
+            //document.getElementById("Normal").style.webkitFilter = "none"
+            //document.getElementById("menuContainer").style.filter = "none"
+            //document.getElementById("menuContainer").style.webkitFilter = "none"
+        
     }
 
     static createDropAreaGraph() {

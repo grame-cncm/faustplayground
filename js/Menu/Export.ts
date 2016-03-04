@@ -22,13 +22,15 @@ class Export{
     exportView: ExportView;
     static exportUrl: string = "http://faustservice.grame.fr"
     static targetsUrl: string = "http://faustservice.grame.fr/targets"
+    eventExport: (event: Event) => void;
 
     //------ Handle Combo Boxes
     setEventListeners() {
         this.exportView.refreshButton.onclick = () => { this.uploadTargets() };
         this.exportView.selectPlatform.onchange = () => { this.updateArchitectures() };
-        this.exportView.inputServerUrl.onkeypress = (e: KeyboardEvent) => { if (e.which == 13) { this.uploadTargets()} };
-        this.exportView.exportButton.onclick = (event) => { this.exportPatch(event, this) };
+        this.exportView.inputServerUrl.onkeypress = (e: KeyboardEvent) => { if (e.which == 13) { this.uploadTargets() } };
+        this.eventExport = (event) => { this.exportPatch(event, this) }
+        this.exportView.exportButton.addEventListener("click", this.eventExport);
         this.exportView.buttonNameApp.onclick = () => { this.renameScene() };
         this.exportView.inputNameApp.onkeypress = (e: KeyboardEvent) => { if (e.which == 13) { this.renameScene() } };
 
@@ -114,6 +116,8 @@ class Export{
 
     exportPatch(event:Event, expor: Export)
     {
+        this.exportView.exportButton.removeEventListener("click", this.eventExport)
+        this.exportView.exportButton.style.opacity = "0.3";
         var sceneName: string = Scene.sceneName;
         if (sceneName == null || sceneName == "") {
             sceneName = "MonApplication";
@@ -177,7 +181,8 @@ class Export{
         disposableExportDiv.appendChild(qrDiv);
         disposableExportDiv.appendChild(downloadBottomButtonContainer);
 
-
+        this.exportView.exportButton.addEventListener("click", this.eventExport)
+        this.exportView.exportButton.style.opacity = "1";
         App.removeLoadingLogo();
 
     }

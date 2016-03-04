@@ -28,7 +28,7 @@ interface ConnectorShape extends SVGElement {
 }
 
 class Connector {
-
+    static connectorId: number = 0;
     connectorShape: ConnectorShape;
     source: ModuleClass;
     destination: ModuleClass;

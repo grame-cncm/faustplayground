@@ -43,39 +43,41 @@ var ModuleClass = (function () {
     /***************  PRIVATE METHODS  ******************************/
     ModuleClass.prototype.dragCallback = function (event, module) {
         if (event.type == "mousedown") {
-            module.drag.getDraggingMouseEvent(event, module, function (el, x, y, module) { module.drag.startDraggingModule(el, x, y, module); });
+            module.drag.getDraggingMouseEvent(event, module, function (el, x, y, module, e) { module.drag.startDraggingModule(el, x, y, module, e); });
         }
         else if (event.type == "mouseup") {
-            module.drag.getDraggingMouseEvent(event, module, function (el, x, y, module) { module.drag.stopDraggingModule(el, x, y, module); });
+            module.drag.getDraggingMouseEvent(event, module, function (el, x, y, module, e) { module.drag.stopDraggingModule(el, x, y, module, e); });
         }
         else if (event.type == "mousemove") {
-            module.drag.getDraggingMouseEvent(event, module, function (el, x, y, module) { module.drag.whileDraggingModule(el, x, y, module); });
+            module.drag.getDraggingMouseEvent(event, module, function (el, x, y, module, e) { module.drag.whileDraggingModule(el, x, y, module, e); });
         }
         else if (event.type == "touchstart") {
-            module.drag.getDraggingTouchEvent(event, module, function (el, x, y, module) { module.drag.startDraggingModule(el, x, y, module); });
+            module.drag.getDraggingTouchEvent(event, module, function (el, x, y, module, e) { module.drag.startDraggingModule(el, x, y, module, e); });
         }
         else if (event.type == "touchmove") {
-            module.drag.getDraggingTouchEvent(event, module, function (el, x, y, module) { module.drag.whileDraggingModule(el, x, y, module); });
+            module.drag.getDraggingTouchEvent(event, module, function (el, x, y, module, e) { module.drag.whileDraggingModule(el, x, y, module, e); });
         }
         else if (event.type == "touchend") {
-            module.drag.getDraggingTouchEvent(event, module, function (el, x, y, module) { module.drag.stopDraggingModule(el, x, y, module); });
+            module.drag.getDraggingTouchEvent(event, module, function (el, x, y, module, e) { module.drag.stopDraggingModule(el, x, y, module, e); });
         }
     };
     ModuleClass.prototype.dragCnxCallback = function (event, module) {
+        module.drag.isDragConnector = true;
         if (event.type == "mousedown") {
-            module.drag.getDraggingMouseEvent(event, module, function (el, x, y, module) { module.drag.startDraggingConnector(el, x, y, module); });
+            module.drag.getDraggingMouseEvent(event, module, function (el, x, y, module, e) { module.drag.startDraggingConnector(el, x, y, module, e); });
         }
         else if (event.type == "mouseup") {
             module.drag.getDraggingMouseEvent(event, module, function (el, x, y, module) { module.drag.stopDraggingConnector(el, x, y, module); });
         }
         else if (event.type == "mousemove") {
-            module.drag.getDraggingMouseEvent(event, module, function (el, x, y, module) { module.drag.whileDraggingConnector(el, x, y, module); });
+            module.drag.getDraggingMouseEvent(event, module, function (el, x, y, module, e) { module.drag.whileDraggingConnector(el, x, y, module, e); });
         }
         else if (event.type == "touchstart") {
-            module.drag.getDraggingTouchEvent(event, module, function (el, x, y, module) { module.drag.startDraggingConnector(el, x, y, module); });
+            module.drag.getDraggingTouchEvent(event, module, function (el, x, y, module, e) { module.drag.startDraggingConnector(el, x, y, module, e); });
         }
         else if (event.type == "touchmove") {
-            module.drag.getDraggingTouchEvent(event, module, function (el, x, y, module) { module.drag.whileDraggingConnector(el, x, y, module); });
+            console.log(module.drag.connector.connectorShape.id);
+            module.drag.getDraggingTouchEvent(event, module, function (el, x, y, module, e) { module.drag.whileDraggingConnector(el, x, y, module, e); });
         }
         else if (event.type == "touchend") {
             module.drag.getDraggingTouchEvent(event, module, function (el, x, y, module) { module.drag.stopDraggingConnector(el, x, y, module); });
@@ -179,6 +181,8 @@ var ModuleClass = (function () {
     //---- Generic callback for Faust Interface
     //---- Called every time an element of the UI changes value
     ModuleClass.prototype.interfaceCallback = function (event, module) {
+        //alert("I'm terribly touched")
+        console.log("touch my slider");
         var input = event.target;
         var groupInput = input.parentNode;
         var elementInInterfaceGroup = groupInput.childNodes[0];

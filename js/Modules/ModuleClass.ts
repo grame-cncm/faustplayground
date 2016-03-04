@@ -72,34 +72,35 @@ class ModuleClass implements IModule {
     private dragCallback(event: Event, module: ModuleClass): void {
 
         if (event.type == "mousedown") {
-            module.drag.getDraggingMouseEvent(<MouseEvent>event, module, (el, x, y, module) => { module.drag.startDraggingModule(el, x, y, module) });
+            module.drag.getDraggingMouseEvent(<MouseEvent>event, module, (el, x, y, module, e) => { module.drag.startDraggingModule(el, x, y, module, e) });
         } else if (event.type == "mouseup" ) {
-            module.drag.getDraggingMouseEvent(<MouseEvent>event, module, (el, x, y, module) => { module.drag.stopDraggingModule(el, x, y, module) });
+            module.drag.getDraggingMouseEvent(<MouseEvent>event, module, (el, x, y, module, e) => { module.drag.stopDraggingModule(el, x, y, module, e) });
         } else if (event.type == "mousemove") {
-            module.drag.getDraggingMouseEvent(<MouseEvent>event, module, (el, x, y, module) => { module.drag.whileDraggingModule(el, x, y, module) });
+            module.drag.getDraggingMouseEvent(<MouseEvent>event, module, (el, x, y, module, e) => { module.drag.whileDraggingModule(el, x, y, module, e) });
         } else if (event.type == "touchstart") {
-            module.drag.getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module) => { module.drag.startDraggingModule(el, x, y, module) });
+            module.drag.getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module, e) => { module.drag.startDraggingModule(el, x, y, module, e) });
         } else if (event.type == "touchmove") {
-            module.drag.getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module) => { module.drag.whileDraggingModule(el, x, y, module) })
+            module.drag.getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module, e) => { module.drag.whileDraggingModule(el, x, y, module, e) });
         } else if (event.type == "touchend") {
-            module.drag.getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module) => { module.drag.stopDraggingModule(el, x, y, module) });
+            module.drag.getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module, e) => { module.drag.stopDraggingModule(el, x, y, module, e) });
         }
         
     }
 
     private dragCnxCallback(event: Event, module: ModuleClass): void {
-
+        module.drag.isDragConnector = true;
         if (event.type == "mousedown") {
-            module.drag.getDraggingMouseEvent(<MouseEvent>event, module, (el, x, y, module) => { module.drag.startDraggingConnector(el, x, y, module) });
+            module.drag.getDraggingMouseEvent(<MouseEvent>event, module, (el, x, y, module, e) => { module.drag.startDraggingConnector(el, x, y, module, e) });
         } else if (event.type == "mouseup") {
             module.drag.getDraggingMouseEvent(<MouseEvent>event, module, (el, x, y, module) => { module.drag.stopDraggingConnector(el, x, y, module) });
         } else if (event.type == "mousemove") {
-            module.drag.getDraggingMouseEvent(<MouseEvent>event, module, (el, x, y, module) => { module.drag.whileDraggingConnector(el, x, y, module) });
+            module.drag.getDraggingMouseEvent(<MouseEvent>event, module, (el, x, y, module, e) => { module.drag.whileDraggingConnector(el, x, y, module, e) });
         }
         else if (event.type == "touchstart") {
-            module.drag.getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module) => { module.drag.startDraggingConnector(el, x, y, module) });
+            module.drag.getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module, e) => { module.drag.startDraggingConnector(el, x, y, module, e) });
         } else if (event.type == "touchmove") {
-            module.drag.getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module) => { module.drag.whileDraggingConnector(el, x, y, module) })
+            console.log(module.drag.connector.connectorShape.id)
+            module.drag.getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module, e) => { module.drag.whileDraggingConnector(el, x, y, module, e) })
         } else if (event.type == "touchend") {
             module.drag.getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module) => { module.drag.stopDraggingConnector(el, x, y, module) });
         }
@@ -247,7 +248,8 @@ class ModuleClass implements IModule {
     //---- Generic callback for Faust Interface
     //---- Called every time an element of the UI changes value
     interfaceCallback(event: Event, module: ModuleClass): any {
-
+        //alert("I'm terribly touched")
+        console.log("touch my slider")
         var input: HTMLInputElement = <HTMLInputElement>event.target
         var groupInput: HTMLinterfaceElement = <HTMLinterfaceElement>input.parentNode;
         var elementInInterfaceGroup: HTMLElement = <HTMLElement>groupInput.childNodes[0];
