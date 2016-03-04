@@ -3,7 +3,7 @@ var Help = (function () {
     function Help() {
     }
     Help.prototype.stopVideo = function () {
-        this.helpView.videoIframe.contentWindow.postMessage('{"event":"command","func":"' + 'stopVideo' + '","args":""}', '*');
+        //this.helpView.videoIframe.contentWindow.postMessage('{"event":"command","func":"' + 'stopVideo' + '","args":""}', '*');
     };
     return Help;
 })();

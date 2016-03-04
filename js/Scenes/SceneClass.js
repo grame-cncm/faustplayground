@@ -18,11 +18,11 @@ var Scene = (function () {
         this.isMute = false;
         //-- Modules contained in the scene
         this.fModuleList = [];
+        this.isInitLoading = true;
         this.parent = parent;
         this.sceneView = new SceneView();
         this.sceneView.initNormalScene(this);
         this.integrateSceneInBody();
-        this.integrateInput();
         this.integrateOutput();
     }
     /******************CALLBACKS FOR LOADING/UNLOADING SCENE **************/
@@ -103,7 +103,6 @@ var Scene = (function () {
         this.fAudioInput = new ModuleClass(App.idX++, positionInput.x, positionInput.y, "input", this, this.sceneView.inputOutputModuleContainer, this.removeModule);
         var scene = this;
         this.parent.compileFaust("input", "process=_,_;", positionInput.x, positionInput.y, function (factory) { scene.integrateAudioInput(factory); });
-        this.fAudioInput.addInputOutputNodes();
     };
     Scene.prototype.integrateOutput = function () {
         var positionOutput = this.positionOutputModule();
@@ -111,7 +110,6 @@ var Scene = (function () {
         this.fAudioOutput = new ModuleClass(App.idX++, positionOutput.x, positionOutput.y, "output", this, this.sceneView.inputOutputModuleContainer, this.removeModule);
         this.addMuteOutputListner(this.fAudioOutput);
         this.parent.compileFaust("output", "process=_,_;", positionOutput.x, positionOutput.y, function (factory) { scene.integrateAudioOutput(factory); });
-        this.fAudioOutput.addInputOutputNodes();
     };
     Scene.prototype.integrateAudioOutput = function (factory) {
         if (this.fAudioOutput) {
@@ -119,6 +117,8 @@ var Scene = (function () {
             this.fAudioOutput.createDSP(factory);
             this.parent.activateAudioOutput(this.fAudioOutput);
         }
+        this.fAudioOutput.addInputOutputNodes();
+        this.integrateInput();
     };
     Scene.prototype.integrateAudioInput = function (factory) {
         if (this.fAudioInput) {
@@ -126,6 +126,9 @@ var Scene = (function () {
             this.fAudioInput.createDSP(factory);
             this.parent.activateAudioInput(this);
         }
+        this.fAudioInput.addInputOutputNodes();
+        App.hideFullPageLoading();
+        this.isInitLoading = false;
     };
     Scene.prototype.getAudioOutput = function () { return this.fAudioOutput; };
     Scene.prototype.getAudioInput = function () { return this.fAudioInput; };

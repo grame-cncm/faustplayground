@@ -126,9 +126,8 @@ var App = (function () {
         //    sourcecode, args
         //})
         //worker.postMessage(messageJson)
-        this.factory = faust.createDSPFactory(sourcecode, args /*, (factory) => { callback(factory, App.scene, this) }*/);
-        ;
-        callback(this.factory);
+        this.factory = faust.createDSPFactory(sourcecode, args, function (factory) { callback(factory); });
+        //callback(this.factory)
         if (currentScene) {
             currentScene.unmuteScene();
         }
@@ -165,7 +164,9 @@ var App = (function () {
             module.moduleView.fModuleContainer.style.boxShadow = "0 5px 10px rgba(0, 0, 0, 0.4)";
         };
         App.scene.addModule(module);
-        App.hideFullPageLoading();
+        if (!App.scene.isInitLoading) {
+            App.hideFullPageLoading();
+        }
     };
     /********************************************************************
     ***********************  HANDLE DRAG AND DROP ***********************
@@ -219,10 +220,8 @@ var App = (function () {
         App.showFullPageLoading();
         //worker.postMessage("go");
         this.preventDefaultAction(e);
-        // CASE 0 : THE DROPPED OBJECT IS NOT WHAT WE WANT
-        if (e.dataTransfer.getData('URL') == "") {
-        }
-        else if (e.dataTransfer.getData('URL') && e.dataTransfer.getData('URL').split(':').shift() != "file") {
+        // CASE 1 : THE DROPPED OBJECT IS A URL TO SOME FAUST CODE
+        if (e.dataTransfer.getData('URL') && e.dataTransfer.getData('URL').split(':').shift() != "file") {
             var url = e.dataTransfer.getData('URL');
             this.uploadUrl(app, module, x, y, url);
         }
@@ -362,29 +361,31 @@ var App = (function () {
     App.removeLoadingLogo = function () {
         document.getElementById("loadingDiv").remove();
     };
-    App.showFullPageLoading = function () {
+    App.addFullPageLoading = function () {
         var loadingPage = document.createElement("div");
         loadingPage.id = "loadingPage";
+        loadingPage.className = "loadingPage";
         var body = document.getElementsByTagName('body')[0];
         var loadingText = document.createElement("div");
         loadingText.id = "loadingTextBig";
         loadingText.textContent = "Chargement en cours";
         loadingPage.appendChild(loadingText);
         body.appendChild(loadingPage);
+        loadingPage.style.display = "none";
+    };
+    App.showFullPageLoading = function () {
+        document.getElementById("loadingPage").style.display = "block";
         document.getElementById("Normal").style.filter = "blur(2px)";
         document.getElementById("Normal").style.webkitFilter = "blur(2px)";
         document.getElementById("menuContainer").style.filter = "blur(2px)";
         document.getElementById("menuContainer").style.webkitFilter = "blur(2px)";
-        //App.addLoadingLogo(loadingPage.id);
     };
     App.hideFullPageLoading = function () {
-        if (document.getElementById("loadingPage") != null) {
-            document.getElementById("loadingPage").remove();
-            document.getElementById("Normal").style.filter = "none";
-            document.getElementById("Normal").style.webkitFilter = "none";
-            document.getElementById("menuContainer").style.filter = "none";
-            document.getElementById("menuContainer").style.webkitFilter = "none";
-        }
+        document.getElementById("loadingPage").style.display = "none";
+        document.getElementById("Normal").style.filter = "none";
+        document.getElementById("Normal").style.webkitFilter = "none";
+        document.getElementById("menuContainer").style.filter = "none";
+        document.getElementById("menuContainer").style.webkitFilter = "none";
     };
     App.createDropAreaGraph = function () {
     };
