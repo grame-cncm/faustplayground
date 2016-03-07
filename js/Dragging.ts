@@ -57,7 +57,7 @@ class Drag {
     getDraggingTouchEvent(touchEvent: TouchEvent, module: ModuleClass, draggingFunction: (el: HTMLElement, x: number, y: number, module: ModuleClass, event: Event) => void) {
         var event = <Event>touchEvent;
         if (touchEvent.touches.length > 0) {
-            var touch: Touch = touchEvent.targetTouches[0];
+            var touch: Touch = touchEvent.touches[0];
             var el = <HTMLElement>touch.target;
             var x = touch.clientX + window.scrollX;
             var y = touch.clientY + window.scrollY;
@@ -83,25 +83,6 @@ class Drag {
 
         console.log("start dragging module")
         console.log(el.className)
-        //   Avoid dragging ModuleClass when it's a Connector that needs dragging
-        //if (el.tagName == "SELECT" || el.classList.contains("node-button")) {
-        //    return;
-        //}
-
-        ////   Avoid dragging ModuleClass when it's a UI element that needs dragging
-        //if (el.nodeType == 3) {// if it's a text node
-        //    el = <HTMLElement>el.parentNode;
-        //}
-        //if (el.classList.contains("module-title")) {
-        //    el = <HTMLElement>el.parentNode;
-        //}
-        //if (el.classList.contains("content")) {
-        //    el = <HTMLElement>el.parentNode;
-        //}
-
-        //if (el.className!="moduleFaust") {
-        //    return;
-        //}
 
         var moduleContainer: HTMLElement = module.moduleView.getModuleContainer();
 

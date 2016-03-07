@@ -32,7 +32,7 @@ var Drag = (function () {
     Drag.prototype.getDraggingTouchEvent = function (touchEvent, module, draggingFunction) {
         var event = touchEvent;
         if (touchEvent.touches.length > 0) {
-            var touch = touchEvent.targetTouches[0];
+            var touch = touchEvent.touches[0];
             var el = touch.target;
             var x = touch.clientX + window.scrollX;
             var y = touch.clientY + window.scrollY;
@@ -56,23 +56,6 @@ var Drag = (function () {
     Drag.prototype.startDraggingModule = function (el, x, y, module, event) {
         console.log("start dragging module");
         console.log(el.className);
-        //   Avoid dragging ModuleClass when it's a Connector that needs dragging
-        //if (el.tagName == "SELECT" || el.classList.contains("node-button")) {
-        //    return;
-        //}
-        ////   Avoid dragging ModuleClass when it's a UI element that needs dragging
-        //if (el.nodeType == 3) {// if it's a text node
-        //    el = <HTMLElement>el.parentNode;
-        //}
-        //if (el.classList.contains("module-title")) {
-        //    el = <HTMLElement>el.parentNode;
-        //}
-        //if (el.classList.contains("content")) {
-        //    el = <HTMLElement>el.parentNode;
-        //}
-        //if (el.className!="moduleFaust") {
-        //    return;
-        //}
         var moduleContainer = module.moduleView.getModuleContainer();
         // Get cursor position with respect to the page.
         // Save starting positions of cursor and element.
