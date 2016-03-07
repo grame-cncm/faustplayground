@@ -15,6 +15,9 @@
 /// <reference path="Modules/ModuleClass.ts"/>
 /// <reference path="Pedagogie/Tooltips.ts"/>
 "use strict";
+/***********************************************************************************/
+/****** Node Dragging - these are used for dragging the audio modules interface*****/
+/***********************************************************************************/
 var Drag = (function () {
     function Drag() {
         this.zIndex = 0;
@@ -193,6 +196,7 @@ var Drag = (function () {
         document.getElementById("svgCanvas").appendChild(curve);
     };
     Drag.prototype.stopDraggingConnection = function (sourceModule, destination, target) {
+        var _this = this;
         if (sourceModule.moduleView.getInterfaceContainer().lastLit) {
             sourceModule.moduleView.getInterfaceContainer().lastLit.className = sourceModule.moduleView.getInterfaceContainer().lastLit.unlitClassname;
             sourceModule.moduleView.getInterfaceContainer().lastLit = null;
@@ -254,9 +258,8 @@ var Drag = (function () {
                 src.moduleFaust.addOutputConnection(connector);
                 this.connector.destination = dst;
                 this.connector.source = src;
-                var drag = this;
                 connector.saveConnection(src, dst, this.connector.connectorShape);
-                this.connector.connectorShape.onclick = function (event) { connector.deleteConnection(event, drag); };
+                this.connector.connectorShape.onclick = function (event) { connector.deleteConnection(event, _this); };
                 //this.connectorShape = null;
                 return;
             }
@@ -349,7 +352,7 @@ var Drag = (function () {
                 arrivingNode = inputModule;
             }
         }
-        module.drag.stopDraggingConnection(module, arrivingNode, target);
+        this.stopDraggingConnection(module, arrivingNode, target);
         var index = module.dragList.indexOf(this);
         module.dragList.splice(index, 1);
         this.isDragConnector = false;

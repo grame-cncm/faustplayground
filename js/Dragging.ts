@@ -26,10 +26,7 @@
 /****** Node Dragging - these are used for dragging the audio modules interface*****/
 /***********************************************************************************/
 
-interface TouchEvent {
-    target: HTMLElement;
 
-}
 
 class Drag {
 
@@ -41,6 +38,7 @@ class Drag {
     elementStartTop: number;
     isOriginInput: boolean;
     connector: Connector = new Connector();
+    originTarget: HTMLElement;
     elemNode: HTMLElement;
     isDragConnector: boolean = false;
 
@@ -351,9 +349,8 @@ class Drag {
 
                 this.connector.destination = dst;
                 this.connector.source = src;
-                var drag: Drag = this
                 connector.saveConnection(src, dst, this.connector.connectorShape);
-                this.connector.connectorShape.onclick = function (event) { connector.deleteConnection(event,drag) };
+                this.connector.connectorShape.onclick = (event)=> { connector.deleteConnection(event,this) };
 
 			    //this.connectorShape = null;
                 
@@ -471,7 +468,7 @@ class Drag {
                 arrivingNode = inputModule;
             }
         }
-        module.drag.stopDraggingConnection(module, arrivingNode, target);
+        this.stopDraggingConnection(module, arrivingNode, target);
         var index = module.dragList.indexOf(this);
         module.dragList.splice(index, 1);
         this.isDragConnector = false;

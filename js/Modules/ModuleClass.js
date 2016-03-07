@@ -74,24 +74,26 @@ var ModuleClass = (function () {
             module.drag.getDraggingMouseEvent(event, module, function (el, x, y, module, e) { module.drag.whileDraggingConnector(el, x, y, module, e); });
         }
         else if (event.type == "touchstart") {
-            //    var newdrag = new Drag();
-            //    newdrag.isDragConnector = true;
-            //    module.dragList.push(newdrag);
-            //    var index = module.dragList.length-1
-            //module.dragList[index].getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module, e) => { module.dragList[index].startDraggingConnector(el, x, y, module, e) });
-            module.drag.getDraggingTouchEvent(event, module, function (el, x, y, module, e) { module.drag.startDraggingConnector(el, x, y, module, e); });
+            var newdrag = new Drag();
+            newdrag.isDragConnector = true;
+            newdrag.originTarget = event.target;
+            module.dragList.push(newdrag);
+            var index = module.dragList.length - 1;
+            module.dragList[index].getDraggingTouchEvent(event, module, function (el, x, y, module, e) { module.dragList[index].startDraggingConnector(el, x, y, module, e); });
         }
         else if (event.type == "touchmove") {
-            //for (var i = 0; i < module.dragList.length; i++) {
-            //module.dragList[i].getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module, e) => { module.dragList[i].whileDraggingConnector(el, x, y, module, e) })
-            //}
-            module.drag.getDraggingTouchEvent(event, module, function (el, x, y, module, e) { module.drag.whileDraggingConnector(el, x, y, module, e); });
+            for (var i = 0; i < module.dragList.length; i++) {
+                if (module.dragList[i].originTarget == event.target) {
+                    module.dragList[i].getDraggingTouchEvent(event, module, function (el, x, y, module, e) { module.dragList[i].whileDraggingConnector(el, x, y, module, e); });
+                }
+            }
         }
         else if (event.type == "touchend") {
-            //for (var i = 0; i < module.dragList.length; i++) {
-            //module.dragList[i].getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module) => { module.dragList[i].stopDraggingConnector(el, x, y, module) });
-            //}
-            module.drag.getDraggingTouchEvent(event, module, function (el, x, y, module) { module.drag.stopDraggingConnector(el, x, y, module); });
+            for (var i = 0; i < module.dragList.length; i++) {
+                if (module.dragList[i].originTarget == event.target) {
+                    module.dragList[i].getDraggingTouchEvent(event, module, function (el, x, y, module) { module.dragList[i].stopDraggingConnector(el, x, y, module); });
+                }
+            }
         }
     };
     /*******************************  PUBLIC METHODS  **********************************/
