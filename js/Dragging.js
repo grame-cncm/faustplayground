@@ -31,24 +31,12 @@ var Drag = (function () {
     };
     Drag.prototype.getDraggingTouchEvent = function (touchEvent, module, draggingFunction) {
         var event = touchEvent;
-        if (touchEvent.touches.length == 1) {
-            var touch = touchEvent.touches[0];
+        if (touchEvent.touches.length > 0) {
+            var touch = touchEvent.targetTouches[0];
             var el = touch.target;
             var x = touch.clientX + window.scrollX;
             var y = touch.clientY + window.scrollY;
             draggingFunction(el, x, y, module, event);
-        }
-        else if (touchEvent.touches.length > 1) {
-            for (var i = 0; i < touchEvent.touches.length; i++) {
-                var touch = touchEvent.touches[i];
-                var el = touch.target;
-                var x = touch.clientX + window.scrollX;
-                var y = touch.clientY + window.scrollY;
-                if (module.moduleView.isPointInNode(x, y)) {
-                    //if (touchEvent.target != touchEvent.touches[i].target) {
-                    draggingFunction(el, x, y, module, event);
-                }
-            }
         }
         else if (this.isDragConnector) {
             for (var i = 0; i < touchEvent.changedTouches.length; i++) {
@@ -56,7 +44,6 @@ var Drag = (function () {
                 var x = touch.clientX + window.scrollX;
                 var y = touch.clientY + window.scrollY;
                 var el = document.elementFromPoint(x - scrollX, y - scrollY);
-                this.isDragConnector = false;
                 draggingFunction(el, x, y, module, event);
             }
         }
@@ -64,20 +51,28 @@ var Drag = (function () {
             draggingFunction(null, null, null, module, event);
         }
         //touchEvent.preventDefault();
+        //touchEvent.stopPropagation();
     };
     Drag.prototype.startDraggingModule = function (el, x, y, module, event) {
+        console.log("start dragging module");
+        console.log(el.className);
         //   Avoid dragging ModuleClass when it's a Connector that needs dragging
-        if (el.tagName == "SELECT" || el.classList.contains("node-button"))
-            return;
-        //   Avoid dragging ModuleClass when it's a UI element that needs dragging
-        if (el.nodeType == 3)
-            el = el.parentNode;
-        if (el.classList.contains("module-title"))
-            el = el.parentNode;
-        if (el.classList.contains("content"))
-            el = el.parentNode;
-        if (!el.classList.contains("moduleFaust"))
-            return;
+        //if (el.tagName == "SELECT" || el.classList.contains("node-button")) {
+        //    return;
+        //}
+        ////   Avoid dragging ModuleClass when it's a UI element that needs dragging
+        //if (el.nodeType == 3) {// if it's a text node
+        //    el = <HTMLElement>el.parentNode;
+        //}
+        //if (el.classList.contains("module-title")) {
+        //    el = <HTMLElement>el.parentNode;
+        //}
+        //if (el.classList.contains("content")) {
+        //    el = <HTMLElement>el.parentNode;
+        //}
+        //if (el.className!="moduleFaust") {
+        //    return;
+        //}
         var moduleContainer = module.moduleView.getModuleContainer();
         // Get cursor position with respect to the page.
         // Save starting positions of cursor and element.
@@ -85,20 +80,28 @@ var Drag = (function () {
         this.cursorStartY = y;
         this.elementStartLeft = parseInt(moduleContainer.style.left, 10);
         this.elementStartTop = parseInt(moduleContainer.style.top, 10);
-        if (isNaN(this.elementStartLeft))
+        if (isNaN(this.elementStartLeft)) {
             this.elementStartLeft = 0;
-        if (isNaN(this.elementStartTop))
+        }
+        ;
+        if (isNaN(this.elementStartTop)) {
             this.elementStartTop = 0;
+        }
+        ;
         // Update element's z-index.
         //moduleContainer.style.zIndex = String(++this.zIndex);
         // Capture mousemove and mouseup events on the page.
-        module.addListener("mousemove", module);
-        module.addListener("mouseup", module);
-        module.addListener("touchmove", module);
-        module.addListener("touchend", module);
+        //module.addListener("mousemove", module);
+        //module.addListener("mouseup", module);
+        document.addEventListener("mouseup", module.eventDraggingHandler, false);
+        document.addEventListener("mousemove", module.eventDraggingHandler, false);
+        //module.addListener("touchmove", module);
+        //module.addListener("touchend", module);
+        event.stopPropagation();
         event.preventDefault();
     };
     Drag.prototype.whileDraggingModule = function (el, x, y, module, event) {
+        console.log("drag module");
         var moduleContainer = module.moduleView.getModuleContainer();
         App.appTest++;
         // Get cursor position with respect to the page.
@@ -148,13 +151,16 @@ var Drag = (function () {
             }
         }
         //event.preventDefault();
+        event.stopPropagation();
     };
     Drag.prototype.stopDraggingModule = function (el, x, y, module, event) {
         // Stop capturing mousemove and mouseup events.
-        module.removeListener("mousemove", null, document);
-        module.removeListener("mouseup", null, document);
-        module.removeListener("touchmove", null, document);
-        module.removeListener("touchend", null, document);
+        document.removeEventListener("mouseup", module.eventDraggingHandler, false);
+        document.removeEventListener("mousemove", module.eventDraggingHandler, false);
+        //module.removeListener("mousemove", null, document);
+        //module.removeListener("mouseup", null, document);
+        //module.removeListener("touchmove", null, document);
+        //module.removeListener("touchend", null, document);
     };
     /************************************************************************************/
     /*** Connector Dragging - these are used for dragging the connectors between nodes***/
@@ -197,7 +203,7 @@ var Drag = (function () {
         // remember if this is an input or output node, so we can match
         this.isOriginInput = target.classList.contains("node-input");
         module.moduleView.getInterfaceContainer().unlitClassname = module.moduleView.getInterfaceContainer().className;
-        module.moduleView.getInterfaceContainer().className += " canConnect";
+        //module.moduleView.getInterfaceContainer().className += " canConnect";
         // Create a connector visual line
         var svgns = "http://www.w3.org/2000/svg";
         var curve = document.createElementNS(svgns, "path");
@@ -287,14 +293,17 @@ var Drag = (function () {
         this.connector.connectorShape = null;
     };
     Drag.prototype.startDraggingConnector = function (target, x, y, module, event) {
+        console.log("start dragging connection");
         this.startDraggingConnection(module, target);
         // Capture mousemove and mouseup events on the page.
-        module.addCnxListener(target, "mousemove", module);
-        module.addCnxListener(target, "mouseup", module);
-        module.addCnxListener(target, "touchmove", module);
-        module.addCnxListener(target, "touchend", module);
+        //module.addCnxListener(target, "mousemove", module);
+        //module.addCnxListener(target, "mouseup", module);
+        document.addEventListener("mousemove", module.eventConnectorHandler);
+        document.addEventListener("mouseup", module.eventConnectorHandler);
+        //module.addCnxListener(target, "touchmove", module);
+        //module.addCnxListener(target, "touchend", module);
         event.preventDefault();
-        //event.stopPropagation();
+        event.stopPropagation();
     };
     Drag.prototype.whileDraggingConnector = function (target, x, y, module, event) {
         var toElem = target;
@@ -332,14 +341,14 @@ var Drag = (function () {
                     if (this.isOriginInput) {
                         if (toElem.classList.contains("node-output")) {
                             toElem.unlitClassname = toElem.className;
-                            toElem.className += " canConnect";
+                            //toElem.className += " canConnect";
                             this.lastLit = toElem;
                         }
                     }
                     else {
                         if (toElem.classList.contains("node-input")) {
                             toElem.unlitClassname = toElem.className;
-                            toElem.className += " canConnect";
+                            //toElem.className += " canConnect";
                             this.lastLit = toElem;
                         }
                     }
@@ -347,16 +356,18 @@ var Drag = (function () {
             }
         }
         event.preventDefault();
-        //event.stopPropagation();
+        event.stopPropagation();
     };
     Drag.prototype.stopDraggingConnector = function (target, x, y, module) {
         x = x - window.scrollX;
         y = y - window.scrollY;
         // Stop capturing mousemove and mouseup events.
-        module.removeCnxListener(target, "mousemove", module);
-        module.removeCnxListener(target, "mouseup", module);
-        module.removeCnxListener(target, "touchmove", module);
-        module.removeCnxListener(target, "touchend", module);
+        document.removeEventListener("mousemove", module.eventConnectorHandler);
+        document.removeEventListener("mouseup", module.eventConnectorHandler);
+        //module.removeCnxListener(target, "touchmove", module);
+        //module.removeCnxListener(target, "touchend", module);
+        //target.removeEventListener("touchmove", module.eventConnectorHandler);
+        //target.removeEventListener("touchend", module.eventConnectorHandler);
         var arrivingHTMLNode = target;
         var arrivingHTMLParentNode = arrivingHTMLNode.offsetParent;
         var arrivingNode;
@@ -378,6 +389,7 @@ var Drag = (function () {
             }
         }
         module.drag.stopDraggingConnection(module, arrivingNode, target);
+        this.isDragConnector = false;
     };
     Drag.prototype.isConnectionValid = function (target) {
         if (target.classList.contains("node-button")) {

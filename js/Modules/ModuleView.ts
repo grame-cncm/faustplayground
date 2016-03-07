@@ -60,8 +60,10 @@ class ModuleView {
         fModuleContainer.appendChild(fInterfaceContainer);
         //var eventHandler = function (event) { self.dragCallback(event, self) }
         this.fInterfaceContainer = fInterfaceContainer;
-        fModuleContainer.addEventListener("mousedown", module.eventDraggingHandler, true);
-        fModuleContainer.addEventListener("touchstart", module.eventDraggingHandler, true);
+        fModuleContainer.addEventListener("mousedown", module.eventDraggingHandler, false);
+        fModuleContainer.addEventListener("touchstart", module.eventDraggingHandler, false);
+        fModuleContainer.addEventListener("touchmove", module.eventDraggingHandler, false);
+        fModuleContainer.addEventListener("touchend", module.eventDraggingHandler, false);
 
         if (name == "input") {
             fModuleContainer.id = "moduleInput";

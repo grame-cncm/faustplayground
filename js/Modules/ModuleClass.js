@@ -237,52 +237,40 @@ var ModuleClass = (function () {
         var module = this;
         if (this.moduleFaust.fDSP.getNumInputs() > 0 && this.moduleView.fName != "input") {
             this.moduleView.setInputNode();
-            this.addCnxListener(this.moduleView.fInputNode, "mousedown", module);
-            this.addCnxListener(this.moduleView.fInputNode, "touchstart", module);
+            this.moduleView.fInputNode.addEventListener("mousedown", this.eventConnectorHandler);
+            this.moduleView.fInputNode.addEventListener("touchstart", this.eventConnectorHandler);
+            this.moduleView.fInputNode.addEventListener("touchmove", this.eventConnectorHandler);
+            this.moduleView.fInputNode.addEventListener("touchend", this.eventConnectorHandler);
         }
         if (this.moduleFaust.fDSP.getNumOutputs() > 0 && this.moduleView.fName != "output") {
             this.moduleView.setOutputNode();
-            this.addCnxListener(this.moduleView.fOutputNode, "mousedown", module);
-            this.addCnxListener(this.moduleView.fOutputNode, "touchstart", module);
-        }
-    };
-    // Added for physical Input and Output which are create outside of ModuleClass (--> see Playground.js or Pedagogie.js)
-    ModuleClass.prototype.setInputOutputNodes = function (input, output) {
-        var module = this;
-        this.moduleView.fInputNode = input;
-        if (this.moduleView.fInputNode) {
-            this.addCnxListener(this.moduleView.fInputNode, "mousedown", module);
-            this.addCnxListener(this.moduleView.fInputNode, "touchstart", module);
-        }
-        this.moduleView.fOutputNode = output;
-        if (this.moduleView.fOutputNode) {
-            this.addCnxListener(this.moduleView.fOutputNode, "mousedown", module);
-            this.addCnxListener(this.moduleView.fOutputNode, "touchstart", module);
+            this.moduleView.fOutputNode.addEventListener("mousedown", this.eventConnectorHandler);
+            this.moduleView.fOutputNode.addEventListener("touchstart", this.eventConnectorHandler);
+            this.moduleView.fOutputNode.addEventListener("touchmove", this.eventConnectorHandler);
+            this.moduleView.fOutputNode.addEventListener("touchend", this.eventConnectorHandler);
         }
     };
     /****************** ADD/REMOVE ACTION LISTENERS **********************/
-    ModuleClass.prototype.addListener = function (type, module) {
-        document.addEventListener(type, module.eventDraggingHandler, true);
-    };
-    ModuleClass.prototype.removeListener = function (type, div, document) {
-        var module = this;
-        if (!document) {
-            div.removeEventListener(type, module.eventDraggingHandler, true);
-        }
-        else {
-            document.removeEventListener(type, module.eventDraggingHandler, true);
-        }
-    };
-    ModuleClass.prototype.addCnxListener = function (div, type, module) {
-        if (type == "mousedown" || type == "touchstart") {
-            div.addEventListener(type, module.eventConnectorHandler, true);
-        }
-        else {
-            document.addEventListener(type, module.eventConnectorHandler, true);
-        }
-    };
+    //addListener(type: string, module: ModuleClass): void {
+    //    document.addEventListener(type, module.eventDraggingHandler, false);
+    //}
+    //removeListener(type: string, div?: HTMLElement, document?: Document): void {
+    //    var module: ModuleClass = this;
+    //    if (!document) {
+    //        div.removeEventListener(type, module.eventDraggingHandler, false)
+    //    } else {
+    //        document.removeEventListener(type, module.eventDraggingHandler, false)
+    //    }
+    //}
+    //addCnxListener(div: HTMLElement, type: string, module: ModuleClass): void {
+    //    if (type == "mousedown" || type == "touchstart" || type == "touchmove" || type == "touchend"  ) {
+    //        div.addEventListener(type, module.eventConnectorHandler, false);
+    //    } else {
+    //        document.addEventListener(type, module.eventConnectorHandler, false);
+    //    }
+    //}
     ModuleClass.prototype.removeCnxListener = function (div, type, module) {
-        document.removeEventListener(type, module.eventConnectorHandler, true);
+        document.removeEventListener(type, module.eventConnectorHandler, false);
     };
     return ModuleClass;
 })();

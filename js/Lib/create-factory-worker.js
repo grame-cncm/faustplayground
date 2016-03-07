@@ -1,6 +1,5 @@
 
 importScripts('libfaustworker.js');
-
 function request(e) {
     //postMessage("debut worker")
     var code = e.data.code;

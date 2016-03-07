@@ -56,56 +56,52 @@ class Drag {
 
     getDraggingTouchEvent(touchEvent: TouchEvent, module: ModuleClass, draggingFunction: (el: HTMLElement, x: number, y: number, module: ModuleClass, event: Event) => void) {
         var event = <Event>touchEvent;
-        if (touchEvent.touches.length ==1) {
-            var touch: Touch = touchEvent.touches[0];
+        if (touchEvent.touches.length > 0) {
+            var touch: Touch = touchEvent.targetTouches[0];
             var el = <HTMLElement>touch.target;
             var x = touch.clientX + window.scrollX;
             var y = touch.clientY + window.scrollY;
             draggingFunction(el, x, y, module,event);
-         
-        } else if (touchEvent.touches.length > 1 ) {
-            for (var i = 0; i < touchEvent.touches.length; i++) {
-                var touch: Touch = touchEvent.touches[i];                
-                var el = <HTMLElement>touch.target;
-                var x = touch.clientX + window.scrollX;
-                var y = touch.clientY + window.scrollY;
-                if (module.moduleView.isPointInNode(x, y)) {
 
-                //if (touchEvent.target != touchEvent.touches[i].target) {
-                    draggingFunction(el, x, y, module, event);
-                }
-            }
+
         } else if (this.isDragConnector) {
             for (var i = 0; i < touchEvent.changedTouches.length; i++) {
                 var touch: Touch = touchEvent.changedTouches[i];
                 var x = touch.clientX + window.scrollX;
                 var y = touch.clientY + window.scrollY;
                 var el = <HTMLElement>document.elementFromPoint(x - scrollX, y - scrollY);
-                this.isDragConnector = false;
                 draggingFunction(el, x, y, module,event);
             }
         } else {
             draggingFunction(null, null, null, module,event);
         }
         //touchEvent.preventDefault();
+        //touchEvent.stopPropagation();
     }
 
     startDraggingModule(el: HTMLElement, x: number, y: number, module: ModuleClass, event: Event): void {
 
-  	
-    //   Avoid dragging ModuleClass when it's a Connector that needs dragging
-	    if (el.tagName == "SELECT" || el.classList.contains("node-button"))
-		    return;
+        console.log("start dragging module")
+        console.log(el.className)
+        //   Avoid dragging ModuleClass when it's a Connector that needs dragging
+        //if (el.tagName == "SELECT" || el.classList.contains("node-button")) {
+        //    return;
+        //}
 
-    //   Avoid dragging ModuleClass when it's a UI element that needs dragging
-	    if (el.nodeType == 3) // if it's a text node
-		    el = <HTMLElement>el.parentNode;
-	    if (el.classList.contains("module-title"))
-            el = <HTMLElement>el.parentNode;
-	    if (el.classList.contains("content"))
-            el = <HTMLElement>el.parentNode;
-	    if (!el.classList.contains("moduleFaust"))
-		    return;
+        ////   Avoid dragging ModuleClass when it's a UI element that needs dragging
+        //if (el.nodeType == 3) {// if it's a text node
+        //    el = <HTMLElement>el.parentNode;
+        //}
+        //if (el.classList.contains("module-title")) {
+        //    el = <HTMLElement>el.parentNode;
+        //}
+        //if (el.classList.contains("content")) {
+        //    el = <HTMLElement>el.parentNode;
+        //}
+
+        //if (el.className!="moduleFaust") {
+        //    return;
+        //}
 
         var moduleContainer: HTMLElement = module.moduleView.getModuleContainer();
 
@@ -119,24 +115,26 @@ class Drag {
         this.elementStartLeft = parseInt(moduleContainer.style.left, 10);
   	    this.elementStartTop   = parseInt(moduleContainer.style.top,  10);
 
-            if (isNaN(this.elementStartLeft)) this.elementStartLeft = 0;
-            if (isNaN(this.elementStartTop)) this.elementStartTop = 0;
+        if (isNaN(this.elementStartLeft)) { this.elementStartLeft = 0 };
+        if (isNaN(this.elementStartTop)) { this.elementStartTop = 0 };
 
   	    // Update element's z-index.
 	    //moduleContainer.style.zIndex = String(++this.zIndex);
 
         // Capture mousemove and mouseup events on the page.
-        module.addListener("mousemove", module);
-        module.addListener("mouseup", module);
-        module.addListener("touchmove", module);
-        module.addListener("touchend", module);
-
+        //module.addListener("mousemove", module);
+        //module.addListener("mouseup", module);
+        document.addEventListener("mouseup", module.eventDraggingHandler, false);
+        document.addEventListener("mousemove", module.eventDraggingHandler, false);
+        //module.addListener("touchmove", module);
+        //module.addListener("touchend", module);
+        event.stopPropagation();
         event.preventDefault();
     }
 
     whileDraggingModule(el: HTMLElement, x: number, y: number, module: ModuleClass,event:Event): void {
 
-
+        console.log("drag module")
         var moduleContainer = module.moduleView.getModuleContainer();
 
         App.appTest++
@@ -207,14 +205,17 @@ class Drag {
 	    }
 
         //event.preventDefault();
+        event.stopPropagation();
     }
 
     stopDraggingModule(el: HTMLElement, x: number, y: number, module: ModuleClass, event: Event): void {
-      // Stop capturing mousemove and mouseup events.
-        module.removeListener("mousemove", null, document);
-        module.removeListener("mouseup", null, document);
-        module.removeListener("touchmove", null, document);
-        module.removeListener("touchend", null, document);
+        // Stop capturing mousemove and mouseup events.
+        document.removeEventListener("mouseup", module.eventDraggingHandler, false)
+        document.removeEventListener("mousemove", module.eventDraggingHandler, false)
+        //module.removeListener("mousemove", null, document);
+        //module.removeListener("mouseup", null, document);
+        //module.removeListener("touchmove", null, document);
+        //module.removeListener("touchend", null, document);
     }
 
     /************************************************************************************/
@@ -268,7 +269,7 @@ class Drag {
         this.isOriginInput = target.classList.contains("node-input");
 
         module.moduleView.getInterfaceContainer().unlitClassname = module.moduleView.getInterfaceContainer().className;
-        module.moduleView.getInterfaceContainer().className += " canConnect";
+        //module.moduleView.getInterfaceContainer().className += " canConnect";
 	
 	    // Create a connector visual line
 	    var svgns:string = "http://www.w3.org/2000/svg";
@@ -393,16 +394,22 @@ class Drag {
     }
 
     startDraggingConnector(target: HTMLElement, x: number, y: number, module: ModuleClass, event: Event): void {
+        console.log("start dragging connection")
+
+
+
         this.startDraggingConnection(module,target);
 
         // Capture mousemove and mouseup events on the page.
-        module.addCnxListener(target, "mousemove", module);
-        module.addCnxListener(target, "mouseup", module);
-        module.addCnxListener(target, "touchmove", module);
-        module.addCnxListener(target, "touchend", module);
+        //module.addCnxListener(target, "mousemove", module);
+        //module.addCnxListener(target, "mouseup", module);
+        document.addEventListener("mousemove", module.eventConnectorHandler);
+        document.addEventListener("mouseup", module.eventConnectorHandler);
+        //module.addCnxListener(target, "touchmove", module);
+        //module.addCnxListener(target, "touchend", module);
 
         event.preventDefault();
-	    //event.stopPropagation();
+        event.stopPropagation();
     }
 
 
@@ -449,31 +456,33 @@ class Drag {
                     if (this.isOriginInput) {
 					    if (toElem.classList.contains("node-output")) {
 						    toElem.unlitClassname = toElem.className;
-						    toElem.className += " canConnect";
+						    //toElem.className += " canConnect";
 						    this.lastLit = toElem;
 					    }
 				    } else {	// first node was an output, so we're looking for an input
 					    if (toElem.classList.contains("node-input")) {
 						    toElem.unlitClassname = toElem.className;
-						    toElem.className += " canConnect";
+						    //toElem.className += " canConnect";
 						    this.lastLit = toElem;
 					    }
 				    }
 			    }
-		    }
-	    }
+            }
+        }
         event.preventDefault();
-	    //event.stopPropagation();
+        event.stopPropagation();
     }
 
     stopDraggingConnector(target: HTMLElement, x: number, y: number, module: ModuleClass): void {
         x = x - window.scrollX;
         y = y - window.scrollY;
         // Stop capturing mousemove and mouseup events.
-        module.removeCnxListener(target, "mousemove", module);
-        module.removeCnxListener(target, "mouseup", module);
-        module.removeCnxListener(target, "touchmove", module);
-        module.removeCnxListener(target, "touchend", module);
+        document.removeEventListener("mousemove", module.eventConnectorHandler);
+        document.removeEventListener("mouseup", module.eventConnectorHandler);
+        //module.removeCnxListener(target, "touchmove", module);
+        //module.removeCnxListener(target, "touchend", module);
+        //target.removeEventListener("touchmove", module.eventConnectorHandler);
+        //target.removeEventListener("touchend", module.eventConnectorHandler);
         var arrivingHTMLNode: HTMLElement = target;
         var arrivingHTMLParentNode: HTMLElement = <HTMLElement>arrivingHTMLNode.offsetParent;
         var arrivingNode: ModuleClass;
@@ -497,6 +506,9 @@ class Drag {
             }
         }
         module.drag.stopDraggingConnection(module, arrivingNode, target);
+        this.isDragConnector = false;
+
+        
     }
     isConnectionValid(target: HTMLElement): boolean {
         if (target.classList.contains("node-button")) {

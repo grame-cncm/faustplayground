@@ -73,7 +73,15 @@ var FaustInterface = (function () {
         slider.max = String(high);
         slider.value = String((parseFloat(ivalue) - parseFloat(imin)) / parseFloat(stepUnits));
         slider.step = "1";
-        slider.oninput = function (event) { onUpdate(event, module); };
+        slider.addEventListener("input", function (event) {
+            console.log("interface faust");
+            onUpdate(event, module);
+            event.stopPropagation();
+            event.preventDefault();
+        });
+        slider.addEventListener("mousedown", function (e) { e.stopPropagation(); });
+        slider.addEventListener("touchstart", function (e) { e.stopPropagation(); });
+        slider.addEventListener("touchmove", function (e) { e.stopPropagation(); });
         this.group.appendChild(slider);
         module.moduleView.getInterfaceContainer().appendChild(this.group);
         return slider;
@@ -83,7 +91,7 @@ var FaustInterface = (function () {
         var checkbox = document.createElement("input");
         checkbox.type = "checkbox";
         checkbox.checked = false;
-        checkbox.onchange = function (event) { onUpdate; };
+        checkbox.onchange = function (event) { onUpdate; event.stopPropagation(); };
         checkbox.id = "mycheckbox";
         var label = document.createElement('label');
         label.htmlFor = "mycheckbox";
