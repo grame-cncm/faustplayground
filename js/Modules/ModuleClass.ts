@@ -39,6 +39,7 @@ interface IModule {
 
 class ModuleClass implements IModule {
     drag: Drag = new Drag()
+    dragList: Drag[] = [];
     patchID: string;
     sceneParent: Scene;
     moduleView: ModuleView;
@@ -47,6 +48,7 @@ class ModuleClass implements IModule {
     private fModuleInterfaceParams: string[] = [];
     eventDraggingHandler: (event: MouseEvent) => void;
     eventConnectorHandler: (event: Event) => void;
+
 
 
 
@@ -95,14 +97,25 @@ class ModuleClass implements IModule {
             module.drag.getDraggingMouseEvent(<MouseEvent>event, module, (el, x, y, module) => { module.drag.stopDraggingConnector(el, x, y, module) });
         } else if (event.type == "mousemove") {
             module.drag.getDraggingMouseEvent(<MouseEvent>event, module, (el, x, y, module, e) => { module.drag.whileDraggingConnector(el, x, y, module, e) });
-        }
-        else if (event.type == "touchstart") {
-            module.drag.getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module, e) => { module.drag.startDraggingConnector(el, x, y, module, e) });
+        } else if (event.type == "touchstart") {
+        //    var newdrag = new Drag();
+        //    newdrag.isDragConnector = true;
+        //    module.dragList.push(newdrag);
+        //    var index = module.dragList.length-1
+            //module.dragList[index].getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module, e) => { module.dragList[index].startDraggingConnector(el, x, y, module, e) });
+           module.drag.getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module, e) => { module.drag.startDraggingConnector(el, x, y, module, e) });
+
         } else if (event.type == "touchmove") {
-            console.log(module.drag.connector.connectorShape.id)
+            //for (var i = 0; i < module.dragList.length; i++) {
+                //module.dragList[i].getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module, e) => { module.dragList[i].whileDraggingConnector(el, x, y, module, e) })
+            //}
             module.drag.getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module, e) => { module.drag.whileDraggingConnector(el, x, y, module, e) })
         } else if (event.type == "touchend") {
+            //for (var i = 0; i < module.dragList.length; i++) {
+                //module.dragList[i].getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module) => { module.dragList[i].stopDraggingConnector(el, x, y, module) });
+            //}
             module.drag.getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module) => { module.drag.stopDraggingConnector(el, x, y, module) });
+
         }
     }
 

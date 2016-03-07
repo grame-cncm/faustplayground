@@ -7,7 +7,7 @@
 */
 /// <reference path="../ExportLib.ts"/>
 /// <reference path="../EquivalentFaust.ts"/>
-/// <reference path="../main.ts"/>
+/// <reference path="../Main.ts"/>
 "use strict";
 /********************************************************************
 *********************  HANDLE FAUST WEB TARGETS *********************

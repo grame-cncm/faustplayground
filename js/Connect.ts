@@ -11,7 +11,7 @@
 
 /// <reference path="Modules/ModuleClass.ts"/>
 /// <reference path="Dragging.ts"/>
-/// <reference path="main.ts"/>
+/// <reference path="Main.ts"/>
 /// <reference path="App.ts"/>
 
 "use strict";
@@ -65,14 +65,15 @@ class Connector {
         var sourceCopy: ModuleClass = source;
         var sourceCopyDSP: IfDSP;
         // Searching for src/dst DSP if existing
-        if (sourceCopy.moduleFaust.getDSP) {
+
+        if (sourceCopy != undefined && sourceCopy.moduleFaust.getDSP) {
             sourceCopyDSP = sourceCopy.moduleFaust.getDSP();
             sourceCopyDSP.getProcessor().disconnect();
         }
         
 		
         // Reconnect all disconnected connections (because disconnect API cannot break a single connection)
-        if (source.moduleFaust.getOutputConnections()) {
+        if (source!=undefined&&source.moduleFaust.getOutputConnections()) {
             for (var i = 0; i < source.moduleFaust.getOutputConnections().length; i++){
                 if (source.moduleFaust.getOutputConnections()[i].destination != destination)
                     this.connectModules(source, source.moduleFaust.getOutputConnections()[i].destination);
@@ -114,16 +115,18 @@ class Connector {
         this.disconnectModules(source, destination);
 		
         // delete connection from src .outputConnections,
-        if (source.moduleFaust.getOutputConnections)
+        if (source != undefined && source.moduleFaust.getOutputConnections) {
             source.moduleFaust.removeOutputConnection(connector);
+        }
 
         // delete connection from dst .inputConnections,
-        if (destination.moduleFaust.getInputConnections)
+        if (destination != undefined && destination.moduleFaust.getInputConnections) {
             destination.moduleFaust.removeInputConnection(connector);
+        }
 		
 	    // and delete the connectorShape
 	    if(connector.connectorShape)
-		    connector.connectorShape.parentNode.removeChild( connector.connectorShape );
+		    connector.connectorShape.remove( );
     }
 
     // Disconnect a node from all its connections

@@ -34,11 +34,30 @@ function init():void {
     app.createMenu();
 	app.showFirstScene();
 }
+window.addEventListener('touchstart', IosInit , false);
 
+function IosInit(){
+    var buffer = App.audioContext.createBuffer(1, 1, 22050);
+    var source = App.audioContext.createBufferSource();
+    source.buffer = buffer;
+
+    // connect to output (your speakers)
+    source.connect(App.audioContext.destination);
+
+    // play the file
+    if (source.noteOn) {
+        source.noteOn(0);
+    }
+    window.removeEventListener('touchstart', IosInit, false)
+}
 
     /********************************************************************
     **************************  interfaces  *********************************
     ********************************************************************/
+
+interface AudioBufferSourceNode {
+    noteOn: (any:any) => any;
+}
 
 interface Navigator {
     //default way to get the devices of browsers

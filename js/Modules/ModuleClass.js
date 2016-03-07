@@ -27,6 +27,7 @@
 var ModuleClass = (function () {
     function ModuleClass(id, x, y, name, sceneParent, htmlElementModuleContainer, removeModuleCallBack) {
         this.drag = new Drag();
+        this.dragList = [];
         this.fModuleInterfaceParams = [];
         this.sceneParent = sceneParent;
         var self = this;
@@ -73,13 +74,23 @@ var ModuleClass = (function () {
             module.drag.getDraggingMouseEvent(event, module, function (el, x, y, module, e) { module.drag.whileDraggingConnector(el, x, y, module, e); });
         }
         else if (event.type == "touchstart") {
+            //    var newdrag = new Drag();
+            //    newdrag.isDragConnector = true;
+            //    module.dragList.push(newdrag);
+            //    var index = module.dragList.length-1
+            //module.dragList[index].getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module, e) => { module.dragList[index].startDraggingConnector(el, x, y, module, e) });
             module.drag.getDraggingTouchEvent(event, module, function (el, x, y, module, e) { module.drag.startDraggingConnector(el, x, y, module, e); });
         }
         else if (event.type == "touchmove") {
-            console.log(module.drag.connector.connectorShape.id);
+            //for (var i = 0; i < module.dragList.length; i++) {
+            //module.dragList[i].getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module, e) => { module.dragList[i].whileDraggingConnector(el, x, y, module, e) })
+            //}
             module.drag.getDraggingTouchEvent(event, module, function (el, x, y, module, e) { module.drag.whileDraggingConnector(el, x, y, module, e); });
         }
         else if (event.type == "touchend") {
+            //for (var i = 0; i < module.dragList.length; i++) {
+            //module.dragList[i].getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module) => { module.dragList[i].stopDraggingConnector(el, x, y, module) });
+            //}
             module.drag.getDraggingTouchEvent(event, module, function (el, x, y, module) { module.drag.stopDraggingConnector(el, x, y, module); });
         }
     };
