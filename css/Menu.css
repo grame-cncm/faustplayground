@@ -337,4 +337,7 @@ div#videoContainer {
 div#fullScreenButton {
     background: url("../img/fullscreen.png") no-repeat 50%;
     background-size: 80%;
+}div#accButton {
+    background: url("../img/checkBox.png") no-repeat 50%;
+    background-size: 80%;
 }

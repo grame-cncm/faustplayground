@@ -6,6 +6,7 @@ class MenuView {
     exportButtonMenu: HTMLElement;
     helpButtonMenu: HTMLElement;
     fullScreenButton: HTMLElement;
+    accButton: HTMLElement;
     libraryContent: HTMLElement;
     exportContent: HTMLElement;
     helpContent: HTMLElement;
@@ -53,10 +54,16 @@ class MenuView {
         fullScreenButton.className = "buttonsLittleMenu";
         this.fullScreenButton = fullScreenButton;
 
+        var accButton: HTMLElement = document.createElement("div");
+        accButton.id = "accButton";
+        accButton.className = "buttonsLittleMenu";
+        this.accButton = accButton;
+
         buttonsMenu.appendChild(libraryButtonMenu);
         buttonsMenu.appendChild(exportButtonMenu);
         buttonsMenu.appendChild(helpButtonMenu);
         buttonsMenu.appendChild(fullScreenButton);
+        buttonsMenu.appendChild(accButton);
 
         this.HTMLButtonsMenu.push(libraryButtonMenu, exportButtonMenu, helpButtonMenu);
 

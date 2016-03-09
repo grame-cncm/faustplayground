@@ -27,6 +27,7 @@ class Menu {
     mouseOverLowerMenu: (event: MouseEvent) => void;
     isMenuLow: boolean = false;
     isFullScreen: boolean = false;
+    isAccelerometer: boolean = true;
 
     constructor(htmlContainer: HTMLElement) {
         this.menuView = new MenuView();
@@ -36,6 +37,7 @@ class Menu {
         this.menuView.helpButtonMenu.onclick = () => { this.menuHandler(this.menuChoices = MenuChoices.help) };
         this.menuView.closeButton.onclick = () => { this.menuHandler(this.menuChoices = MenuChoices.null) };
         this.menuView.fullScreenButton.addEventListener("click", () => { this.fullScreen() });
+        this.menuView.accButton.addEventListener("click", () => { this.accelerometer() });
         this.library = new Library();
         this.library.libraryView = this.menuView.libraryView;
         this.library.fillLibrary();
@@ -221,6 +223,27 @@ class Menu {
             }
             this.isFullScreen = true;
         }
-
+    }
+    accelerometer() {
+        var checkboxs = document.getElementsByClassName("accCheckbox")
+        if (this.isAccelerometer) {
+            for (var i = 0; i < checkboxs.length; i++) {
+                var checkbox = <HTMLInputElement>checkboxs[i]
+                checkbox.checked = false;
+                var changeEvent = new Event("change")
+                checkbox.dispatchEvent(changeEvent);
+                this.isAccelerometer = false;
+            }
+            this.menuView.accButton.style.opacity = "0.5";            
+        } else {
+            for (var i = 0; i < checkboxs.length; i++) {
+                var checkbox = <HTMLInputElement>checkboxs[i]
+                checkbox.checked = true;
+                var changeEvent = new Event("change")
+                checkbox.dispatchEvent(changeEvent);
+                this.isAccelerometer = true;
+            }    
+            this.menuView.accButton.style.opacity = "1";            
+        }
     }
 }

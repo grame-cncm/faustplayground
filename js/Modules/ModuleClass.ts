@@ -224,7 +224,9 @@ class ModuleClass implements IModule {
         //module.moduleView.fEditImg.src = App.baseImg + "enter.png";
         this.moduleView.fEditImg.style.backgroundImage = "url(" + App.baseImg + "enter.png)";
         this.moduleView.fEditImg.addEventListener("click", this.eventCloseEditHandler);
+        this.moduleView.fEditImg.addEventListener("touchend", this.eventCloseEditHandler);
         this.moduleView.fEditImg.removeEventListener("click", this.eventOpenEditHandler);
+        this.moduleView.fEditImg.removeEventListener("touchend", this.eventOpenEditHandler);
         this.moduleView.fEditImg.area = textArea;
     }
 
@@ -249,7 +251,9 @@ class ModuleClass implements IModule {
 
         module.moduleView.fEditImg.style.backgroundImage = "url(" + App.baseImg + "edit.png)";
         module.moduleView.fEditImg.addEventListener("click", this.eventOpenEditHandler);
+        module.moduleView.fEditImg.addEventListener("touchend", this.eventOpenEditHandler);
         module.moduleView.fEditImg.removeEventListener("click", this.eventCloseEditHandler);
+        module.moduleView.fEditImg.removeEventListener("touchend", this.eventCloseEditHandler);
     }
 	
     /***************** CREATE/DELETE the DSP Interface ********************/

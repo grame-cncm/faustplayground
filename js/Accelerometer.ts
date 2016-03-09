@@ -18,6 +18,7 @@ class AccelerometerSlider {
     module: ModuleClass;
     label: string;
     converter: UpdatableValueConverter;
+    isActive: boolean = true;
 
     constructor(fMetaAcc: string) {
         this.setAttributes(fMetaAcc);  
@@ -30,6 +31,20 @@ class AccelerometerSlider {
         this.amin = parseInt(arrayMeta[2]);
         this.amid = parseInt(arrayMeta[3]);
         this.amax = parseInt(arrayMeta[4]);
+    }
+    switchActive(event: Event) {
+        var checkBox = <HTMLInputElement>event.target;
+        this.isActive = checkBox.checked;
+        var range = checkBox.parentElement.getElementsByTagName("input")[0];
+        if (this.isActive) {
+            range.disabled = true;
+            range.style.opacity = "0.3";
+        } else {
+            range.disabled = false;
+            range.style.opacity = "1";
+            range.value = String(parseInt(this.module.moduleFaust.fDSP.getValue(this.label)));
+            alert(range.value)
+        }
     }
 }
 
@@ -54,12 +69,14 @@ class AccelerometerHandler {
         var y = event.accelerationIncludingGravity.y;
         var z = event.accelerationIncludingGravity.z;
         for (var i = 0; i < AccelerometerHandler.accelerometerSliders.length; i++) {
-            this.axisSplitter(AccelerometerHandler.accelerometerSliders[i], x, y, z)
+            if (AccelerometerHandler.accelerometerSliders[i].isActive) {
+                this.axisSplitter(AccelerometerHandler.accelerometerSliders[i], x, y, z)
+            }
         }
 
         console.log(x + " " + y + " " + z);
     }
-    static registerAcceleratedSlider(fMetaAcc: string, module: ModuleClass, label: string, min: number, ivalue: number, max: number) {
+    static registerAcceleratedSlider(fMetaAcc: string, module: ModuleClass, label: string, min: number, ivalue: number, max: number): AccelerometerSlider {
         var accelerometerSlide: AccelerometerSlider = new AccelerometerSlider(fMetaAcc);
         accelerometerSlide.module = module;
         accelerometerSlide.label = label;
@@ -68,6 +85,7 @@ class AccelerometerHandler {
         accelerometerSlide.ivalue = ivalue;
         AccelerometerHandler.curveSplitter(accelerometerSlide)
         AccelerometerHandler.accelerometerSliders.push(accelerometerSlide);
+        return accelerometerSlide;
     }
 
     axisSplitter(accelerometerSlide: AccelerometerSlider, x: number, y: number, z: number) {

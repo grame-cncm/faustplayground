@@ -44,11 +44,6 @@ var FaustInterface = (function () {
     ********************* ADD GRAPHICAL ELEMENTS ************************
     ********************************************************************/
     FaustInterface.prototype.addFaustModuleSlider = function (module, groupName, label, ivalue, imin, imax, stepUnits, units, meta, onUpdate) {
-        for (var i = 0; i < meta.length; i++) {
-            if (meta[i].acc) {
-                AccelerometerHandler.registerAcceleratedSlider(meta[i].acc, module, groupName, parseFloat(imin), parseFloat(ivalue), parseFloat(imax));
-            }
-        }
         var precision = stepUnits.toString().split('.').pop().length;
         this.group = document.createElement("div");
         this.group.className = "control-group";
@@ -88,6 +83,25 @@ var FaustInterface = (function () {
         slider.addEventListener("touchstart", function (e) { e.stopPropagation(); });
         slider.addEventListener("touchmove", function (e) { e.stopPropagation(); });
         this.group.appendChild(slider);
+        if (meta != undefined) {
+            for (var i = 0; i < meta.length; i++) {
+                if (meta[i].acc) {
+                    var accSlide = AccelerometerHandler.registerAcceleratedSlider(meta[i].acc, module, groupName, parseFloat(imin), parseFloat(ivalue), parseFloat(imax));
+                    var checkbox = document.createElement("input");
+                    checkbox.type = "checkbox";
+                    checkbox.checked = true;
+                    checkbox.className = "accCheckbox";
+                    checkbox.addEventListener("click", function (event) { event.stopPropagation(), false; });
+                    checkbox.addEventListener("touchstart", function (event) { event.stopPropagation(), false; });
+                    checkbox.addEventListener("change", function (event) {
+                        accSlide.switchActive(event);
+                    }, false);
+                    slider.style.opacity = "0.3";
+                    slider.disabled = true;
+                    this.group.appendChild(checkbox);
+                }
+            }
+        }
         module.moduleView.getInterfaceContainer().appendChild(this.group);
         return slider;
     };

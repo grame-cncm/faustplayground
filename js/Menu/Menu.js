@@ -19,6 +19,7 @@ var Menu = (function () {
         this.currentMenuChoices = MenuChoices.null;
         this.isMenuLow = false;
         this.isFullScreen = false;
+        this.isAccelerometer = true;
         this.menuView = new MenuView();
         this.menuView.init(htmlContainer);
         this.menuView.libraryButtonMenu.onclick = function () { _this.menuHandler(_this.menuChoices = MenuChoices.library); };
@@ -26,6 +27,7 @@ var Menu = (function () {
         this.menuView.helpButtonMenu.onclick = function () { _this.menuHandler(_this.menuChoices = MenuChoices.help); };
         this.menuView.closeButton.onclick = function () { _this.menuHandler(_this.menuChoices = MenuChoices.null); };
         this.menuView.fullScreenButton.addEventListener("click", function () { _this.fullScreen(); });
+        this.menuView.accButton.addEventListener("click", function () { _this.accelerometer(); });
         this.library = new Library();
         this.library.libraryView = this.menuView.libraryView;
         this.library.fillLibrary();
@@ -198,6 +200,29 @@ var Menu = (function () {
                 document.documentElement.mozRequestFullScreen();
             }
             this.isFullScreen = true;
+        }
+    };
+    Menu.prototype.accelerometer = function () {
+        var checkboxs = document.getElementsByClassName("accCheckbox");
+        if (this.isAccelerometer) {
+            for (var i = 0; i < checkboxs.length; i++) {
+                var checkbox = checkboxs[i];
+                checkbox.checked = false;
+                var changeEvent = new Event("change");
+                checkbox.dispatchEvent(changeEvent);
+                this.isAccelerometer = false;
+            }
+            this.menuView.accButton.style.opacity = "0.5";
+        }
+        else {
+            for (var i = 0; i < checkboxs.length; i++) {
+                var checkbox = checkboxs[i];
+                checkbox.checked = true;
+                var changeEvent = new Event("change");
+                checkbox.dispatchEvent(changeEvent);
+                this.isAccelerometer = true;
+            }
+            this.menuView.accButton.style.opacity = "1";
         }
     };
     return Menu;

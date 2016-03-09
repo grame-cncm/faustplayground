@@ -32,10 +32,15 @@ var MenuView = (function () {
         fullScreenButton.id = "fullScreenButton";
         fullScreenButton.className = "buttonsLittleMenu";
         this.fullScreenButton = fullScreenButton;
+        var accButton = document.createElement("div");
+        accButton.id = "accButton";
+        accButton.className = "buttonsLittleMenu";
+        this.accButton = accButton;
         buttonsMenu.appendChild(libraryButtonMenu);
         buttonsMenu.appendChild(exportButtonMenu);
         buttonsMenu.appendChild(helpButtonMenu);
         buttonsMenu.appendChild(fullScreenButton);
+        buttonsMenu.appendChild(accButton);
         this.HTMLButtonsMenu.push(libraryButtonMenu, exportButtonMenu, helpButtonMenu);
         var myScene = document.createElement("div");
         myScene.id = "PatchName";
