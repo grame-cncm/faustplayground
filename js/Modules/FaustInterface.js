@@ -46,7 +46,7 @@ var FaustInterface = (function () {
     FaustInterface.prototype.addFaustModuleSlider = function (module, groupName, label, ivalue, imin, imax, stepUnits, units, meta, onUpdate) {
         for (var i = 0; i < meta.length; i++) {
             if (meta[i].acc) {
-                AccelerometerHandler.registerAcceleratedSlider(meta[i].acc, module, label);
+                AccelerometerHandler.registerAcceleratedSlider(meta[i].acc, module, groupName, parseFloat(imin), parseFloat(ivalue), parseFloat(imax));
             }
         }
         var precision = stepUnits.toString().split('.').pop().length;

@@ -190,8 +190,8 @@ var ModuleClass = (function () {
     // Fill fInterfaceContainer with the DSP's Interface (--> see FaustInterface.js)
     ModuleClass.prototype.createFaustInterface = function () {
         this.moduleView.fTitle.textContent = this.moduleFaust.fName;
-        var faustInterface = new FaustInterface();
-        faustInterface.parse_ui(JSON.parse(this.moduleFaust.fDSP.json()).ui, this);
+        this.moduleFaustInterface = new FaustInterface();
+        this.moduleFaustInterface.parse_ui(JSON.parse(this.moduleFaust.fDSP.json()).ui, this);
     };
     ModuleClass.prototype.deleteFaustInterface = function () {
         while (this.moduleView.fInterfaceContainer.childNodes.length != 0)
