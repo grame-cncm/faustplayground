@@ -383,7 +383,22 @@ class Drag {
 
 
 
-    whileDraggingConnector(target: HTMLElement, x: number, y: number, module: ModuleClass,event:Event) {
+    whileDraggingConnector(target: HTMLElement, x: number, y: number, module: ModuleClass, event: Event) {
+
+        if (this.isDragConnector) {
+            var currentHoverElement = <HTMLElement>document.elementFromPoint(x - scrollX, y - scrollY);
+            if (currentHoverElement.classList.contains("node-input")) {
+                module.styleInputNodeTouchDragOver(currentHoverElement);
+            } else if (currentHoverElement.classList.contains("node-output")) {
+                module.styleOutputNodeTouchDragOver(currentHoverElement);
+            } else if (currentHoverElement.parentElement.classList.contains("node-input")) {
+                module.styleInputNodeTouchDragOver(currentHoverElement.parentElement);
+            } else if (currentHoverElement.parentElement.classList.contains("node-output")) {
+                module.styleOutputNodeTouchDragOver(currentHoverElement.parentElement);
+            } else if (!ModuleClass.isNodesModuleUnstyle) {
+                module.sceneParent.unstyleNode();
+            }
+        }
 
         var toElem: HTMLInterfaceContainer = <HTMLInterfaceContainer>target;
         // Get cursor position with respect to the page.

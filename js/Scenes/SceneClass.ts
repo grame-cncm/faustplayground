@@ -347,7 +347,25 @@ class Scene {
         position.y = window.innerHeight / 2;
         return position
     }
+    unstyleNode() {
+        var modules = this.getModules();
+        modules.push(this.fAudioInput);
+        modules.push(this.fAudioOutput);
+        for (var i = 0; i < modules.length; i++) {
+            if (modules[i].moduleView.fInputNode) {
+                modules[i].moduleView.fInputNode.style.border = "none";
+                modules[i].moduleView.fInputNode.style.left = "-16px";
+                modules[i].moduleView.fInputNode.style.marginTop = "-18px";
+            }
+            if (modules[i].moduleView.fOutputNode){
+                modules[i].moduleView.fOutputNode.style.border = "none";
+                modules[i].moduleView.fOutputNode.style.right = "-16px";
+                modules[i].moduleView.fOutputNode.style.marginTop = "-18px";
+            }
+        }
+        ModuleClass.isNodesModuleUnstyle = true;
 
+    }
 
 
 }

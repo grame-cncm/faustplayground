@@ -30,7 +30,7 @@ var FaustInterface = (function () {
         if (item.type === "vgroup" || item.type === "hgroup" || item.type === "tgroup")
             this.parse_items(item.items, module);
         else if (item.type === "vslider" || item.type === "hslider")
-            this.addFaustModuleSlider(module, item.address, item.label, item.init, item.min, item.max, item.step, "", module.interfaceCallback);
+            this.addFaustModuleSlider(module, item.address, item.label, item.init, item.min, item.max, item.step, "", item.meta, module.interfaceCallback);
         else if (item.type === "button")
             this.addFaustButton(module, item.address, item.label, module.interfaceCallback);
         else if (item.type === "checkbox")
@@ -43,7 +43,12 @@ var FaustInterface = (function () {
     /********************************************************************
     ********************* ADD GRAPHICAL ELEMENTS ************************
     ********************************************************************/
-    FaustInterface.prototype.addFaustModuleSlider = function (module, groupName, label, ivalue, imin, imax, stepUnits, units, onUpdate) {
+    FaustInterface.prototype.addFaustModuleSlider = function (module, groupName, label, ivalue, imin, imax, stepUnits, units, meta, onUpdate) {
+        for (var i = 0; i < meta.length; i++) {
+            if (meta[i].acc) {
+                AccelerometerHandler.registerAcceleratedSlider(meta[i].acc, module, label);
+            }
+        }
         var precision = stepUnits.toString().split('.').pop().length;
         this.group = document.createElement("div");
         this.group.className = "control-group";

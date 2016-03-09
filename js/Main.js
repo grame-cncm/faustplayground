@@ -23,6 +23,8 @@ function init() {
     app.createAllScenes();
     app.createMenu();
     app.showFirstScene();
+    var accHandler = new AccelerometerHandler();
+    accHandler.getAccelerometerValue();
 }
 window.addEventListener('touchstart', IosInit, false);
 function IosInit() {

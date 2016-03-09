@@ -38,16 +38,21 @@ interface IModule {
 
 
 class ModuleClass implements IModule {
+    static isNodesModuleUnstyle: boolean = true;
     drag: Drag = new Drag()
     dragList: Drag[] = [];
     patchID: string;
     sceneParent: Scene;
     moduleView: ModuleView;
     moduleFaust: ModuleFaust;
-    private deleteCallback: (module: ModuleClass,scene:Scene) => void;
+    moduleFaustInterface: FaustInterface;
+    private deleteCallback: (module: ModuleClass, scene: Scene) => void;
     private fModuleInterfaceParams: string[] = [];
     eventDraggingHandler: (event: MouseEvent) => void;
     eventConnectorHandler: (event: Event) => void;
+    eventOpenEditHandler: () => void;
+    eventCloseEditHandler: (event: Event) => void;
+
 
 
 
@@ -55,7 +60,9 @@ class ModuleClass implements IModule {
     constructor(id: number, x: number, y: number, name: string, sceneParent: Scene, htmlElementModuleContainer: HTMLElement, removeModuleCallBack: (m: ModuleClass, scene: Scene) => void) {
         this.sceneParent = sceneParent;
         var self: ModuleClass = this
-        this.eventConnectorHandler = function (event: MouseEvent) { self.dragCnxCallback(event, self) };
+        this.eventConnectorHandler = (event: MouseEvent) => { this.dragCnxCallback(event, this) };
+        this.eventCloseEditHandler = (event: MouseEvent) => { this.recompileSource(event, this) }
+        this.eventOpenEditHandler = () => { this.edit() }
 
         // ---- Capturing module instance	
         // ----- Delete Callback was added to make sure 
@@ -66,7 +73,7 @@ class ModuleClass implements IModule {
         self.moduleView = new ModuleView();
         self.moduleView.createModuleView(id, x, y, name, htmlElementModuleContainer, self);
         self.moduleFaust = new ModuleFaust(name);
-        
+
     }
 
     /***************  PRIVATE METHODS  ******************************/
@@ -75,7 +82,7 @@ class ModuleClass implements IModule {
 
         if (event.type == "mousedown") {
             module.drag.getDraggingMouseEvent(<MouseEvent>event, module, (el, x, y, module, e) => { module.drag.startDraggingModule(el, x, y, module, e) });
-        } else if (event.type == "mouseup" ) {
+        } else if (event.type == "mouseup") {
             module.drag.getDraggingMouseEvent(<MouseEvent>event, module, (el, x, y, module, e) => { module.drag.stopDraggingModule(el, x, y, module, e) });
         } else if (event.type == "mousemove") {
             module.drag.getDraggingMouseEvent(<MouseEvent>event, module, (el, x, y, module, e) => { module.drag.whileDraggingModule(el, x, y, module, e) });
@@ -86,11 +93,10 @@ class ModuleClass implements IModule {
         } else if (event.type == "touchend") {
             module.drag.getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module, e) => { module.drag.stopDraggingModule(el, x, y, module, e) });
         }
-        
+
     }
 
     private dragCnxCallback(event: Event, module: ModuleClass): void {
-        module.drag.isDragConnector = true;
         if (event.type == "mousedown") {
             module.drag.getDraggingMouseEvent(<MouseEvent>event, module, (el, x, y, module, e) => { module.drag.startDraggingConnector(el, x, y, module, e) });
         } else if (event.type == "mouseup") {
@@ -102,21 +108,24 @@ class ModuleClass implements IModule {
             newdrag.isDragConnector = true;
             newdrag.originTarget = <HTMLElement>event.target;
             module.dragList.push(newdrag);
-            var index = module.dragList.length-1
+            var index = module.dragList.length - 1
             module.dragList[index].getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module, e) => { module.dragList[index].startDraggingConnector(el, x, y, module, e) });
 
         } else if (event.type == "touchmove") {
+            
             for (var i = 0; i < module.dragList.length; i++) {
                 if (module.dragList[i].originTarget == event.target) {
                     module.dragList[i].getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module, e) => { module.dragList[i].whileDraggingConnector(el, x, y, module, e) })
                 }
             }
         } else if (event.type == "touchend") {
+            this.sceneParent.unstyleNode()
             for (var i = 0; i < module.dragList.length; i++) {
                 if (module.dragList[i].originTarget == event.target) {
                     module.dragList[i].getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module) => { module.dragList[i].stopDraggingConnector(el, x, y, module) });
                 }
             }
+            this.sceneParent.unstyleNode();
         }
     }
 
@@ -200,28 +209,29 @@ class ModuleClass implements IModule {
         // 		    faust.deleteDSPInstance(todelete);
     }
     /******************** EDIT SOURCE & RECOMPILE *************************/
-    edit(module: ModuleClass): void {
+    edit(): void {
 
-        module.saveInterfaceParams();
+        this.saveInterfaceParams();
 
-        module.deleteFaustInterface();
+        this.deleteFaustInterface();
 
         var textArea: HTMLTextAreaElement = document.createElement("textarea");
         textArea.rows = 15;
         textArea.cols = 60;
         textArea.value = this.moduleFaust.fSource;
-        module.moduleView.fInterfaceContainer.appendChild(textArea);
+        this.moduleView.fInterfaceContainer.appendChild(textArea);
 
         //module.moduleView.fEditImg.src = App.baseImg + "enter.png";
-        module.moduleView.fEditImg.style.backgroundImage = "url(" +App.baseImg + "enter.png)";
-        module.moduleView.fEditImg.onclick = function (event) { module.recompileSource(event, module) };
-        module.moduleView.fEditImg.area = textArea;
+        this.moduleView.fEditImg.style.backgroundImage = "url(" + App.baseImg + "enter.png)";
+        this.moduleView.fEditImg.addEventListener("click", this.eventCloseEditHandler);
+        this.moduleView.fEditImg.removeEventListener("click", this.eventOpenEditHandler);
+        this.moduleView.fEditImg.area = textArea;
     }
 
     //---- Update ModuleClass with new name/code source
     update(name: string, code: string): void {
 
-        
+
         this.moduleFaust.fTempName = name;
         this.moduleFaust.fTempSource = code;
         var module: ModuleClass = this;
@@ -237,8 +247,9 @@ class ModuleClass implements IModule {
         module.update(this.moduleView.fTitle.textContent, dsp_code);
         module.recallInterfaceParams();
 
-        module.moduleView.fEditImg.style.backgroundImage = "url("+App.baseImg + "edit.png)";
-        module.moduleView.fEditImg.onclick = function () { module.edit(module) };
+        module.moduleView.fEditImg.style.backgroundImage = "url(" + App.baseImg + "edit.png)";
+        module.moduleView.fEditImg.addEventListener("click", this.eventOpenEditHandler);
+        module.moduleView.fEditImg.removeEventListener("click", this.eventCloseEditHandler);
     }
 	
     /***************** CREATE/DELETE the DSP Interface ********************/
@@ -247,8 +258,8 @@ class ModuleClass implements IModule {
     createFaustInterface(): void {
 
         this.moduleView.fTitle.textContent = this.moduleFaust.fName;
-        var faustInterface: FaustInterface = new FaustInterface()
-        faustInterface.parse_ui(JSON.parse(this.moduleFaust.fDSP.json()).ui, this);
+        this.moduleFaustInterface = new FaustInterface()
+        this.moduleFaustInterface.parse_ui(JSON.parse(this.moduleFaust.fDSP.json()).ui, this);
     }
     private deleteFaustInterface(): void {
 
@@ -262,10 +273,9 @@ class ModuleClass implements IModule {
     //---- Generic callback for Faust Interface
     //---- Called every time an element of the UI changes value
     interfaceCallback(event: Event, module: ModuleClass): any {
-        //alert("I'm terribly touched")
-        console.log("touch my slider")
+
         var input: HTMLInputElement = <HTMLInputElement>event.target
-        var groupInput: HTMLinterfaceElement = <HTMLinterfaceElement>input.parentNode;
+        var groupInput: HTMLinterfaceElement = <HTMLinterfaceElement>input.parentElement;
         var elementInInterfaceGroup: HTMLElement = <HTMLElement>groupInput.childNodes[0];
         var text: string = groupInput.label;
 
@@ -323,15 +333,15 @@ class ModuleClass implements IModule {
     getInterfaceParams(): string[] {
         return this.fModuleInterfaceParams;
     }
-    setInterfaceParams(parameters: string[]):void {
+    setInterfaceParams(parameters: string[]): void {
         this.fModuleInterfaceParams = parameters;
     }
-    addInterfaceParam(path: string, value: number):void {
+    addInterfaceParam(path: string, value: number): void {
         this.fModuleInterfaceParams[path] = value;
     }
 		
-/******************* GET/SET INPUT/OUTPUT NODES **********************/
-    addInputOutputNodes(): void{
+    /******************* GET/SET INPUT/OUTPUT NODES **********************/
+    addInputOutputNodes(): void {
         var module: ModuleClass = this;
         if (this.moduleFaust.fDSP.getNumInputs() > 0 && this.moduleView.fName != "input") {
             this.moduleView.setInputNode();
@@ -340,7 +350,7 @@ class ModuleClass implements IModule {
             this.moduleView.fInputNode.addEventListener("touchmove", this.eventConnectorHandler);
             this.moduleView.fInputNode.addEventListener("touchend", this.eventConnectorHandler);
 
-		}
+        }
 
         if (this.moduleFaust.fDSP.getNumOutputs() > 0 && this.moduleView.fName != "output") {
             this.moduleView.setOutputNode();
@@ -348,7 +358,21 @@ class ModuleClass implements IModule {
             this.moduleView.fOutputNode.addEventListener("touchstart", this.eventConnectorHandler);
             this.moduleView.fOutputNode.addEventListener("touchmove", this.eventConnectorHandler);
             this.moduleView.fOutputNode.addEventListener("touchend", this.eventConnectorHandler);
-		}		
+        }
+    }
+
+    styleInputNodeTouchDragOver(el: HTMLElement) {
+        el.style.border = "15px double rgb(0, 211, 255)"
+        el.style.left = "-32px"
+        el.style.marginTop = "-32px"
+        ModuleClass.isNodesModuleUnstyle = false;
+    }
+    styleOutputNodeTouchDragOver(el: HTMLElement) {
+        el.style.border = "15px double rgb(0, 211, 255)"
+        el.style.right = "-32px"
+        el.style.marginTop = "-32px"
+        ModuleClass.isNodesModuleUnstyle = false;
+
     }
 
 	

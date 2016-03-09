@@ -26,12 +26,15 @@
 "use strict";
 var ModuleClass = (function () {
     function ModuleClass(id, x, y, name, sceneParent, htmlElementModuleContainer, removeModuleCallBack) {
+        var _this = this;
         this.drag = new Drag();
         this.dragList = [];
         this.fModuleInterfaceParams = [];
         this.sceneParent = sceneParent;
         var self = this;
-        this.eventConnectorHandler = function (event) { self.dragCnxCallback(event, self); };
+        this.eventConnectorHandler = function (event) { _this.dragCnxCallback(event, _this); };
+        this.eventCloseEditHandler = function (event) { _this.recompileSource(event, _this); };
+        this.eventOpenEditHandler = function () { _this.edit(); };
         // ---- Capturing module instance	
         // ----- Delete Callback was added to make sure 
         // ----- the module is well deleted from the scene containing it
@@ -63,7 +66,6 @@ var ModuleClass = (function () {
         }
     };
     ModuleClass.prototype.dragCnxCallback = function (event, module) {
-        module.drag.isDragConnector = true;
         if (event.type == "mousedown") {
             module.drag.getDraggingMouseEvent(event, module, function (el, x, y, module, e) { module.drag.startDraggingConnector(el, x, y, module, e); });
         }
@@ -89,11 +91,13 @@ var ModuleClass = (function () {
             }
         }
         else if (event.type == "touchend") {
+            this.sceneParent.unstyleNode();
             for (var i = 0; i < module.dragList.length; i++) {
                 if (module.dragList[i].originTarget == event.target) {
                     module.dragList[i].getDraggingTouchEvent(event, module, function (el, x, y, module) { module.dragList[i].stopDraggingConnector(el, x, y, module); });
                 }
             }
+            this.sceneParent.unstyleNode();
         }
     };
     /*******************************  PUBLIC METHODS  **********************************/
@@ -150,18 +154,19 @@ var ModuleClass = (function () {
         // 		    faust.deleteDSPInstance(todelete);
     };
     /******************** EDIT SOURCE & RECOMPILE *************************/
-    ModuleClass.prototype.edit = function (module) {
-        module.saveInterfaceParams();
-        module.deleteFaustInterface();
+    ModuleClass.prototype.edit = function () {
+        this.saveInterfaceParams();
+        this.deleteFaustInterface();
         var textArea = document.createElement("textarea");
         textArea.rows = 15;
         textArea.cols = 60;
         textArea.value = this.moduleFaust.fSource;
-        module.moduleView.fInterfaceContainer.appendChild(textArea);
+        this.moduleView.fInterfaceContainer.appendChild(textArea);
         //module.moduleView.fEditImg.src = App.baseImg + "enter.png";
-        module.moduleView.fEditImg.style.backgroundImage = "url(" + App.baseImg + "enter.png)";
-        module.moduleView.fEditImg.onclick = function (event) { module.recompileSource(event, module); };
-        module.moduleView.fEditImg.area = textArea;
+        this.moduleView.fEditImg.style.backgroundImage = "url(" + App.baseImg + "enter.png)";
+        this.moduleView.fEditImg.addEventListener("click", this.eventCloseEditHandler);
+        this.moduleView.fEditImg.removeEventListener("click", this.eventOpenEditHandler);
+        this.moduleView.fEditImg.area = textArea;
     };
     //---- Update ModuleClass with new name/code source
     ModuleClass.prototype.update = function (name, code) {
@@ -178,7 +183,8 @@ var ModuleClass = (function () {
         module.update(this.moduleView.fTitle.textContent, dsp_code);
         module.recallInterfaceParams();
         module.moduleView.fEditImg.style.backgroundImage = "url(" + App.baseImg + "edit.png)";
-        module.moduleView.fEditImg.onclick = function () { module.edit(module); };
+        module.moduleView.fEditImg.addEventListener("click", this.eventOpenEditHandler);
+        module.moduleView.fEditImg.removeEventListener("click", this.eventCloseEditHandler);
     };
     /***************** CREATE/DELETE the DSP Interface ********************/
     // Fill fInterfaceContainer with the DSP's Interface (--> see FaustInterface.js)
@@ -194,10 +200,8 @@ var ModuleClass = (function () {
     //---- Generic callback for Faust Interface
     //---- Called every time an element of the UI changes value
     ModuleClass.prototype.interfaceCallback = function (event, module) {
-        //alert("I'm terribly touched")
-        console.log("touch my slider");
         var input = event.target;
-        var groupInput = input.parentNode;
+        var groupInput = input.parentElement;
         var elementInInterfaceGroup = groupInput.childNodes[0];
         var text = groupInput.label;
         var val = input.value;
@@ -263,6 +267,18 @@ var ModuleClass = (function () {
             this.moduleView.fOutputNode.addEventListener("touchend", this.eventConnectorHandler);
         }
     };
+    ModuleClass.prototype.styleInputNodeTouchDragOver = function (el) {
+        el.style.border = "15px double rgb(0, 211, 255)";
+        el.style.left = "-32px";
+        el.style.marginTop = "-32px";
+        ModuleClass.isNodesModuleUnstyle = false;
+    };
+    ModuleClass.prototype.styleOutputNodeTouchDragOver = function (el) {
+        el.style.border = "15px double rgb(0, 211, 255)";
+        el.style.right = "-32px";
+        el.style.marginTop = "-32px";
+        ModuleClass.isNodesModuleUnstyle = false;
+    };
     /****************** ADD/REMOVE ACTION LISTENERS **********************/
     //addListener(type: string, module: ModuleClass): void {
     //    document.addEventListener(type, module.eventDraggingHandler, false);
@@ -285,6 +301,7 @@ var ModuleClass = (function () {
     ModuleClass.prototype.removeCnxListener = function (div, type, module) {
         document.removeEventListener(type, module.eventConnectorHandler, false);
     };
+    ModuleClass.isNodesModuleUnstyle = true;
     return ModuleClass;
 })();
 //# sourceMappingURL=ModuleClass.js.map

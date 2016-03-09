@@ -32,7 +32,9 @@ function init():void {
     App.addFullPageLoading();
     app.createAllScenes();
     app.createMenu();
-	app.showFirstScene();
+    app.showFirstScene();
+    var accHandler: AccelerometerHandler = new AccelerometerHandler();
+    accHandler.getAccelerometerValue(); 
 }
 window.addEventListener('touchstart', IosInit , false);
 

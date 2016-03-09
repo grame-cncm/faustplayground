@@ -28,7 +28,10 @@ interface Iitem extends HTMLDivElement{
     min: string;
     max: string;
     step: string;
-
+    meta: FaustMeta[];
+}
+interface FaustMeta {
+    acc: string;
 }
 
 class FaustInterface {
@@ -64,7 +67,7 @@ class FaustInterface {
             this.parse_items(item.items, module);
 
         else if (item.type === "vslider" || item.type === "hslider")
-            this.addFaustModuleSlider(module, item.address, item.label, item.init, item.min, item.max, item.step, "", module.interfaceCallback);
+            this.addFaustModuleSlider(module, item.address, item.label, item.init, item.min, item.max, item.step, "", item.meta, module.interfaceCallback);
 		
         else if(item.type === "button")
             this.addFaustButton(module, item.address, item.label, module.interfaceCallback);
@@ -82,8 +85,13 @@ class FaustInterface {
     ********************* ADD GRAPHICAL ELEMENTS ************************
     ********************************************************************/
 
-    addFaustModuleSlider(module: ModuleClass, groupName: string, label: string, ivalue: string, imin: string, imax: string, stepUnits: string, units: string, onUpdate: (event: Event, module: ModuleClass) => any): HTMLInputElement {
+    addFaustModuleSlider(module: ModuleClass, groupName: string, label: string, ivalue: string, imin: string, imax: string, stepUnits: string, units: string, meta: FaustMeta[], onUpdate: (event: Event, module: ModuleClass) => any): HTMLInputElement {
+        for (var i = 0; i < meta.length;i++) {
+            if (meta[i].acc) {
 
+                AccelerometerHandler.registerAcceleratedSlider(meta[i].acc, module,label);
+            }
+        }
 	    var precision = stepUnits.toString().split('.').pop().length;
 
         this.group = <Iitem>document.createElement("div");

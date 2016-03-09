@@ -81,8 +81,8 @@ class ModuleView {
             fModuleContainer.appendChild(fCloseButton);
             var fEditImg = <HTMLfEdit>document.createElement("div");
             fEditImg.className = "edit"
-            fEditImg.addEventListener("click", () => { module.edit(module) });
-            fEditImg.addEventListener("touchend", () => { module.edit(module) });
+            fEditImg.addEventListener("click",  module.eventOpenEditHandler);
+            fEditImg.addEventListener("touchend",  module.eventOpenEditHandler);
             fEditImg.draggable = false;
             this.fEditImg = fEditImg;
             fFooter.appendChild(fEditImg);

@@ -55,8 +55,8 @@ var ModuleView = (function () {
             fModuleContainer.appendChild(fCloseButton);
             var fEditImg = document.createElement("div");
             fEditImg.className = "edit";
-            fEditImg.addEventListener("click", function () { module.edit(module); });
-            fEditImg.addEventListener("touchend", function () { module.edit(module); });
+            fEditImg.addEventListener("click", module.eventOpenEditHandler);
+            fEditImg.addEventListener("touchend", module.eventOpenEditHandler);
             fEditImg.draggable = false;
             this.fEditImg = fEditImg;
             fFooter.appendChild(fEditImg);
