@@ -6,6 +6,11 @@
     SECOND PART --> ADD GRAPHICAL OBJECTS TO INTERFACE
 */
 "use strict";
+var Controler = (function () {
+    function Controler() {
+    }
+    return Controler;
+})();
 var FaustInterface = (function () {
     function FaustInterface() {
     }
@@ -27,14 +32,32 @@ var FaustInterface = (function () {
         if (params && params[item.address]) {
             item.init = params[item.address];
         }
-        if (item.type === "vgroup" || item.type === "hgroup" || item.type === "tgroup")
+        if (item.type === "vgroup" || item.type === "hgroup" || item.type === "tgroup") {
             this.parse_items(item.items, module);
-        else if (item.type === "vslider" || item.type === "hslider")
-            this.addFaustModuleSlider(module, item.address, item.label, item.init, item.min, item.max, item.step, "", item.meta, module.interfaceCallback);
-        else if (item.type === "button")
-            this.addFaustButton(module, item.address, item.label, module.interfaceCallback);
-        else if (item.type === "checkbox")
-            this.addFaustCheckBox(module, item.address, module.interfaceCallback);
+        }
+        else if (item.type === "vslider" || item.type === "hslider") {
+            var controler = item;
+            this.addFaustModuleSlider(module, controler);
+            controler.slider.addEventListener("input", function (event) {
+                module.interfaceCallback(event, controler, module);
+                event.stopPropagation();
+                event.preventDefault();
+            });
+            controler.slider.addEventListener("mousedown", function (e) { e.stopPropagation(); });
+            controler.slider.addEventListener("touchstart", function (e) { e.stopPropagation(); });
+            controler.slider.addEventListener("touchmove", function (e) { e.stopPropagation(); });
+            module.moduleControles.push(controler);
+        }
+        else if (item.type === "button") {
+            var controler = item;
+            this.addFaustButton(module, item.address, item.label, function (event) { module.interfaceCallback(event, controler, module); });
+            module.moduleControles.push(controler);
+        }
+        else if (item.type === "checkbox") {
+            var controler = item;
+            this.addFaustCheckBox(module, item.address, function (event) { module.interfaceCallback(event, controler, module); });
+            module.moduleControles.push(controler);
+        }
     };
     FaustInterface.prototype.parse_items = function (items, node) {
         for (var i = 0; i < items.length; i++)
@@ -43,50 +66,56 @@ var FaustInterface = (function () {
     /********************************************************************
     ********************* ADD GRAPHICAL ELEMENTS ************************
     ********************************************************************/
-    FaustInterface.prototype.addFaustModuleSlider = function (module, groupName, label, ivalue, imin, imax, stepUnits, units, meta, onUpdate) {
-        var precision = stepUnits.toString().split('.').pop().length;
-        this.group = document.createElement("div");
-        this.group.className = "control-group";
-        this.group.label = groupName;
+    //addFaustModuleSlider(module: ModuleClass, groupName: string, label: string, ivalue: string, imin: string, imax: string, stepUnits: string, units: string, meta: FaustMeta[], onUpdate: (event: Event, module: ModuleClass) => any): HTMLInputElement {
+    FaustInterface.prototype.addFaustModuleSlider = function (module, controler) {
+        var precision = controler.step.toString().split('.').pop().length;
+        controler.precision = String(precision);
+        var group = document.createElement("div");
+        group.className = "control-group";
         var info = document.createElement("div");
         info.className = "slider-info";
-        info.setAttribute("min", imin);
-        info.setAttribute("max", imax);
-        info.setAttribute("step", stepUnits);
+        info.setAttribute("min", controler.min);
+        info.setAttribute("max", controler.max);
+        info.setAttribute("step", controler.step);
         info.setAttribute("precision", String(precision));
         var lab = document.createElement("span");
         lab.className = "label";
-        lab.appendChild(document.createTextNode(label));
+        lab.appendChild(document.createTextNode(controler.label));
         info.appendChild(lab);
         var val = document.createElement("span");
         val.className = "value";
-        var myValue = Number(ivalue).toFixed(precision);
-        val.appendChild(document.createTextNode("" + myValue + " " + units));
+        controler.output = val;
+        var myValue = Number(controler.init).toFixed(precision);
+        if (controler.unit == undefined) {
+            controler.unit = "";
+        }
+        val.appendChild(document.createTextNode("" + myValue + " " + controler.unit));
         // cache the units type on the element for updates
-        val.setAttribute("units", units);
+        val.setAttribute("units", controler.unit);
         info.appendChild(val);
-        this.group.appendChild(info);
-        var high = (parseFloat(imax) - parseFloat(imin)) / parseFloat(stepUnits);
+        group.appendChild(info);
+        var high = (parseFloat(controler.max) - parseFloat(controler.min)) / parseFloat(controler.step);
         var slider = document.createElement("input");
         slider.type = "range";
         slider.min = "0";
         slider.max = String(high);
-        slider.value = String((parseFloat(ivalue) - parseFloat(imin)) / parseFloat(stepUnits));
+        slider.value = String((parseFloat(controler.init) - parseFloat(controler.min)) / parseFloat(controler.unit));
         slider.step = "1";
-        slider.addEventListener("input", function (event) {
-            console.log("interface faust");
-            onUpdate(event, module);
-            event.stopPropagation();
-            event.preventDefault();
-        });
-        slider.addEventListener("mousedown", function (e) { e.stopPropagation(); });
-        slider.addEventListener("touchstart", function (e) { e.stopPropagation(); });
-        slider.addEventListener("touchmove", function (e) { e.stopPropagation(); });
-        this.group.appendChild(slider);
-        if (meta != undefined) {
-            for (var i = 0; i < meta.length; i++) {
-                if (meta[i].acc) {
-                    var accSlide = AccelerometerHandler.registerAcceleratedSlider(meta[i].acc, module, groupName, parseFloat(imin), parseFloat(ivalue), parseFloat(imax));
+        controler.slider = slider;
+        //slider.addEventListener("input", function (event) {
+        //    console.log("interface faust");
+        //    onUpdate(event, module)
+        //    event.stopPropagation();
+        //    event.preventDefault();
+        //});
+        //slider.addEventListener("mousedown", (e) => { e.stopPropagation() })
+        //slider.addEventListener("touchstart", (e) => { e.stopPropagation() })
+        //slider.addEventListener("touchmove", (e) => { e.stopPropagation() })
+        group.appendChild(slider);
+        if (controler.meta != undefined) {
+            for (var i = 0; i < controler.meta.length; i++) {
+                if (controler.meta[i].acc) {
+                    var accSlide = AccelerometerHandler.registerAcceleratedSlider(controler.meta[i].acc, module, controler.address, parseFloat(controler.min), parseFloat(controler.init), parseFloat(controler.max));
                     var checkbox = document.createElement("input");
                     checkbox.type = "checkbox";
                     checkbox.checked = true;
@@ -98,15 +127,15 @@ var FaustInterface = (function () {
                     }, false);
                     slider.style.opacity = "0.3";
                     slider.disabled = true;
-                    this.group.appendChild(checkbox);
+                    group.appendChild(checkbox);
                 }
             }
         }
-        module.moduleView.getInterfaceContainer().appendChild(this.group);
+        module.moduleView.getInterfaceContainer().appendChild(group);
         return slider;
     };
     FaustInterface.prototype.addFaustCheckBox = function (module, ivalue, onUpdate) {
-        this.group = document.createElement("div");
+        var group = document.createElement("div");
         var checkbox = document.createElement("input");
         checkbox.type = "checkbox";
         checkbox.checked = false;
@@ -115,22 +144,21 @@ var FaustInterface = (function () {
         var label = document.createElement('label');
         label.htmlFor = "mycheckbox";
         label.appendChild(document.createTextNode(" " + ivalue));
-        this.group.appendChild(checkbox);
-        this.group.appendChild(label);
-        module.moduleView.getInterfaceContainer().appendChild(this.group);
+        group.appendChild(checkbox);
+        group.appendChild(label);
+        module.moduleView.getInterfaceContainer().appendChild(group);
         return checkbox;
     };
     FaustInterface.prototype.addFaustButton = function (module, groupName, label, onUpdate) {
-        this.group = document.createElement("div");
-        this.group.label = groupName;
+        var group = document.createElement("div");
         var button = document.createElement("BUTTON"); // Create a <button> element
         button.onmouseup = function (event) { onUpdate; };
         button.onmousedown = function (event) { onUpdate; };
         var labelText = document.createTextNode(label); // Create a text node
         button.appendChild(labelText);
         // Append the text to <button>
-        this.group.appendChild(button);
-        module.moduleView.getInterfaceContainer().appendChild(this.group);
+        group.appendChild(button);
+        module.moduleView.getInterfaceContainer().appendChild(group);
         return button;
     };
     return FaustInterface;

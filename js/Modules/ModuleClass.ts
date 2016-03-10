@@ -46,6 +46,7 @@ class ModuleClass implements IModule {
     moduleView: ModuleView;
     moduleFaust: ModuleFaust;
     moduleFaustInterface: FaustInterface;
+    moduleControles: Controler[]=[];
     private deleteCallback: (module: ModuleClass, scene: Scene) => void;
     private fModuleInterfaceParams: string[] = [];
     eventDraggingHandler: (event: MouseEvent) => void;
@@ -276,18 +277,16 @@ class ModuleClass implements IModule {
 
     //---- Generic callback for Faust Interface
     //---- Called every time an element of the UI changes value
-    interfaceCallback(event: Event, module: ModuleClass): any {
+    interfaceCallback(event: Event, controler: Controler, module: ModuleClass): any {
 
-        var input: HTMLInputElement = <HTMLInputElement>event.target
-        var groupInput: HTMLinterfaceElement = <HTMLinterfaceElement>input.parentElement;
-        var elementInInterfaceGroup: HTMLElement = <HTMLElement>groupInput.childNodes[0];
-        var text: string = groupInput.label;
+        var input: HTMLInputElement = controler.slider;
+        var text: string = controler.address;
 
 
 
         var val = input.value;
 
-        val = Number((parseFloat(input.value) * parseFloat(elementInInterfaceGroup.getAttribute('step'))) + parseFloat(elementInInterfaceGroup.getAttribute('min'))).toFixed(parseFloat(elementInInterfaceGroup.getAttribute('precision')));
+        val = Number((parseFloat(input.value) * parseFloat(controler.step)) + parseFloat(controler.min)).toFixed(parseFloat(controler.precision));
 
         if (event.type == "mousedown")
             val = "1";
@@ -296,11 +295,11 @@ class ModuleClass implements IModule {
 		
         //---- TODO: yes, this is lazy coding, and fragile. - Historical from Chris Web Audio Playground
         //var output = event.target.parentNode.children[0].children[1];
-        var output: HTMLElement = <HTMLElement>groupInput.getElementsByClassName("value")[0];
+        var output: HTMLElement = controler.output;
 
         //---- update the value text
         if (output)
-            output.innerHTML = "" + val.toString() + " " + output.getAttribute("units");
+            output.textContent = "" + val.toString() + " " + output.getAttribute("units");
 
         if (input.type == "submit")
             val = String(App.buttonVal);

@@ -29,6 +29,7 @@ var ModuleClass = (function () {
         var _this = this;
         this.drag = new Drag();
         this.dragList = [];
+        this.moduleControles = [];
         this.fModuleInterfaceParams = [];
         this.sceneParent = sceneParent;
         var self = this;
@@ -203,23 +204,21 @@ var ModuleClass = (function () {
     };
     //---- Generic callback for Faust Interface
     //---- Called every time an element of the UI changes value
-    ModuleClass.prototype.interfaceCallback = function (event, module) {
-        var input = event.target;
-        var groupInput = input.parentElement;
-        var elementInInterfaceGroup = groupInput.childNodes[0];
-        var text = groupInput.label;
+    ModuleClass.prototype.interfaceCallback = function (event, controler, module) {
+        var input = controler.slider;
+        var text = controler.address;
         var val = input.value;
-        val = Number((parseFloat(input.value) * parseFloat(elementInInterfaceGroup.getAttribute('step'))) + parseFloat(elementInInterfaceGroup.getAttribute('min'))).toFixed(parseFloat(elementInInterfaceGroup.getAttribute('precision')));
+        val = Number((parseFloat(input.value) * parseFloat(controler.step)) + parseFloat(controler.min)).toFixed(parseFloat(controler.precision));
         if (event.type == "mousedown")
             val = "1";
         else if (event.type == "mouseup")
             val = "0";
         //---- TODO: yes, this is lazy coding, and fragile. - Historical from Chris Web Audio Playground
         //var output = event.target.parentNode.children[0].children[1];
-        var output = groupInput.getElementsByClassName("value")[0];
+        var output = controler.output;
         //---- update the value text
         if (output)
-            output.innerHTML = "" + val.toString() + " " + output.getAttribute("units");
+            output.textContent = "" + val.toString() + " " + output.getAttribute("units");
         if (input.type == "submit")
             val = String(App.buttonVal);
         if (App.buttonVal == 0)
