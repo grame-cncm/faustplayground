@@ -282,32 +282,14 @@ class ModuleClass implements IModule {
         var input: HTMLInputElement = controler.slider;
         var text: string = controler.address;
 
+        var val = Number((parseFloat(input.value) * parseFloat(controler.step)) + parseFloat(controler.min)).toFixed(parseFloat(controler.precision));
 
-
-        var val = input.value;
-
-        val = Number((parseFloat(input.value) * parseFloat(controler.step)) + parseFloat(controler.min)).toFixed(parseFloat(controler.precision));
-
-        if (event.type == "mousedown")
-            val = "1";
-        else if (event.type == "mouseup")
-            val = "0";
-		
-        //---- TODO: yes, this is lazy coding, and fragile. - Historical from Chris Web Audio Playground
-        //var output = event.target.parentNode.children[0].children[1];
         var output: HTMLElement = controler.output;
 
         //---- update the value text
         if (output)
-            output.textContent = "" + val.toString() + " " + output.getAttribute("units");
+            output.textContent = "" + val + " " + output.getAttribute("units");
 
-        if (input.type == "submit")
-            val = String(App.buttonVal);
-
-        if (App.buttonVal == 0)
-            App.buttonVal = 1;
-        else
-            App.buttonVal = 0;
 
         // 	Search for DSP then update the value of its parameter.
         module.moduleFaust.fDSP.setValue(text, val);

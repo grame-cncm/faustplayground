@@ -62,6 +62,7 @@ class App {
     static recursiveMap: ModuleTree[];
     static jsonText: string;
     static exportURL: string;
+    static isAccelerometerOn: boolean = false;
     private static currentScene: number;
     private static src: IHTMLDivElementSrc;
     private static out: IHTMLDivElementOut;

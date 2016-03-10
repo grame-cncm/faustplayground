@@ -36,6 +36,9 @@ var MenuView = (function () {
         accButton.id = "accButton";
         accButton.className = "buttonsLittleMenu";
         this.accButton = accButton;
+        if (!App.isAccelerometerOn) {
+            accButton.style.opacity = "0.2";
+        }
         buttonsMenu.appendChild(libraryButtonMenu);
         buttonsMenu.appendChild(exportButtonMenu);
         buttonsMenu.appendChild(helpButtonMenu);

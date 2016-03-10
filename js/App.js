@@ -441,6 +441,7 @@ var App = (function () {
     App.appTest = 0;
     App.idX = 0;
     App.baseImg = "img/";
+    App.isAccelerometerOn = false;
     return App;
 })();
 //# sourceMappingURL=App.js.map

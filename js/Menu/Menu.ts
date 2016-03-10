@@ -27,7 +27,7 @@ class Menu {
     mouseOverLowerMenu: (event: MouseEvent) => void;
     isMenuLow: boolean = false;
     isFullScreen: boolean = false;
-    isAccelerometer: boolean = true;
+    isAccelerometer: boolean = App.isAccelerometerOn;
 
     constructor(htmlContainer: HTMLElement) {
         this.menuView = new MenuView();
@@ -233,8 +233,9 @@ class Menu {
                 var changeEvent = new Event("change")
                 checkbox.dispatchEvent(changeEvent);
                 this.isAccelerometer = false;
+                App.isAccelerometerOn = false;
             }
-            this.menuView.accButton.style.opacity = "0.5";            
+            this.menuView.accButton.style.opacity = "0.2";            
         } else {
             for (var i = 0; i < checkboxs.length; i++) {
                 var checkbox = <HTMLInputElement>checkboxs[i]
@@ -242,6 +243,8 @@ class Menu {
                 var changeEvent = new Event("change")
                 checkbox.dispatchEvent(changeEvent);
                 this.isAccelerometer = true;
+                App.isAccelerometerOn = true;
+
             }    
             this.menuView.accButton.style.opacity = "1";            
         }

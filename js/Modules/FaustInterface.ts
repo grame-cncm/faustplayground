@@ -165,35 +165,32 @@ class FaustInterface {
 	    slider.type="range";
 	    slider.min =  "0";
         slider.max = String(high);
-        slider.value = String((parseFloat(controler.init) - parseFloat(controler.min)) / parseFloat(controler.unit));
+        slider.value = String((parseFloat(controler.init) - parseFloat(controler.min)) / parseFloat(controler.step));
+        //slider.value = String(Number(controler.init).toFixed(precision));
         slider.step = "1";
         controler.slider = slider;
-        //slider.addEventListener("input", function (event) {
-        //    console.log("interface faust");
-        //    onUpdate(event, module)
-        //    event.stopPropagation();
-        //    event.preventDefault();
-        //});
-        //slider.addEventListener("mousedown", (e) => { e.stopPropagation() })
-        //slider.addEventListener("touchstart", (e) => { e.stopPropagation() })
-        //slider.addEventListener("touchmove", (e) => { e.stopPropagation() })
         group.appendChild(slider);
         if (controler.meta != undefined) {
             for (var i = 0; i < controler.meta.length; i++) {
                 if (controler.meta[i].acc) {
 
-                    var accSlide = AccelerometerHandler.registerAcceleratedSlider(controler.meta[i].acc, module, controler.address, parseFloat(controler.min), parseFloat(controler.init), parseFloat(controler.max));
+                    var accSlide = AccelerometerHandler.registerAcceleratedSlider(controler.meta[i].acc, module, controler.address, parseFloat(controler.min), parseFloat(controler.init), parseFloat(controler.max), parseFloat(controler.step), controler.slider, controler.output, parseFloat(controler.precision))
                     var checkbox = document.createElement("input");
                     checkbox.type = "checkbox";
-                    checkbox.checked = true;
+                    if (App.isAccelerometerOn) {
+                        checkbox.checked = true;
+                        slider.style.opacity = "0.3";
+                        slider.disabled = true;
+                    } else {
+                        checkbox.checked = false;
+                    }
                     checkbox.className = "accCheckbox";
                     checkbox.addEventListener("click", (event) => { event.stopPropagation(),false })
                     checkbox.addEventListener("touchstart", (event) => { event.stopPropagation(), false })
                     checkbox.addEventListener("change", (event) => {
                         accSlide.switchActive(event)
                     }, false);
-                    slider.style.opacity = "0.3";
-                    slider.disabled = true;
+
                     group.appendChild(checkbox);
 
                 }

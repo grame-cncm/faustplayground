@@ -19,7 +19,7 @@ var Menu = (function () {
         this.currentMenuChoices = MenuChoices.null;
         this.isMenuLow = false;
         this.isFullScreen = false;
-        this.isAccelerometer = true;
+        this.isAccelerometer = App.isAccelerometerOn;
         this.menuView = new MenuView();
         this.menuView.init(htmlContainer);
         this.menuView.libraryButtonMenu.onclick = function () { _this.menuHandler(_this.menuChoices = MenuChoices.library); };
@@ -211,8 +211,9 @@ var Menu = (function () {
                 var changeEvent = new Event("change");
                 checkbox.dispatchEvent(changeEvent);
                 this.isAccelerometer = false;
+                App.isAccelerometerOn = false;
             }
-            this.menuView.accButton.style.opacity = "0.5";
+            this.menuView.accButton.style.opacity = "0.2";
         }
         else {
             for (var i = 0; i < checkboxs.length; i++) {
@@ -221,6 +222,7 @@ var Menu = (function () {
                 var changeEvent = new Event("change");
                 checkbox.dispatchEvent(changeEvent);
                 this.isAccelerometer = true;
+                App.isAccelerometerOn = true;
             }
             this.menuView.accButton.style.opacity = "1";
         }
