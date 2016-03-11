@@ -158,18 +158,19 @@ var ModuleClass = (function () {
     ModuleClass.prototype.edit = function () {
         this.saveInterfaceParams();
         this.deleteFaustInterface();
-        var textArea = document.createElement("textarea");
-        textArea.rows = 15;
-        textArea.cols = 60;
-        textArea.value = this.moduleFaust.fSource;
-        this.moduleView.fInterfaceContainer.appendChild(textArea);
+        //var textArea: HTMLTextAreaElement = document.createElement("textarea");
+        //textArea.rows = 15;
+        //textArea.cols = 60;
+        this.moduleView.textArea.style.display = "block";
+        this.moduleView.textArea.value = this.moduleFaust.fSource;
+        //textArea.contentEditable = "true";
+        //this.moduleView.fInterfaceContainer.appendChild(textArea);
         //module.moduleView.fEditImg.src = App.baseImg + "enter.png";
         this.moduleView.fEditImg.style.backgroundImage = "url(" + App.baseImg + "enter.png)";
         this.moduleView.fEditImg.addEventListener("click", this.eventCloseEditHandler);
         this.moduleView.fEditImg.addEventListener("touchend", this.eventCloseEditHandler);
         this.moduleView.fEditImg.removeEventListener("click", this.eventOpenEditHandler);
         this.moduleView.fEditImg.removeEventListener("touchend", this.eventOpenEditHandler);
-        this.moduleView.fEditImg.area = textArea;
     };
     //---- Update ModuleClass with new name/code source
     ModuleClass.prototype.update = function (name, code) {
@@ -182,7 +183,8 @@ var ModuleClass = (function () {
     ModuleClass.prototype.recompileSource = function (event, module) {
         App.showFullPageLoading();
         var buttonImage = event.target;
-        var dsp_code = buttonImage.area.value;
+        var dsp_code = this.moduleView.textArea.value;
+        this.moduleView.textArea.style.display = "none";
         module.update(this.moduleView.fTitle.textContent, dsp_code);
         module.recallInterfaceParams();
         module.moduleView.fEditImg.style.backgroundImage = "url(" + App.baseImg + "edit.png)";

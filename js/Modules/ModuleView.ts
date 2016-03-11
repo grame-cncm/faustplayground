@@ -33,6 +33,7 @@ class ModuleView {
     fInputNode: HTMLDivElement;
     fOutputNode: HTMLDivElement;
     contentModule: HTMLElement;
+    textArea: HTMLTextAreaElement;
     x: number;
     y: number;
 
@@ -70,6 +71,20 @@ class ModuleView {
         } else if (name == "output") {
             fModuleContainer.id = "moduleOutput";
         } else {
+            var textArea: HTMLTextAreaElement = document.createElement("textarea");
+            textArea.rows = 15;
+            textArea.cols = 60;
+            textArea.className="textArea"
+            textArea.value = "";
+            textArea.style.display = "none";
+            textArea.contentEditable = "true";
+            this.textArea = textArea;
+            this.textArea.addEventListener("touchstart", (e) => { e.stopPropagation() });
+            this.textArea.addEventListener("touchend", (e) => { e.stopPropagation() });
+            this.textArea.addEventListener("touchmove", (e) => { e.stopPropagation() });
+            this.textArea.addEventListener("mousedown", (e) => { e.stopPropagation() });
+            fModuleContainer.appendChild(textArea);
+
             var fFooter: HTMLElement = document.createElement("footer");
             fFooter.id = "moduleFooter";
             fModuleContainer.id = "module" + ID;
@@ -87,6 +102,8 @@ class ModuleView {
             this.fEditImg = fEditImg;
             fFooter.appendChild(fEditImg);
             fModuleContainer.appendChild(fFooter);
+
+
 
         }
         

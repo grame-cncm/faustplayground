@@ -396,7 +396,7 @@ footer>img {
 
 /* Control group */
 .control-group {
-	margin: 0 0 1.2em;
+	margin: 0 0 0.2em;
 }
 .control-group.last {
 	margin: 0;
@@ -519,5 +519,9 @@ input[type=range]::-moz-range-thumb {
 	cursor: pointer;
 	border-radius: 40px;
     border-style:hidden;
+}
+input.accCheckbox {
+    width: 1em;
+    height: 1em;
 }
 

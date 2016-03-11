@@ -44,6 +44,19 @@ var ModuleView = (function () {
             fModuleContainer.id = "moduleOutput";
         }
         else {
+            var textArea = document.createElement("textarea");
+            textArea.rows = 15;
+            textArea.cols = 60;
+            textArea.className = "textArea";
+            textArea.value = "";
+            textArea.style.display = "none";
+            textArea.contentEditable = "true";
+            this.textArea = textArea;
+            this.textArea.addEventListener("touchstart", function (e) { e.stopPropagation(); });
+            this.textArea.addEventListener("touchend", function (e) { e.stopPropagation(); });
+            this.textArea.addEventListener("touchmove", function (e) { e.stopPropagation(); });
+            this.textArea.addEventListener("mousedown", function (e) { e.stopPropagation(); });
+            fModuleContainer.appendChild(textArea);
             var fFooter = document.createElement("footer");
             fFooter.id = "moduleFooter";
             fModuleContainer.id = "module" + ID;

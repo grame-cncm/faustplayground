@@ -216,11 +216,13 @@ class ModuleClass implements IModule {
 
         this.deleteFaustInterface();
 
-        var textArea: HTMLTextAreaElement = document.createElement("textarea");
-        textArea.rows = 15;
-        textArea.cols = 60;
-        textArea.value = this.moduleFaust.fSource;
-        this.moduleView.fInterfaceContainer.appendChild(textArea);
+        //var textArea: HTMLTextAreaElement = document.createElement("textarea");
+        //textArea.rows = 15;
+        //textArea.cols = 60;
+        this.moduleView.textArea.style.display = "block";
+        this.moduleView.textArea.value = this.moduleFaust.fSource;
+        //textArea.contentEditable = "true";
+        //this.moduleView.fInterfaceContainer.appendChild(textArea);
 
         //module.moduleView.fEditImg.src = App.baseImg + "enter.png";
         this.moduleView.fEditImg.style.backgroundImage = "url(" + App.baseImg + "enter.png)";
@@ -228,7 +230,7 @@ class ModuleClass implements IModule {
         this.moduleView.fEditImg.addEventListener("touchend", this.eventCloseEditHandler);
         this.moduleView.fEditImg.removeEventListener("click", this.eventOpenEditHandler);
         this.moduleView.fEditImg.removeEventListener("touchend", this.eventOpenEditHandler);
-        this.moduleView.fEditImg.area = textArea;
+
     }
 
     //---- Update ModuleClass with new name/code source
@@ -245,7 +247,8 @@ class ModuleClass implements IModule {
     private recompileSource(event: MouseEvent, module: ModuleClass): void {
         App.showFullPageLoading();
         var buttonImage: HTMLfEdit = <HTMLfEdit>event.target;
-        var dsp_code: string = buttonImage.area.value;
+        var dsp_code: string = this.moduleView.textArea.value;
+        this.moduleView.textArea.style.display = "none";
 
         module.update(this.moduleView.fTitle.textContent, dsp_code);
         module.recallInterfaceParams();
