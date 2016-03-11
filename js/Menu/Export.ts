@@ -107,7 +107,13 @@ class Export{
     }	
     setDefaultSelect() {
         var platefromSelect: HTMLSelectElement = <HTMLSelectElement>document.getElementById("platforms");
-        platefromSelect.selectedIndex = 3;
+        var options = platefromSelect.options
+        for (var i = 0; i < options.length; i++){
+            if (options[i].text == "android") {
+                platefromSelect.selectedIndex = i;
+            }
+        }
+        
     }
 
     /******************************************************************** 

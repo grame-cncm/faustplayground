@@ -127,7 +127,12 @@ var Export = (function () {
     };
     Export.prototype.setDefaultSelect = function () {
         var platefromSelect = document.getElementById("platforms");
-        platefromSelect.selectedIndex = 3;
+        var options = platefromSelect.options;
+        for (var i = 0; i < options.length; i++) {
+            if (options[i].text == "android") {
+                platefromSelect.selectedIndex = i;
+            }
+        }
     };
     /********************************************************************
     *********************  HANDLE POST TO FAUST WEB  ********************
