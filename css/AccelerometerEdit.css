@@ -1,0 +1,122 @@
+﻿div#accBlockLayer {
+    position: absolute;
+    display: block;
+    width: 100%;
+    background: -moz-linear-gradient(top, rgba(0, 137, 255, 0.80) 0%, rgba(108, 50, 255, 0.92) 100%);
+    background: -webkit-linear-gradient(top, rgba(0, 137, 255, 0.80) 0%,rgba(108, 50, 255, 0.92) 100%);
+    background: linear-gradient(to bottom, rgba(0, 137, 255, 0.80) 0%,rgba(108, 50, 255, 0.92) 100%);
+}
+
+form#radioAxisContainer {
+    position:relative;
+    width: 50%;
+    margin: 0 auto;
+}
+
+input.radio {
+    width: 33%;
+    height: 1.3em;
+}
+input.curve {
+    width:25%;
+}
+div#rangeContainer {
+    /* top: 400px; */
+    position: relative;
+    width: 80%;
+    margin: 0 auto;
+    /* margin-top: 50%; */
+}
+
+input.accRange {
+    position:absolute;
+}
+
+#rangeContainer > [type="range"]::-webkit-slider-thumb {
+    background: url("../img/slider_chrome.png");
+    box-shadow:none;
+    background-repeat: no-repeat;
+    background-position: center;
+	-webkit-appearance: none;
+	position: relative;
+	top: -18px;
+	height: 34px;
+    width: 28px;
+	border-radius: 0px;
+}
+
+[type="range"]#accRangeVirtual::-webkit-slider-thumb {
+    background:red!important;
+    border-radius:20px;
+    top: 0px!important;
+    height: 28px!important;
+}
+[type="range"]#accRangeCurrent::-webkit-slider-thumb {
+    background:red!important;
+    border-radius:20px;
+    top: 0px!important;
+    height: 28px!important;
+}
+#rangeContainer > input[type="range"] {
+	-webkit-appearance: none;
+    cursor:pointer;
+	background-color: #303030;
+	height: 2px;
+	display: block;
+	margin-top: 1px;
+	margin-bottom: 15px;
+	width: 100%;
+}
+#rangeContainer > [type="range"]::-moz-range-thumb{
+    background: url("../img/slider.png");
+    box-shadow:none;
+    background-repeat: no-repeat;
+    background-position: center;
+	-webkit-appearance: none;
+	position: relative;
+	height: 72px;
+    width: 28px;
+	border-radius: 0px;
+}
+[type="range"]#accRangeVirtual::-moz-range-thumb {
+    background:red!important;
+    border-radius:20px;
+    top: 0px!important;
+    height: 28px!important;
+}
+[type="range"]#accRangeCurrent::-moz-range-thumb {
+    background:red!important;
+    border-radius:20px;
+    top: 0px!important;
+    height: 28px!important;
+}
+#rangeContainer > input[type=range]::-moz-range-track {
+	-webkit-appearance: none;
+    cursor:pointer;
+	background-color: #303030;
+	height: 2px;
+	display: block;
+	margin-top: 1px;
+	margin-bottom: 15px;
+	width: 100%;
+}
+
+div#validContainer {
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+}
+button.accButton {
+    height: 5em;
+    width: 50%;
+    border: none;
+}
+button#cancelButton {
+    background: url(../img/cancel_white.png)no-repeat 50%;
+    background-size: contain;
+
+}
+button#validButton {
+    background: url(../img/validate_white.png)no-repeat 50%;
+    background-size: contain;
+}
