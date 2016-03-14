@@ -397,6 +397,8 @@ footer>img {
 /* Control group */
 .control-group {
 	margin: 0 0 0.2em;
+    width:100%;
+    display:table;
 }
 .control-group.last {
 	margin: 0;
@@ -481,6 +483,7 @@ footer>img {
 
 input[type="range"] {
 	-webkit-appearance: none;
+    cursor:pointer;
 	background-color: #303030;
 	height: 2px;
 	display: block;
@@ -489,7 +492,8 @@ input[type="range"] {
 	width: 100%;
 }
 input[type=range]::-moz-range-track {
-    	background-color: #303030;
+    background-color: #303030;
+    cursor:pointer;
 	height: 1px;
     border-style:none;
 	display: block;
@@ -498,30 +502,60 @@ input[type=range]::-moz-range-track {
 	width: 100%;
 }
 input[type="range"]::-webkit-slider-thumb {
-    background-color: rgb(255, 0, 50);
+    background-color: #4C4C4C;
     box-shadow: 0px 4px 5px rgba(0, 0, 0, 0.61);
 	-webkit-appearance: none;
 	position: relative;
 	top: 0px;
 	height: 20px;
     width: 20px;
-	cursor: pointer;
 	border-radius: 40px;
 }
 
+.x > input[type="range"]::-webkit-slider-thumb {
+    background-color: #ff002f;
+}
+.y > input[type="range"]::-webkit-slider-thumb {
+    background-color: #24d711;
+}
+.z > input[type="range"]::-webkit-slider-thumb {
+    background-color: #0044ff;
+}
+
 input[type=range]::-moz-range-thumb {
-    background-color: rgb(255, 0, 50);
+    background-color: #4C4C4C;
     box-shadow: 0px 4px 5px rgba(0, 0, 0, 0.61);
 	position: relative;
 	top: 0px;
 	height: 20px;
     width: 20px;
-	cursor: pointer;
 	border-radius: 40px;
     border-style:hidden;
 }
+.x > input[type="range"]::-moz-range-thumb {
+    background-color: #ff002f;
+}
+.y > input[type="range"]::-moz-range-thumb {
+    background-color: #24d711;
+}
+.z > input[type="range"]::-moz-range-thumb {
+    background-color: #0044ff;
+}
+
 input.accCheckbox {
+    display:block;
     width: 1em;
     height: 1em;
+    float: left;
+    margin-right: 0.3em;
 }
+
+span.titleAcc {
+    font-size: 0.7em;
+    line-height: 1.5em;
+    display: block;
+    float: left;
+    margin-right: 0.3em;
+}
+
 

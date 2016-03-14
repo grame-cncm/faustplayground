@@ -47,7 +47,7 @@ class ExportView {
 
         var rulesName: HTMLSpanElement = document.createElement("span");
         rulesName.id = "rulesName";
-        rulesName.textContent = "Seul les lettres de l'alphabet et les nombres sont acceptés. Les espaces, les apostrophes et les accents sont automatiquement remplacés. Le nom ne peut commencer par un nombre, il doit comporter entre 1 et 50 caractères.";
+        rulesName.textContent = "Seules les lettres de l'alphabet et les nombres sont acceptés. Les espaces, les apostrophes et les accents sont automatiquement remplacés. Le nom ne peut pas commencer par un nombre ; il doit comporter entre 1 et 50 caractères.";
         this.rulesName = rulesName;
 
         var input: HTMLInputElement = document.createElement("input");

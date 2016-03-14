@@ -25,20 +25,6 @@ var AccelerometerSlider = (function () {
         this.amid = parseInt(arrayMeta[3]);
         this.amax = parseInt(arrayMeta[4]);
     };
-    AccelerometerSlider.prototype.switchActive = function (event) {
-        var checkBox = event.target;
-        this.isActive = checkBox.checked;
-        var range = this.mySlider;
-        if (this.isActive) {
-            range.disabled = true;
-            range.style.opacity = "0.3";
-        }
-        else {
-            range.disabled = false;
-            range.style.opacity = "1";
-            range.value = String((parseFloat(this.module.moduleFaust.fDSP.getValue(this.label)) - this.min) / this.step);
-        }
-    };
     return AccelerometerSlider;
 })();
 var AccelerometerHandler = (function () {
@@ -65,7 +51,6 @@ var AccelerometerHandler = (function () {
                 this.axisSplitter(AccelerometerHandler.accelerometerSliders[i], x, y, z);
             }
         }
-        console.log(x + " " + y + " " + z);
     };
     AccelerometerHandler.registerAcceleratedSlider = function (fMetaAcc, module, label, min, ivalue, max, step, slider, valueOutput, precision) {
         var accelerometerSlide = new AccelerometerSlider(fMetaAcc);
@@ -81,6 +66,7 @@ var AccelerometerHandler = (function () {
         accelerometerSlide.precision = precision;
         AccelerometerHandler.curveSplitter(accelerometerSlide);
         AccelerometerHandler.accelerometerSliders.push(accelerometerSlide);
+        accelerometerSlide.mySlider.parentElement.classList.add(Axis[accelerometerSlide.axis]);
         return accelerometerSlide;
     };
     AccelerometerHandler.prototype.axisSplitter = function (accelerometerSlide, x, y, z) {

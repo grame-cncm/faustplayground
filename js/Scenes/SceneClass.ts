@@ -31,6 +31,8 @@ class Scene {
     sceneView: SceneView;
     static sceneName: string = "Patch";
     isInitLoading: boolean = true;
+    eventEditAcc: (event: Event) => void;
+
     
 
 

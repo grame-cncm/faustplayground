@@ -5,6 +5,7 @@ class MenuView {
     libraryButtonMenu: HTMLElement;
     exportButtonMenu: HTMLElement;
     helpButtonMenu: HTMLElement;
+    editButtonMenu: HTMLElement;
     fullScreenButton: HTMLElement;
     accButton: HTMLElement;
     libraryContent: HTMLElement;
@@ -18,6 +19,7 @@ class MenuView {
     libraryView: LibraryView;
     exportView: ExportView;
     helpView: HelpView;
+    accEditView: AccelerometerEditView;
     menuColorDefault: string = "rgba(227, 64, 80, 0.73)";
     menuColorSelected: string = "rgb(209, 64, 80)";
 
@@ -49,6 +51,12 @@ class MenuView {
         helpButtonMenu.appendChild(document.createTextNode("Aide"));
         this.helpButtonMenu = helpButtonMenu;
 
+        var editButtonMenu: HTMLElement = document.createElement("div");
+        editButtonMenu.id = "EditButtonMenu";
+        editButtonMenu.className = "buttonsMenu";
+        editButtonMenu.appendChild(document.createTextNode("Editer"));
+        this.editButtonMenu = editButtonMenu;
+
         var fullScreenButton: HTMLElement = document.createElement("div");
         fullScreenButton.id = "fullScreenButton";
         fullScreenButton.className = "buttonsLittleMenu";
@@ -65,6 +73,7 @@ class MenuView {
         }
 
         buttonsMenu.appendChild(libraryButtonMenu);
+        buttonsMenu.appendChild(editButtonMenu);
         buttonsMenu.appendChild(exportButtonMenu);
         buttonsMenu.appendChild(helpButtonMenu);
         buttonsMenu.appendChild(fullScreenButton);
@@ -108,6 +117,13 @@ class MenuView {
         helpContent.style.display = "none";
         this.helpView = helpView;
 
+        var accEditView: AccelerometerEditView = new AccelerometerEditView();
+        var accEditContent = accEditView.initAccelerometerEdit();
+        accEditContent.style.display = "none";
+        this.accEditView = accEditView;
+
+
+
         contentsMenu.appendChild(CloseButtonContainer);
         contentsMenu.appendChild(libraryContent);
         contentsMenu.appendChild(exportContent);
@@ -115,6 +131,8 @@ class MenuView {
 
         menuContainer.appendChild(buttonsMenu);
         menuContainer.appendChild(contentsMenu);
+        menuContainer.appendChild(accEditContent);
+
 
         htmlContainer.appendChild(menuContainer);
         this.HTMLElementsMenu.push(libraryContent, exportContent, helpContent)

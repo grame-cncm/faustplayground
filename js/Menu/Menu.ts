@@ -15,14 +15,16 @@ interface HTMLElement {
     mozRequestFullScreen: () => any;
 }
 
-enum MenuChoices { library, export, help, kids, null }
+enum MenuChoices { library, export, help, kids,edit, null }
 
 class Menu {
+    sceneCurrent: Scene;
     menuChoices: MenuChoices;
     currentMenuChoices: MenuChoices = MenuChoices.null;
     menuView: MenuView;
     library: Library;
     expor: Export;
+    accEdit: AccelerometerEdit;
     help: Help;
     mouseOverLowerMenu: (event: MouseEvent) => void;
     isMenuLow: boolean = false;
@@ -35,6 +37,7 @@ class Menu {
         this.menuView.libraryButtonMenu.onclick = () => { this.menuHandler(this.menuChoices = MenuChoices.library) };
         this.menuView.exportButtonMenu.onclick = () => { this.menuHandler(this.menuChoices = MenuChoices.export) };
         this.menuView.helpButtonMenu.onclick = () => { this.menuHandler(this.menuChoices = MenuChoices.help) };
+        this.menuView.editButtonMenu.onclick = () => { this.menuHandler(this.menuChoices = MenuChoices.edit) };
         this.menuView.closeButton.onclick = () => { this.menuHandler(this.menuChoices = MenuChoices.null) };
         this.menuView.fullScreenButton.addEventListener("click", () => { this.fullScreen() });
         this.menuView.accButton.addEventListener("click", () => { this.accelerometer() });
@@ -49,6 +52,8 @@ class Menu {
         this.help.helpView = this.menuView.helpView;
         this.menuView.exportView.inputNameApp.onchange = (e) => { this.updatePatchNameToInput(e) }
         this.mouseOverLowerMenu = (event: MouseEvent) => { this.raiseLibraryMenuEvent(event) }
+        this.accEdit = new AccelerometerEdit(this.menuView.accEditView);
+        //this.accEdit.accelerometerEditView = this.menuView.accEditView
 
     }
 
@@ -65,16 +70,19 @@ class Menu {
             case MenuChoices.help:
                 this.helpMenu();
                 break;
+            case MenuChoices.edit:
+                this.editMenu();
+                break;
             case MenuChoices.null:
-                this.closeMenu();
                 this.cleanMenu();
+                this.closeMenu();
                 break;
         }
     }
 
     libraryMenu() {
         switch (this.currentMenuChoices) {
-            case MenuChoices.null:
+            case MenuChoices.null:// case MenuChoices.edit:
                 this.menuView.contentsMenu.style.display = "block";
                 this.menuView.libraryContent.style.display = "block";
                 this.currentMenuChoices = MenuChoices.library;
@@ -103,7 +111,7 @@ class Menu {
     }
     exportMenu() {
         switch (this.currentMenuChoices) {
-            case MenuChoices.null:
+            case MenuChoices.null:// case MenuChoices.edit:
                 this.menuView.contentsMenu.style.display = "block";
                 this.menuView.exportContent.style.display = "inline-table";
                 this.currentMenuChoices = MenuChoices.export;
@@ -132,7 +140,7 @@ class Menu {
     }
     helpMenu() {
         switch (this.currentMenuChoices) {
-            case MenuChoices.null:
+            case MenuChoices.null: //case MenuChoices.edit:
                 this.menuView.contentsMenu.style.display = "block";
                 this.menuView.helpContent.style.display = "block";
                 this.menuView.helpButtonMenu.style.backgroundColor = this.menuView.menuColorSelected;
@@ -159,6 +167,36 @@ class Menu {
                 break;
         }
     }
+    editMenu() {
+        switch (this.currentMenuChoices) {
+            case MenuChoices.null:
+                this.menuView.editButtonMenu.style.backgroundColor = "#00C50D";
+                this.menuView.editButtonMenu.style.boxShadow = "yellow 0px 0px 51px inset";
+
+                this.accEdit.editAction(this.sceneCurrent);
+                this.currentMenuChoices = MenuChoices.edit;
+                break;
+            case MenuChoices.edit:
+                this.accEdit.editAction(this.sceneCurrent);
+
+                this.menuView.editButtonMenu.style.backgroundColor = this.menuView.menuColorDefault;
+                this.menuView.editButtonMenu.style.boxShadow = "none";
+
+                this.menuView.contentsMenu.style.display = "none";
+                this.currentMenuChoices = MenuChoices.null;
+
+                break;
+            default:
+                this.cleanMenu();
+                this.menuView.editButtonMenu.style.backgroundColor = "#00C50D";
+                this.menuView.editButtonMenu.style.boxShadow = "yellow 0px 0px 51px inset";
+                this.accEdit.editAction(this.sceneCurrent);
+                this.menuView.contentsMenu.style.display = "none";
+
+                this.currentMenuChoices = MenuChoices.edit;
+                break;
+        }
+    }
     closeMenu() {
         for (var i = 0; i < this.menuView.HTMLElementsMenu.length; i++) {
             this.menuView.HTMLElementsMenu[i].style.display = "none";
@@ -168,6 +206,14 @@ class Menu {
         this.currentMenuChoices = MenuChoices.null;
     }
     cleanMenu() {
+        if (this.accEdit.isOn) {
+            this.accEdit.editAction(this.sceneCurrent)
+            this.menuView.editButtonMenu.style.backgroundColor = this.menuView.menuColorDefault;
+            this.menuView.editButtonMenu.style.boxShadow = "none";
+            this.menuView.contentsMenu.style.display = "block";
+
+
+        }
         for (var i = 0; i < this.menuView.HTMLElementsMenu.length; i++) {
             this.menuView.HTMLElementsMenu[i].style.display = "none";
         }
@@ -227,21 +273,21 @@ class Menu {
     accelerometer() {
         var checkboxs = document.getElementsByClassName("accCheckbox")
         if (this.isAccelerometer) {
-            for (var i = 0; i < checkboxs.length; i++) {
-                var checkbox = <HTMLInputElement>checkboxs[i]
-                checkbox.checked = false;
-                var changeEvent = new Event("change")
-                checkbox.dispatchEvent(changeEvent);
+            for (var i = 0; i < AccelerometerHandler.accelerometerSliders.length; i++) {
+                AccelerometerHandler.accelerometerSliders[i].isActive = false;
+                AccelerometerHandler.accelerometerSliders[i].mySlider.style.opacity = "1";
+                AccelerometerHandler.accelerometerSliders[i].mySlider.style.cursor = "pointer";
+                AccelerometerHandler.accelerometerSliders[i].mySlider.disabled = false;
                 this.isAccelerometer = false;
                 App.isAccelerometerOn = false;
             }
             this.menuView.accButton.style.opacity = "0.2";            
         } else {
-            for (var i = 0; i < checkboxs.length; i++) {
-                var checkbox = <HTMLInputElement>checkboxs[i]
-                checkbox.checked = true;
-                var changeEvent = new Event("change")
-                checkbox.dispatchEvent(changeEvent);
+            for (var i = 0; i < AccelerometerHandler.accelerometerSliders.length; i++) {
+                AccelerometerHandler.accelerometerSliders[i].isActive = true;
+                AccelerometerHandler.accelerometerSliders[i].mySlider.style.opacity = "0.5";
+                AccelerometerHandler.accelerometerSliders[i].mySlider.style.cursor = "not-allowed";
+                AccelerometerHandler.accelerometerSliders[i].mySlider.disabled = true;
                 this.isAccelerometer = true;
                 App.isAccelerometerOn = true;
 

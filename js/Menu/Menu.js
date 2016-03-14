@@ -11,7 +11,8 @@ var MenuChoices;
     MenuChoices[MenuChoices["export"] = 1] = "export";
     MenuChoices[MenuChoices["help"] = 2] = "help";
     MenuChoices[MenuChoices["kids"] = 3] = "kids";
-    MenuChoices[MenuChoices["null"] = 4] = "null";
+    MenuChoices[MenuChoices["edit"] = 4] = "edit";
+    MenuChoices[MenuChoices["null"] = 5] = "null";
 })(MenuChoices || (MenuChoices = {}));
 var Menu = (function () {
     function Menu(htmlContainer) {
@@ -25,6 +26,7 @@ var Menu = (function () {
         this.menuView.libraryButtonMenu.onclick = function () { _this.menuHandler(_this.menuChoices = MenuChoices.library); };
         this.menuView.exportButtonMenu.onclick = function () { _this.menuHandler(_this.menuChoices = MenuChoices.export); };
         this.menuView.helpButtonMenu.onclick = function () { _this.menuHandler(_this.menuChoices = MenuChoices.help); };
+        this.menuView.editButtonMenu.onclick = function () { _this.menuHandler(_this.menuChoices = MenuChoices.edit); };
         this.menuView.closeButton.onclick = function () { _this.menuHandler(_this.menuChoices = MenuChoices.null); };
         this.menuView.fullScreenButton.addEventListener("click", function () { _this.fullScreen(); });
         this.menuView.accButton.addEventListener("click", function () { _this.accelerometer(); });
@@ -39,6 +41,8 @@ var Menu = (function () {
         this.help.helpView = this.menuView.helpView;
         this.menuView.exportView.inputNameApp.onchange = function (e) { _this.updatePatchNameToInput(e); };
         this.mouseOverLowerMenu = function (event) { _this.raiseLibraryMenuEvent(event); };
+        this.accEdit = new AccelerometerEdit(this.menuView.accEditView);
+        //this.accEdit.accelerometerEditView = this.menuView.accEditView
     }
     Menu.prototype.menuHandler = function (menuChoises) {
         this.help.stopVideo();
@@ -52,9 +56,12 @@ var Menu = (function () {
             case MenuChoices.help:
                 this.helpMenu();
                 break;
+            case MenuChoices.edit:
+                this.editMenu();
+                break;
             case MenuChoices.null:
-                this.closeMenu();
                 this.cleanMenu();
+                this.closeMenu();
                 break;
         }
     };
@@ -135,6 +142,31 @@ var Menu = (function () {
                 break;
         }
     };
+    Menu.prototype.editMenu = function () {
+        switch (this.currentMenuChoices) {
+            case MenuChoices.null:
+                this.menuView.editButtonMenu.style.backgroundColor = "#00C50D";
+                this.menuView.editButtonMenu.style.boxShadow = "yellow 0px 0px 51px inset";
+                this.accEdit.editAction(this.sceneCurrent);
+                this.currentMenuChoices = MenuChoices.edit;
+                break;
+            case MenuChoices.edit:
+                this.accEdit.editAction(this.sceneCurrent);
+                this.menuView.editButtonMenu.style.backgroundColor = this.menuView.menuColorDefault;
+                this.menuView.editButtonMenu.style.boxShadow = "none";
+                this.menuView.contentsMenu.style.display = "none";
+                this.currentMenuChoices = MenuChoices.null;
+                break;
+            default:
+                this.cleanMenu();
+                this.menuView.editButtonMenu.style.backgroundColor = "#00C50D";
+                this.menuView.editButtonMenu.style.boxShadow = "yellow 0px 0px 51px inset";
+                this.accEdit.editAction(this.sceneCurrent);
+                this.menuView.contentsMenu.style.display = "none";
+                this.currentMenuChoices = MenuChoices.edit;
+                break;
+        }
+    };
     Menu.prototype.closeMenu = function () {
         for (var i = 0; i < this.menuView.HTMLElementsMenu.length; i++) {
             this.menuView.HTMLElementsMenu[i].style.display = "none";
@@ -144,6 +176,12 @@ var Menu = (function () {
         this.currentMenuChoices = MenuChoices.null;
     };
     Menu.prototype.cleanMenu = function () {
+        if (this.accEdit.isOn) {
+            this.accEdit.editAction(this.sceneCurrent);
+            this.menuView.editButtonMenu.style.backgroundColor = this.menuView.menuColorDefault;
+            this.menuView.editButtonMenu.style.boxShadow = "none";
+            this.menuView.contentsMenu.style.display = "block";
+        }
         for (var i = 0; i < this.menuView.HTMLElementsMenu.length; i++) {
             this.menuView.HTMLElementsMenu[i].style.display = "none";
         }
@@ -205,22 +243,22 @@ var Menu = (function () {
     Menu.prototype.accelerometer = function () {
         var checkboxs = document.getElementsByClassName("accCheckbox");
         if (this.isAccelerometer) {
-            for (var i = 0; i < checkboxs.length; i++) {
-                var checkbox = checkboxs[i];
-                checkbox.checked = false;
-                var changeEvent = new Event("change");
-                checkbox.dispatchEvent(changeEvent);
+            for (var i = 0; i < AccelerometerHandler.accelerometerSliders.length; i++) {
+                AccelerometerHandler.accelerometerSliders[i].isActive = false;
+                AccelerometerHandler.accelerometerSliders[i].mySlider.style.opacity = "1";
+                AccelerometerHandler.accelerometerSliders[i].mySlider.style.cursor = "pointer";
+                AccelerometerHandler.accelerometerSliders[i].mySlider.disabled = false;
                 this.isAccelerometer = false;
                 App.isAccelerometerOn = false;
             }
             this.menuView.accButton.style.opacity = "0.2";
         }
         else {
-            for (var i = 0; i < checkboxs.length; i++) {
-                var checkbox = checkboxs[i];
-                checkbox.checked = true;
-                var changeEvent = new Event("change");
-                checkbox.dispatchEvent(changeEvent);
+            for (var i = 0; i < AccelerometerHandler.accelerometerSliders.length; i++) {
+                AccelerometerHandler.accelerometerSliders[i].isActive = true;
+                AccelerometerHandler.accelerometerSliders[i].mySlider.style.opacity = "0.5";
+                AccelerometerHandler.accelerometerSliders[i].mySlider.style.cursor = "not-allowed";
+                AccelerometerHandler.accelerometerSliders[i].mySlider.disabled = true;
                 this.isAccelerometer = true;
                 App.isAccelerometerOn = true;
             }

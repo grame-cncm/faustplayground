@@ -28,6 +28,11 @@ var MenuView = (function () {
         helpButtonMenu.className = "buttonsMenu";
         helpButtonMenu.appendChild(document.createTextNode("Aide"));
         this.helpButtonMenu = helpButtonMenu;
+        var editButtonMenu = document.createElement("div");
+        editButtonMenu.id = "EditButtonMenu";
+        editButtonMenu.className = "buttonsMenu";
+        editButtonMenu.appendChild(document.createTextNode("Editer"));
+        this.editButtonMenu = editButtonMenu;
         var fullScreenButton = document.createElement("div");
         fullScreenButton.id = "fullScreenButton";
         fullScreenButton.className = "buttonsLittleMenu";
@@ -40,6 +45,7 @@ var MenuView = (function () {
             accButton.style.opacity = "0.2";
         }
         buttonsMenu.appendChild(libraryButtonMenu);
+        buttonsMenu.appendChild(editButtonMenu);
         buttonsMenu.appendChild(exportButtonMenu);
         buttonsMenu.appendChild(helpButtonMenu);
         buttonsMenu.appendChild(fullScreenButton);
@@ -73,12 +79,17 @@ var MenuView = (function () {
         var helpContent = helpView.initHelpView();
         helpContent.style.display = "none";
         this.helpView = helpView;
+        var accEditView = new AccelerometerEditView();
+        var accEditContent = accEditView.initAccelerometerEdit();
+        accEditContent.style.display = "none";
+        this.accEditView = accEditView;
         contentsMenu.appendChild(CloseButtonContainer);
         contentsMenu.appendChild(libraryContent);
         contentsMenu.appendChild(exportContent);
         contentsMenu.appendChild(helpContent);
         menuContainer.appendChild(buttonsMenu);
         menuContainer.appendChild(contentsMenu);
+        menuContainer.appendChild(accEditContent);
         htmlContainer.appendChild(menuContainer);
         this.HTMLElementsMenu.push(libraryContent, exportContent, helpContent);
         this.libraryContent = libraryContent;

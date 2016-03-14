@@ -62,6 +62,7 @@ var App = (function () {
     App.prototype.createMenu = function () {
         var _this = this;
         this.menu = new Menu(document.getElementsByTagName('body')[0]);
+        this.menu.sceneCurrent = App.scene;
         App.scene.getSceneContainer().onmousedown = function () {
             _this.menu.menuChoices = MenuChoices.null;
             _this.menu.menuHandler(_this.menu.menuChoices);

@@ -33,7 +33,7 @@ interface Iitem{
     slider: HTMLInputElement;
     output: HTMLElement
     precision: string;
-
+    hasAccelerometer: boolean;
 }
 interface FaustMeta {
     acc: string;
@@ -52,6 +52,7 @@ class Controler implements Iitem {
     slider: HTMLInputElement;
     output: HTMLElement
     precision: string;
+    hasAccelerometer: boolean;
 
 }
 class FaustInterface {
@@ -173,25 +174,35 @@ class FaustInterface {
         if (controler.meta != undefined) {
             for (var i = 0; i < controler.meta.length; i++) {
                 if (controler.meta[i].acc) {
-
+                    controler.hasAccelerometer = true;
                     var accSlide = AccelerometerHandler.registerAcceleratedSlider(controler.meta[i].acc, module, controler.address, parseFloat(controler.min), parseFloat(controler.init), parseFloat(controler.max), parseFloat(controler.step), controler.slider, controler.output, parseFloat(controler.precision))
-                    var checkbox = document.createElement("input");
-                    checkbox.type = "checkbox";
+                    //var checkbox = document.createElement("input");
+                    //checkbox.type = "checkbox";
                     if (App.isAccelerometerOn) {
-                        checkbox.checked = true;
+
                         slider.style.opacity = "0.3";
                         slider.disabled = true;
-                    } else {
-                        checkbox.checked = false;
-                    }
-                    checkbox.className = "accCheckbox";
-                    checkbox.addEventListener("click", (event) => { event.stopPropagation(),false })
-                    checkbox.addEventListener("touchstart", (event) => { event.stopPropagation(), false })
-                    checkbox.addEventListener("change", (event) => {
-                        accSlide.switchActive(event)
-                    }, false);
+                    } 
+                    //checkbox.className = "accCheckbox";
+                    //checkbox.addEventListener("click", (event) => { event.stopPropagation(),false })
+                    //checkbox.addEventListener("touchstart", (event) => { event.stopPropagation(), false })
+                    //checkbox.addEventListener("change", (event) => {
+                    //    accSlide.switchActive(event)
+                    //}, false);
 
-                    group.appendChild(checkbox);
+                    //var titleAcc = document.createElement("span")
+                    //titleAcc.className = "titleAcc";
+                    //titleAcc.textContent = "Accelerometre";
+
+                    //var editAcc = document.createElement("button");
+                    //editAcc.type = "button";
+                    //editAcc.className = "accButton";
+                    //editAcc.textContent = "edite";
+                    //editAcc.addEventListener("click", module.sceneParent.eventEditAcc)
+
+                    //group.appendChild(checkbox);
+                    //group.appendChild(titleAcc);
+                    //group.appendChild(editAcc);
 
                 }
             }

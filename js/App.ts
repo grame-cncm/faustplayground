@@ -104,6 +104,7 @@ class App {
 
     createMenu(): void {
         this.menu = new Menu(document.getElementsByTagName('body')[0])
+        this.menu.sceneCurrent = App.scene
         App.scene.getSceneContainer().onmousedown = () => {
             this.menu.menuChoices = MenuChoices.null
             this.menu.menuHandler(this.menu.menuChoices)
@@ -537,9 +538,6 @@ class App {
         } else {
             document.getElementsByTagName("html")[0].style.height = "100%";
             document.getElementById("svgCanvas").style.height = "100%";
-        }
-
-       
-        
+        } 
     }
 }

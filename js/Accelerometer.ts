@@ -36,19 +36,6 @@ class AccelerometerSlider {
         this.amid = parseInt(arrayMeta[3]);
         this.amax = parseInt(arrayMeta[4]);
     }
-    switchActive(event: Event) {
-        var checkBox = <HTMLInputElement>event.target;
-        this.isActive = checkBox.checked;
-        var range = this.mySlider;
-        if (this.isActive) {
-            range.disabled = true;
-            range.style.opacity = "0.3";
-        } else {
-            range.disabled = false;
-            range.style.opacity = "1";
-            range.value = String((parseFloat(this.module.moduleFaust.fDSP.getValue(this.label)) - this.min) / this.step);
-        }
-    }
 }
 
 class AccelerometerHandler {
@@ -76,8 +63,6 @@ class AccelerometerHandler {
                 this.axisSplitter(AccelerometerHandler.accelerometerSliders[i], x, y, z)
             }
         }
-
-        console.log(x + " " + y + " " + z);
     }
     static registerAcceleratedSlider(fMetaAcc: string, module: ModuleClass, label: string, min: number, ivalue: number, max: number, step: number, slider: HTMLInputElement, valueOutput: HTMLElement, precision: number): AccelerometerSlider {
         var accelerometerSlide: AccelerometerSlider = new AccelerometerSlider(fMetaAcc);
@@ -93,8 +78,10 @@ class AccelerometerHandler {
         accelerometerSlide.precision = precision;
         AccelerometerHandler.curveSplitter(accelerometerSlide)
         AccelerometerHandler.accelerometerSliders.push(accelerometerSlide);
+        accelerometerSlide.mySlider.parentElement.classList.add(Axis[accelerometerSlide.axis])
         return accelerometerSlide;
     }
+
 
     axisSplitter(accelerometerSlide: AccelerometerSlider, x: number, y: number, z: number) {
         switch (accelerometerSlide.axis) {
