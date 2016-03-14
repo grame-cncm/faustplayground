@@ -23,15 +23,16 @@ brass(n) = (borePressure <: deltaPressure(pressure(n)),_ :
 
 //==================== GUI SPECIFICATION ================
 
-gate = checkbox(" Play");
+//gate = checkbox(" Play");
+gate = hslider(" ON/OFF", 0, 0, 1, 1);
 
-freq(0) = hslider("h:Instrument/v:Frequencies/Frequency 1 [unit:Hz][acc:1 1 -10 0 10]", 370,280,380, 0.01):smooth(0.999);
-freq(1) = hslider("h:Instrument/v:Frequencies/Frequency 2 [unit:Hz][acc:0 1 -10 0 10]", 440,380,550,0.01):smooth(0.999);
-freq(2) = hslider("h:Instrument/v:Frequencies/Frequency 3 [unit:Hz][acc:2 0 -10 0 12]", 587,550,700,0.01):smooth(0.999);
+freq(0) = hslider("h:Instrument/v:Frequencies/Frequency 1 [unit:Hz][acc:1 0 -10 10 0 370]",370,280,380, 0.01):smooth(0.999);
+freq(1) = hslider("h:Instrument/v:Frequencies/Frequency 2 [unit:Hz][acc:0 0 -10 10 0 440]",440,380,550,0.01):smooth(0.999);
+freq(2) = hslider("h:Instrument/v:Frequencies/Frequency 3 [unit:Hz][acc:2 1 -10 12 0 587]",587.32,550,700,0.01):smooth(0.999);
 
-gain(0) = hslider("h:Instrument/v:Gain/Volume 1 [style:knob][acc:1 0 -10 0 12][tooltip:Gain (value between 0 and 1)]",0.5,0,1,0.01);
-gain(1) = hslider("h:Instrument/v:Gain/Volume 2 [style:knob][acc:0 0 -10 0 12][tooltip:Gain (value between 0 and 1)]",0.5,0,1,0.01);
-gain(2) = hslider("h:Instrument/v:Gain/Volume 3 [style:knob][acc:2 0 -10 0 10][tooltip:Gain (value between 0 and 1)]",0.5,0,0.5,0.01); 
+gain(0) = hslider("h:Instrument/v:Gain/Volume 1 [style:knob][acc:1 1 -10 12 0 0.5][tooltip:Gain (value between 0 and 1)]",0.75,0,1,0.01);
+gain(1) = hslider("h:Instrument/v:Gain/Volume 2 [style:knob][acc:0 1 -10 12 0 0.5][tooltip:Gain (value between 0 and 1)]",0.5,0,1,0.01);
+gain(2) = hslider("h:Instrument/v:Gain/Volume 3 [style:knob][acc:2 0 -10 10 0 0.5][tooltip:Gain (value between 0 and 1)]",0.25,0,0.5,0.01);
 
 
 pressure(0) = 0.37;
@@ -54,7 +55,7 @@ envelopeDecay = 0.001;
 envelopeRelease = 2;
 //==================== SIGNAL PROCESSING ================
 
-//----------------------- Synthesis parameters computing and functions declaration ----------------------------
+//---------- Synthesis parameters computing and functions declaration ----------
 
 //lips are simulated by a biquad filter whose output is squared and hard-clipped, bandPassH and saturationPos are declared in instrument.lib
 lipFilterFrequency(f) = f*pow(4,(2*lipTension)-1);
