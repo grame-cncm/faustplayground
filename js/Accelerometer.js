@@ -62,8 +62,11 @@ var AccelerometerHandler = (function () {
         var z = event.accelerationIncludingGravity.z;
         for (var i = 0; i < AccelerometerHandler.accelerometerSliders.length; i++) {
             if (AccelerometerHandler.accelerometerSliders[i].isActive) {
-                this.axisSplitter(AccelerometerHandler.accelerometerSliders[i], x, y, z);
+                this.axisSplitter(AccelerometerHandler.accelerometerSliders[i], x, y, z, this.applyNewValueToModule);
             }
+        }
+        if (AccelerometerHandler.sliderEdit != null) {
+            this.axisSplitter(AccelerometerHandler.sliderEdit, x, y, z, this.applyValueToEdit);
         }
     };
     //static registerAcceleratedSlider(fMetaAcc: string, module: ModuleClass, label: string, min: number, ivalue: number, max: number, step: number, slider: HTMLInputElement, valueOutput: HTMLElement, precision: number): AccelerometerSlider {
@@ -71,34 +74,38 @@ var AccelerometerHandler = (function () {
         var accelerometerSlide = new AccelerometerSlider(controler);
         accelerometerSlide.module = module;
         AccelerometerHandler.curveSplitter(accelerometerSlide);
-        AccelerometerHandler.accelerometerSliders.push(accelerometerSlide);
+        if (module != null) {
+            AccelerometerHandler.accelerometerSliders.push(accelerometerSlide);
+        }
+        else {
+            AccelerometerHandler.sliderEdit = accelerometerSlide;
+        }
         accelerometerSlide.mySlider.parentElement.classList.add(Axis[accelerometerSlide.axis]);
         return accelerometerSlide;
     };
-    AccelerometerHandler.prototype.axisSplitter = function (accelerometerSlide, x, y, z) {
+    AccelerometerHandler.prototype.axisSplitter = function (accelerometerSlide, x, y, z, callBack) {
         switch (accelerometerSlide.axis) {
             case Axis.x:
                 var newVal = accelerometerSlide.converter.uiToFaust(x);
-                this.applyNewValue(accelerometerSlide, newVal);
+                callBack(accelerometerSlide, newVal, x);
                 break;
             case Axis.y:
                 var newVal = accelerometerSlide.converter.uiToFaust(y);
-                this.applyNewValue(accelerometerSlide, newVal);
+                callBack(accelerometerSlide, newVal, y);
                 break;
             case Axis.z:
                 var newVal = accelerometerSlide.converter.uiToFaust(z);
-                this.applyNewValue(accelerometerSlide, newVal);
+                callBack(accelerometerSlide, newVal, z);
                 break;
         }
     };
-    AccelerometerHandler.prototype.applyNewValue = function (accSlid, newVal) {
-        if (accSlid.module != null) {
-            accSlid.module.moduleFaust.fDSP.setValue(accSlid.label, String(newVal));
-        }
+    AccelerometerHandler.prototype.applyNewValueToModule = function (accSlid, newVal, axeValue) {
+        accSlid.module.moduleFaust.fDSP.setValue(accSlid.label, String(newVal));
         accSlid.mySlider.value = String((newVal - accSlid.min) / accSlid.step);
-        if (accSlid.valueOutput != undefined) {
-            accSlid.valueOutput.textContent = String(newVal.toFixed(accSlid.precision));
-        }
+        accSlid.valueOutput.textContent = String(newVal.toFixed(accSlid.precision));
+    };
+    AccelerometerHandler.prototype.applyValueToEdit = function (accSlid, newVal, axeValue) {
+        accSlid.mySlider.value = axeValue.toString();
     };
     AccelerometerHandler.curveSplitter = function (accelerometerSlide) {
         switch (accelerometerSlide.curve) {
@@ -112,11 +119,12 @@ var AccelerometerHandler = (function () {
                 accelerometerSlide.converter = new AccUpDownConverter(accelerometerSlide.amin, accelerometerSlide.amid, accelerometerSlide.amax, accelerometerSlide.min, accelerometerSlide.ivalue, accelerometerSlide.max);
                 break;
             case Curve.DownUp:
-                accelerometerSlide.converter = new AccUpConverter(accelerometerSlide.amin, accelerometerSlide.amid, accelerometerSlide.amax, accelerometerSlide.min, accelerometerSlide.ivalue, accelerometerSlide.max);
+                accelerometerSlide.converter = new AccDownUpConverter(accelerometerSlide.amin, accelerometerSlide.amid, accelerometerSlide.amax, accelerometerSlide.min, accelerometerSlide.ivalue, accelerometerSlide.max);
                 break;
         }
     };
     AccelerometerHandler.accelerometerSliders = [];
+    AccelerometerHandler.sliderEdit = null;
     return AccelerometerHandler;
 })();
 var MinMaxClip = (function () {

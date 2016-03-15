@@ -7,6 +7,13 @@ var AccelerometerEdit = (function () {
         this.accelerometerEditView = accelerometerEditView;
         this.eventEditHandler = function (event, accelerometer) { _this.editEvent(accelerometer, event); };
         this.accelerometerEditView.cancelButton.addEventListener("click", function () { _this.cancelAccelerometerEdit(); });
+        this.accelerometerEditView.radioAxisX.addEventListener("change", function (event) { _this.radioAxisSplit(event); });
+        this.accelerometerEditView.radioAxisY.addEventListener("change", function (event) { _this.radioAxisSplit(event); });
+        this.accelerometerEditView.radioAxisZ.addEventListener("change", function (event) { _this.radioAxisSplit(event); });
+        this.accelerometerEditView.radioCurve1.addEventListener("change", function (event) { _this.radioCurveSplit(event); });
+        this.accelerometerEditView.radioCurve2.addEventListener("change", function (event) { _this.radioCurveSplit(event); });
+        this.accelerometerEditView.radioCurve3.addEventListener("change", function (event) { _this.radioCurveSplit(event); });
+        this.accelerometerEditView.radioCurve4.addEventListener("change", function (event) { _this.radioCurveSplit(event); });
     }
     AccelerometerEdit.prototype.editAction = function (scene) {
         var _this = this;
@@ -38,6 +45,7 @@ var AccelerometerEdit = (function () {
         event.stopPropagation();
         event.preventDefault();
         window.addEventListener("resize", function () { _this.placeElement(); });
+        this.accSlid = accSlider;
         this.placeElement();
         this.accelerometerEditView.radioAxisContainer;
         this.selectDefaultAxis(accSlider);
@@ -47,7 +55,7 @@ var AccelerometerEdit = (function () {
         this.applyRange3Values(accSlider);
         this.applyRangeVirtualValues(accSlider);
         this.createCurrentControler(accSlider);
-        this.applyRangeCurrentValues();
+        this.applyRangeCurrentValues(accSlider);
     };
     AccelerometerEdit.prototype.cancelAccelerometerEdit = function () {
         var _this = this;
@@ -91,25 +99,31 @@ var AccelerometerEdit = (function () {
         }
     };
     AccelerometerEdit.prototype.applyRange1Values = function (accSlider) {
-        this.accelerometerEditView.range1.min = String(accSlider.amin);
-        this.accelerometerEditView.range1.max = String(accSlider.amax);
-        //this.accelerometerEditView.range1.step = String(accSlider.step);
+        //this.accelerometerEditView.range1.min = String(accSlider.amin);
+        //this.accelerometerEditView.range1.max = String(accSlider.amax);
+        this.accelerometerEditView.range1.min = "-20";
+        this.accelerometerEditView.range1.max = "20";
+        this.accelerometerEditView.range1.step = "0.1";
         this.accelerometerEditView.range1.value = String(accSlider.amin);
     };
     AccelerometerEdit.prototype.applyRange2Values = function (accSlider) {
-        this.accelerometerEditView.range2.min = String(accSlider.amin);
-        this.accelerometerEditView.range2.max = String(accSlider.amax);
-        //this.accelerometerEditView.range2.step = String(accSlider.step);
+        //this.accelerometerEditView.range2.min = String(accSlider.amin);
+        //this.accelerometerEditView.range2.max = String(accSlider.amax);
+        this.accelerometerEditView.range2.min = "-20";
+        this.accelerometerEditView.range2.max = "20";
+        this.accelerometerEditView.range2.step = "0.1";
         this.accelerometerEditView.range2.value = String(accSlider.amax);
     };
     AccelerometerEdit.prototype.applyRange3Values = function (accSlider) {
-        this.accelerometerEditView.range3.min = String(accSlider.amin);
-        this.accelerometerEditView.range3.max = String(accSlider.amax);
-        //this.accelerometerEditView.range3.step = String(accSlider.step);
+        //this.accelerometerEditView.range3.min = String(accSlider.amin);
+        //this.accelerometerEditView.range3.max = String(accSlider.amax);
+        this.accelerometerEditView.range3.min = "-20";
+        this.accelerometerEditView.range3.max = "20";
+        this.accelerometerEditView.range3.step = "0.1";
         this.accelerometerEditView.range3.value = String(accSlider.amid);
     };
     AccelerometerEdit.prototype.applyRangeVirtualValues = function (accSlider) {
-        this.accelerometerEditView.rangeVirtual.parentElement.classList.add(Axis[accSlider.axis]);
+        //this.accelerometerEditView.rangeVirtual.parentElement.classList.add(Axis[accSlider.axis]);
     };
     AccelerometerEdit.prototype.createCurrentControler = function (accSlider) {
         var controler = new Controler();
@@ -123,13 +137,60 @@ var AccelerometerEdit = (function () {
         controler.precision = accSlider.precision.toString();
         this.controler = controler;
     };
-    AccelerometerEdit.prototype.applyRangeCurrentValues = function () {
+    AccelerometerEdit.prototype.applyRangeCurrentValues = function (accSlider) {
+        this.accelerometerEditView.rangeCurrent.min = "-20";
+        this.accelerometerEditView.rangeCurrent.max = "20";
+        this.accelerometerEditView.rangeCurrent.value = "0";
+        this.accelerometerEditView.rangeCurrent.step = "0.1";
         var accCurrentVal = AccelerometerHandler.registerAcceleratedSlider(this.controler, null);
         accCurrentVal.mySlider = this.accelerometerEditView.rangeCurrent;
         accCurrentVal.isActive = true;
     };
     AccelerometerEdit.prototype.removeRangeCurrentValueFromMotionEvent = function () {
-        AccelerometerHandler.accelerometerSliders.pop();
+        AccelerometerHandler.sliderEdit.mySlider.parentElement.className = "";
+        AccelerometerHandler.sliderEdit = null;
+    };
+    AccelerometerEdit.prototype.radioAxisSplit = function (event) {
+        console.log("change");
+        var radio = event.target;
+        if (radio.id == "radioX") {
+            this.editAxis(Axis.x);
+        }
+        else if (radio.id == "radioY") {
+            this.editAxis(Axis.y);
+        }
+        else if (radio.id == "radioZ") {
+            this.editAxis(Axis.z);
+        }
+    };
+    AccelerometerEdit.prototype.radioCurveSplit = function (event) {
+        console.log("change");
+        var radio = event.target;
+        if (radio.id == "radio1") {
+            this.editCurve(Curve.Up);
+        }
+        else if (radio.id == "radio2") {
+            this.editCurve(Curve.Down);
+        }
+        else if (radio.id == "radio3") {
+            this.editCurve(Curve.UpDown);
+        }
+        else if (radio.id == "radio4") {
+            this.editCurve(Curve.DownUp);
+        }
+    };
+    AccelerometerEdit.prototype.editAxis = function (axe) {
+        this.accSlid.axis = axe;
+        var editAcc = AccelerometerHandler.sliderEdit;
+        editAcc.axis = axe;
+        editAcc.mySlider.parentElement.className = "";
+        editAcc.mySlider.parentElement.classList.add(Axis[editAcc.axis]);
+    };
+    AccelerometerEdit.prototype.editCurve = function (curve) {
+        this.accSlid.curve = curve;
+        var editAcc = AccelerometerHandler.sliderEdit;
+        editAcc.curve = curve;
+        AccelerometerHandler.curveSplitter(this.accSlid);
     };
     return AccelerometerEdit;
 })();
