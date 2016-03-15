@@ -14,16 +14,30 @@ var Curve;
 })(Curve || (Curve = {}));
 ;
 var AccelerometerSlider = (function () {
-    function AccelerometerSlider(fMetaAcc) {
-        this.setAttributes(fMetaAcc);
+    function AccelerometerSlider(controler) {
+        if (controler != null) {
+            this.acc = controler.acc;
+            this.setAttributes(controler.acc);
+            this.label = controler.address;
+            this.min = parseFloat(controler.min);
+            this.max = parseFloat(controler.max);
+            this.ivalue = parseFloat(controler.init);
+            this.step = parseFloat(controler.step);
+            this.mySlider = controler.slider;
+            this.valueOutput = controler.output;
+            this.isActive = App.isAccelerometerOn;
+            this.precision = parseFloat(controler.precision);
+        }
     }
     AccelerometerSlider.prototype.setAttributes = function (fMetaAcc) {
-        var arrayMeta = fMetaAcc.split(" ");
-        this.axis = parseInt(arrayMeta[0]);
-        this.curve = parseInt(arrayMeta[1]);
-        this.amin = parseInt(arrayMeta[2]);
-        this.amid = parseInt(arrayMeta[3]);
-        this.amax = parseInt(arrayMeta[4]);
+        if (fMetaAcc != null) {
+            var arrayMeta = fMetaAcc.split(" ");
+            this.axis = parseInt(arrayMeta[0]);
+            this.curve = parseInt(arrayMeta[1]);
+            this.amin = parseInt(arrayMeta[2]);
+            this.amid = parseInt(arrayMeta[3]);
+            this.amax = parseInt(arrayMeta[4]);
+        }
     };
     return AccelerometerSlider;
 })();
@@ -52,18 +66,10 @@ var AccelerometerHandler = (function () {
             }
         }
     };
-    AccelerometerHandler.registerAcceleratedSlider = function (fMetaAcc, module, label, min, ivalue, max, step, slider, valueOutput, precision) {
-        var accelerometerSlide = new AccelerometerSlider(fMetaAcc);
+    //static registerAcceleratedSlider(fMetaAcc: string, module: ModuleClass, label: string, min: number, ivalue: number, max: number, step: number, slider: HTMLInputElement, valueOutput: HTMLElement, precision: number): AccelerometerSlider {
+    AccelerometerHandler.registerAcceleratedSlider = function (controler, module) {
+        var accelerometerSlide = new AccelerometerSlider(controler);
         accelerometerSlide.module = module;
-        accelerometerSlide.label = label;
-        accelerometerSlide.min = min;
-        accelerometerSlide.max = max;
-        accelerometerSlide.ivalue = ivalue;
-        accelerometerSlide.step = step;
-        accelerometerSlide.mySlider = slider;
-        accelerometerSlide.valueOutput = valueOutput;
-        accelerometerSlide.isActive = App.isAccelerometerOn;
-        accelerometerSlide.precision = precision;
         AccelerometerHandler.curveSplitter(accelerometerSlide);
         AccelerometerHandler.accelerometerSliders.push(accelerometerSlide);
         accelerometerSlide.mySlider.parentElement.classList.add(Axis[accelerometerSlide.axis]);
@@ -73,22 +79,25 @@ var AccelerometerHandler = (function () {
         switch (accelerometerSlide.axis) {
             case Axis.x:
                 var newVal = accelerometerSlide.converter.uiToFaust(x);
-                accelerometerSlide.module.moduleFaust.fDSP.setValue(accelerometerSlide.label, String(newVal));
-                accelerometerSlide.mySlider.value = String((newVal - accelerometerSlide.min) / accelerometerSlide.step);
-                accelerometerSlide.valueOutput.textContent = String(newVal.toFixed(accelerometerSlide.precision));
+                this.applyNewValue(accelerometerSlide, newVal);
                 break;
             case Axis.y:
                 var newVal = accelerometerSlide.converter.uiToFaust(y);
-                accelerometerSlide.module.moduleFaust.fDSP.setValue(accelerometerSlide.label, String(newVal));
-                accelerometerSlide.mySlider.value = String((newVal - accelerometerSlide.min) / accelerometerSlide.step);
-                accelerometerSlide.valueOutput.textContent = String(newVal.toFixed(accelerometerSlide.precision));
+                this.applyNewValue(accelerometerSlide, newVal);
                 break;
             case Axis.z:
                 var newVal = accelerometerSlide.converter.uiToFaust(z);
-                accelerometerSlide.module.moduleFaust.fDSP.setValue(accelerometerSlide.label, String(newVal));
-                accelerometerSlide.mySlider.value = String((newVal - accelerometerSlide.min) / accelerometerSlide.step);
-                accelerometerSlide.valueOutput.textContent = String(newVal.toFixed(accelerometerSlide.precision));
+                this.applyNewValue(accelerometerSlide, newVal);
                 break;
+        }
+    };
+    AccelerometerHandler.prototype.applyNewValue = function (accSlid, newVal) {
+        if (accSlid.module != null) {
+            accSlid.module.moduleFaust.fDSP.setValue(accSlid.label, String(newVal));
+        }
+        accSlid.mySlider.value = String((newVal - accSlid.min) / accSlid.step);
+        if (accSlid.valueOutput != undefined) {
+            accSlid.valueOutput.textContent = String(newVal.toFixed(accSlid.precision));
         }
     };
     AccelerometerHandler.curveSplitter = function (accelerometerSlide) {

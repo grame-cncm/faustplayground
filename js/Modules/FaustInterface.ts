@@ -34,6 +34,8 @@ interface Iitem{
     output: HTMLElement
     precision: string;
     hasAccelerometer: boolean;
+    acc: string;
+
 }
 interface FaustMeta {
     acc: string;
@@ -53,6 +55,7 @@ class Controler implements Iitem {
     output: HTMLElement
     precision: string;
     hasAccelerometer: boolean;
+    acc: string;
 
 }
 class FaustInterface {
@@ -174,8 +177,9 @@ class FaustInterface {
         if (controler.meta != undefined) {
             for (var i = 0; i < controler.meta.length; i++) {
                 if (controler.meta[i].acc) {
+                    controler.acc = controler.meta[i].acc;
                     controler.hasAccelerometer = true;
-                    var accSlide = AccelerometerHandler.registerAcceleratedSlider(controler.meta[i].acc, module, controler.address, parseFloat(controler.min), parseFloat(controler.init), parseFloat(controler.max), parseFloat(controler.step), controler.slider, controler.output, parseFloat(controler.precision))
+                    var accSlide = AccelerometerHandler.registerAcceleratedSlider(controler, module)
                     //var checkbox = document.createElement("input");
                     //checkbox.type = "checkbox";
                     if (App.isAccelerometerOn) {

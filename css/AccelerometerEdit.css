@@ -2,11 +2,19 @@
     position: absolute;
     display: block;
     width: 100%;
-    background: -moz-linear-gradient(top, rgba(0, 137, 255, 0.80) 0%, rgba(108, 50, 255, 0.92) 100%);
-    background: -webkit-linear-gradient(top, rgba(0, 137, 255, 0.80) 0%,rgba(108, 50, 255, 0.92) 100%);
-    background: linear-gradient(to bottom, rgba(0, 137, 255, 0.80) 0%,rgba(108, 50, 255, 0.92) 100%);
+    background: -moz-linear-gradient(top, rgba(0, 137, 255, 0.95) 0%, rgba(108, 50, 255, 0.95) 100%);
+    background: -webkit-linear-gradient(top, rgba(0, 137, 255, 0.95) 0%,rgba(108, 50, 255, 0.95) 100%);
+    background: linear-gradient(to bottom, rgba(0, 137, 255, 0.95) 0%,rgba(108, 50, 255, 0.95) 100%);
 }
+div#accEditContainer {
+    color: white;
+}
+form#radioCurveContainer {
+    width: 75%;
+    margin: 0 auto;
+    position:relative;
 
+}
 form#radioAxisContainer {
     position:relative;
     width: 50%;
@@ -14,17 +22,57 @@ form#radioAxisContainer {
 }
 
 input.radio {
-    width: 33%;
+    width: 1.3em;
+    display: block;
+    float: right;
+    margin-top: 0.1em;
     height: 1.3em;
+    margin-right: 1em;
 }
-input.curve {
-    width:25%;
+label.curve {
+    box-shadow: 0 0 5px rgb(0, 67, 255);
+    border-radius: 5px;
+    display: block;
+    width: 23%;
+    float: left;
+    margin: 0 1%;
+    padding: 3px 0;
+    text-align: center;
+}
+label.axe {
+    box-shadow: 0 0 5px rgb(0, 67, 255);
+    border-radius: 5px;
+    display: block;
+    width: 31%;
+    float: left;
+    margin: 0 1%;
+    opacity: 0.8;
+    padding: 3px 0;
+    text-align: center;
+}
+    label.axe:hover {
+        opacity:1;
+    }
+label#axeX {
+    background: rgba(255, 65, 33, 0.4);
+}
+label#axeY {
+    background: rgba(0, 255, 0, 0.3);
+}
+label#axeZ {
+    background: rgba(0, 0, 255, 0.1);
 }
 div#rangeContainer {
     /* top: 400px; */
     position: relative;
     width: 80%;
     margin: 0 auto;
+    height: 3em;
+    padding-top: 3em;
+    /* padding-right: 1em; */
+    /* padding-left: 1em; */
+    border-radius: 5px;
+    box-shadow: 0 0 7px #0043FF;
     /* margin-top: 50%; */
 }
 
@@ -46,26 +94,51 @@ input.accRange {
 }
 
 [type="range"]#accRangeVirtual::-webkit-slider-thumb {
-    background:red!important;
+    background:red;
+
     border-radius:20px;
     top: 0px!important;
     height: 28px!important;
 }
 [type="range"]#accRangeCurrent::-webkit-slider-thumb {
-    background:red!important;
+    background:red;
+    box-shadow: 0px 4px 5px rgba(0, 0, 0, 0.61);
+
     border-radius:20px;
     top: 0px!important;
     height: 28px!important;
 }
+
+.x > input[type="range"]#accRangeCurrent::-webkit-slider-thumb {
+    background-color: rgba(255, 0, 47, 0.60);
+}
+.y > input[type="range"]#accRangeCurrent::-webkit-slider-thumb {
+    background-color: rgba(36, 215, 17, 0.60);
+}
+.z > input[type="range"]#accRangeCurrent::-webkit-slider-thumb {
+    background-color: rgba(0, 68, 255, 0.60);
+}
+.x > input[type="range"]#accRangeVirtual::-webkit-slider-thumb {
+    background-color: #ff002f;
+}
+.y > input[type="range"]#accRangeVirtual::-webkit-slider-thumb {
+    background-color: #24d711;
+}
+.z > input[type="range"]#accRangeVirtual::-webkit-slider-thumb {
+    background-color: #0044ff;
+}
 #rangeContainer > input[type="range"] {
-	-webkit-appearance: none;
-    cursor:pointer;
-	background-color: #303030;
-	height: 2px;
-	display: block;
-	margin-top: 1px;
-	margin-bottom: 15px;
-	width: 100%;
+    -webkit-appearance: none;
+    cursor: pointer;
+    background-color: rgba(83, 0, 255, 0.5);
+    box-shadow: 0 0 2px rgba(1, 185, 255, 0.35);
+    height: 10px;
+    display: block;
+    border-radius: 10px;
+    margin-top: 1px;
+    margin-bottom: 15px;
+    margin: 0 1em;
+    width: 95%;
 }
 #rangeContainer > [type="range"]::-moz-range-thumb{
     background: url("../img/slider.png");
@@ -91,14 +164,17 @@ input.accRange {
     height: 28px!important;
 }
 #rangeContainer > input[type=range]::-moz-range-track {
-	-webkit-appearance: none;
-    cursor:pointer;
-	background-color: #303030;
-	height: 2px;
-	display: block;
-	margin-top: 1px;
-	margin-bottom: 15px;
-	width: 100%;
+    -webkit-appearance: none;
+    cursor: pointer;
+    background-color: rgba(83, 0, 255, 0.5);
+    box-shadow: 0 0 2px rgba(1, 185, 255, 0.35);
+    height: 10px;
+    display: block;
+    border-radius: 10px;
+    margin-top: 1px;
+    margin-bottom: 15px;
+    margin: 0 1em;
+    width: 95%;
 }
 
 div#validContainer {
@@ -107,6 +183,8 @@ div#validContainer {
     width: 100%;
 }
 button.accButton {
+    border-right: 1px solid rgba(0, 0, 255, 0.35) !important;
+    border-top: 1px solid rgba(0, 0, 255, 0.35) !important;
     height: 5em;
     width: 50%;
     border: none;
