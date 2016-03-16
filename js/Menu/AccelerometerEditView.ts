@@ -3,6 +3,8 @@
     container: HTMLDivElement;
     radioAxisContainer: HTMLFormElement;
     radioCurveContainer: HTMLFormElement;
+    checkeOnOffContainer: HTMLFormElement;
+    checkeOnOff: HTMLInputElement;
     rangeContainer: HTMLDivElement;
     validButton: HTMLButtonElement;
     cancelButton: HTMLButtonElement;
@@ -13,9 +15,9 @@
     radioAxisX: HTMLInputElement;
     radioAxisY: HTMLInputElement;
     radioAxisZ: HTMLInputElement;
-    range1: HTMLInputElement;
-    range2: HTMLInputElement;
-    range3: HTMLInputElement;
+    rangeMin: HTMLInputElement;
+    rangeMid: HTMLInputElement;
+    rangeMax: HTMLInputElement;
     rangeVirtual: HTMLInputElement;
     rangeCurrent: HTMLInputElement;
 
@@ -32,59 +34,6 @@
         var container = document.createElement("div")
         container.id = "accEditContainer";
         this.container = container;
-
-
-        var radioAxisContainer = document.createElement("form")
-        radioAxisContainer.id = "radioAxisContainer"
-        this.radioAxisContainer = radioAxisContainer;
-
-        var labelX = document.createElement("label");
-        labelX.className = "axe";
-        labelX.id = "axeX";
-        labelX.textContent = "axe X : ";
-
-        var labelY = document.createElement("label");
-        labelY.className = "axe";
-        labelY.id = "axeY";
-        labelY.textContent = "axe Y : ";
-
-        var labelZ = document.createElement("label");
-        labelZ.className = "axe";
-        labelZ.id = "axeZ";
-        labelZ.textContent = "axe Z : ";
-
-        var radioX = document.createElement("input");
-        radioX.id = "radioX";
-        radioX.type = "radio";
-        radioX.className = "radio";
-        radioX.name = "axis";
-        radioX.textContent = "axe X";
-        radioX.value = "axe X"
-        this.radioAxisX = radioX;
-        labelX.appendChild(radioX);
-
-        var radioY = document.createElement("input");
-        radioY.id = "radioY";
-        radioY.type = "radio";
-        radioY.className = "radio";
-        radioY.name = "axis";
-        radioY.textContent = "axe Y";
-        this.radioAxisY = radioY;
-        labelY.appendChild(radioY);
-
-        var radioZ = document.createElement("input");
-        radioZ.id = "radioZ";
-        radioZ.type = "radio";
-        radioZ.className = "radio";
-        radioZ.name = "axis";
-        radioZ.textContent = "axe Z";
-        this.radioAxisZ = radioZ;
-        labelZ.appendChild(radioZ);
-
-
-        radioAxisContainer.appendChild(labelX)
-        radioAxisContainer.appendChild(labelY)
-        radioAxisContainer.appendChild(labelZ)
 
         var radioCurveContainer = document.createElement("form")
         radioCurveContainer.id = "radioCurveContainer"
@@ -149,28 +98,97 @@
         radioCurveContainer.appendChild(label3)
         radioCurveContainer.appendChild(label4)
 
+        var radioAxisContainer = document.createElement("form")
+        radioAxisContainer.id = "radioAxisContainer"
+        this.radioAxisContainer = radioAxisContainer;
+
+        var labelX = document.createElement("label");
+        labelX.className = "axe";
+        labelX.id = "axeX";
+        labelX.textContent = "axe X : ";
+
+        var labelY = document.createElement("label");
+        labelY.className = "axe";
+        labelY.id = "axeY";
+        labelY.textContent = "axe Y : ";
+
+        var labelZ = document.createElement("label");
+        labelZ.className = "axe";
+        labelZ.id = "axeZ";
+        labelZ.textContent = "axe Z : ";
+
+        var radioX = document.createElement("input");
+        radioX.id = "radioX";
+        radioX.type = "radio";
+        radioX.className = "radio";
+        radioX.name = "axis";
+        radioX.textContent = "axe X";
+        radioX.value = "axe X"
+        this.radioAxisX = radioX;
+        labelX.appendChild(radioX);
+
+        var radioY = document.createElement("input");
+        radioY.id = "radioY";
+        radioY.type = "radio";
+        radioY.className = "radio";
+        radioY.name = "axis";
+        radioY.textContent = "axe Y";
+        this.radioAxisY = radioY;
+        labelY.appendChild(radioY);
+
+        var radioZ = document.createElement("input");
+        radioZ.id = "radioZ";
+        radioZ.type = "radio";
+        radioZ.className = "radio";
+        radioZ.name = "axis";
+        radioZ.textContent = "axe Z";
+        this.radioAxisZ = radioZ;
+        labelZ.appendChild(radioZ);
+
+
+        radioAxisContainer.appendChild(labelX)
+        radioAxisContainer.appendChild(labelY)
+        radioAxisContainer.appendChild(labelZ)
+
+        var checkOnOffContainer = document.createElement("form");
+        checkOnOffContainer.id = "checkOnOffContainer";
+        this.checkeOnOffContainer = checkOnOffContainer;
+
+        var checkOnOffLabel = document.createElement("label");
+        checkOnOffLabel.id = "checkOnOffLabel";
+        checkOnOffLabel.textContent = "On/Off accelerometre"
+        checkOnOffContainer.appendChild(checkOnOffLabel);
+
+        var checkOnOff = document.createElement("input");
+        checkOnOff.type = "checkbox";
+        checkOnOff.id = "checkOnOff";
+        this.checkeOnOff = checkOnOff;
+        checkOnOffLabel.appendChild(checkOnOff);checkOnOffLabel
+
+
         var accRangeMax = document.createElement("input");
         accRangeMax.id = "accRangeMax";
         accRangeMax.className = "accRange";
         accRangeMax.type = "range";
-        this.range3 = accRangeMax;
+        this.rangeMax = accRangeMax;
 
         var accRangeMid = document.createElement("input");
         accRangeMid.id = "accRangeMid";
         accRangeMid.className = "accRange";
         accRangeMid.type = "range";
-        this.range2 = accRangeMid;
+        this.rangeMid = accRangeMid;
 
         var accRangeMin = document.createElement("input");
         accRangeMin.id = "accRangeMin";
         accRangeMin.className = "accRange";
         accRangeMin.type = "range";
-        this.range1 = accRangeMin;
+        this.rangeMin = accRangeMin;
 
         var accRangeCurrent = document.createElement("input");
         accRangeCurrent.id = "accRangeCurrent";
         accRangeCurrent.className = "accRange acc";
         accRangeCurrent.type = "range";
+        accRangeCurrent.disabled = true;
         this.rangeCurrent = accRangeCurrent;
 
         var accRangeVirtual = document.createElement("input");
@@ -206,10 +224,11 @@
         validContainer.appendChild(cancelButton);
         validContainer.appendChild(validButton);
 
-        container.appendChild(radioAxisContainer)
-        container.appendChild(radioCurveContainer)
-        container.appendChild(rangeContainer)
-        container.appendChild(validContainer)
+        container.appendChild(radioCurveContainer);
+        container.appendChild(radioAxisContainer);
+        container.appendChild(checkOnOffContainer);
+        container.appendChild(rangeContainer);
+        container.appendChild(validContainer);
 
         blockLayer.appendChild(container);
 

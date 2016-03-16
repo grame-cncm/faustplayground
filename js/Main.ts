@@ -34,6 +34,7 @@ function init():void {
     app.createMenu();
     app.showFirstScene();
     var accHandler: AccelerometerHandler = new AccelerometerHandler();
+    App.accHandler = accHandler;
     accHandler.getAccelerometerValue(); 
 }
 window.addEventListener('touchstart', IosInit , false);

@@ -14,17 +14,21 @@ var AccelerometerEdit = (function () {
         this.accelerometerEditView.radioCurve2.addEventListener("change", function (event) { _this.radioCurveSplit(event); });
         this.accelerometerEditView.radioCurve3.addEventListener("change", function (event) { _this.radioCurveSplit(event); });
         this.accelerometerEditView.radioCurve4.addEventListener("change", function (event) { _this.radioCurveSplit(event); });
+        this.accelerometerEditView.checkeOnOff.addEventListener("change", function (event) { _this.accelerometerSwitch(event); });
+        this.accelerometerEditView.rangeVirtual.addEventListener("input", function (event) { _this.virtualAccelerometer(event); });
+        this.accelerometerEditView.rangeMin.addEventListener("input", function (event) { _this.accMin(); });
+        this.accelerometerEditView.rangeMid.addEventListener("input", function (event) { _this.accMid(); });
+        this.accelerometerEditView.rangeMax.addEventListener("input", function (event) { _this.accMax(); });
     }
     AccelerometerEdit.prototype.editAction = function (scene) {
-        var _this = this;
         if (this.isOn) {
             for (var i = 0; i < AccelerometerHandler.accelerometerSliders.length; i++) {
                 //AccelerometerHandler.accelerometerSliders[i].mySlider.addEventListener("mousedown", (e) => { e.stopPropagation() })
                 //AccelerometerHandler.accelerometerSliders[i].mySlider.addEventListener("touchstart", (e) => { e.stopPropagation() })
                 //AccelerometerHandler.accelerometerSliders[i].mySlider.addEventListener("touchmove", (e) => { e.stopPropagation() })
                 var currentAccSlide = AccelerometerHandler.accelerometerSliders[i];
-                currentAccSlide.mySlider.parentElement.removeEventListener("click", function (event) { _this.eventEditHandler(event, currentAccSlide); }, true);
-                currentAccSlide.mySlider.parentElement.removeEventListener("touchstart", function (event) { _this.eventEditHandler(event, currentAccSlide); }, true);
+                currentAccSlide.mySlider.parentElement.removeEventListener("click", currentAccSlide.callbackEdit, true);
+                currentAccSlide.mySlider.parentElement.removeEventListener("touchstart", currentAccSlide.callbackEdit, true);
             }
             this.isOn = false;
         }
@@ -34,40 +38,42 @@ var AccelerometerEdit = (function () {
                 //AccelerometerHandler.accelerometerSliders[i].mySlider.removeEventListener("touchstart", (e) => { e.stopPropagation() })
                 //AccelerometerHandler.accelerometerSliders[i].mySlider.removeEventListener("touchmove", (e) => { e.stopPropagation() })
                 var currentAccSlide = AccelerometerHandler.accelerometerSliders[i];
-                currentAccSlide.mySlider.parentElement.addEventListener("click", this.editEvent.bind(this, currentAccSlide), true);
-                currentAccSlide.mySlider.parentElement.addEventListener("touchstart", this.editEvent.bind(this, currentAccSlide), true);
+                currentAccSlide.callbackEdit = this.editEvent.bind(this, currentAccSlide);
+                currentAccSlide.mySlider.parentElement.addEventListener("click", currentAccSlide.callbackEdit, true);
+                currentAccSlide.mySlider.parentElement.addEventListener("touchstart", currentAccSlide.callbackEdit, true);
             }
             this.isOn = true;
         }
     };
     AccelerometerEdit.prototype.editEvent = function (accSlider, event) {
-        var _this = this;
         event.stopPropagation();
         event.preventDefault();
-        window.addEventListener("resize", function () { _this.placeElement(); });
+        this.windowResizeEvent = this.placeElement.bind(this);
+        window.addEventListener("resize", this.windowResizeEvent);
         this.accSlid = accSlider;
         this.placeElement();
-        this.accelerometerEditView.radioAxisContainer;
         this.selectDefaultAxis(accSlider);
         this.selectDefaultCurve(accSlider);
-        this.applyRange1Values(accSlider);
-        this.applyRange2Values(accSlider);
-        this.applyRange3Values(accSlider);
+        this.accelerometerEditView.checkeOnOff.checked = this.accSlid.isActive;
+        this.applyRangeMinValues(accSlider);
+        this.applyRangeMidValues(accSlider);
+        this.applyRangeMaxValues(accSlider);
         this.applyRangeVirtualValues(accSlider);
         this.createCurrentControler(accSlider);
         this.applyRangeCurrentValues(accSlider);
     };
     AccelerometerEdit.prototype.cancelAccelerometerEdit = function () {
-        var _this = this;
         this.accelerometerEditView.blockLayer.style.display = "none";
-        window.removeEventListener("resize", function () { _this.placeElement(); });
+        window.removeEventListener("resize", this.windowResizeEvent);
+        this.accelerometerEditView.rangeContainer.className = "";
     };
     AccelerometerEdit.prototype.placeElement = function () {
         this.accelerometerEditView.blockLayer.style.display = "block";
         this.accelerometerEditView.blockLayer.style.height = window.innerHeight + "px";
-        this.accelerometerEditView.rangeContainer.style.top = window.innerHeight / 2 + "px";
-        this.accelerometerEditView.radioAxisContainer.style.top = window.innerHeight / 4 + "px";
-        this.accelerometerEditView.radioCurveContainer.style.top = window.innerHeight / 8 + "px";
+        this.accelerometerEditView.rangeContainer.style.top = window.innerHeight / 1.6 + "px";
+        this.accelerometerEditView.checkeOnOffContainer.style.top = window.innerHeight / 3.5 + "px";
+        this.accelerometerEditView.radioAxisContainer.style.top = window.innerHeight / 5 + "px";
+        this.accelerometerEditView.radioCurveContainer.style.top = window.innerHeight / 10 + "px";
     };
     AccelerometerEdit.prototype.selectDefaultCurve = function (accSlider) {
         switch (accSlider.curve) {
@@ -98,32 +104,29 @@ var AccelerometerEdit = (function () {
                 break;
         }
     };
-    AccelerometerEdit.prototype.applyRange1Values = function (accSlider) {
-        //this.accelerometerEditView.range1.min = String(accSlider.amin);
-        //this.accelerometerEditView.range1.max = String(accSlider.amax);
-        this.accelerometerEditView.range1.min = "-20";
-        this.accelerometerEditView.range1.max = "20";
-        this.accelerometerEditView.range1.step = "0.1";
-        this.accelerometerEditView.range1.value = String(accSlider.amin);
+    AccelerometerEdit.prototype.applyRangeMinValues = function (accSlider) {
+        this.accelerometerEditView.rangeMin.min = "-20";
+        this.accelerometerEditView.rangeMin.max = "20";
+        this.accelerometerEditView.rangeMin.step = "0.1";
+        this.accelerometerEditView.rangeMin.value = String(accSlider.amin);
     };
-    AccelerometerEdit.prototype.applyRange2Values = function (accSlider) {
-        //this.accelerometerEditView.range2.min = String(accSlider.amin);
-        //this.accelerometerEditView.range2.max = String(accSlider.amax);
-        this.accelerometerEditView.range2.min = "-20";
-        this.accelerometerEditView.range2.max = "20";
-        this.accelerometerEditView.range2.step = "0.1";
-        this.accelerometerEditView.range2.value = String(accSlider.amax);
+    AccelerometerEdit.prototype.applyRangeMidValues = function (accSlider) {
+        this.accelerometerEditView.rangeMid.min = "-20";
+        this.accelerometerEditView.rangeMid.max = "20";
+        this.accelerometerEditView.rangeMid.step = "0.1";
+        this.accelerometerEditView.rangeMid.value = String(accSlider.amid);
     };
-    AccelerometerEdit.prototype.applyRange3Values = function (accSlider) {
-        //this.accelerometerEditView.range3.min = String(accSlider.amin);
-        //this.accelerometerEditView.range3.max = String(accSlider.amax);
-        this.accelerometerEditView.range3.min = "-20";
-        this.accelerometerEditView.range3.max = "20";
-        this.accelerometerEditView.range3.step = "0.1";
-        this.accelerometerEditView.range3.value = String(accSlider.amid);
+    AccelerometerEdit.prototype.applyRangeMaxValues = function (accSlider) {
+        this.accelerometerEditView.rangeMax.min = "-20";
+        this.accelerometerEditView.rangeMax.max = "20";
+        this.accelerometerEditView.rangeMax.step = "0.1";
+        this.accelerometerEditView.rangeMax.value = String(accSlider.amax);
     };
     AccelerometerEdit.prototype.applyRangeVirtualValues = function (accSlider) {
-        //this.accelerometerEditView.rangeVirtual.parentElement.classList.add(Axis[accSlider.axis]);
+        this.accelerometerEditView.rangeVirtual.min = "-20";
+        this.accelerometerEditView.rangeVirtual.max = "20";
+        this.accelerometerEditView.rangeVirtual.value = "0";
+        this.accelerometerEditView.rangeVirtual.step = "0.1";
     };
     AccelerometerEdit.prototype.createCurrentControler = function (accSlider) {
         var controler = new Controler();
@@ -191,6 +194,33 @@ var AccelerometerEdit = (function () {
         var editAcc = AccelerometerHandler.sliderEdit;
         editAcc.curve = curve;
         AccelerometerHandler.curveSplitter(this.accSlid);
+    };
+    AccelerometerEdit.prototype.accelerometerSwitch = function (event) {
+        this.accSlid.isActive = this.accelerometerEditView.checkeOnOff.checked;
+    };
+    AccelerometerEdit.prototype.virtualAccelerometer = function (event) {
+        if (this.accelerometerEditView.checkeOnOff.checked == true) {
+            this.accelerometerEditView.checkeOnOff.checked = false;
+            this.accSlid.isActive = false;
+        }
+        //if (AccelerometerHandler.sliderEdit != null) {
+        //    AccelerometerHandler.sliderEdit = null;
+        //};
+        var rangeVal = parseFloat(this.accelerometerEditView.rangeVirtual.value);
+        console.log(rangeVal);
+        App.accHandler.axisSplitter(this.accSlid, rangeVal, rangeVal, rangeVal, App.accHandler.applyNewValueToModule);
+    };
+    AccelerometerEdit.prototype.accMin = function () {
+        this.accSlid.amin = parseFloat(this.accelerometerEditView.rangeMin.value);
+        this.accSlid.converter.setMappingValues(this.accSlid.amin, this.accSlid.amid, this.accSlid.amax, this.accSlid.min, this.accSlid.ivalue, this.accSlid.max);
+    };
+    AccelerometerEdit.prototype.accMid = function () {
+        this.accSlid.amid = parseFloat(this.accelerometerEditView.rangeMid.value);
+        this.accSlid.converter.setMappingValues(this.accSlid.amin, this.accSlid.amid, this.accSlid.amax, this.accSlid.min, this.accSlid.ivalue, this.accSlid.max);
+    };
+    AccelerometerEdit.prototype.accMax = function () {
+        this.accSlid.amax = parseFloat(this.accelerometerEditView.rangeMax.value);
+        this.accSlid.converter.setMappingValues(this.accSlid.amin, this.accSlid.amid, this.accSlid.amax, this.accSlid.min, this.accSlid.ivalue, this.accSlid.max);
     };
     return AccelerometerEdit;
 })();

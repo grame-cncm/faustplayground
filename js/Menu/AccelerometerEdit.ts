@@ -7,6 +7,7 @@ class AccelerometerEdit {
     isOn: boolean = false
     accSlid: AccelerometerSlider;
     controler: Controler;
+    windowResizeEvent: any;
     eventEditHandler: (event: Event, accSlide:AccelerometerSlider) => void;
     constructor(accelerometerEditView: AccelerometerEditView) {
         this.accelerometerEditView = accelerometerEditView
@@ -19,6 +20,11 @@ class AccelerometerEdit {
         this.accelerometerEditView.radioCurve2.addEventListener("change", (event) => { this.radioCurveSplit(event) });
         this.accelerometerEditView.radioCurve3.addEventListener("change", (event) => { this.radioCurveSplit(event) });
         this.accelerometerEditView.radioCurve4.addEventListener("change", (event) => { this.radioCurveSplit(event) });
+        this.accelerometerEditView.checkeOnOff.addEventListener("change", (event) => { this.accelerometerSwitch(event) });
+        this.accelerometerEditView.rangeVirtual.addEventListener("input", (event) => { this.virtualAccelerometer(event) });
+        this.accelerometerEditView.rangeMin.addEventListener("input", (event) => { this.accMin() });
+        this.accelerometerEditView.rangeMid.addEventListener("input", (event) => { this.accMid() });
+        this.accelerometerEditView.rangeMax.addEventListener("input", (event) => { this.accMax() });
 
     }
 
@@ -30,8 +36,8 @@ class AccelerometerEdit {
                 //AccelerometerHandler.accelerometerSliders[i].mySlider.addEventListener("touchstart", (e) => { e.stopPropagation() })
                 //AccelerometerHandler.accelerometerSliders[i].mySlider.addEventListener("touchmove", (e) => { e.stopPropagation() })
                 var currentAccSlide = AccelerometerHandler.accelerometerSliders[i]
-                currentAccSlide.mySlider.parentElement.removeEventListener("click", (event) => { this.eventEditHandler(event, currentAccSlide) }, true);
-                currentAccSlide.mySlider.parentElement.removeEventListener("touchstart", (event) => { this.eventEditHandler(event, currentAccSlide) }, true);
+                currentAccSlide.mySlider.parentElement.removeEventListener("click", currentAccSlide.callbackEdit, true);
+                currentAccSlide.mySlider.parentElement.removeEventListener("touchstart", currentAccSlide.callbackEdit, true);
 
             }
             this.isOn = false;
@@ -41,8 +47,9 @@ class AccelerometerEdit {
                 //AccelerometerHandler.accelerometerSliders[i].mySlider.removeEventListener("touchstart", (e) => { e.stopPropagation() })
                 //AccelerometerHandler.accelerometerSliders[i].mySlider.removeEventListener("touchmove", (e) => { e.stopPropagation() })
                 var currentAccSlide = AccelerometerHandler.accelerometerSliders[i]
-                currentAccSlide.mySlider.parentElement.addEventListener("click", this.editEvent.bind(this,currentAccSlide), true);
-                currentAccSlide.mySlider.parentElement.addEventListener("touchstart", this.editEvent.bind(this,currentAccSlide) , true);
+                currentAccSlide.callbackEdit = this.editEvent.bind(this, currentAccSlide);
+                currentAccSlide.mySlider.parentElement.addEventListener("click", currentAccSlide.callbackEdit, true);
+                currentAccSlide.mySlider.parentElement.addEventListener("touchstart", currentAccSlide.callbackEdit , true);
             }
             this.isOn = true;
         }
@@ -50,15 +57,16 @@ class AccelerometerEdit {
     editEvent(accSlider: AccelerometerSlider,event: Event):any {
         event.stopPropagation();
         event.preventDefault();
-        window.addEventListener("resize", () => { this.placeElement() })
+        this.windowResizeEvent = this.placeElement.bind(this);
+        window.addEventListener("resize", this.windowResizeEvent )
         this.accSlid = accSlider;
         this.placeElement();
-        this.accelerometerEditView.radioAxisContainer
         this.selectDefaultAxis(accSlider);
         this.selectDefaultCurve(accSlider);
-        this.applyRange1Values(accSlider);
-        this.applyRange2Values(accSlider);
-        this.applyRange3Values(accSlider);
+        this.accelerometerEditView.checkeOnOff.checked = this.accSlid.isActive;
+        this.applyRangeMinValues(accSlider);
+        this.applyRangeMidValues(accSlider);
+        this.applyRangeMaxValues(accSlider);
         this.applyRangeVirtualValues(accSlider);
         this.createCurrentControler(accSlider);
         this.applyRangeCurrentValues(accSlider);
@@ -69,15 +77,17 @@ class AccelerometerEdit {
     }
     cancelAccelerometerEdit() {
         this.accelerometerEditView.blockLayer.style.display = "none";
-        window.removeEventListener("resize", () => { this.placeElement() })
+        window.removeEventListener("resize", this.windowResizeEvent)
+        this.accelerometerEditView.rangeContainer.className = "";
 
     }
     placeElement() {
         this.accelerometerEditView.blockLayer.style.display = "block";
         this.accelerometerEditView.blockLayer.style.height = window.innerHeight + "px";
-        this.accelerometerEditView.rangeContainer.style.top = window.innerHeight / 2 + "px";
-        this.accelerometerEditView.radioAxisContainer.style.top = window.innerHeight / 4 + "px";
-        this.accelerometerEditView.radioCurveContainer.style.top = window.innerHeight / 8 + "px";
+        this.accelerometerEditView.rangeContainer.style.top = window.innerHeight / 1.6 + "px";
+        this.accelerometerEditView.checkeOnOffContainer.style.top = window.innerHeight / 3.5 + "px"
+        this.accelerometerEditView.radioAxisContainer.style.top = window.innerHeight / 5 + "px";
+        this.accelerometerEditView.radioCurveContainer.style.top = window.innerHeight / 10 + "px";
     }
     selectDefaultCurve(accSlider: AccelerometerSlider) {
         switch (accSlider.curve) {
@@ -109,32 +119,29 @@ class AccelerometerEdit {
 
         }
     }
-    applyRange1Values(accSlider: AccelerometerSlider) {
-        //this.accelerometerEditView.range1.min = String(accSlider.amin);
-        //this.accelerometerEditView.range1.max = String(accSlider.amax);
-        this.accelerometerEditView.range1.min = "-20";
-        this.accelerometerEditView.range1.max = "20";
-        this.accelerometerEditView.range1.step = "0.1";
-        this.accelerometerEditView.range1.value = String(accSlider.amin);
+    applyRangeMinValues(accSlider: AccelerometerSlider) {
+        this.accelerometerEditView.rangeMin.min = "-20";
+        this.accelerometerEditView.rangeMin.max = "20";
+        this.accelerometerEditView.rangeMin.step = "0.1";
+        this.accelerometerEditView.rangeMin.value = String(accSlider.amin);
     }
-    applyRange2Values(accSlider: AccelerometerSlider) {
-        //this.accelerometerEditView.range2.min = String(accSlider.amin);
-        //this.accelerometerEditView.range2.max = String(accSlider.amax);
-        this.accelerometerEditView.range2.min = "-20";
-        this.accelerometerEditView.range2.max = "20";
-        this.accelerometerEditView.range2.step = "0.1";
-        this.accelerometerEditView.range2.value = String(accSlider.amax);
+    applyRangeMidValues(accSlider: AccelerometerSlider) {
+        this.accelerometerEditView.rangeMid.min = "-20";
+        this.accelerometerEditView.rangeMid.max = "20";
+        this.accelerometerEditView.rangeMid.step = "0.1";
+        this.accelerometerEditView.rangeMid.value = String(accSlider.amid);
     }
-    applyRange3Values(accSlider: AccelerometerSlider) {
-        //this.accelerometerEditView.range3.min = String(accSlider.amin);
-        //this.accelerometerEditView.range3.max = String(accSlider.amax);
-        this.accelerometerEditView.range3.min = "-20";
-        this.accelerometerEditView.range3.max = "20";
-        this.accelerometerEditView.range3.step = "0.1";
-        this.accelerometerEditView.range3.value = String(accSlider.amid);
+    applyRangeMaxValues(accSlider: AccelerometerSlider) {
+        this.accelerometerEditView.rangeMax.min = "-20";
+        this.accelerometerEditView.rangeMax.max = "20";
+        this.accelerometerEditView.rangeMax.step = "0.1";
+        this.accelerometerEditView.rangeMax.value = String(accSlider.amax);
     }
     applyRangeVirtualValues(accSlider: AccelerometerSlider) {
-        //this.accelerometerEditView.rangeVirtual.parentElement.classList.add(Axis[accSlider.axis]);
+        this.accelerometerEditView.rangeVirtual.min = "-20";
+        this.accelerometerEditView.rangeVirtual.max = "20";
+        this.accelerometerEditView.rangeVirtual.value = "0";
+        this.accelerometerEditView.rangeVirtual.step = "0.1";
     }
     createCurrentControler(accSlider: AccelerometerSlider) {
         var controler: Controler = new Controler();
@@ -190,7 +197,6 @@ class AccelerometerEdit {
         }
     }
     editAxis(axe: Axis) {
-
         this.accSlid.axis = axe;
         var editAcc = AccelerometerHandler.sliderEdit;
         editAcc.axis = axe;
@@ -203,5 +209,35 @@ class AccelerometerEdit {
         var editAcc = AccelerometerHandler.sliderEdit;
         editAcc.curve = curve;
         AccelerometerHandler.curveSplitter(this.accSlid);
+    }
+
+    accelerometerSwitch(event: Event) {
+        this.accSlid.isActive = this.accelerometerEditView.checkeOnOff.checked;
+    }
+
+    virtualAccelerometer(event: Event) {
+        if (this.accelerometerEditView.checkeOnOff.checked == true) {
+            this.accelerometerEditView.checkeOnOff.checked = false
+            this.accSlid.isActive = false;
+        }
+        //if (AccelerometerHandler.sliderEdit != null) {
+        //    AccelerometerHandler.sliderEdit = null;
+        //};
+
+        var rangeVal = parseFloat(this.accelerometerEditView.rangeVirtual.value);
+        console.log(rangeVal);
+        App.accHandler.axisSplitter(this.accSlid, rangeVal, rangeVal, rangeVal, App.accHandler.applyNewValueToModule)
+    }
+    accMin() {
+        this.accSlid.amin = parseFloat(this.accelerometerEditView.rangeMin.value)
+        this.accSlid.converter.setMappingValues(this.accSlid.amin, this.accSlid.amid, this.accSlid.amax, this.accSlid.min, this.accSlid.ivalue, this.accSlid.max)
+    }
+    accMid() {
+        this.accSlid.amid = parseFloat(this.accelerometerEditView.rangeMid.value)
+        this.accSlid.converter.setMappingValues(this.accSlid.amin, this.accSlid.amid, this.accSlid.amax, this.accSlid.min, this.accSlid.ivalue, this.accSlid.max)
+    }
+    accMax() {
+        this.accSlid.amax = parseFloat(this.accelerometerEditView.rangeMax.value)
+        this.accSlid.converter.setMappingValues(this.accSlid.amin, this.accSlid.amid, this.accSlid.amax, this.accSlid.min, this.accSlid.ivalue, this.accSlid.max)
     }
 }

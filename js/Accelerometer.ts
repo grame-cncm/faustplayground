@@ -24,6 +24,7 @@ class AccelerometerSlider {
     mySlider: HTMLInputElement
     valueOutput: HTMLElement
     acc: string;
+    callbackEdit: any;
 
     constructor(controler: Controler) {
         if (controler != null) {
@@ -101,6 +102,7 @@ class AccelerometerHandler {
 
 
     axisSplitter(accelerometerSlide: AccelerometerSlider, x: number, y: number, z: number, callBack: (acc: AccelerometerSlider, val: number, axeValue: number) => void) {
+        
         switch (accelerometerSlide.axis) {
             case Axis.x:
                 var newVal = accelerometerSlide.converter.uiToFaust(x);
