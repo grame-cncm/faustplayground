@@ -37,7 +37,28 @@ label.curve {
     float: left;
     margin: 0 1%;
     padding: 3px 0;
+    padding-bottom:1.8em;
     text-align: center;
+}
+label#curve1 {
+    background:url(../img/curve1.png);
+    background-position: 50% 95%;
+    background-repeat: no-repeat;
+}
+label#curve2 {
+    background:url(../img/curve2.png);
+    background-position: 50% 95%;
+    background-repeat: no-repeat;
+}
+label#curve3 {
+    background:url(../img/curve3.png);
+    background-position: 50% 95%;
+    background-repeat: no-repeat;
+}
+label#curve4 {
+    background:url(../img/curve4.png);
+    background-position: 50% 95%;
+    background-repeat: no-repeat;
 }
 label.axe {
     box-shadow: 0 0 5px rgb(0, 67, 255);
@@ -69,6 +90,7 @@ form#checkOnOffContainer {
     width: 33%;
     margin: 0px auto;
     display: block;
+    min-width: 187px;
 }
 
 label#checkOnOffLabel {
@@ -109,7 +131,13 @@ div#rangeContainer {
 input.accRange {
     position:absolute;
 }
+label#labelTitle {
 
+    display: block;
+    font-size: 0.8em;
+    margin: -3em 1em;
+    position: absolute;
+}
 input[type="range"]#accRangeMin::-webkit-slider-thumb {
     content:"";
     background: url("../img/sliderleft_chrome.png");
@@ -199,7 +227,7 @@ input[type="range"]#accRangeMax::-webkit-slider-thumb {
     border-radius: 10px;
     margin-top: 1px;
     margin-bottom: 15px;
-    margin: 0 1em;
+    margin: 1em 1em;
     width: 95%;
 }
 
@@ -265,7 +293,7 @@ input[type="range"]#accRangeMax::-moz-range-thumb {
     border-radius: 10px;
     margin-top: 1px;
     margin-bottom: 15px;
-    margin: 0 1em;
+    margin: 1em 1em;
     width: 95%;
 }
 .x > input[type="range"]#accRangeCurrent::-moz-range-thumb {
@@ -310,4 +338,13 @@ button#cancelButton {
 button#validButton {
     background: url(../img/validate_white.png)no-repeat 50%;
     background-size: contain;
+}
+.editControl {
+    box-shadow: rgb(0, 112, 255) 0 0 5px;
+    border-radius: 3px;
+}
+.editControl:hover {
+    box-shadow: rgb(0, 112, 255) 0 0 20px!important;
+    border-radius: 3px;
+    cursor:pointer;
 }

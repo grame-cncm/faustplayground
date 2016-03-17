@@ -201,8 +201,20 @@ var ModuleClass = (function () {
         this.moduleFaustInterface.parse_ui(JSON.parse(this.moduleFaust.fDSP.json()).ui, this);
     };
     ModuleClass.prototype.deleteFaustInterface = function () {
-        while (this.moduleView.fInterfaceContainer.childNodes.length != 0)
+        this.deleteAccelerometerRef();
+        while (this.moduleView.fInterfaceContainer.childNodes.length != 0) {
             this.moduleView.fInterfaceContainer.removeChild(this.moduleView.fInterfaceContainer.childNodes[0]);
+        }
+    };
+    ModuleClass.prototype.deleteAccelerometerRef = function () {
+        for (var i = 0; i < this.moduleControles.length; i++) {
+            if (this.moduleControles[i].accelerometerSlider != null && this.moduleControles[i].accelerometerSlider != undefined) {
+                var index = AccelerometerHandler.accelerometerSliders.indexOf(this.moduleControles[i].accelerometerSlider);
+                AccelerometerHandler.accelerometerSliders.splice(index, 1);
+                delete this.moduleControles[i].accelerometerSlider;
+            }
+        }
+        this.moduleControles = [];
     };
     //---- Generic callback for Faust Interface
     //---- Called every time an element of the UI changes value

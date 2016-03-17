@@ -443,6 +443,7 @@ var App = (function () {
     App.idX = 0;
     App.baseImg = "img/";
     App.isAccelerometerOn = false;
+    App.isAccelerometerEditOn = false;
     return App;
 })();
 //# sourceMappingURL=App.js.map

@@ -106,7 +106,10 @@ class Scene {
     /******************** HANDLE MODULES IN SCENE ************************/
     getModules(): ModuleClass[] { return this.fModuleList; }
     addModule(module: ModuleClass): void { this.fModuleList.push(module); }
-    removeModule(module: ModuleClass, scene: Scene):void { scene.fModuleList.splice(scene.fModuleList.indexOf(module), 1); }
+    removeModule(module: ModuleClass, scene: Scene): void {
+        scene.fModuleList.splice(scene.fModuleList.indexOf(module), 1);
+
+    }
 	
     private cleanModules():void {
         for (var i = this.fModuleList.length - 1; i >= 0; i--) {

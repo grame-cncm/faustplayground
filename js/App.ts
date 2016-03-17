@@ -63,6 +63,7 @@ class App {
     static jsonText: string;
     static exportURL: string;
     static isAccelerometerOn: boolean = false;
+    static isAccelerometerEditOn: boolean = false;
     static accHandler: AccelerometerHandler;
     private static currentScene: number;
     private static src: IHTMLDivElementSrc;

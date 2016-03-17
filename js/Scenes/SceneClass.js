@@ -81,7 +81,9 @@ var Scene = (function () {
     /******************** HANDLE MODULES IN SCENE ************************/
     Scene.prototype.getModules = function () { return this.fModuleList; };
     Scene.prototype.addModule = function (module) { this.fModuleList.push(module); };
-    Scene.prototype.removeModule = function (module, scene) { scene.fModuleList.splice(scene.fModuleList.indexOf(module), 1); };
+    Scene.prototype.removeModule = function (module, scene) {
+        scene.fModuleList.splice(scene.fModuleList.indexOf(module), 1);
+    };
     Scene.prototype.cleanModules = function () {
         for (var i = this.fModuleList.length - 1; i >= 0; i--) {
             this.fModuleList[i].deleteModule();

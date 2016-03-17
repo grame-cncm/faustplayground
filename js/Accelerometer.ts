@@ -52,6 +52,13 @@ class AccelerometerSlider {
             this.amax = parseInt(arrayMeta[4]);
         }
     }
+    setAttributesDetailed(axis: Axis, curve: Curve, min: number, mid: number, max: number) {
+        this.axis = axis;
+        this.curve = curve;
+        this.amin = min;
+        this.amid = mid;
+        this.amax = max;
+    }
 }
 
 class AccelerometerHandler {
@@ -68,7 +75,6 @@ class AccelerometerHandler {
             console.log("Browser doesn't support DeviceMotionEvent")
         }
     }
-
 
     // propagate the new x, y, z value of the accelerometer to the regisred object
     propagate(event: DeviceMotionEvent) {
@@ -290,7 +296,7 @@ class AccUpDownConverter {
     uiToFaust(x: number) { return this.accToFaust.returnMappedValue(x) }
     faustToUi(x: number) { return this.accToFaust.returnMappedValue(x) };
     setMappingValues(amin: number, amid: number, amax: number, min: number, init: number, max: number): void {
-        this.accToFaust = new Interpolator3pt(amin, amid, amax, max, init, min);
+        this.accToFaust = new Interpolator3pt(amin, amid, amax, min, max, min);
         this.faustToAcc = new Interpolator(min, max, amin, amax);
     };
     getMappingValues(amin: number, amid: number, amax: number): InterpolateObject3pt {

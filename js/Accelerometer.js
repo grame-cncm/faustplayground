@@ -39,6 +39,13 @@ var AccelerometerSlider = (function () {
             this.amax = parseInt(arrayMeta[4]);
         }
     };
+    AccelerometerSlider.prototype.setAttributesDetailed = function (axis, curve, min, mid, max) {
+        this.axis = axis;
+        this.curve = curve;
+        this.amin = min;
+        this.amid = mid;
+        this.amax = max;
+    };
     return AccelerometerSlider;
 })();
 var AccelerometerHandler = (function () {
@@ -241,7 +248,7 @@ var AccUpDownConverter = (function () {
     AccUpDownConverter.prototype.faustToUi = function (x) { return this.accToFaust.returnMappedValue(x); };
     ;
     AccUpDownConverter.prototype.setMappingValues = function (amin, amid, amax, min, init, max) {
-        this.accToFaust = new Interpolator3pt(amin, amid, amax, max, init, min);
+        this.accToFaust = new Interpolator3pt(amin, amid, amax, min, max, min);
         this.faustToAcc = new Interpolator(min, max, amin, amax);
     };
     ;

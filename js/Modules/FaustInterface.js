@@ -109,7 +109,7 @@ var FaustInterface = (function () {
                 if (controler.meta[i].acc) {
                     controler.acc = controler.meta[i].acc;
                     controler.hasAccelerometer = true;
-                    var accSlide = AccelerometerHandler.registerAcceleratedSlider(controler, module);
+                    controler.accelerometerSlider = AccelerometerHandler.registerAcceleratedSlider(controler, module);
                     //var checkbox = document.createElement("input");
                     //checkbox.type = "checkbox";
                     if (App.isAccelerometerOn) {

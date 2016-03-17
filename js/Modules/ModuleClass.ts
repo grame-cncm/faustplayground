@@ -148,6 +148,7 @@ class ModuleClass implements IModule {
 
         this.deleteDSP(this.moduleFaust.fDSP);
         this.deleteCallback(this, this.sceneParent);
+
     }
 	
 	
@@ -270,11 +271,24 @@ class ModuleClass implements IModule {
         this.moduleFaustInterface.parse_ui(JSON.parse(this.moduleFaust.fDSP.json()).ui, this);
     }
     private deleteFaustInterface(): void {
+        this.deleteAccelerometerRef();
 
-        while (this.moduleView.fInterfaceContainer.childNodes.length != 0)
+        while (this.moduleView.fInterfaceContainer.childNodes.length != 0) {
             this.moduleView.fInterfaceContainer.removeChild(this.moduleView.fInterfaceContainer.childNodes[0]);
+        }
     }
 
+    private deleteAccelerometerRef() {
+        for (var i = 0; i < this.moduleControles.length; i++) {
+            if (this.moduleControles[i].accelerometerSlider != null && this.moduleControles[i].accelerometerSlider != undefined) {
+                var index = AccelerometerHandler.accelerometerSliders.indexOf(this.moduleControles[i].accelerometerSlider);
+                AccelerometerHandler.accelerometerSliders.splice(index, 1);
+                delete this.moduleControles[i].accelerometerSlider ;
+                //this.moduleControles.splice(i, 1)
+            }
+        }
+        this.moduleControles = [];
+    }
 
 
 
