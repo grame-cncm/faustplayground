@@ -83,11 +83,11 @@ var AccelerometerHandler = (function () {
         AccelerometerHandler.curveSplitter(accelerometerSlide);
         if (module != null) {
             AccelerometerHandler.accelerometerSliders.push(accelerometerSlide);
+            accelerometerSlide.mySlider.parentElement.classList.add(Axis[accelerometerSlide.axis]);
         }
         else {
             AccelerometerHandler.sliderEdit = accelerometerSlide;
         }
-        accelerometerSlide.mySlider.parentElement.classList.add(Axis[accelerometerSlide.axis]);
         return accelerometerSlide;
     };
     AccelerometerHandler.prototype.axisSplitter = function (accelerometerSlide, x, y, z, callBack) {

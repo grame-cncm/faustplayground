@@ -95,11 +95,14 @@ var AccelerometerEdit = (function () {
     };
     AccelerometerEdit.prototype.applyAccelerometerEdit = function () {
         this.accSlid.mySlider.parentElement.removeEventListener("click", this.accSlid.callbackEdit, true);
+        this.accSlid.mySlider.parentElement.removeEventListener("touchstart", this.accSlid.callbackEdit, true);
         this.accSlid.callbackEdit = this.editEvent.bind(this, this.accSlid);
         this.accSlid.mySlider.parentElement.addEventListener("click", this.accSlid.callbackEdit, true);
+        this.accSlid.mySlider.parentElement.addEventListener("touchstart", this.accSlid.callbackEdit, true);
         this.accSlid.mySlider.parentElement.classList.remove(this.originalAxis);
         this.accSlid.mySlider.parentElement.classList.add(Axis[this.accSlid.axis]);
         this.accelerometerEditView.blockLayer.style.display = "none";
+        this.accSlid.acc = this.accSlid.axis + " " + this.accSlid.curve + " " + this.accSlid.amin + " " + this.accSlid.amid + " " + this.accSlid.amax;
         window.removeEventListener("resize", this.windowResizeEvent);
         this.accelerometerEditView.rangeContainer.className = "";
     };
@@ -190,6 +193,7 @@ var AccelerometerEdit = (function () {
         this.accelerometerEditView.rangeCurrent.step = "0.1";
         var accCurrentVal = AccelerometerHandler.registerAcceleratedSlider(this.controler, null);
         accCurrentVal.mySlider = this.accelerometerEditView.rangeCurrent;
+        accCurrentVal.mySlider.parentElement.classList.add(Axis[accCurrentVal.axis]);
         accCurrentVal.isActive = true;
     };
     AccelerometerEdit.prototype.removeRangeCurrentValueFromMotionEvent = function () {
