@@ -127,7 +127,12 @@ var App = (function () {
         //    sourcecode, args
         //})
         //worker.postMessage(messageJson)
-        this.factory = faust.createDSPFactory(sourcecode, args, function (factory) { callback(factory); });
+        try {
+            this.factory = faust.createDSPFactory(sourcecode, args, function (factory) { callback(factory); });
+        }
+        catch (error) {
+            alert(error);
+        }
         //callback(this.factory)
         if (currentScene) {
             currentScene.unmuteScene();
@@ -138,6 +143,7 @@ var App = (function () {
         var _this = this;
         if (!factory) {
             alert(faust.getErrorMessage());
+            this.terminateUpload();
             return null;
         }
         // can't it be just window.scenes[window.currentScene] ???
@@ -212,8 +218,7 @@ var App = (function () {
         e.preventDefault();
     };
     App.prototype.terminateUpload = function () {
-        var uploadTitle = document.getElementById("upload");
-        uploadTitle.textContent = "";
+        App.hideFullPageLoading();
     };
     //-- Finds out if the drop was on an existing module or creating a new one
     //-- Upload content dropped on the page and create a Faust DSP with it
@@ -233,7 +238,12 @@ var App = (function () {
                 this.uploadCodeFaust(app, module, x, y, e, dsp_code);
             }
             else {
-                this.uploadFile2(app, module, x, y, e, dsp_code);
+                try {
+                    this.uploadFile2(app, module, x, y, e, dsp_code);
+                }
+                catch (error) {
+                    throw new Error("Upload2Error");
+                }
             }
         }
         else {
@@ -257,7 +267,7 @@ var App = (function () {
                     module.update(filename, dsp_code);
                 }
             }
-            app.terminateUpload();
+            //app.terminateUpload();
         };
         xmlhttp.open("GET", url);
         // 	Avoid error "mal formé" on firefox
@@ -272,7 +282,7 @@ var App = (function () {
         else {
             module.update("TEXT", dsp_code);
         }
-        app.terminateUpload();
+        //app.terminateUpload();
     };
     App.prototype.uploadFile2 = function (app, module, x, y, e, dsp_code) {
         var files = e.dataTransfer.files; //e.target.files ||
@@ -308,7 +318,7 @@ var App = (function () {
                 else if (type == "json") {
                     app.scenes[App.currentScene].recallScene(reader.result);
                 }
-                app.terminateUpload();
+                //app.terminateUpload();
             };
         }
     };

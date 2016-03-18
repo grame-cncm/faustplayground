@@ -8,6 +8,9 @@ var AccelerometerEditView = (function () {
         var container = document.createElement("div");
         container.id = "accEditContainer";
         this.container = container;
+        var labelTitle = document.createElement("label");
+        labelTitle.id = "labelTitle";
+        this.labelTitle = labelTitle;
         var radioCurveContainer = document.createElement("form");
         radioCurveContainer.id = "radioCurveContainer";
         this.radioCurveContainer = radioCurveContainer;
@@ -119,9 +122,9 @@ var AccelerometerEditView = (function () {
         this.checkeOnOff = checkOnOff;
         checkOnOffLabel.appendChild(checkOnOff);
         checkOnOffLabel;
-        var labelTitle = document.createElement("label");
-        labelTitle.id = "labelTitle";
-        this.labelTitle = labelTitle;
+        var cloneContainer = document.createElement("div");
+        cloneContainer.id = "cloneContainer";
+        this.cloneContainer = cloneContainer;
         var accRangeMax = document.createElement("input");
         accRangeMax.id = "accRangeMax";
         accRangeMax.className = "accRange";
@@ -151,7 +154,7 @@ var AccelerometerEditView = (function () {
         var rangeContainer = document.createElement("div");
         rangeContainer.id = "rangeContainer";
         this.rangeContainer = rangeContainer;
-        rangeContainer.appendChild(labelTitle);
+        //rangeContainer.appendChild(labelTitle);
         rangeContainer.appendChild(accRangeMin);
         rangeContainer.appendChild(accRangeMid);
         rangeContainer.appendChild(accRangeMax);
@@ -172,6 +175,7 @@ var AccelerometerEditView = (function () {
         container.appendChild(radioCurveContainer);
         container.appendChild(radioAxisContainer);
         container.appendChild(checkOnOffContainer);
+        container.appendChild(cloneContainer);
         container.appendChild(rangeContainer);
         container.appendChild(validContainer);
         blockLayer.appendChild(container);

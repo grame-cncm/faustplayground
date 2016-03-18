@@ -4,6 +4,7 @@
     radioAxisContainer: HTMLFormElement;
     radioCurveContainer: HTMLFormElement;
     checkeOnOffContainer: HTMLFormElement;
+    cloneContainer: HTMLDivElement;
     checkeOnOff: HTMLInputElement;
     labelTitle: HTMLLabelElement;
     rangeContainer: HTMLDivElement;
@@ -35,6 +36,10 @@
         var container = document.createElement("div")
         container.id = "accEditContainer";
         this.container = container;
+
+        var labelTitle = document.createElement("label");
+        labelTitle.id = "labelTitle";
+        this.labelTitle = labelTitle;
 
         var radioCurveContainer = document.createElement("form")
         radioCurveContainer.id = "radioCurveContainer"
@@ -168,11 +173,11 @@
         checkOnOff.type = "checkbox";
         checkOnOff.id = "checkOnOff";
         this.checkeOnOff = checkOnOff;
-        checkOnOffLabel.appendChild(checkOnOff);checkOnOffLabel
+        checkOnOffLabel.appendChild(checkOnOff); checkOnOffLabel
 
-        var labelTitle = document.createElement("label");
-        labelTitle.id = "labelTitle";
-        this.labelTitle = labelTitle;
+        var cloneContainer = document.createElement("div");
+        cloneContainer.id = "cloneContainer";
+        this.cloneContainer = cloneContainer;
 
         var accRangeMax = document.createElement("input");
         accRangeMax.id = "accRangeMax";
@@ -209,7 +214,7 @@
         rangeContainer.id = "rangeContainer";
         this.rangeContainer = rangeContainer;
 
-        rangeContainer.appendChild(labelTitle);
+        //rangeContainer.appendChild(labelTitle);
         rangeContainer.appendChild(accRangeMin);
         rangeContainer.appendChild(accRangeMid);
         rangeContainer.appendChild(accRangeMax);
@@ -236,6 +241,7 @@
         container.appendChild(radioCurveContainer);
         container.appendChild(radioAxisContainer);
         container.appendChild(checkOnOffContainer);
+        container.appendChild(cloneContainer);
         container.appendChild(rangeContainer);
         container.appendChild(validContainer);
 

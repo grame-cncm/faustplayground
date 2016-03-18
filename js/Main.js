@@ -12,6 +12,17 @@ window.addEventListener('load', init, false);
 //var worker = new Worker("js/worker.js");
 //worker.addEventListener("message", function (event) { console.log(event.data) }, false)
 function init() {
+    window.addEventListener("error", function (e) {
+        if (e.message == "Uncaught Error: workerError" || e.message == "Error: workerError") {
+            alert("une erreur s'est produite :" + e.message);
+            App.hideFullPageLoading();
+        }
+        if (e.message == "Uncaught Error: Upload2Error") {
+            App.hideFullPageLoading();
+            e.preventDefault();
+        }
+        //e.preventDefault();
+    });
     var app = new App();
     try {
         App.audioContext = new AudioContext();

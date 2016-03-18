@@ -1,6 +1,6 @@
 
 importScripts('libfaustworker.js');
-function request(e) {
+onmessage=function(e) {
     //postMessage("debut worker")
     var code = e.data.code;
     var argv = e.data.argv;
@@ -32,9 +32,9 @@ function request(e) {
         Module.writeStringToMemory(argv[i], arg_ptr);
         argv_ptr_buffer[i] = arg_ptr; 
     }
-    postMessage("before createAsmCDSPFactoryFromString")
+    //postMessage("before createAsmCDSPFactoryFromString")
     var factory_code_ptr = createAsmCDSPFactoryFromString(name_ptr, code_ptr, argv.length, argv_ptr, error_msg_ptr);
-    postMessage("after createAsmCDSPFactoryFromString")
+    //postMessage("after createAsmCDSPFactoryFromString")
     var factory_code = Pointer_stringify(factory_code_ptr);
     var error_msg = Pointer_stringify(error_msg_ptr);
 
@@ -52,11 +52,11 @@ function request(e) {
         Module._free(argv_ptr_buffer[i]);
     }
     Module._free(argv_ptr);
-    postMessage("before posting back")
+    //postMessage("before posting back")
     // Returns compiled factory
     postMessage({ factory_code: factory_code, error_msg: error_msg });
-    postMessage("after posting back")
+    //postMessage("after posting back")
 
 }
 
-addEventListener("message", function(e) { request(e) }, false);
+//addEventListener("message", function(e) { request(e) }, false);

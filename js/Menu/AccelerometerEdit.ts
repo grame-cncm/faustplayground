@@ -7,13 +7,20 @@ class AccelerometerEdit {
     isOn: boolean = false
     accSlid: AccelerometerSlider;
     controler: Controler;
+    originalSlider: HTMLInputElement;
+    originalSliderStyle: string;
+    originalValueOutput: HTMLElement;
     originalAccValue: string;
     originalAxis: string;
     originalActive: boolean;
     originalDefaultVal: number;
     originalDefaultSliderVal: string;
+    sliderStyle: string;
+    currentParentElemSliderClone: HTMLElement
     windowResizeEvent: any;
-    eventEditHandler: (event: Event, accSlide:AccelerometerSlider) => void;
+    eventEditHandler: (event: Event, accSlide: AccelerometerSlider) => void;
+
+
     constructor(accelerometerEditView: AccelerometerEditView) {
         this.accelerometerEditView = accelerometerEditView
         this.eventEditHandler = (event: Event, accelerometer: AccelerometerSlider) => { this.editEvent(accelerometer, event) };
@@ -45,6 +52,7 @@ class AccelerometerEdit {
                 currentAccSlide.mySlider.parentElement.removeEventListener("click", currentAccSlide.callbackEdit, true);
                 currentAccSlide.mySlider.parentElement.removeEventListener("touchstart", currentAccSlide.callbackEdit, true);
                 currentAccSlide.mySlider.parentElement.classList.remove('editControl');
+                currentAccSlide.mySlider.classList.remove('edit');
                 this.setSliderDisableValue(currentAccSlide);
 
 
@@ -61,6 +69,7 @@ class AccelerometerEdit {
                 currentAccSlide.mySlider.parentElement.addEventListener("click", currentAccSlide.callbackEdit, true);
                 currentAccSlide.mySlider.parentElement.addEventListener("touchstart", currentAccSlide.callbackEdit, true);
                 currentAccSlide.mySlider.parentElement.classList.add('editControl');
+                currentAccSlide.mySlider.classList.add('edit');
                 currentAccSlide.mySlider.disabled = true;
 
             }
@@ -71,21 +80,20 @@ class AccelerometerEdit {
     setSliderDisableValue(slider: AccelerometerSlider) {
         if (slider.isActive) {
             slider.mySlider.disabled = true;
-            slider.mySlider.style.opacity = "0.5";
         } else {
             slider.mySlider.disabled = false;
-            slider.mySlider.style.opacity = "1";
         }
     }
     editEvent(accSlider: AccelerometerSlider,event: Event):any {
         event.stopPropagation();
         event.preventDefault();
+
         this.windowResizeEvent = this.placeElement.bind(this);
         window.addEventListener("resize", this.windowResizeEvent )
         this.accSlid = accSlider;
         this.storeAccelerometerSliderInfos(accSlider);
         this.placeElement();
-        this.accelerometerEditView.labelTitle.textContent = accSlider.label;
+        //this.accelerometerEditView.labelTitle.textContent = accSlider.label;
         this.selectDefaultAxis(accSlider);
         this.selectDefaultCurve(accSlider);
         this.accelerometerEditView.checkeOnOff.checked = this.accSlid.isActive;
@@ -95,10 +103,31 @@ class AccelerometerEdit {
         this.applyRangeVirtualValues(accSlider);
         this.createCurrentControler(accSlider);
         this.applyRangeCurrentValues(accSlider);
+        this.addCloneSlider(accSlider);
+
         
 
 
         
+    }
+    addCloneSlider(accSlider: AccelerometerSlider) {
+
+        this.originalSlider = accSlider.mySlider;
+        this.originalValueOutput = accSlider.valueOutput;
+        this.currentParentElemSliderClone = <HTMLElement>accSlider.mySlider.parentElement.cloneNode(true);
+        var title = accSlider.module.moduleView.fModuleContainer.getElementsByTagName("h6")[0].cloneNode(true);
+        this.accelerometerEditView.container.insertBefore(title, this.accelerometerEditView.radioCurveContainer);
+        this.accelerometerEditView.cloneContainer.appendChild(this.currentParentElemSliderClone);
+        accSlider.mySlider = this.currentParentElemSliderClone.getElementsByTagName("input")[0];
+        accSlider.valueOutput = <HTMLElement>this.currentParentElemSliderClone.getElementsByClassName("value")[0];
+        this.accelerometerSwitch(this.accSlid.isActive)
+
+    }
+    removeCloneSlider(accSlider: AccelerometerSlider) {
+        this.accelerometerEditView.cloneContainer.removeChild(this.accelerometerEditView.cloneContainer.getElementsByTagName("div")[0])
+        accSlider.mySlider = this.originalSlider;
+        accSlider.valueOutput = this.originalValueOutput;
+        this.accelerometerEditView.container.getElementsByTagName("h6")[0].remove()
     }
     cancelAccelerometerEdit() {
         this.accSlid.setAttributes(this.originalAccValue);
@@ -111,29 +140,35 @@ class AccelerometerEdit {
         this.accSlid.valueOutput.textContent = this.accSlid.ivalue.toString();
         AccelerometerHandler.curveSplitter(this.accSlid);
         this.accelerometerEditView.blockLayer.style.display = "none";
+        this.removeCloneSlider(this.accSlid);
 
 
     }
     applyAccelerometerEdit() {
-        this.accSlid.mySlider.parentElement.removeEventListener("click", this.accSlid.callbackEdit, true);
-        this.accSlid.mySlider.parentElement.removeEventListener("touchstart", this.accSlid.callbackEdit, true);
-        this.accSlid.callbackEdit = this.editEvent.bind(this, this.accSlid);
-        this.accSlid.mySlider.parentElement.addEventListener("click", this.accSlid.callbackEdit, true);
-        this.accSlid.mySlider.parentElement.addEventListener("touchstart", this.accSlid.callbackEdit, true);
+        this.removeCloneSlider(this.accSlid);
         this.accSlid.mySlider.parentElement.classList.remove(this.originalAxis);
         this.accSlid.mySlider.parentElement.classList.add(Axis[this.accSlid.axis]);
         this.accelerometerEditView.blockLayer.style.display = "none";
         this.accSlid.acc =  this.accSlid.axis + " " + this.accSlid.curve + " " + this.accSlid.amin + " " + this.accSlid.amid + " " + this.accSlid.amax ;
         window.removeEventListener("resize", this.windowResizeEvent);
         this.accelerometerEditView.rangeContainer.className = "";
+        this.accSlid.mySlider.classList.remove(this.originalSliderStyle);
+        this.accSlid.mySlider.classList.add(this.sliderStyle);
+        this.accSlid.mySlider.parentElement.removeEventListener("click", this.accSlid.callbackEdit, true);
+        this.accSlid.mySlider.parentElement.removeEventListener("touchstart", this.accSlid.callbackEdit, true);
+        this.accSlid.callbackEdit = this.editEvent.bind(this, this.accSlid);
+        this.accSlid.mySlider.parentElement.addEventListener("click", this.accSlid.callbackEdit, true);
+        this.accSlid.mySlider.parentElement.addEventListener("touchstart", this.accSlid.callbackEdit, true);
+
     }
     placeElement() {
         this.accelerometerEditView.blockLayer.style.display = "block";
         this.accelerometerEditView.blockLayer.style.height = window.innerHeight + "px";
-        this.accelerometerEditView.rangeContainer.style.top = window.innerHeight / 1.6 + "px";
-        this.accelerometerEditView.checkeOnOffContainer.style.top = window.innerHeight / 3.5 + "px"
-        this.accelerometerEditView.radioAxisContainer.style.top = window.innerHeight / 5 + "px";
-        this.accelerometerEditView.radioCurveContainer.style.top = window.innerHeight / 10 + "px";
+        this.accelerometerEditView.rangeContainer.style.top = window.innerHeight / 1.8 + "px";
+        this.accelerometerEditView.cloneContainer.style.top = window.innerHeight / 7 + "px";
+        this.accelerometerEditView.checkeOnOffContainer.style.top = window.innerHeight / 8 + "px"
+        this.accelerometerEditView.radioAxisContainer.style.top = window.innerHeight / 12 + "px";
+        this.accelerometerEditView.radioCurveContainer.style.top = window.innerHeight / 25 + "px";
     }
     storeAccelerometerSliderInfos(accSlider: AccelerometerSlider) {
         this.originalAxis = Axis[accSlider.axis];
@@ -141,6 +176,11 @@ class AccelerometerEdit {
         this.originalActive = accSlider.isActive;
         this.originalDefaultVal = accSlider.ivalue;
         this.originalDefaultSliderVal = accSlider.mySlider.value;
+        if (accSlider.isActive) {
+            this.originalSliderStyle = "not-allowed";
+        } else {
+            this.originalSliderStyle = "allowed";
+        }
     }
     selectDefaultCurve(accSlider: AccelerometerSlider) {
         switch (accSlider.curve) {
@@ -250,11 +290,14 @@ class AccelerometerEdit {
         }
     }
     editAxis(axe: Axis) {
+        this.accelerometerEditView.cloneContainer.getElementsByTagName("div")[0].classList.remove(Axis[this.accSlid.axis]);
+        this.accelerometerEditView.cloneContainer.getElementsByTagName("div")[0].classList.add(Axis[axe]);
         this.accSlid.axis = axe;
         var editAcc = AccelerometerHandler.sliderEdit;
         editAcc.axis = axe;
         editAcc.mySlider.parentElement.className = "";
         editAcc.mySlider.parentElement.classList.add(Axis[editAcc.axis]);
+        
     }
     editCurve(curve: Curve) {
 
@@ -273,9 +316,9 @@ class AccelerometerEdit {
     accelerometerSwitch(isSliderActive: boolean) {
         if (isSliderActive) {
             this.accSlid.isActive = isSliderActive
-            this.accSlid.mySlider.style.opacity = "0.5";
+            this.sliderStyle = "not-allowed";
         } else {
-            this.accSlid.mySlider.style.opacity = "1";
+            this.sliderStyle = "allowed";
             this.accSlid.isActive = isSliderActive
         }
     }

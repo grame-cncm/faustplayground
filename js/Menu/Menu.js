@@ -245,22 +245,24 @@ var Menu = (function () {
         if (this.isAccelerometer) {
             for (var i = 0; i < AccelerometerHandler.accelerometerSliders.length; i++) {
                 AccelerometerHandler.accelerometerSliders[i].isActive = false;
-                AccelerometerHandler.accelerometerSliders[i].mySlider.style.opacity = "1";
-                AccelerometerHandler.accelerometerSliders[i].mySlider.style.cursor = "pointer";
+                //AccelerometerHandler.accelerometerSliders[i].mySlider.style.opacity = "1";
+                AccelerometerHandler.accelerometerSliders[i].mySlider.classList.remove("not-allowed");
+                AccelerometerHandler.accelerometerSliders[i].mySlider.classList.add("allowed");
                 if (!App.isAccelerometerEditOn) {
                     AccelerometerHandler.accelerometerSliders[i].mySlider.disabled = false;
                 }
                 this.isAccelerometer = false;
                 App.isAccelerometerOn = false;
             }
-            this.menuView.accButton.style.opacity = "0.2";
+            this.menuView.accButton.style.opacity = "0.3";
         }
         else if (!this.isAccelerometer) {
             for (var i = 0; i < AccelerometerHandler.accelerometerSliders.length; i++) {
                 AccelerometerHandler.accelerometerSliders[i].isActive = true;
-                AccelerometerHandler.accelerometerSliders[i].mySlider.style.opacity = "0.5";
+                //AccelerometerHandler.accelerometerSliders[i].mySlider.style.opacity = "0.5";
+                AccelerometerHandler.accelerometerSliders[i].mySlider.classList.add("not-allowed");
+                AccelerometerHandler.accelerometerSliders[i].mySlider.classList.remove("allowed");
                 if (!App.isAccelerometerEditOn) {
-                    AccelerometerHandler.accelerometerSliders[i].mySlider.style.cursor = "not-allowed";
                     AccelerometerHandler.accelerometerSliders[i].mySlider.disabled = true;
                 }
                 this.isAccelerometer = true;

@@ -182,7 +182,11 @@ class App {
         //    sourcecode, args
         //})
         //worker.postMessage(messageJson)
-        this.factory = faust.createDSPFactory(sourcecode, args, (factory) => { callback(factory) });
+        try {
+            this.factory = faust.createDSPFactory(sourcecode, args, (factory) => { callback(factory) });
+        } catch (error) {
+            alert(error)
+        }
         
         //callback(this.factory)
         if (currentScene) { currentScene.unmuteScene() };
@@ -193,6 +197,7 @@ class App {
 
         if (!factory) {
             alert(faust.getErrorMessage());
+            this.terminateUpload();
             return null;
         }
 
@@ -281,8 +286,7 @@ class App {
 
     private terminateUpload(): void {
 
-        var uploadTitle: HTMLElement = document.getElementById("upload");
-        uploadTitle.textContent = "";
+        App.hideFullPageLoading();
 
     }
 
@@ -310,7 +314,11 @@ class App {
             }
             // CASE 3 : THE DROPPED OBJECT IS A FILE CONTAINING SOME FAUST CODE
             else {
-                this.uploadFile2(app, module, x, y, e, dsp_code)
+                try {
+                    this.uploadFile2(app, module, x, y, e, dsp_code)
+                } catch (error) {
+                    throw new Error("Upload2Error");
+                }
             }
         } else { // CASE 4 : ANY OTHER STRANGE THING
             app.terminateUpload();
@@ -336,7 +344,7 @@ class App {
                 }
             }
 
-            app.terminateUpload();
+            //app.terminateUpload();
         }
 
         xmlhttp.open("GET", url);
@@ -354,7 +362,7 @@ class App {
             module.update("TEXT", dsp_code);
         }
 
-        app.terminateUpload();
+        //app.terminateUpload();
     }
 
     uploadFile2(app: App, module: ModuleClass, x: number, y: number, e: DragEvent, dsp_code: string) {
@@ -396,7 +404,7 @@ class App {
                 } else if (type == "json") {
                     app.scenes[App.currentScene].recallScene(reader.result);
                 }
-                app.terminateUpload();
+                //app.terminateUpload();
             };
         }
     }

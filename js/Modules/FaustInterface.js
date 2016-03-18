@@ -110,10 +110,13 @@ var FaustInterface = (function () {
                     controler.acc = controler.meta[i].acc;
                     controler.hasAccelerometer = true;
                     controler.accelerometerSlider = AccelerometerHandler.registerAcceleratedSlider(controler, module);
+                    slider.classList.add("allowed");
                     //var checkbox = document.createElement("input");
                     //checkbox.type = "checkbox";
                     if (App.isAccelerometerOn) {
-                        slider.style.opacity = "0.3";
+                        slider.classList.remove("allowed");
+                        slider.classList.add("not-allowed");
+                        // slider.style.opacity = "0.3";
                         slider.disabled = true;
                     }
                 }

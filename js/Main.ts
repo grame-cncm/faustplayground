@@ -22,6 +22,21 @@ window.addEventListener('load', init, false);
 
 function init():void {
 
+    window.addEventListener("error", (e: ErrorEvent) => {
+        if (e.message == "Uncaught Error: workerError" || e.message =="Error: workerError") {
+            alert("une erreur s'est produite :" + e.message)
+            App.hideFullPageLoading();
+        }
+        if (e.message == "Uncaught Error: Upload2Error") {
+            
+
+            App.hideFullPageLoading();
+            e.preventDefault();
+        }
+        //e.preventDefault();
+
+    });
+
     var app: App = new App();
 
     try {

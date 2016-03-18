@@ -9,6 +9,14 @@
 div#accEditContainer {
     color: white;
 }
+
+div#accEditContainer>h6.module-title {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 0;
+    font-size: 1.3em;
+    margin-top: 0em;
+}
 form#radioCurveContainer {
     width: 75%;
     margin: 0 auto;
@@ -20,7 +28,9 @@ form#radioAxisContainer {
     width: 50%;
     margin: 0 auto;
 }
-
+[type="radio"], [type="checkbox"] {
+    cursor:pointer;
+}
 input.radio {
     width: 1.3em;
     display: block;
@@ -113,7 +123,23 @@ input#checkOnOff {
     float: right;
 }
 
+div#cloneContainer {
+    position: relative;
+    width: 33%;
+    margin: 0 auto;
+    opacity: 0.5;
+    height:0;
+}
 
+
+#cloneContainer > .control-group {
+    cursor: not-allowed;
+    background: white;
+    color: red;
+}
+#cloneContainer > .control-group > input {
+    cursor:not-allowed;
+}
 div#rangeContainer {
     /* top: 400px; */
     position: relative;
@@ -326,7 +352,7 @@ div#validContainer {
 button.accButton {
     border-right: 1px solid rgba(0, 0, 255, 0.35) !important;
     border-top: 1px solid rgba(0, 0, 255, 0.35) !important;
-    height: 5em;
+    height: 3em;
     width: 50%;
     border: none;
 }
