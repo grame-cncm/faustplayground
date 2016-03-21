@@ -38,7 +38,7 @@ function init() {
     App.accHandler = accHandler;
     accHandler.getAccelerometerValue();
 }
-window.addEventListener('touchstart', IosInit, false);
+window.addEventListener('touchend', IosInit, false);
 function IosInit() {
     var buffer = App.audioContext.createBuffer(1, 1, 22050);
     var source = App.audioContext.createBufferSource();
@@ -49,7 +49,7 @@ function IosInit() {
     if (source.noteOn) {
         source.noteOn(0);
     }
-    window.removeEventListener('touchstart', IosInit, false);
+    window.removeEventListener('touchend', IosInit, false);
 }
 var PositionModule = (function () {
     function PositionModule() {

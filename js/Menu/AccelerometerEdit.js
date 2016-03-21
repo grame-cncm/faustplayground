@@ -127,6 +127,10 @@ var AccelerometerEdit = (function () {
         this.accSlid.callbackEdit = this.editEvent.bind(this, this.accSlid);
         this.accSlid.mySlider.parentElement.addEventListener("click", this.accSlid.callbackEdit, true);
         this.accSlid.mySlider.parentElement.addEventListener("touchstart", this.accSlid.callbackEdit, true);
+        if (this.originalAccValue != this.accSlid.acc) {
+            var newCodeFaust = new CodeFaustParser(this.accSlid.module.moduleFaust.fSource, this.accSlid.name, this.accSlid.acc);
+            this.accSlid.module.moduleFaust.fSource = newCodeFaust.replaceAccValue();
+        }
     };
     AccelerometerEdit.prototype.placeElement = function () {
         this.accelerometerEditView.blockLayer.style.display = "block";

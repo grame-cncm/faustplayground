@@ -27,6 +27,7 @@ var AccelerometerSlider = (function () {
             this.valueOutput = controler.output;
             this.isActive = App.isAccelerometerOn;
             this.precision = parseFloat(controler.precision);
+            this.name = controler.label;
         }
     }
     AccelerometerSlider.prototype.setAttributes = function (fMetaAcc) {

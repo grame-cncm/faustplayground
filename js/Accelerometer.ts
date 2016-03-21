@@ -7,6 +7,7 @@ enum Axis { x, y, z };
 enum Curve { Up, Down, UpDown, DownUp };
 
 class AccelerometerSlider {
+    name: string;
     axis: Axis;
     curve: Curve;
     amin: number;
@@ -39,6 +40,7 @@ class AccelerometerSlider {
             this.valueOutput = controler.output;
             this.isActive = App.isAccelerometerOn;
             this.precision = parseFloat(controler.precision);
+            this.name = controler.label;
         }
     }
 

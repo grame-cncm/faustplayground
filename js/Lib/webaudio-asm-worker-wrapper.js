@@ -261,7 +261,7 @@ faust.pow2limit = function (x) {
 
 faust.createDSPFactoryTmp = function (factory_code, factory_name, sha_key, max_polyphony) {
     
-    console.log(factory_code);
+    //console.log(factory_code);
 
     // 'libfaustworker.js' asm.js backend generates the ASM module + UI method, then we compile the code
     eval(factory_code);
