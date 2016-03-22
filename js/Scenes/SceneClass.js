@@ -19,6 +19,7 @@ var Scene = (function () {
         //-- Modules contained in the scene
         this.fModuleList = [];
         this.isInitLoading = true;
+        this.isOutputTouch = false;
         this.parent = parent;
         this.sceneView = new SceneView();
         this.sceneView.initNormalScene(this);
@@ -53,7 +54,7 @@ var Scene = (function () {
     Scene.prototype.unmuteScene = function () {
         var _this = this;
         console.log("timeIn");
-        window.setTimeout(function () { _this.delayedUnmuteScene(); }, 1000);
+        window.setTimeout(function () { _this.delayedUnmuteScene(); }, 500);
     };
     Scene.prototype.delayedUnmuteScene = function () {
         console.log("timeout");
@@ -69,14 +70,27 @@ var Scene = (function () {
     //add listner on the output module to give the user the possibility to mute/onmute the scene
     Scene.prototype.addMuteOutputListner = function (moduleOutput) {
         var _this = this;
-        moduleOutput.moduleView.fModuleContainer.ondblclick = function () {
-            if (!_this.isMute) {
-                _this.muteScene();
-            }
-            else {
-                _this.unmuteScene();
-            }
-        };
+        moduleOutput.moduleView.fModuleContainer.ontouchstart = function () { _this.dbleTouchOutput(); };
+        moduleOutput.moduleView.fModuleContainer.ondblclick = function () { _this.dispatchEventMuteUnmute(); };
+    };
+    Scene.prototype.dbleTouchOutput = function () {
+        var _this = this;
+        if (!this.isOutputTouch) {
+            this.isOutputTouch = true;
+            window.setTimeout(function () { _this.isOutputTouch = false; }, 300);
+        }
+        else {
+            this.dispatchEventMuteUnmute();
+            this.isOutputTouch = false;
+        }
+    };
+    Scene.prototype.dispatchEventMuteUnmute = function () {
+        if (!this.isMute) {
+            this.muteScene();
+        }
+        else {
+            this.unmuteScene();
+        }
     };
     /******************** HANDLE MODULES IN SCENE ************************/
     Scene.prototype.getModules = function () { return this.fModuleList; };

@@ -31,6 +31,7 @@ class Scene {
     sceneView: SceneView;
     static sceneName: string = "Patch";
     isInitLoading: boolean = true;
+    isOutputTouch: boolean = false;
     eventEditAcc: (event: Event) => void;
 
     
@@ -77,7 +78,7 @@ class Scene {
     }
     unmuteScene(): void {
         console.log("timeIn");
-        window.setTimeout(() => { this.delayedUnmuteScene() }, 1000)
+        window.setTimeout(() => { this.delayedUnmuteScene() }, 500)
     }
 
     delayedUnmuteScene() {//because of probable Firefox bug with audioContext.resume() when resume to close from suspend
@@ -95,12 +96,24 @@ class Scene {
     }
     //add listner on the output module to give the user the possibility to mute/onmute the scene
     addMuteOutputListner(moduleOutput: ModuleClass) {
-        moduleOutput.moduleView.fModuleContainer.ondblclick = () => {
-            if (!this.isMute) {
-                this.muteScene()
-            } else {
-                this.unmuteScene()
-            }
+        moduleOutput.moduleView.fModuleContainer.ontouchstart = () => { this.dbleTouchOutput() }
+        moduleOutput.moduleView.fModuleContainer.ondblclick = () => { this.dispatchEventMuteUnmute()}
+    }
+
+    dbleTouchOutput() {
+        if (!this.isOutputTouch) {
+            this.isOutputTouch = true;
+            window.setTimeout(() => { this.isOutputTouch = false }, 300)
+        } else {
+            this.dispatchEventMuteUnmute();
+            this.isOutputTouch = false;
+        }
+    }
+    dispatchEventMuteUnmute() {
+        if (!this.isMute) {
+            this.muteScene()
+        } else {
+            this.unmuteScene()
         }
     }
     /******************** HANDLE MODULES IN SCENE ************************/
