@@ -41,9 +41,9 @@ class AccelerometerEdit {
 
     }
 
-    editAction(scene: Scene) {
-        if (this.isOn) {
+    editAction() {
 
+        if (this.isOn) {
             for (var i = 0; i < AccelerometerHandler.accelerometerSliders.length; i++) {
                 //AccelerometerHandler.accelerometerSliders[i].mySlider.addEventListener("mousedown", (e) => { e.stopPropagation() })
                 //AccelerometerHandler.accelerometerSliders[i].mySlider.addEventListener("touchstart", (e) => { e.stopPropagation() })
@@ -76,6 +76,7 @@ class AccelerometerEdit {
             this.isOn = true;
             App.isAccelerometerEditOn = true;
         }
+
     }
     setSliderDisableValue(slider: AccelerometerSlider) {
         if (slider.isActive) {
@@ -84,6 +85,8 @@ class AccelerometerEdit {
             slider.mySlider.disabled = false;
         }
     }
+
+
     editEvent(accSlider: AccelerometerSlider,event: Event):any {
         event.stopPropagation();
         event.preventDefault();

@@ -41,6 +41,10 @@ var MenuView = (function () {
         accButton.id = "accButton";
         accButton.className = "buttonsLittleMenu";
         this.accButton = accButton;
+        //var accEditButton: HTMLElement = document.createElement("div");
+        //accEditButton.id = "accEditButton";
+        //accEditButton.className = "buttonsLittleMenu";
+        //this.accEditButton = accEditButton;
         if (!App.isAccelerometerOn) {
             accButton.style.opacity = "0.2";
         }

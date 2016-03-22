@@ -37,7 +37,7 @@ class Menu {
         this.menuView.libraryButtonMenu.onclick = () => { this.menuHandler(this.menuChoices = MenuChoices.library) };
         this.menuView.exportButtonMenu.onclick = () => { this.menuHandler(this.menuChoices = MenuChoices.export) };
         this.menuView.helpButtonMenu.onclick = () => { this.menuHandler(this.menuChoices = MenuChoices.help) };
-        this.menuView.editButtonMenu.onclick = () => { this.menuHandler(this.menuChoices = MenuChoices.edit) };
+        this.menuView.editButtonMenu.addEventListener("click", () => { this.menuHandler(this.menuChoices = MenuChoices.edit) });
         this.menuView.closeButton.onclick = () => { this.menuHandler(this.menuChoices = MenuChoices.null) };
         this.menuView.fullScreenButton.addEventListener("click", () => { this.fullScreen() });
         this.menuView.accButton.addEventListener("click", () => { this.accelerometer() });
@@ -53,14 +53,15 @@ class Menu {
         this.menuView.exportView.inputNameApp.onchange = (e) => { this.updatePatchNameToInput(e) }
         this.mouseOverLowerMenu = (event: MouseEvent) => { this.raiseLibraryMenuEvent(event) }
         this.accEdit = new AccelerometerEdit(this.menuView.accEditView);
+        document.addEventListener("codeeditevent", ()=> { this.customeCodeEditEvent() });
         //this.accEdit.accelerometerEditView = this.menuView.accEditView
 
     }
 
-    menuHandler(menuChoises: MenuChoices): any {
+    menuHandler(menuChoices: MenuChoices): any {
         this.help.stopVideo();
 
-        switch (this.menuChoices) {
+        switch (menuChoices) {
             case MenuChoices.library:
                 this.libraryMenu();
                 break;
@@ -170,14 +171,16 @@ class Menu {
     editMenu() {
         switch (this.currentMenuChoices) {
             case MenuChoices.null:
+
                 this.menuView.editButtonMenu.style.backgroundColor = "#00C50D";
                 this.menuView.editButtonMenu.style.boxShadow = "yellow 0px 0px 51px inset";
 
-                this.accEdit.editAction(this.sceneCurrent);
+
+                this.accEdit.editAction();
                 this.currentMenuChoices = MenuChoices.edit;
                 break;
             case MenuChoices.edit:
-                this.accEdit.editAction(this.sceneCurrent);
+                this.accEdit.editAction();
 
                 this.menuView.editButtonMenu.style.backgroundColor = this.menuView.menuColorDefault;
                 this.menuView.editButtonMenu.style.boxShadow = "none";
@@ -190,7 +193,7 @@ class Menu {
                 this.cleanMenu();
                 this.menuView.editButtonMenu.style.backgroundColor = "#00C50D";
                 this.menuView.editButtonMenu.style.boxShadow = "yellow 0px 0px 51px inset";
-                this.accEdit.editAction(this.sceneCurrent);
+                this.accEdit.editAction();
                 this.menuView.contentsMenu.style.display = "none";
 
                 this.currentMenuChoices = MenuChoices.edit;
@@ -207,10 +210,11 @@ class Menu {
     }
     cleanMenu() {
         if (this.accEdit.isOn) {
-            this.accEdit.editAction(this.sceneCurrent)
+            this.accEdit.editAction()
             this.menuView.editButtonMenu.style.backgroundColor = this.menuView.menuColorDefault;
             this.menuView.editButtonMenu.style.boxShadow = "none";
             this.menuView.contentsMenu.style.display = "block";
+
 
 
         }
@@ -299,5 +303,9 @@ class Menu {
                 }
             }                
         }
+    }
+    customeCodeEditEvent() {
+
+        this.menuHandler(MenuChoices.null);
     }
 }

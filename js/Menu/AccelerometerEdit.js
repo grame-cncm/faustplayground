@@ -21,7 +21,7 @@ var AccelerometerEdit = (function () {
         this.accelerometerEditView.rangeMid.addEventListener("input", function (event) { _this.accMid(); });
         this.accelerometerEditView.rangeMax.addEventListener("input", function (event) { _this.accMax(); });
     }
-    AccelerometerEdit.prototype.editAction = function (scene) {
+    AccelerometerEdit.prototype.editAction = function () {
         if (this.isOn) {
             for (var i = 0; i < AccelerometerHandler.accelerometerSliders.length; i++) {
                 //AccelerometerHandler.accelerometerSliders[i].mySlider.addEventListener("mousedown", (e) => { e.stopPropagation() })

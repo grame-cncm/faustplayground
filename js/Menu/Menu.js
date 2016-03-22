@@ -26,7 +26,7 @@ var Menu = (function () {
         this.menuView.libraryButtonMenu.onclick = function () { _this.menuHandler(_this.menuChoices = MenuChoices.library); };
         this.menuView.exportButtonMenu.onclick = function () { _this.menuHandler(_this.menuChoices = MenuChoices.export); };
         this.menuView.helpButtonMenu.onclick = function () { _this.menuHandler(_this.menuChoices = MenuChoices.help); };
-        this.menuView.editButtonMenu.onclick = function () { _this.menuHandler(_this.menuChoices = MenuChoices.edit); };
+        this.menuView.editButtonMenu.addEventListener("click", function () { _this.menuHandler(_this.menuChoices = MenuChoices.edit); });
         this.menuView.closeButton.onclick = function () { _this.menuHandler(_this.menuChoices = MenuChoices.null); };
         this.menuView.fullScreenButton.addEventListener("click", function () { _this.fullScreen(); });
         this.menuView.accButton.addEventListener("click", function () { _this.accelerometer(); });
@@ -42,11 +42,12 @@ var Menu = (function () {
         this.menuView.exportView.inputNameApp.onchange = function (e) { _this.updatePatchNameToInput(e); };
         this.mouseOverLowerMenu = function (event) { _this.raiseLibraryMenuEvent(event); };
         this.accEdit = new AccelerometerEdit(this.menuView.accEditView);
+        document.addEventListener("codeeditevent", function () { _this.customeCodeEditEvent(); });
         //this.accEdit.accelerometerEditView = this.menuView.accEditView
     }
-    Menu.prototype.menuHandler = function (menuChoises) {
+    Menu.prototype.menuHandler = function (menuChoices) {
         this.help.stopVideo();
-        switch (this.menuChoices) {
+        switch (menuChoices) {
             case MenuChoices.library:
                 this.libraryMenu();
                 break;
@@ -147,11 +148,11 @@ var Menu = (function () {
             case MenuChoices.null:
                 this.menuView.editButtonMenu.style.backgroundColor = "#00C50D";
                 this.menuView.editButtonMenu.style.boxShadow = "yellow 0px 0px 51px inset";
-                this.accEdit.editAction(this.sceneCurrent);
+                this.accEdit.editAction();
                 this.currentMenuChoices = MenuChoices.edit;
                 break;
             case MenuChoices.edit:
-                this.accEdit.editAction(this.sceneCurrent);
+                this.accEdit.editAction();
                 this.menuView.editButtonMenu.style.backgroundColor = this.menuView.menuColorDefault;
                 this.menuView.editButtonMenu.style.boxShadow = "none";
                 this.menuView.contentsMenu.style.display = "none";
@@ -161,7 +162,7 @@ var Menu = (function () {
                 this.cleanMenu();
                 this.menuView.editButtonMenu.style.backgroundColor = "#00C50D";
                 this.menuView.editButtonMenu.style.boxShadow = "yellow 0px 0px 51px inset";
-                this.accEdit.editAction(this.sceneCurrent);
+                this.accEdit.editAction();
                 this.menuView.contentsMenu.style.display = "none";
                 this.currentMenuChoices = MenuChoices.edit;
                 break;
@@ -177,7 +178,7 @@ var Menu = (function () {
     };
     Menu.prototype.cleanMenu = function () {
         if (this.accEdit.isOn) {
-            this.accEdit.editAction(this.sceneCurrent);
+            this.accEdit.editAction();
             this.menuView.editButtonMenu.style.backgroundColor = this.menuView.menuColorDefault;
             this.menuView.editButtonMenu.style.boxShadow = "none";
             this.menuView.contentsMenu.style.display = "block";
@@ -270,6 +271,9 @@ var Menu = (function () {
                 }
             }
         }
+    };
+    Menu.prototype.customeCodeEditEvent = function () {
+        this.menuHandler(MenuChoices.null);
     };
     return Menu;
 })();

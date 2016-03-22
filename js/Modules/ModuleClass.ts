@@ -230,17 +230,14 @@ class ModuleClass implements IModule {
 
         this.saveInterfaceParams();
 
+        var event: CustomEvent = new CustomEvent("codeeditevent")
+        document.dispatchEvent(event);
+
         this.deleteFaustInterface();
 
-        //var textArea: HTMLTextAreaElement = document.createElement("textarea");
-        //textArea.rows = 15;
-        //textArea.cols = 60;
         this.moduleView.textArea.style.display = "block";
         this.moduleView.textArea.value = this.moduleFaust.fSource;
-        //textArea.contentEditable = "true";
-        //this.moduleView.fInterfaceContainer.appendChild(textArea);
 
-        //module.moduleView.fEditImg.src = App.baseImg + "enter.png";
         this.moduleView.fEditImg.style.backgroundImage = "url(" + App.baseImg + "enter.png)";
         this.moduleView.fEditImg.addEventListener("click", this.eventCloseEditHandler);
         this.moduleView.fEditImg.addEventListener("touchend", this.eventCloseEditHandler);
@@ -251,8 +248,8 @@ class ModuleClass implements IModule {
 
     //---- Update ModuleClass with new name/code source
     update(name: string, code: string): void {
-
-
+        var event: CustomEvent = new CustomEvent("codeeditevent")
+        document.dispatchEvent(event);
         this.moduleFaust.fTempName = name;
         this.moduleFaust.fTempSource = code;
         var module: ModuleClass = this;
