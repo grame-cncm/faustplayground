@@ -98,6 +98,8 @@ var Export = (function () {
         this.exportView.inputNameApp.onkeypress = function (e) { if (e.which == 13) {
             _this.renameScene();
         } };
+        this.exportView.moreOptionDiv.addEventListener("click", function () { _this.exportView.moreOptionDiv.style.display = "none"; _this.exportView.lessOptionDiv.style.display = _this.exportView.optionContainer.style.display = "block"; }, false);
+        this.exportView.lessOptionDiv.addEventListener("click", function () { _this.exportView.moreOptionDiv.style.display = "block"; _this.exportView.lessOptionDiv.style.display = _this.exportView.optionContainer.style.display = "none"; }, false);
     };
     Export.prototype.addItem = function (id, itemText) {
         var platformsSelect = document.getElementById(id);
@@ -158,12 +160,12 @@ var Export = (function () {
     };
     Export.prototype.renameScene = function () {
         var newName = this.exportView.inputNameApp.value;
-        newName = this.replaceAll(newName, "é", "e");
-        newName = this.replaceAll(newName, "è", "e");
-        newName = this.replaceAll(newName, "à", "a");
-        newName = this.replaceAll(newName, "ù", "u");
-        newName = this.replaceAll(newName, " ", "_");
-        newName = this.replaceAll(newName, "'", "_");
+        newName = App.replaceAll(newName, "é", "e");
+        newName = App.replaceAll(newName, "è", "e");
+        newName = App.replaceAll(newName, "à", "a");
+        newName = App.replaceAll(newName, "ù", "u");
+        newName = App.replaceAll(newName, " ", "_");
+        newName = App.replaceAll(newName, "'", "_");
         var pattern = new RegExp("^[a-zA-Z_][a-zA-Z_0-9]{1,50}$");
         if (pattern.test(newName)) {
             Scene.sceneName = newName;
@@ -180,9 +182,6 @@ var Export = (function () {
             this.exportView.inputNameApp.style.boxShadow = "0 0 6px yellow inset";
             this.exportView.inputNameApp.style.border = "3px solid red";
         }
-    };
-    Export.prototype.replaceAll = function (str, find, replace) {
-        return str.replace(new RegExp(find, 'g'), replace);
     };
     Export.exportUrl = "http://faustservice.grame.fr";
     Export.targetsUrl = "http://faustservice.grame.fr/targets";

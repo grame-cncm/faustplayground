@@ -34,6 +34,8 @@ class ModuleView {
     fOutputNode: HTMLDivElement;
     contentModule: HTMLElement;
     textArea: HTMLTextAreaElement;
+    miniButton: HTMLDivElement;
+    maxButton: HTMLDivElement;
     x: number;
     y: number;
 
@@ -88,12 +90,31 @@ class ModuleView {
             var fFooter: HTMLElement = document.createElement("footer");
             fFooter.id = "moduleFooter";
             fModuleContainer.id = "module" + ID;
+
             var fCloseButton: HTMLDivElement = document.createElement("div");
             fCloseButton.draggable = false;
             fCloseButton.className = "close";
             fCloseButton.addEventListener("click", ()=> { module.deleteModule(); });
             fCloseButton.addEventListener("touchend", () => { module.deleteModule(); });
+
+            var fMinButton: HTMLDivElement = document.createElement("div");
+            fMinButton.draggable = false;
+            fMinButton.className = "minus";
+            fMinButton.addEventListener("click", () => { module.minModule(); });
+            fMinButton.addEventListener("touchend", () => { module.minModule(); });
+            this.miniButton = fMinButton;
+
+            var fMaxButton: HTMLDivElement = document.createElement("div");
+            fMaxButton.draggable = false;
+            fMaxButton.className = "max";
+            fMaxButton.addEventListener("click", () => { module.maxModule(); });
+            fMaxButton.addEventListener("touchend", () => { module.maxModule(); });
+            this.maxButton = fMaxButton;
+
             fModuleContainer.appendChild(fCloseButton);
+            fModuleContainer.appendChild(fMinButton);
+            fModuleContainer.appendChild(fMaxButton);
+
             var fEditImg = <HTMLfEdit>document.createElement("div");
             fEditImg.className = "edit"
             fEditImg.addEventListener("click",  module.eventOpenEditHandler);

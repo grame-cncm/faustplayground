@@ -243,6 +243,9 @@ var Menu = (function () {
     Menu.prototype.accelerometer = function () {
         var checkboxs = document.getElementsByClassName("accCheckbox");
         if (this.isAccelerometer) {
+            this.isAccelerometer = false;
+            App.isAccelerometerOn = false;
+            this.menuView.accButton.style.opacity = "0.3";
             for (var i = 0; i < AccelerometerHandler.accelerometerSliders.length; i++) {
                 AccelerometerHandler.accelerometerSliders[i].isActive = false;
                 //AccelerometerHandler.accelerometerSliders[i].mySlider.style.opacity = "1";
@@ -251,12 +254,12 @@ var Menu = (function () {
                 if (!App.isAccelerometerEditOn) {
                     AccelerometerHandler.accelerometerSliders[i].mySlider.disabled = false;
                 }
-                this.isAccelerometer = false;
-                App.isAccelerometerOn = false;
             }
-            this.menuView.accButton.style.opacity = "0.3";
         }
         else if (!this.isAccelerometer) {
+            this.menuView.accButton.style.opacity = "1";
+            this.isAccelerometer = true;
+            App.isAccelerometerOn = true;
             for (var i = 0; i < AccelerometerHandler.accelerometerSliders.length; i++) {
                 AccelerometerHandler.accelerometerSliders[i].isActive = true;
                 //AccelerometerHandler.accelerometerSliders[i].mySlider.style.opacity = "0.5";
@@ -265,10 +268,7 @@ var Menu = (function () {
                 if (!App.isAccelerometerEditOn) {
                     AccelerometerHandler.accelerometerSliders[i].mySlider.disabled = true;
                 }
-                this.isAccelerometer = true;
-                App.isAccelerometerOn = true;
             }
-            this.menuView.accButton.style.opacity = "1";
         }
     };
     return Menu;

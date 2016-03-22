@@ -151,10 +151,19 @@ class ModuleClass implements IModule {
 
     }
 	
+    minModule() {
+        this.moduleView.fInterfaceContainer.classList.add("mini");
+        this.moduleView.miniButton.style.display = "none";
+        this.moduleView.maxButton.style.display = "block";
+
+    }
 	
+    maxModule() {
+        this.moduleView.fInterfaceContainer.classList.remove("mini");
+        this.moduleView.maxButton.style.display = "none";
+        this.moduleView.miniButton.style.display = "block";
 
-
-
+    }
 	
     //--- Create and Update are called once a source code is compiled and the factory exists
     createDSP(factory: Factory): void {

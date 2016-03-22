@@ -33,6 +33,9 @@ class Export{
         this.exportView.exportButton.addEventListener("click", this.eventExport);
         this.exportView.buttonNameApp.onclick = () => { this.renameScene() };
         this.exportView.inputNameApp.onkeypress = (e: KeyboardEvent) => { if (e.which == 13) { this.renameScene() } };
+        this.exportView.moreOptionDiv.addEventListener("click", () => { this.exportView.moreOptionDiv.style.display = "none"; this.exportView.lessOptionDiv.style.display = this.exportView.optionContainer.style.display = "block" }, false);
+        this.exportView.lessOptionDiv.addEventListener("click", () => { this.exportView.moreOptionDiv.style.display = "block"; this.exportView.lessOptionDiv.style.display = this.exportView.optionContainer.style.display = "none" }, false);
+
 
     }
     addItem(id: string, itemText:string):void
@@ -205,12 +208,12 @@ class Export{
 
         var newName: string = this.exportView.inputNameApp.value;
 
-        newName = this.replaceAll(newName,"é", "e");
-        newName = this.replaceAll(newName, "è", "e");
-        newName = this.replaceAll(newName, "à", "a");
-        newName = this.replaceAll(newName, "ù", "u");
-        newName = this.replaceAll(newName, " ", "_");
-        newName = this.replaceAll(newName, "'", "_");
+        newName = App.replaceAll(newName,"é", "e");
+        newName = App.replaceAll(newName, "è", "e");
+        newName = App.replaceAll(newName, "à", "a");
+        newName = App.replaceAll(newName, "ù", "u");
+        newName = App.replaceAll(newName, " ", "_");
+        newName = App.replaceAll(newName, "'", "_");
         
 
         var pattern: RegExp = new RegExp("^[a-zA-Z_][a-zA-Z_0-9]{1,50}$");
@@ -231,9 +234,6 @@ class Export{
             this.exportView.inputNameApp.style.border = "3px solid red";
         }
        
-    }
-    replaceAll(str: String, find: string, replace: string) {
-        return str.replace(new RegExp(find, 'g'), replace);
     }
 }
 

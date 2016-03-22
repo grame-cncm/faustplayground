@@ -550,4 +550,7 @@ class App {
             document.getElementById("svgCanvas").style.height = "100%";
         } 
     }
+    static replaceAll(str: String, find: string, replace: string) {
+        return str.replace(new RegExp(find, 'g'), replace);
+    }
 }

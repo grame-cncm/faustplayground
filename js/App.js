@@ -448,6 +448,9 @@ var App = (function () {
             document.getElementById("svgCanvas").style.height = "100%";
         }
     };
+    App.replaceAll = function (str, find, replace) {
+        return str.replace(new RegExp(find, 'g'), replace);
+    };
     //************* Fields
     App.appTest = 0;
     App.idX = 0;

@@ -8,28 +8,47 @@ var CodeFaustParser = (function () {
     }
     CodeFaustParser.prototype.replaceAccValue = function () {
         this.indexSlider = this.findSliderIndex(this.sliderName);
-        if (this.indexSlider != null) {
-            this.indexAccelerometer = this.findAccRank();
-            if (this.indexAccelerometer != -1) {
-                this.removeOldAccValue();
-                this.addNewAccValue();
-                return this.recomposeCodeFaust();
+        if (this.indexSlider == null) {
+            this.indexSlider = this.findSliderIndexNoSpace(this.sliderName);
+            if (this.indexSlider != null) {
+                return this.continueReplaceAccValue();
             }
             else {
-                alert("Accelerometer non trouvé");
-                throw new Error("Accelerometer non trouvé");
+                alert("Slider : " + this.sliderName + " non trouvé, les changements sur ce slider ne seront pas exporté dans l'application finale");
+                throw new Error("Slider non trouvé");
                 return this.originalCodeFaust;
             }
         }
+        else if (this.indexSlider != null) {
+            return this.continueReplaceAccValue();
+        }
+    };
+    CodeFaustParser.prototype.continueReplaceAccValue = function () {
+        this.indexAccelerometer = this.findAccRank();
+        if (this.indexAccelerometer != -1) {
+            this.removeOldAccValue();
+            this.addNewAccValue();
+            return this.recomposeCodeFaust();
+        }
         else {
-            alert("Slider : " + this.sliderName + "non trouvé, les changements sur ce slider ne seront pas exporté");
-            throw new Error("Slider non trouvé");
+            alert("Accelerometer non trouvé");
+            throw new Error("Accelerometer non trouvé");
             return this.originalCodeFaust;
         }
     };
     CodeFaustParser.prototype.findSliderIndex = function (sliderName) {
         for (var i = 0; i < this.codeFaustArray.length; i++) {
             if (this.codeFaustArray[i].indexOf(sliderName) != -1 && this.codeFaustArray[i].indexOf("acc") != -1) {
+                return i;
+            }
+        }
+        return null;
+    };
+    CodeFaustParser.prototype.findSliderIndexNoSpace = function (sliderName) {
+        sliderName = App.replaceAll(sliderName, " ", "");
+        for (var i = 0; i < this.codeFaustArray.length; i++) {
+            var tempRowWithoutSpace = App.replaceAll(this.codeFaustArray[i], " ", "");
+            if (tempRowWithoutSpace.indexOf(sliderName) != -1 && tempRowWithoutSpace.indexOf("acc") != -1) {
                 return i;
             }
         }

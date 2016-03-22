@@ -10,7 +10,9 @@ class ExportView {
     dynamicName: HTMLSpanElement;
     rulesName: HTMLSpanElement;
     downloadButton: HTMLButtonElement;
-
+    moreOptionDiv: HTMLElement;
+    lessOptionDiv: HTMLElement;
+    optionContainer: HTMLElement;
     initExportView(): HTMLElement {
 
         var exportContainer: HTMLElement = document.createElement("div");
@@ -77,7 +79,26 @@ class ExportView {
         this.buttonNameApp = renameButton;
 
 
-/////////////////////////////////  export Options
+        /////////////////////////////////  export Options
+        var moreOptionDiv = document.createElement("div");
+        moreOptionDiv.textContent = "+ plus d'options"
+        moreOptionDiv.id = "moreOptionDiv";
+        moreOptionDiv.style.display = "block";
+        this.moreOptionDiv = moreOptionDiv;
+
+
+        var optionContainer = document.createElement("div");
+        optionContainer.id = "optionContainer";
+        optionContainer.style.display = "none";
+        this.optionContainer = optionContainer;
+
+
+        var lessOptionDiv = document.createElement("div")
+        lessOptionDiv.id = "lessOptionDiv";
+        lessOptionDiv.textContent = "- moins d'options"
+        lessOptionDiv.style.display = "none";
+        this.lessOptionDiv = lessOptionDiv;
+
 
         var urlDiv: HTMLElement = document.createElement("div");
         urlDiv.id = "inputExport";
@@ -137,11 +158,12 @@ class ExportView {
 
         exportBottomButtonContainer.appendChild(exportButton);
 
-
-
-        exportOptionContainer.appendChild(exportOptionTitle);
-        exportOptionContainer.appendChild(urlDiv);
-        exportOptionContainer.appendChild(exportChoiceDiv);
+        optionContainer.appendChild(exportOptionTitle)
+        optionContainer.appendChild(urlDiv);
+        optionContainer.appendChild(exportChoiceDiv);
+        exportOptionContainer.appendChild(moreOptionDiv);
+        exportOptionContainer.appendChild(lessOptionDiv);
+        exportOptionContainer.appendChild(optionContainer);
         exportOptionContainer.appendChild(exportBottomButtonContainer);
 
 

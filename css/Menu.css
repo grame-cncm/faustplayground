@@ -267,6 +267,20 @@ div#exportOptionContainer{
     float:left;
 }
 
+div#moreOptionDiv {
+    top: 40%;
+    margin: 0px auto;
+    width: inherit;
+    cursor: pointer;
+    text-align: center;
+    position: absolute;
+}
+
+div#lessOptionDiv {
+    cursor: pointer;
+    font-size: small;
+}
+
 #plateforms{
 
 

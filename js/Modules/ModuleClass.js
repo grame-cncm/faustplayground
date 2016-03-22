@@ -112,6 +112,16 @@ var ModuleClass = (function () {
         this.deleteDSP(this.moduleFaust.fDSP);
         this.deleteCallback(this, this.sceneParent);
     };
+    ModuleClass.prototype.minModule = function () {
+        this.moduleView.fInterfaceContainer.classList.add("mini");
+        this.moduleView.miniButton.style.display = "none";
+        this.moduleView.maxButton.style.display = "block";
+    };
+    ModuleClass.prototype.maxModule = function () {
+        this.moduleView.fInterfaceContainer.classList.remove("mini");
+        this.moduleView.maxButton.style.display = "none";
+        this.moduleView.miniButton.style.display = "block";
+    };
     //--- Create and Update are called once a source code is compiled and the factory exists
     ModuleClass.prototype.createDSP = function (factory) {
         this.moduleFaust.fDSP = faust.createDSPInstance(factory, App.audioContext, 1024);

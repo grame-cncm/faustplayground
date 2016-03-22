@@ -48,6 +48,20 @@ var ExportView = (function () {
         this.inputNameApp = input;
         this.buttonNameApp = renameButton;
         /////////////////////////////////  export Options
+        var moreOptionDiv = document.createElement("div");
+        moreOptionDiv.textContent = "+ plus d'options";
+        moreOptionDiv.id = "moreOptionDiv";
+        moreOptionDiv.style.display = "block";
+        this.moreOptionDiv = moreOptionDiv;
+        var optionContainer = document.createElement("div");
+        optionContainer.id = "optionContainer";
+        optionContainer.style.display = "none";
+        this.optionContainer = optionContainer;
+        var lessOptionDiv = document.createElement("div");
+        lessOptionDiv.id = "lessOptionDiv";
+        lessOptionDiv.textContent = "- moins d'options";
+        lessOptionDiv.style.display = "none";
+        this.lessOptionDiv = lessOptionDiv;
         var urlDiv = document.createElement("div");
         urlDiv.id = "inputExport";
         var exportOptionTitle = document.createElement("span");
@@ -90,9 +104,12 @@ var ExportView = (function () {
         var exportBottomButtonContainer = document.createElement("div");
         exportBottomButtonContainer.className = "bottomButtonContainer";
         exportBottomButtonContainer.appendChild(exportButton);
-        exportOptionContainer.appendChild(exportOptionTitle);
-        exportOptionContainer.appendChild(urlDiv);
-        exportOptionContainer.appendChild(exportChoiceDiv);
+        optionContainer.appendChild(exportOptionTitle);
+        optionContainer.appendChild(urlDiv);
+        optionContainer.appendChild(exportChoiceDiv);
+        exportOptionContainer.appendChild(moreOptionDiv);
+        exportOptionContainer.appendChild(lessOptionDiv);
+        exportOptionContainer.appendChild(optionContainer);
         exportOptionContainer.appendChild(exportBottomButtonContainer);
         //////////////////////////// export Result
         var exportResultTitle = document.createElement("span");
