@@ -123,61 +123,13 @@ class Drag {
         moduleContainer.style.top = (this.elementStartTop + y - this.cursorStartY) + "px";
 
         if (module.moduleFaust.getInputConnections() != null) {	// update any lines that point in here.
+            Connector.redrawInputConnections(module, this) 
 
-            var offset: HTMLElement = module.moduleView.getInputNode();
-            x = module.moduleView.inputOutputNodeDimension/2// + window.scrollX ;
-            y = module.moduleView.inputOutputNodeDimension/2// + window.scrollY;
-
-            while (offset) {
-		
-                x += offset.offsetLeft;
-                y += offset.offsetTop;
-                offset = <HTMLDivElement>offset.offsetParent;
-		    }
-
-            for (var c = 0; c < module.moduleFaust.getInputConnections().length; c++) {
-
-                var currentConnectorShape: ConnectorShape = module.moduleFaust.getInputConnections()[c].connectorShape;
-                var x1 = x;
-                var y1 = y;
-                var x2 = currentConnectorShape.x2
-                var y2 = currentConnectorShape.y2
-                var d = this.setCurvePath(x1, y1, x2, y2, this.calculBezier1(x1, x2), this.calculBezier2(x1, x2))
-                currentConnectorShape.setAttributeNS(null, "d", d);
-                this.updateConnectorShapePath(currentConnectorShape, x1, x2, y1, y2);
-
-
-		    }
 	    }
 
         if (module.moduleFaust.getOutputConnections() != null) {	// update any lines that point out of here.
 		    
-
-            var offset = module.moduleView.getOutputNode();
-            x =  module.moduleView.inputOutputNodeDimension / 2;
-            y =  module.moduleView.inputOutputNodeDimension / 2;
-
-            while (offset) {
-                x += offset.offsetLeft;
-                y += offset.offsetTop;
-                offset = <HTMLDivElement>offset.offsetParent;
-		    }
-
-            for (var c = 0; c < module.moduleFaust.getOutputConnections().length; c++) {
-
-                if (module.moduleFaust.getOutputConnections()[c].connectorShape) {
-                    var currentConnectorShape: ConnectorShape = module.moduleFaust.getOutputConnections()[c].connectorShape;
-                    var x1 = currentConnectorShape.x1;
-                    var y1 = currentConnectorShape.y1;
-                    var x2 = x;
-                    var y2 = y;
-                    var d = this.setCurvePath(x1, y1, x2, y2, this.calculBezier1(x1, x2), this.calculBezier2(x1, x2))
-                    
-                    currentConnectorShape.setAttributeNS(null, "d", d);
-                    this.updateConnectorShapePath(currentConnectorShape,x1, x2, y1, y2);
-
-			    }
-		    }
+            Connector.redrawOutputConnections(module, this) 
 	    }
 
         //event.preventDefault();
@@ -206,14 +158,9 @@ class Drag {
         return "M" + x1 + "," + y1 + " C" + x1Bezier + "," + y1 + " " + x2Bezier + "," + y2 + " " + x2 + "," + y2;
 
     }
-    calculDistance(x1: number, x2: number): number{
-        return (x1 - x2) / 2;
-    }
-    calculBezier1(x1: number, x2: number): number {
-        return x1 - this.calculDistance(x1, x2);
-    }
-    calculBezier2(x1: number, x2: number): number {
-        return x2 + this.calculDistance(x1, x2);
+
+    calculBezier(x1: number, x2: number): number {
+        return x1 - (x1 - x2) / 2;;
     }
 
 
@@ -251,7 +198,7 @@ class Drag {
         var d = this.setCurvePath(x,y,x,y,x,x)
         curve.setAttributeNS(null, "d", d);
         curve.setAttributeNS(null, "stroke", "black");
-        curve.setAttributeNS(null, "stroke-width", "5");
+        curve.setAttributeNS(null, "stroke-width", "6");
         curve.setAttributeNS(null, "fill", "none");
         curve.id = String(Connector.connectorId);
         Connector.connectorId++
@@ -306,7 +253,7 @@ class Drag {
             var y1 = this.cursorStartY;
             var x2 = x;
             var y2 = y;
-            var d = this.setCurvePath(x1, y1, x2, y2, this.calculBezier1(x1, x2), this.calculBezier2(x1, x2))
+            var d = this.setCurvePath(x1, y1, x2, y2, this.calculBezier(x1, x2), this.calculBezier(x1, x2))
             this.connector.connectorShape.setAttributeNS(null, "d", d);
             this.updateConnectorShapePath(this.connector.connectorShape, x1, x2, y1, y2);
 
@@ -324,7 +271,7 @@ class Drag {
 			    if (toElem.classList.contains("node-input")) {
 
                     // Make sure the connector line points go from src->dest (x1->x2)
-                    var d = this.setCurvePath(x2, y2, x1, y1, this.calculBezier1(x1, x2), this.calculBezier2(x1, x2))
+                    var d = this.setCurvePath(x2, y2, x1, y1, this.calculBezier(x1, x2), this.calculBezier(x1, x2))
                     this.connector.connectorShape.setAttributeNS(null, "d", d);
                     this.updateConnectorShapePath(this.connector.connectorShape,x2, x1, y2, y1);
 
@@ -408,9 +355,9 @@ class Drag {
         var y2: number = y //+ window.scrollY;
         var d: string;
         if (!this.isOriginInput) {
-            d = this.setCurvePath(x1, y1, x2, y2, this.calculBezier1(x1, x2), this.calculBezier2(x1, x2))
+            d = this.setCurvePath(x1, y1, x2, y2, this.calculBezier(x1, x2), this.calculBezier(x1, x2))
         } else {
-            d = this.setCurvePath(x1, y1, x2, y2, this.calculBezier1(x1, x2), this.calculBezier2(x1, x2))
+            d = this.setCurvePath(x1, y1, x2, y2, this.calculBezier(x1, x2), this.calculBezier(x1, x2))
         }
         // Move connector visual line
         this.connector.connectorShape.setAttributeNS(null, "d", d);

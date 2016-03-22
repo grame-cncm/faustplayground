@@ -106,6 +106,48 @@ var Connector = (function () {
                 this.breakSingleInputConnection(module.moduleFaust.getInputConnections()[0].source, module, module.moduleFaust.getInputConnections()[0]);
         }
     };
+    Connector.redrawInputConnections = function (module, drag) {
+        var offset = module.moduleView.getInputNode();
+        var x = module.moduleView.inputOutputNodeDimension / 2; // + window.scrollX ;
+        var y = module.moduleView.inputOutputNodeDimension / 2; // + window.scrollY;
+        while (offset) {
+            x += offset.offsetLeft;
+            y += offset.offsetTop;
+            offset = offset.offsetParent;
+        }
+        for (var c = 0; c < module.moduleFaust.getInputConnections().length; c++) {
+            var currentConnectorShape = module.moduleFaust.getInputConnections()[c].connectorShape;
+            var x1 = x;
+            var y1 = y;
+            var x2 = currentConnectorShape.x2;
+            var y2 = currentConnectorShape.y2;
+            var d = drag.setCurvePath(x1, y1, x2, y2, drag.calculBezier(x1, x2), drag.calculBezier(x1, x2));
+            currentConnectorShape.setAttributeNS(null, "d", d);
+            drag.updateConnectorShapePath(currentConnectorShape, x1, x2, y1, y2);
+        }
+    };
+    Connector.redrawOutputConnections = function (module, drag) {
+        var offset = module.moduleView.getOutputNode();
+        var x = module.moduleView.inputOutputNodeDimension / 2; // + window.scrollX ;
+        var y = module.moduleView.inputOutputNodeDimension / 2; // + window.scrollY;
+        while (offset) {
+            x += offset.offsetLeft;
+            y += offset.offsetTop;
+            offset = offset.offsetParent;
+        }
+        for (var c = 0; c < module.moduleFaust.getOutputConnections().length; c++) {
+            if (module.moduleFaust.getOutputConnections()[c].connectorShape) {
+                var currentConnectorShape = module.moduleFaust.getOutputConnections()[c].connectorShape;
+                var x1 = currentConnectorShape.x1;
+                var y1 = currentConnectorShape.y1;
+                var x2 = x;
+                var y2 = y;
+                var d = drag.setCurvePath(x1, y1, x2, y2, drag.calculBezier(x1, x2), drag.calculBezier(x1, x2));
+                currentConnectorShape.setAttributeNS(null, "d", d);
+                drag.updateConnectorShapePath(currentConnectorShape, x1, x2, y1, y2);
+            }
+        }
+    };
     Connector.connectorId = 0;
     return Connector;
 })();

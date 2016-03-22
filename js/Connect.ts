@@ -146,4 +146,57 @@ class Connector {
 	    }
     }
 
+    static redrawInputConnections(module: ModuleClass, drag: Drag) {
+        var offset: HTMLElement = module.moduleView.getInputNode();
+        var x = module.moduleView.inputOutputNodeDimension / 2// + window.scrollX ;
+        var y = module.moduleView.inputOutputNodeDimension / 2// + window.scrollY;
+
+        while (offset) {
+
+            x += offset.offsetLeft;
+            y += offset.offsetTop;
+            offset = <HTMLDivElement>offset.offsetParent;
+        }
+
+        for (var c = 0; c < module.moduleFaust.getInputConnections().length; c++) {
+
+            var currentConnectorShape: ConnectorShape = module.moduleFaust.getInputConnections()[c].connectorShape;
+            var x1 = x;
+            var y1 = y;
+            var x2 = currentConnectorShape.x2
+            var y2 = currentConnectorShape.y2
+            var d = drag.setCurvePath(x1, y1, x2, y2, drag.calculBezier(x1, x2), drag.calculBezier(x1, x2))
+            currentConnectorShape.setAttributeNS(null, "d", d);
+            drag.updateConnectorShapePath(currentConnectorShape, x1, x2, y1, y2);
+        }
+    }
+    static redrawOutputConnections(module: ModuleClass, drag: Drag) {
+        var offset: HTMLElement = module.moduleView.getOutputNode();
+        var x = module.moduleView.inputOutputNodeDimension / 2// + window.scrollX ;
+        var y = module.moduleView.inputOutputNodeDimension / 2// + window.scrollY;
+
+        while (offset) {
+
+            x += offset.offsetLeft;
+            y += offset.offsetTop;
+            offset = <HTMLDivElement>offset.offsetParent;
+        }
+
+        for (var c = 0; c < module.moduleFaust.getOutputConnections().length; c++) {
+
+                if (module.moduleFaust.getOutputConnections()[c].connectorShape) {
+                    var currentConnectorShape: ConnectorShape = module.moduleFaust.getOutputConnections()[c].connectorShape;
+                    var x1 = currentConnectorShape.x1;
+                    var y1 = currentConnectorShape.y1;
+                    var x2 = x;
+                    var y2 = y;
+                    var d = drag.setCurvePath(x1, y1, x2, y2, drag.calculBezier(x1, x2), drag.calculBezier(x1, x2))
+                    
+                    currentConnectorShape.setAttributeNS(null, "d", d);
+                    drag.updateConnectorShapePath(currentConnectorShape,x1, x2, y1, y2);
+
+			    }
+		    }
+    }
+
 }

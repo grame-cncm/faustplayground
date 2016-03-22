@@ -73,7 +73,7 @@
     height: 0px;
     min-width: 0px!important;
     padding: 0em! important;
-    /* display: none!important; */
+    width: 0em;
 }
 .moduleFaust .content img {
 	display: block;
@@ -85,6 +85,10 @@
 	margin: 1em 1em 1em;
 	text-align: center;
 	text-transform: uppercase;
+}
+
+.miniTitle {
+    margin: 1em 5em 1em !important;
 }
 
 /* Module nodes */
