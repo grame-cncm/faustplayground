@@ -23,6 +23,10 @@ html {
     height:100%
 }
 
+body * {
+ /*pointer-events: none;*/
+}
+
 #Normal{
     height:100%;
     /*background: url('../img/body-bkg.gif');*/

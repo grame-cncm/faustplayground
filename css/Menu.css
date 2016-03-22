@@ -4,10 +4,15 @@
 
 /*layout menu general*/
 
+
 div#menuContainer {
     width: 100%;
     position: absolute;
     top: 0;
+}
+
+.no_pointer{
+    pointer-events:none;
 }
 
 div#closeButtonContainer {
@@ -107,8 +112,8 @@ ul.librarySelects {
     position: relative;
     box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.29);
     list-style: none;
-    height:calc(100% - 4em)
-
+    height:calc(100% - 4em);
+    
 }
 .librarySelects.ps-container > .ps-scrollbar-x-rail,
 .librarySelects.ps-container > .ps-scrollbar-y-rail
@@ -130,6 +135,7 @@ li {
 li>a {
     display: block;
     padding-left: 1em;
+    pointer-events:all!important;
 }
 
 li>a:hover {

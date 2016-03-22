@@ -63,10 +63,18 @@ var App = (function () {
         var _this = this;
         this.menu = new Menu(document.getElementsByTagName('body')[0]);
         this.menu.sceneCurrent = App.scene;
-        App.scene.getSceneContainer().onmousedown = function () {
-            _this.menu.menuChoices = MenuChoices.null;
-            _this.menu.menuHandler(_this.menu.menuChoices);
-        };
+        App.scene.getSceneContainer().addEventListener("mousedown", function () {
+            if (!_this.menu.accEdit.isOn) {
+                _this.menu.menuChoices = MenuChoices.null;
+                _this.menu.menuHandler(_this.menu.menuChoices);
+            }
+        }, true);
+        App.scene.getSceneContainer().addEventListener("touchstart", function () {
+            if (!_this.menu.accEdit.isOn) {
+                _this.menu.menuChoices = MenuChoices.null;
+                _this.menu.menuHandler(_this.menu.menuChoices);
+            }
+        }, true);
     };
     /********************************************************************
     **********************  ACTIVATE PHYSICAL IN/OUTPUT *****************
@@ -190,6 +198,15 @@ var App = (function () {
             }
             else {
                 _this.styleOnDragStart();
+            }
+        };
+        document.ondragleave = function (e) {
+            var elementTarget = e.target;
+            if (elementTarget.id == "svgCanvas") {
+                //alert("svg")
+                _this.styleOnDragEnd();
+                e.stopPropagation();
+                e.preventDefault();
             }
         };
         document.onscroll = function () {
@@ -404,6 +421,7 @@ var App = (function () {
     // manage style during a drag and drop event
     App.prototype.styleOnDragStart = function () {
         this.menu.menuView.menuContainer.style.opacity = "0.5";
+        this.menu.menuView.menuContainer.classList.add("no_pointer");
         App.scene.sceneView.dropElementScene.style.display = "block";
         App.scene.getSceneContainer().style.boxShadow = "0 0 200px #00f inset";
         var modules = App.scene.getModules();
@@ -415,7 +433,8 @@ var App = (function () {
         //var body: HTMLBodyElement = <HTMLBodyElement>document.getElementById("body")[0];
         //body.removeEventListener("ondragleave");
         //document.getElementById("body")[0].style.zIndex = "100";
-        this.menu.lowerLibraryMenu();
+        //this.menu.lowerLibraryMenu();
+        this.menu.menuView.menuContainer.classList.remove("no_pointer");
         this.menu.menuView.menuContainer.style.opacity = "1";
         App.scene.sceneView.dropElementScene.style.display = "none";
         App.scene.getSceneContainer().style.boxShadow = "none";
