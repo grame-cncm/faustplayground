@@ -420,7 +420,7 @@ class App {
                 } else if (type == "dsp") {
                     module.update(filename, dsp_code);
                 } else if (type == "json") {
-                    app.scenes[App.currentScene].recallScene(reader.result);
+                    App.scene.recallScene(reader.result);
                 }
                 //app.terminateUpload();
             };

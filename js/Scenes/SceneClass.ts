@@ -203,6 +203,7 @@ class Scene {
     integrateInput() {
         var positionInput: PositionModule = this.positionInputModule();
         this.fAudioInput = new ModuleClass(App.idX++, positionInput.x, positionInput.y, "input", this, this.sceneView.inputOutputModuleContainer, this.removeModule);
+        this.fAudioInput.patchID = "input";
         var scene: Scene = this;
         this.parent.compileFaust("input", "process=_,_;", positionInput.x, positionInput.y, (factory)=>{ scene.integrateAudioInput(factory) });
         
@@ -211,9 +212,9 @@ class Scene {
         var positionOutput: PositionModule = this.positionOutputModule();
         var scene: Scene = this;
         this.fAudioOutput = new ModuleClass(App.idX++, positionOutput.x, positionOutput.y, "output", this, this.sceneView.inputOutputModuleContainer, this.removeModule);
+        this.fAudioOutput.patchID = "output";
         this.addMuteOutputListner(this.fAudioOutput);
         this.parent.compileFaust("output", "process=_,_;", positionOutput.x, positionOutput.y, (factory) =>{ scene.integrateAudioOutput(factory) });
-        
     }
 
     private integrateAudioOutput(factory: Factory): void {
@@ -250,62 +251,64 @@ class Scene {
     saveScene():string {
 
         for (var i = 0; i < this.fModuleList.length; i++) {
-            this.fModuleList[i].patchID = String(i + 1);
+            if (this.fModuleList[i].patchID != "output" && this.fModuleList[i].patchID != "input") {
+                this.fModuleList[i].patchID = String(i + 1);
+            }
         }
 
-        this.fAudioOutput.patchID = String(0);
 
         var json: string
         var jsonObjectCollection: JsonSaveCollection = {};
 
         for (var i = 0; i < this.fModuleList.length; i++) {
+            if (this.fModuleList[i].patchID != "output" && this.fModuleList[i].patchID != "input") {
+                jsonObjectCollection[this.fModuleList[i].patchID.toString()] = new JsonSaveObject();
+                var jsonObject = jsonObjectCollection[this.fModuleList[i].patchID.toString()];
+                jsonObject.patchId = this.fModuleList[i].patchID.toString();
+                jsonObject.code = this.fModuleList[i].moduleFaust.getSource();
+                jsonObject.name = this.fModuleList[i].moduleFaust.getName();
+                jsonObject.x = this.fModuleList[i].moduleView.getModuleContainer().getBoundingClientRect().left.toString();
+                jsonObject.y = this.fModuleList[i].moduleView.getModuleContainer().getBoundingClientRect().top.toString()
 
-            jsonObjectCollection[this.fModuleList[i].patchID.toString()] = new JsonSaveObject();
-            var jsonObject = jsonObjectCollection[this.fModuleList[i].patchID.toString()];
-            jsonObject.patchId = this.fModuleList[i].patchID.toString();
-            jsonObject.code = this.fModuleList[i].moduleFaust.getSource();
-            jsonObject.name = this.fModuleList[i].moduleFaust.getName();
-            jsonObject.x = this.fModuleList[i].moduleView.getModuleContainer().getBoundingClientRect().left.toString();
-            jsonObject.y = this.fModuleList[i].moduleView.getModuleContainer().getBoundingClientRect().top.toString()
 
+                var inputs: Connector[] = this.fModuleList[i].moduleFaust.getInputConnections();
+                var jsonInputs: JsonInputsSave = new JsonInputsSave();
+                jsonInputs.source = [];
+                if (inputs) {
 
-            var inputs: Connector[] = this.fModuleList[i].moduleFaust.getInputConnections();
-            var jsonInputs: JsonInputsSave = new JsonInputsSave();
-            jsonInputs.source = [];
-            if (inputs) {
-
-                for (var j = 0; j < inputs.length; j++) {
-                    jsonInputs.source.push(inputs[j].source.patchID.toString());
-                }
-            }
-
-            var outputs = this.fModuleList[i].moduleFaust.getOutputConnections();
-            var jsonOutputs: JsonOutputsSave = new JsonOutputsSave();
-            jsonOutputs.destination = [];
-
-            if (outputs) {
-                for (var j = 0; j < outputs.length; j++) {
-                    jsonOutputs.destination.push(outputs[j].destination.patchID.toString())
+                    for (var j = 0; j < inputs.length; j++) {
+                        jsonInputs.source.push(inputs[j].source.patchID.toString());
+                    }
                 }
 
-            }
+                var outputs = this.fModuleList[i].moduleFaust.getOutputConnections();
+                var jsonOutputs: JsonOutputsSave = new JsonOutputsSave();
+                jsonOutputs.destination = [];
 
-            var params = this.fModuleList[i].moduleFaust.getDSP().controls();
-            var jsonParams: JsonParamsSave = new JsonParamsSave();
-            jsonParams.sliders=[]
-            if (params) {                
-                for (var j = 0; j < params.length; j++) {
-                    var jsonSlider: JsonSliderSave = new JsonSliderSave();
-                    jsonSlider.path = params[j];
-                    jsonSlider.value = this.fModuleList[i].moduleFaust.getDSP().getValue(params[j]);
-                    jsonParams.sliders.push(jsonSlider);
+                if (outputs) {
+                    for (var j = 0; j < outputs.length; j++) {
+                        jsonOutputs.destination.push(outputs[j].destination.patchID.toString())
+                    }
+
                 }
 
-            }
-            jsonObject.inputs = jsonInputs;
-            jsonObject.outputs = jsonOutputs;
-            jsonObject.params = jsonParams;
+                var params = this.fModuleList[i].moduleFaust.getDSP().controls();
+                var jsonParams: JsonParamsSave = new JsonParamsSave();
+                jsonParams.sliders = []
+                if (params) {
+                    for (var j = 0; j < params.length; j++) {
+                        var jsonSlider: JsonSliderSave = new JsonSliderSave();
+                        jsonSlider.path = params[j];
+                        jsonSlider.value = this.fModuleList[i].moduleFaust.getDSP().getValue(params[j]);
+                        jsonParams.sliders.push(jsonSlider);
+                    }
 
+                }
+                jsonObject.inputs = jsonInputs;
+                jsonObject.outputs = jsonOutputs;
+                jsonObject.params = jsonParams;
+
+            }
         }
 
         json = JSON.stringify(jsonObjectCollection)
@@ -330,8 +333,13 @@ class Scene {
     lunchModuleCreation() {
         if (this.arrayRecalScene.length != 0) {
             var jsonObject = this.arrayRecalScene[0]
-            this.parent.tempPatchId = jsonObject.patchId;
-            this.parent.compileFaust(jsonObject.name, jsonObject.code, parseFloat(jsonObject.x), parseFloat(jsonObject.y), (factory) => { this.createModule(factory) });
+            if (jsonObject.patchId != "output" && jsonObject.patchId != "input") {
+                this.parent.tempPatchId = jsonObject.patchId;
+                this.parent.compileFaust(jsonObject.name, jsonObject.code, parseFloat(jsonObject.x), parseFloat(jsonObject.y), (factory) => { this.createModule(factory) });
+            } else {
+                this.arrayRecalScene.shift();
+                this.lunchModuleCreation();
+            }
         } else {
             for (var i = 0; i < this.arrayRecalledModule.length; i++){
                 this.connectModule(this.arrayRecalledModule[i]);
@@ -399,10 +407,16 @@ class Scene {
     }
 
     getModuleByPatchId(patchId: string): ModuleClass {
-        var arrayModules = this.getModules();
-        for (var i = 0; i < arrayModules.length; i++) {
-            if (arrayModules[i].patchID == patchId) {
-                return arrayModules[i];
+        if (patchId == "output") {
+            return this.fAudioOutput;
+        } else if (patchId == "input") {
+            return this.fAudioInput;
+        } else {
+            var arrayModules = this.getModules();
+            for (var i = 0; i < arrayModules.length; i++) {
+                if (arrayModules[i].patchID == patchId) {
+                    return arrayModules[i];
+                }
             }
         }
         return null;
