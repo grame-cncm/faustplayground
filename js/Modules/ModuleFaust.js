@@ -4,6 +4,8 @@ var ModuleFaust = (function () {
     function ModuleFaust(name) {
         this.fOutputConnections = [];
         this.fInputConnections = [];
+        this.recallOutputsDestination = [];
+        this.recallInputsSource = [];
         this.fName = name;
     }
     /*************** ACTIONS ON IN/OUTPUT NODES ***************************/

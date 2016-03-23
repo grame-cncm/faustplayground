@@ -8,6 +8,8 @@ class MenuView {
     editButtonMenu: HTMLElement;
     fullScreenButton: HTMLElement;
     accButton: HTMLElement;
+    loadButton: HTMLElement;
+    saveButton: HTMLElement;
     //accEditButton: HTMLElement;
     libraryContent: HTMLElement;
     exportContent: HTMLElement;
@@ -58,6 +60,18 @@ class MenuView {
         editButtonMenu.appendChild(document.createTextNode("Editer"));
         this.editButtonMenu = editButtonMenu;
 
+        var loadButtonMenu: HTMLElement = document.createElement("div");
+        loadButtonMenu.id = "loadButtonMenu";
+        loadButtonMenu.className = "buttonsMenu";
+        loadButtonMenu.appendChild(document.createTextNode("Charger"));
+        this.loadButton = loadButtonMenu;
+
+        var saveButtonMenu: HTMLElement = document.createElement("div");
+        saveButtonMenu.id = "saveButtonMenu";
+        saveButtonMenu.className = "buttonsMenu";
+        saveButtonMenu.appendChild(document.createTextNode("Sauver"));
+        this.saveButton = saveButtonMenu;
+
         var fullScreenButton: HTMLElement = document.createElement("div");
         fullScreenButton.id = "fullScreenButton";
         fullScreenButton.className = "buttonsLittleMenu";
@@ -79,7 +93,9 @@ class MenuView {
         }
 
         buttonsMenu.appendChild(libraryButtonMenu);
+        buttonsMenu.appendChild(loadButtonMenu)
         buttonsMenu.appendChild(editButtonMenu);
+        buttonsMenu.appendChild(saveButtonMenu);
         buttonsMenu.appendChild(exportButtonMenu);
         buttonsMenu.appendChild(helpButtonMenu);
         buttonsMenu.appendChild(fullScreenButton);

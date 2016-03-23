@@ -30,6 +30,8 @@ var Menu = (function () {
         this.menuView.closeButton.onclick = function () { _this.menuHandler(_this.menuChoices = MenuChoices.null); };
         this.menuView.fullScreenButton.addEventListener("click", function () { _this.fullScreen(); });
         this.menuView.accButton.addEventListener("click", function () { _this.accelerometer(); });
+        this.menuView.saveButton.addEventListener("click", function () { _this.saveGraph(); });
+        this.menuView.loadButton.addEventListener("click", function () { _this.loadGraph(); });
         this.library = new Library();
         this.library.libraryView = this.menuView.libraryView;
         this.library.fillLibrary();
@@ -274,6 +276,20 @@ var Menu = (function () {
     };
     Menu.prototype.customeCodeEditEvent = function () {
         this.menuHandler(MenuChoices.null);
+    };
+    Menu.prototype.saveGraph = function () {
+        var jsonScene = this.sceneCurrent.saveScene();
+        console.log(JSON.parse(jsonScene));
+        if (typeof sessionStorage != 'undefined') {
+            localStorage.setItem("save", jsonScene);
+        }
+        else {
+            alert("sessionStorage n'est pas supporté");
+        }
+    };
+    Menu.prototype.loadGraph = function () {
+        App.showFullPageLoading();
+        this.sceneCurrent.recallScene(localStorage.getItem(localStorage.key(0)));
     };
     return Menu;
 })();

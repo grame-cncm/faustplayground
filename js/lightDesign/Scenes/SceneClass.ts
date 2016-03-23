@@ -16,68 +16,10 @@
 
 "use strict";
 
-interface IJsonSaveCollection {
-    [patchId: string]: IJsonSaveObject;
-}
-class JsonSaveCollection implements IJsonSaveCollection{
-    [patchId: string]: IJsonSaveObject;
 
-}
-
-interface IJsonSaveObject {
-    patchId: string;
-    name: string;
-    code: string;
-    x: string;
-    y: string;
-    inputs: IJsonInputsSave;
-    outputs: IJsonOutputsSave;
-    params: IJsonParamsSave
-}
-class JsonSaveObject {
-    patchId: string;
-    name: string;
-    code: string;
-    x: string;
-    y: string;
-    inputs: IJsonInputsSave;
-    outputs: IJsonOutputsSave;
-    params: IJsonParamsSave
-}
-
-interface IJsonOutputsSave {
-    destination: string[]
-}
-class JsonOutputsSave {
-    destination: string[]
-}
-
-interface IJsonInputsSave {
-    source: string[]
-}
-class JsonInputsSave {
-    source: string[]
-}
-
-interface IJsonParamsSave {
-    sliders: IJsonSliderSave[]
-}
-class JsonParamsSave {
-    sliders: IJsonSliderSave[]
-}
-
-interface IJsonSliderSave {
-    path: string;
-    value: string;
-}
-class JsonSliderSave {
-    path: string;
-    value: string;
-}
 
 class Scene {
-    arrayRecalScene: JsonSaveObject[] = [];
-    arrayRecalledModule: ModuleClass[] = [];
+
     parent: App;
     isMute: boolean = false;
     //-- Audio Input/Output
@@ -89,9 +31,6 @@ class Scene {
     sceneView: SceneView;
     static sceneName: string = "Patch";
     isInitLoading: boolean = true;
-    isOutputTouch: boolean = false;
-    eventEditAcc: (event: Event) => void;
-
     
 
 
@@ -136,7 +75,7 @@ class Scene {
     }
     unmuteScene(): void {
         console.log("timeIn");
-        window.setTimeout(() => { this.delayedUnmuteScene() }, 500)
+        window.setTimeout(() => { this.delayedUnmuteScene() }, 1000)
     }
 
     delayedUnmuteScene() {//because of probable Firefox bug with audioContext.resume() when resume to close from suspend
@@ -154,33 +93,18 @@ class Scene {
     }
     //add listner on the output module to give the user the possibility to mute/onmute the scene
     addMuteOutputListner(moduleOutput: ModuleClass) {
-        moduleOutput.moduleView.fModuleContainer.ontouchstart = () => { this.dbleTouchOutput() }
-        moduleOutput.moduleView.fModuleContainer.ondblclick = () => { this.dispatchEventMuteUnmute()}
-    }
-
-    dbleTouchOutput() {
-        if (!this.isOutputTouch) {
-            this.isOutputTouch = true;
-            window.setTimeout(() => { this.isOutputTouch = false }, 300)
-        } else {
-            this.dispatchEventMuteUnmute();
-            this.isOutputTouch = false;
-        }
-    }
-    dispatchEventMuteUnmute() {
-        if (!this.isMute) {
-            this.muteScene()
-        } else {
-            this.unmuteScene()
+        moduleOutput.moduleView.fModuleContainer.ondblclick = () => {
+            if (!this.isMute) {
+                this.muteScene()
+            } else {
+                this.unmuteScene()
+            }
         }
     }
     /******************** HANDLE MODULES IN SCENE ************************/
     getModules(): ModuleClass[] { return this.fModuleList; }
     addModule(module: ModuleClass): void { this.fModuleList.push(module); }
-    removeModule(module: ModuleClass, scene: Scene): void {
-        scene.fModuleList.splice(scene.fModuleList.indexOf(module), 1);
-
-    }
+    removeModule(module: ModuleClass, scene: Scene):void { scene.fModuleList.splice(scene.fModuleList.indexOf(module), 1); }
 	
     private cleanModules():void {
         for (var i = this.fModuleList.length - 1; i >= 0; i--) {
@@ -247,7 +171,7 @@ class Scene {
     //not used for now and not seriously typescripted//
     ///////////////////////////////////////////////////
 
-    saveScene():string {
+    private saveScene():string {
 
         for (var i = 0; i < this.fModuleList.length; i++) {
             this.fModuleList[i].patchID = String(i + 1);
@@ -255,98 +179,104 @@ class Scene {
 
         this.fAudioOutput.patchID = String(0);
 
-        var json: string
-        var jsonObjectCollection: JsonSaveCollection = {};
+        var json:string = '{';
 
         for (var i = 0; i < this.fModuleList.length; i++) {
+            if (i != 0)
+                json += ',';
 
-            jsonObjectCollection[this.fModuleList[i].patchID.toString()] = new JsonSaveObject();
-            var jsonObject = jsonObjectCollection[this.fModuleList[i].patchID.toString()];
-            jsonObject.patchId = this.fModuleList[i].patchID.toString();
-            jsonObject.code = this.fModuleList[i].moduleFaust.getSource();
-            jsonObject.name = this.fModuleList[i].moduleFaust.getName();
-            jsonObject.x = this.fModuleList[i].moduleView.getModuleContainer().getBoundingClientRect().left.toString();
-            jsonObject.y = this.fModuleList[i].moduleView.getModuleContainer().getBoundingClientRect().top.toString()
+            json += '"' + this.fModuleList[i].patchID.toString() + '":['
 
+            json += '{"x":"' + this.fModuleList[i].moduleView.getModuleContainer().getBoundingClientRect().left + '"},';
+            json += '{"y\":"' + this.fModuleList[i].moduleView.getModuleContainer().getBoundingClientRect().top + '"},';
+            json += '{"name\":"' + this.fModuleList[i].moduleFaust.getName() + '"},';
+            json += '{"code":' + JSON.stringify(this.fModuleList[i].moduleFaust.getSource()) + '},';
 
             var inputs: Connector[] = this.fModuleList[i].moduleFaust.getInputConnections();
-            var jsonInputs: JsonInputsSave = new JsonInputsSave();
-            jsonInputs.source = [];
+
             if (inputs) {
 
+                json += '{"inputs":[';
                 for (var j = 0; j < inputs.length; j++) {
-                    jsonInputs.source.push(inputs[j].source.patchID.toString());
+                    if (j != 0)
+                        json += ',';
+
+                    json += '{"src":"' + inputs[j].source.patchID.toString() + '"}';
                 }
+                json += ']},';
             }
 
             var outputs = this.fModuleList[i].moduleFaust.getOutputConnections();
-            var jsonOutputs: JsonOutputsSave = new JsonOutputsSave();
-            jsonOutputs.destination = [];
-
             if (outputs) {
+                json += '{"outputs":[';
+
                 for (var j = 0; j < outputs.length; j++) {
-                    jsonOutputs.destination.push(outputs[j].destination.patchID.toString())
+                    if (j != 0)
+                        json += ',';
+
+                    json += '{"dst":"' + outputs[j].destination.patchID.toString() + '"}';
                 }
 
+                json += ']},';
             }
 
             var params = this.fModuleList[i].moduleFaust.getDSP().controls();
-            var jsonParams: JsonParamsSave = new JsonParamsSave();
-            jsonParams.sliders=[]
-            if (params) {                
+            if (params) {
+                json += '{"params":[';
+
                 for (var j = 0; j < params.length; j++) {
-                    var jsonSlider: JsonSliderSave = new JsonSliderSave();
-                    jsonSlider.path = params[j];
-                    jsonSlider.value = this.fModuleList[i].moduleFaust.getDSP().getValue(params[j]);
-                    jsonParams.sliders.push(jsonSlider);
+                    if (j != 0)
+                        json += ',';
+
+                    json += '{"path":"' + params[j] + '"},';
+                    json += '{"value":"' + this.fModuleList[i].moduleFaust.getDSP().getValue(params[j]) + '"}';
                 }
 
+                json += ']}';
             }
-            jsonObject.inputs = jsonInputs;
-            jsonObject.outputs = jsonOutputs;
-            jsonObject.params = jsonParams;
 
+            json += ']';
         }
 
-        json = JSON.stringify(jsonObjectCollection)
-        console.log(jsonObjectCollection)
+        json += '}';
+        
         // 	console.log(json);
         return json;
     }
 
     recallScene(json: string):void {
 
-        var jsonObjectCollection: JsonSaveCollection = JSON.parse(json);
         this.parent.currentNumberDSP = this.fModuleList.length;
         var data: JSON = JSON.parse(json);
-        console.log(jsonObjectCollection)
-        for (var index in jsonObjectCollection) {
-            var jsonObject = jsonObjectCollection[index];
-            this.arrayRecalScene.push(jsonObject);
-        }
-        this.lunchModuleCreation();
-    }
+        for (var sel in data) {
 
-    lunchModuleCreation() {
-        if (this.arrayRecalScene.length != 0) {
-            var jsonObject = this.arrayRecalScene[0]
-            this.parent.tempPatchId = jsonObject.patchId;
-            this.parent.compileFaust(jsonObject.name, jsonObject.code, parseFloat(jsonObject.x), parseFloat(jsonObject.y), (factory) => { this.createModule(factory) });
-        } else {
-            for (var i = 0; i < this.arrayRecalledModule.length; i++){
-                this.connectModule(this.arrayRecalledModule[i]);
+            var dataCopy = data[sel];
+
+            var newsel;
+            var name: string, code: string, x: number, y: number;
+
+            for (newsel in dataCopy) {
+                var mainData = dataCopy[newsel];
+                if (mainData["name"])
+                    name = mainData["name"];
+                else if (mainData["code"])
+                    code = mainData["code"];
+                else if (mainData["x"])
+                    x = mainData["x"];
+                else if (mainData["y"])
+                    y = mainData["y"];
+                else if (mainData["inputs"])
+                    this.parent.inputs = mainData["inputs"];
+                else if (mainData["outputs"])
+                    this.parent.outputs = mainData["outputs"];
+                else if (mainData["params"])
+                    this.parent.params = mainData["params"];
             }
-            for (var i = 0; i < this.arrayRecalledModule.length; i++) {
-                delete this.arrayRecalledModule[i].patchID;
-            }
-            this.arrayRecalledModule = [];
-            App.hideFullPageLoading();
-
+            this.parent.compileFaust(name, code, x, y, this.createModuleAndConnectIt);
         }
-
     }
 	
-    private createModule(factory:Factory):void {
+    private createModuleAndConnectIt(factory:Factory):void {
 
         //---- This is very similar to "createFaustModule" from App.js
         //---- But as we need to set Params before calling "createFaustInterface", it is copied
@@ -356,56 +286,46 @@ class Scene {
             return;
         }
 
-        var module: ModuleClass = new ModuleClass(App.idX++, this.parent.tempModuleX, this.parent.tempModuleY, this.parent.tempModuleName, this, document.getElementById("modules"), this.removeModule);
-        module.moduleFaust.setSource(this.parent.tempModuleSourceCode);
-        module.createDSP(factory);
-        module.patchID = this.parent.tempPatchId;
+        var faustModule: ModuleClass = new ModuleClass(App.idX++, this.parent.tempModuleX, this.parent.tempModuleY, window.name, this, document.getElementById("modules"), this.removeModule);
+        faustModule.moduleFaust.setSource(this.parent.tempModuleSourceCode);
+        faustModule.createDSP(factory);
+
         if (this.parent.params) {
             for (var i = 0; i < this.parent.params.length; i++) {
                 //console.log("WINDOW.PARAMS");
                 //console.log(this.parent.params.length);
                 if (this.parent.params[i] && this.parent.params[i + 1]) {
-                    module.addInterfaceParam(this.parent.params[i]["path"], this.parent.params[i + 1]["value"]);
+                    faustModule.addInterfaceParam(this.parent.params[i]["path"], this.parent.params[i + 1]["value"]);
+                    i + 1;
                 }
             }
         }
-        module.moduleFaust.recallInputsSource = this.arrayRecalScene[0].inputs.source;
-        module.moduleFaust.recallOutputsDestination = this.arrayRecalScene[0].outputs.destination;
-        this.arrayRecalledModule.push(module);
-        module.recallInterfaceParams();
-        module.createFaustInterface();
-        module.addInputOutputNodes();
-        this.addModule(module);
-        this.arrayRecalScene.shift();
-        this.lunchModuleCreation()
-    }
 
-    connectModule(module: ModuleClass) {
-        for (var i = 0; i < module.moduleFaust.recallInputsSource.length; i++) {
-            var moduleSource = this.getModuleByPatchId(module.moduleFaust.recallInputsSource[i]);
-            if (moduleSource != null) {
-                var connector: Connector = new Connector();
-                connector.createConnection(moduleSource, moduleSource.moduleView.getOutputNode(), module, module.moduleView.getInputNode());
+        faustModule.recallInterfaceParams();
+        faustModule.createFaustInterface();
+        faustModule.addInputOutputNodes();
+        this.addModule(faustModule);
+	
+        // WARNING!!!!! Not right in an asynchroneous call of this.parent.compileFaust
+        if (this.parent.inputs) {
+            for (var i = 0; i < this.parent.inputs.length; i++) {
+                var src = this.getModules()[this.parent.inputs[i]["src"] - 1 + this.parent.currentNumberDSP];
+                if (src)
+                    var connector: Connector = new Connector();
+                connector.createConnection(src, src.moduleView.getOutputNode(), faustModule, faustModule.moduleView.getInputNode());
             }
         }
-        
-        for (var i = 0; i < module.moduleFaust.recallOutputsDestination.length; i++) {
-            var moduleDestination = this.getModuleByPatchId(module.moduleFaust.recallOutputsDestination[i]);
-            if (moduleDestination != null) {
-                var connector: Connector = new Connector();
-                connector.createConnection(module, module.moduleView.getOutputNode(), moduleDestination, moduleDestination.moduleView.getInputNode());
-            }
-        }
-    }
 
-    getModuleByPatchId(patchId: string): ModuleClass {
-        var arrayModules = this.getModules();
-        for (var i = 0; i < arrayModules.length; i++) {
-            if (arrayModules[i].patchID == patchId) {
-                return arrayModules[i];
+        if (this.parent.outputs) {
+            for (var i = 0; i < this.parent.outputs.length; i++) {
+                var dst = this.getModules()[this.parent.outputs[i]["dst"] + this.parent.currentNumberDSP - 1];
+                var connector: Connector = new Connector();
+                if (this.parent.outputs[i]["dst"] == 0)
+                    connector.createConnection(faustModule, faustModule.moduleView.getOutputNode(), this.fAudioOutput, this.fAudioOutput.moduleView.getInputNode());
+                else if (dst)
+                    connector.createConnection(faustModule, faustModule.moduleView.getOutputNode(), dst, dst.moduleView.getInputNode());
             }
         }
-        return null;
     }
 
     /***************** SET POSITION OF INPUT OUTPUT MODULE ***************/

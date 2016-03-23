@@ -41,6 +41,8 @@ class Menu {
         this.menuView.closeButton.onclick = () => { this.menuHandler(this.menuChoices = MenuChoices.null) };
         this.menuView.fullScreenButton.addEventListener("click", () => { this.fullScreen() });
         this.menuView.accButton.addEventListener("click", () => { this.accelerometer() });
+        this.menuView.saveButton.addEventListener("click", () => { this.saveGraph() });
+        this.menuView.loadButton.addEventListener("click", () => { this.loadGraph() });
         this.library = new Library();
         this.library.libraryView = this.menuView.libraryView;
         this.library.fillLibrary();
@@ -53,7 +55,7 @@ class Menu {
         this.menuView.exportView.inputNameApp.onchange = (e) => { this.updatePatchNameToInput(e) }
         this.mouseOverLowerMenu = (event: MouseEvent) => { this.raiseLibraryMenuEvent(event) }
         this.accEdit = new AccelerometerEdit(this.menuView.accEditView);
-        document.addEventListener("codeeditevent", ()=> { this.customeCodeEditEvent() });
+        document.addEventListener("codeeditevent", () => { this.customeCodeEditEvent() });
         //this.accEdit.accelerometerEditView = this.menuView.accEditView
 
     }
@@ -279,7 +281,7 @@ class Menu {
         if (this.isAccelerometer) {
             this.isAccelerometer = false;
             App.isAccelerometerOn = false;
-            this.menuView.accButton.style.opacity = "0.3";            
+            this.menuView.accButton.style.opacity = "0.3";
             for (var i = 0; i < AccelerometerHandler.accelerometerSliders.length; i++) {
                 AccelerometerHandler.accelerometerSliders[i].isActive = false;
                 //AccelerometerHandler.accelerometerSliders[i].mySlider.style.opacity = "1";
@@ -301,11 +303,25 @@ class Menu {
                 if (!App.isAccelerometerEditOn) {
                     AccelerometerHandler.accelerometerSliders[i].mySlider.disabled = true;
                 }
-            }                
+            }
         }
     }
     customeCodeEditEvent() {
 
         this.menuHandler(MenuChoices.null);
+    }
+    saveGraph() {
+        var jsonScene = this.sceneCurrent.saveScene()
+        console.log(JSON.parse(jsonScene));
+        if (typeof sessionStorage != 'undefined') {
+            localStorage.setItem("save", jsonScene);
+
+        } else {
+            alert("sessionStorage n'est pas supporté");
+        }
+    }
+    loadGraph() {
+        App.showFullPageLoading();
+        this.sceneCurrent.recallScene(localStorage.getItem(localStorage.key(0)))
     }
 }

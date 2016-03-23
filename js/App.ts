@@ -70,7 +70,8 @@ class App {
     private static out: IHTMLDivElementOut;
     menu: Menu
 
-    private tempModuleName: string;
+    tempModuleName: string;
+    tempPatchId: string;
     scenes: Scene[];
     tempModuleSourceCode: string;
     tempModuleX: number;
