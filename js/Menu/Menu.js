@@ -12,7 +12,8 @@ var MenuChoices;
     MenuChoices[MenuChoices["help"] = 2] = "help";
     MenuChoices[MenuChoices["kids"] = 3] = "kids";
     MenuChoices[MenuChoices["edit"] = 4] = "edit";
-    MenuChoices[MenuChoices["null"] = 5] = "null";
+    MenuChoices[MenuChoices["save"] = 5] = "save";
+    MenuChoices[MenuChoices["null"] = 6] = "null";
 })(MenuChoices || (MenuChoices = {}));
 var Menu = (function () {
     function Menu(htmlContainer) {
@@ -30,11 +31,14 @@ var Menu = (function () {
         this.menuView.closeButton.onclick = function () { _this.menuHandler(_this.menuChoices = MenuChoices.null); };
         this.menuView.fullScreenButton.addEventListener("click", function () { _this.fullScreen(); });
         this.menuView.accButton.addEventListener("click", function () { _this.accelerometer(); });
-        this.menuView.saveButton.addEventListener("click", function () { _this.saveGraph(); });
+        this.menuView.saveButton.addEventListener("click", function () { _this.menuHandler(_this.menuChoices = MenuChoices.save); });
         this.menuView.loadButton.addEventListener("click", function () { _this.loadGraph(); });
         this.library = new Library();
         this.library.libraryView = this.menuView.libraryView;
         this.library.fillLibrary();
+        this.save = new Save();
+        this.save.saveView = this.menuView.saveView;
+        this.save.setEventListeners();
         this.expor = new Export();
         this.expor.exportView = this.menuView.exportView;
         this.expor.uploadTargets();
@@ -47,6 +51,10 @@ var Menu = (function () {
         document.addEventListener("codeeditevent", function () { _this.customeCodeEditEvent(); });
         //this.accEdit.accelerometerEditView = this.menuView.accEditView
     }
+    Menu.prototype.setMenuScene = function (scene) {
+        this.sceneCurrent = scene;
+        this.save.sceneCurrent = scene;
+    };
     Menu.prototype.menuHandler = function (menuChoices) {
         this.help.stopVideo();
         switch (menuChoices) {
@@ -61,6 +69,9 @@ var Menu = (function () {
                 break;
             case MenuChoices.edit:
                 this.editMenu();
+                break;
+            case MenuChoices.save:
+                this.saveMenu();
                 break;
             case MenuChoices.null:
                 this.cleanMenu();
@@ -117,6 +128,31 @@ var Menu = (function () {
                 this.menuView.exportButtonMenu.style.zIndex = "1";
                 this.menuView.exportContent.style.display = "inline-table";
                 this.currentMenuChoices = MenuChoices.export;
+                break;
+        }
+    };
+    Menu.prototype.saveMenu = function () {
+        switch (this.currentMenuChoices) {
+            case MenuChoices.null:
+                this.menuView.contentsMenu.style.display = "block";
+                this.menuView.saveContent.style.display = "inline-table";
+                this.currentMenuChoices = MenuChoices.save;
+                this.menuView.saveButton.style.backgroundColor = this.menuView.menuColorSelected;
+                this.menuView.saveButton.style.zIndex = "1";
+                break;
+            case MenuChoices.save:
+                this.menuView.contentsMenu.style.display = "none";
+                this.menuView.saveContent.style.display = "none";
+                this.currentMenuChoices = MenuChoices.null;
+                this.menuView.saveButton.style.backgroundColor = this.menuView.menuColorDefault;
+                this.menuView.saveButton.style.zIndex = "0";
+                break;
+            default:
+                this.cleanMenu();
+                this.menuView.saveButton.style.backgroundColor = this.menuView.menuColorSelected;
+                this.menuView.saveButton.style.zIndex = "1";
+                this.menuView.saveButton.style.display = "inline-table";
+                this.currentMenuChoices = MenuChoices.save;
                 break;
         }
     };

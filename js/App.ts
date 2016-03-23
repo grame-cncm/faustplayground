@@ -107,7 +107,7 @@ class App {
 
     createMenu(): void {
         this.menu = new Menu(document.getElementsByTagName('body')[0])
-        this.menu.sceneCurrent = App.scene
+        this.menu.setMenuScene(App.scene);
         App.scene.getSceneContainer().addEventListener("mousedown", () => {
             if (!this.menu.accEdit.isOn) {
                 this.menu.menuChoices = MenuChoices.null

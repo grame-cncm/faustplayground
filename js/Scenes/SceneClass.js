@@ -339,6 +339,45 @@ var Scene = (function () {
         }
         return null;
     };
+    Scene.cleanName = function (newName) {
+        newName = App.replaceAll(newName, "é", "e");
+        newName = App.replaceAll(newName, "è", "e");
+        newName = App.replaceAll(newName, "à", "a");
+        newName = App.replaceAll(newName, "ù", "u");
+        newName = App.replaceAll(newName, " ", "_");
+        newName = App.replaceAll(newName, "'", "_");
+        return newName;
+    };
+    Scene.isNameValid = function (newName) {
+        var pattern = new RegExp("^[a-zA-Z_][a-zA-Z_0-9]{1,50}$");
+        if (pattern.test(newName)) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    };
+    Scene.rename = function (input, spanRule, spanDynamic) {
+        var newName = input.value;
+        newName = Scene.cleanName(newName);
+        if (Scene.isNameValid(newName)) {
+            Scene.sceneName = newName;
+            spanDynamic.textContent = Scene.sceneName;
+            spanRule.style.opacity = "0.6";
+            input.style.boxShadow = "0 0 0 green inset";
+            input.style.border = "none";
+            input.value = Scene.sceneName;
+            var ev;
+            input.onchange(ev);
+            return true;
+        }
+        else {
+            spanRule.style.opacity = "1";
+            input.style.boxShadow = "0 0 6px yellow inset";
+            input.style.border = "3px solid red";
+            return false;
+        }
+    };
     /***************** SET POSITION OF INPUT OUTPUT MODULE ***************/
     Scene.prototype.positionInputModule = function () {
         var position = new PositionModule();

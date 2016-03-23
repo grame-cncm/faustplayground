@@ -62,7 +62,7 @@ var App = (function () {
     App.prototype.createMenu = function () {
         var _this = this;
         this.menu = new Menu(document.getElementsByTagName('body')[0]);
-        this.menu.sceneCurrent = App.scene;
+        this.menu.setMenuScene(App.scene);
         App.scene.getSceneContainer().addEventListener("mousedown", function () {
             if (!_this.menu.accEdit.isOn) {
                 _this.menu.menuChoices = MenuChoices.null;

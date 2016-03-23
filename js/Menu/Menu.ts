@@ -15,7 +15,7 @@ interface HTMLElement {
     mozRequestFullScreen: () => any;
 }
 
-enum MenuChoices { library, export, help, kids,edit, null }
+enum MenuChoices { library, export, help, kids, edit, save, null }
 
 class Menu {
     sceneCurrent: Scene;
@@ -23,6 +23,7 @@ class Menu {
     currentMenuChoices: MenuChoices = MenuChoices.null;
     menuView: MenuView;
     library: Library;
+    save: Save;
     expor: Export;
     accEdit: AccelerometerEdit;
     help: Help;
@@ -41,11 +42,14 @@ class Menu {
         this.menuView.closeButton.onclick = () => { this.menuHandler(this.menuChoices = MenuChoices.null) };
         this.menuView.fullScreenButton.addEventListener("click", () => { this.fullScreen() });
         this.menuView.accButton.addEventListener("click", () => { this.accelerometer() });
-        this.menuView.saveButton.addEventListener("click", () => { this.saveGraph() });
+        this.menuView.saveButton.addEventListener("click", () => { this.menuHandler(this.menuChoices = MenuChoices.save) });
         this.menuView.loadButton.addEventListener("click", () => { this.loadGraph() });
         this.library = new Library();
         this.library.libraryView = this.menuView.libraryView;
         this.library.fillLibrary();
+        this.save = new Save();
+        this.save.saveView = this.menuView.saveView;
+        this.save.setEventListeners();
         this.expor = new Export();
         this.expor.exportView = this.menuView.exportView;
         this.expor.uploadTargets();
@@ -59,7 +63,10 @@ class Menu {
         //this.accEdit.accelerometerEditView = this.menuView.accEditView
 
     }
-
+    setMenuScene(scene: Scene) {
+        this.sceneCurrent = scene;
+        this.save.sceneCurrent = scene;
+    }
     menuHandler(menuChoices: MenuChoices): any {
         this.help.stopVideo();
 
@@ -75,6 +82,9 @@ class Menu {
                 break;
             case MenuChoices.edit:
                 this.editMenu();
+                break;
+            case MenuChoices.save:
+                this.saveMenu();
                 break;
             case MenuChoices.null:
                 this.cleanMenu();
@@ -138,6 +148,35 @@ class Menu {
                 this.menuView.exportButtonMenu.style.zIndex = "1";
                 this.menuView.exportContent.style.display = "inline-table";
                 this.currentMenuChoices = MenuChoices.export;
+                break;
+        }
+    }
+    saveMenu() {
+        switch (this.currentMenuChoices) {
+            case MenuChoices.null:// case MenuChoices.edit:
+                this.menuView.contentsMenu.style.display = "block";
+                this.menuView.saveContent.style.display = "inline-table";
+                this.currentMenuChoices = MenuChoices.save;
+                this.menuView.saveButton.style.backgroundColor = this.menuView.menuColorSelected;
+                this.menuView.saveButton.style.zIndex = "1";
+
+
+                break;
+            case MenuChoices.save:
+                this.menuView.contentsMenu.style.display = "none";
+                this.menuView.saveContent.style.display = "none";
+                this.currentMenuChoices = MenuChoices.null;
+                this.menuView.saveButton.style.backgroundColor = this.menuView.menuColorDefault;
+                this.menuView.saveButton.style.zIndex = "0";
+
+
+                break;
+            default:
+                this.cleanMenu();
+                this.menuView.saveButton.style.backgroundColor = this.menuView.menuColorSelected;
+                this.menuView.saveButton.style.zIndex = "1";
+                this.menuView.saveButton.style.display = "inline-table";
+                this.currentMenuChoices = MenuChoices.save;
                 break;
         }
     }

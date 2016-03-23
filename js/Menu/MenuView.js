@@ -66,7 +66,7 @@ var MenuView = (function () {
         buttonsMenu.appendChild(helpButtonMenu);
         buttonsMenu.appendChild(fullScreenButton);
         buttonsMenu.appendChild(accButton);
-        this.HTMLButtonsMenu.push(libraryButtonMenu, exportButtonMenu, helpButtonMenu);
+        this.HTMLButtonsMenu.push(libraryButtonMenu, saveButtonMenu, exportButtonMenu, helpButtonMenu);
         var myScene = document.createElement("div");
         myScene.id = "PatchName";
         myScene.className = "sceneTitle";
@@ -87,6 +87,10 @@ var MenuView = (function () {
         var libraryContent = libraryView.initLibraryView();
         libraryContent.style.display = "none";
         this.libraryView = libraryView;
+        var saveView = new SaveView();
+        var saveContent = saveView.initSaveView();
+        saveContent.style.display = "none";
+        this.saveView = saveView;
         var exportView = new ExportView();
         var exportContent = exportView.initExportView();
         exportContent.style.display = "none";
@@ -101,14 +105,16 @@ var MenuView = (function () {
         this.accEditView = accEditView;
         contentsMenu.appendChild(CloseButtonContainer);
         contentsMenu.appendChild(libraryContent);
+        contentsMenu.appendChild(saveContent);
         contentsMenu.appendChild(exportContent);
         contentsMenu.appendChild(helpContent);
         menuContainer.appendChild(buttonsMenu);
         menuContainer.appendChild(contentsMenu);
         menuContainer.appendChild(accEditContent);
         htmlContainer.appendChild(menuContainer);
-        this.HTMLElementsMenu.push(libraryContent, exportContent, helpContent);
+        this.HTMLElementsMenu.push(libraryContent, saveContent, exportContent, helpContent);
         this.libraryContent = libraryContent;
+        this.saveContent = saveContent;
         this.exportContent = exportContent;
         this.helpContent = helpContent;
         this.contentsMenu = contentsMenu;

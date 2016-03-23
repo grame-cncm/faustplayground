@@ -1,4 +1,4 @@
-/*				SCENECLASS.JS
+﻿/*				SCENECLASS.JS
 	HAND-MADE JAVASCRIPT CLASS CONTAINING THE API OF A GENERIC SCENE
 
 	DEPENDENCIES :
@@ -420,6 +420,46 @@ class Scene {
             }
         }
         return null;
+    }
+
+    static cleanName(newName:string): string {
+        newName = App.replaceAll(newName, "é", "e");
+        newName = App.replaceAll(newName, "è", "e");
+        newName = App.replaceAll(newName, "à", "a");
+        newName = App.replaceAll(newName, "ù", "u");
+        newName = App.replaceAll(newName, " ", "_");
+        newName = App.replaceAll(newName, "'", "_");
+        return newName;
+    }
+    static isNameValid(newName: string): boolean {
+
+    
+        var pattern: RegExp = new RegExp("^[a-zA-Z_][a-zA-Z_0-9]{1,50}$");
+        if (pattern.test(newName)) {
+            return true
+        } else {
+            return false
+        }
+    }
+    static rename(input: HTMLInputElement, spanRule: HTMLSpanElement, spanDynamic: HTMLSpanElement):boolean {
+        var newName = input.value;
+        newName = Scene.cleanName(newName);
+        if (Scene.isNameValid(newName)) {
+            Scene.sceneName = newName;
+            spanDynamic.textContent = Scene.sceneName;
+            spanRule.style.opacity = "0.6";
+            input.style.boxShadow = "0 0 0 green inset";
+            input.style.border = "none";
+            input.value = Scene.sceneName;
+            var ev: Event;
+            input.onchange(ev);
+            return true;
+        } else {
+            spanRule.style.opacity = "1";
+            input.style.boxShadow = "0 0 6px yellow inset";
+            input.style.border = "3px solid red";
+            return false;
+        }
     }
 
     /***************** SET POSITION OF INPUT OUTPUT MODULE ***************/

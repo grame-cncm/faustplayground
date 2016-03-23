@@ -13,6 +13,7 @@ class MenuView {
     //accEditButton: HTMLElement;
     libraryContent: HTMLElement;
     exportContent: HTMLElement;
+    saveContent: HTMLElement;
     helpContent: HTMLElement;
     contentsMenu: HTMLElement;
     closeButton: HTMLElement;
@@ -20,6 +21,7 @@ class MenuView {
     HTMLButtonsMenu: HTMLElement[] = []
     patchNameScene: HTMLElement;
     libraryView: LibraryView;
+    saveView: SaveView;
     exportView: ExportView;
     helpView: HelpView;
     accEditView: AccelerometerEditView;
@@ -101,7 +103,7 @@ class MenuView {
         buttonsMenu.appendChild(fullScreenButton);
         buttonsMenu.appendChild(accButton);
 
-        this.HTMLButtonsMenu.push(libraryButtonMenu, exportButtonMenu, helpButtonMenu);
+        this.HTMLButtonsMenu.push(libraryButtonMenu, saveButtonMenu, exportButtonMenu, helpButtonMenu);
 
         var myScene: HTMLDivElement = document.createElement("div");
         myScene.id = "PatchName";
@@ -129,6 +131,11 @@ class MenuView {
         libraryContent.style.display = "none";
         this.libraryView = libraryView;
 
+        var saveView: SaveView = new SaveView();
+        var saveContent = saveView.initSaveView();
+        saveContent.style.display = "none";
+        this.saveView = saveView;
+
         var exportView: ExportView = new ExportView();
         var exportContent: HTMLElement = exportView.initExportView();
         exportContent.style.display = "none";
@@ -148,6 +155,7 @@ class MenuView {
 
         contentsMenu.appendChild(CloseButtonContainer);
         contentsMenu.appendChild(libraryContent);
+        contentsMenu.appendChild(saveContent);
         contentsMenu.appendChild(exportContent);
         contentsMenu.appendChild(helpContent);
 
@@ -157,9 +165,10 @@ class MenuView {
 
 
         htmlContainer.appendChild(menuContainer);
-        this.HTMLElementsMenu.push(libraryContent, exportContent, helpContent)
+        this.HTMLElementsMenu.push(libraryContent, saveContent, exportContent, helpContent)
 
         this.libraryContent = libraryContent;
+        this.saveContent = saveContent;
         this.exportContent = exportContent;
         this.helpContent = helpContent;
         this.contentsMenu = contentsMenu;

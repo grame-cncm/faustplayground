@@ -204,36 +204,8 @@ class Export{
         }
     }
     renameScene() {
+        Scene.rename(this.exportView.inputNameApp, this.exportView.rulesName, this.exportView.dynamicName);
 
-
-        var newName: string = this.exportView.inputNameApp.value;
-
-        newName = App.replaceAll(newName,"é", "e");
-        newName = App.replaceAll(newName, "è", "e");
-        newName = App.replaceAll(newName, "à", "a");
-        newName = App.replaceAll(newName, "ù", "u");
-        newName = App.replaceAll(newName, " ", "_");
-        newName = App.replaceAll(newName, "'", "_");
-        
-
-        var pattern: RegExp = new RegExp("^[a-zA-Z_][a-zA-Z_0-9]{1,50}$");
-
-        if (pattern.test(newName)) {
-            Scene.sceneName = newName;
-            this.exportView.dynamicName.textContent = Scene.sceneName;
-            this.exportView.rulesName.style.opacity = "0.6";
-            this.exportView.inputNameApp.style.boxShadow = "0 0 0 green inset";
-            this.exportView.inputNameApp.style.border = "none";
-            this.exportView.inputNameApp.value = Scene.sceneName;
-            var ev: Event;
-            this.exportView.inputNameApp.onchange(ev);
-
-        } else {
-            this.exportView.rulesName.style.opacity = "1";
-            this.exportView.inputNameApp.style.boxShadow = "0 0 6px yellow inset";
-            this.exportView.inputNameApp.style.border = "3px solid red";
-        }
-       
     }
 }
 
