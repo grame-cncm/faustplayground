@@ -43,6 +43,11 @@ var JsonSliderSave = (function () {
     }
     return JsonSliderSave;
 })();
+var JsonFactorySave = (function () {
+    function JsonFactorySave() {
+    }
+    return JsonFactorySave;
+})();
 var Scene = (function () {
     function Scene(identifiant, parent, /*onload?: (s: Scene) => void, onunload?: (s: Scene) => void, */ sceneView) {
         this.arrayRecalScene = [];
@@ -186,7 +191,7 @@ var Scene = (function () {
     ///////////////////////////////////////////////////
     //not used for now and not seriously typescripted//
     ///////////////////////////////////////////////////
-    Scene.prototype.saveScene = function () {
+    Scene.prototype.saveScene = function (isPrecompiled) {
         for (var i = 0; i < this.fModuleList.length; i++) {
             if (this.fModuleList[i].patchID != "output" && this.fModuleList[i].patchID != "input") {
                 this.fModuleList[i].patchID = String(i + 1);
@@ -233,6 +238,12 @@ var Scene = (function () {
                 jsonObject.inputs = jsonInputs;
                 jsonObject.outputs = jsonOutputs;
                 jsonObject.params = jsonParams;
+                var factorySave = faust.writeDSPFactoryToMachine(this.fModuleList[i].moduleFaust.factory);
+                if (factorySave && isPrecompiled) {
+                    jsonObject.factory = new JsonFactorySave();
+                    jsonObject.factory.name = factorySave[0];
+                    jsonObject.factory.code = factorySave[1];
+                }
             }
         }
         json = JSON.stringify(jsonObjectCollection);
@@ -255,7 +266,12 @@ var Scene = (function () {
         var _this = this;
         if (this.arrayRecalScene.length != 0) {
             var jsonObject = this.arrayRecalScene[0];
-            if (jsonObject.patchId != "output" && jsonObject.patchId != "input") {
+            if (jsonObject.factory != undefined && 1 == 0) {
+                this.parent.tempPatchId = jsonObject.patchId;
+                var factory = faust.readDSPFactoryFromMachine([jsonObject.factory.name, jsonObject.factory.code]);
+                this.createModule(factory);
+            }
+            else if (jsonObject.patchId != "output" && jsonObject.patchId != "input") {
                 this.parent.tempPatchId = jsonObject.patchId;
                 this.parent.compileFaust(jsonObject.name, jsonObject.code, parseFloat(jsonObject.x), parseFloat(jsonObject.y), function (factory) { _this.createModule(factory); });
             }
@@ -367,8 +383,8 @@ var Scene = (function () {
             input.style.boxShadow = "0 0 0 green inset";
             input.style.border = "none";
             input.value = Scene.sceneName;
-            var ev;
-            input.onchange(ev);
+            var event = new CustomEvent("updatename");
+            document.dispatchEvent(event);
             return true;
         }
         else {

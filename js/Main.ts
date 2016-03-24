@@ -139,7 +139,8 @@ interface IHTMLDivElementOut extends HTMLDivElement{
     audioNode: AudioDestinationNode;
 }
 interface Factory {
-    factoryName: string;
-    shaKe: string;
+    name: string;
+    sha_key: string;
+    code: string;
 }
 

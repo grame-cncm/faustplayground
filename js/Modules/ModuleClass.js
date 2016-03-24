@@ -130,6 +130,7 @@ var ModuleClass = (function () {
     };
     //--- Create and Update are called once a source code is compiled and the factory exists
     ModuleClass.prototype.createDSP = function (factory) {
+        this.moduleFaust.factory = factory;
         this.moduleFaust.fDSP = faust.createDSPInstance(factory, App.audioContext, 1024);
     };
     //--- Update DSP in module 

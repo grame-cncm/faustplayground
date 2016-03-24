@@ -32,9 +32,10 @@ interface IJsonSaveObject {
     y: string;
     inputs: IJsonInputsSave;
     outputs: IJsonOutputsSave;
-    params: IJsonParamsSave
+    params: IJsonParamsSave;
+    factory: IJsonFactorySave;
 }
-class JsonSaveObject {
+class JsonSaveObject implements IJsonSaveObject {
     patchId: string;
     name: string;
     code: string;
@@ -43,26 +44,28 @@ class JsonSaveObject {
     inputs: IJsonInputsSave;
     outputs: IJsonOutputsSave;
     params: IJsonParamsSave
+    factory: IJsonFactorySave;
+
 }
 
 interface IJsonOutputsSave {
     destination: string[]
 }
-class JsonOutputsSave {
+class JsonOutputsSave implements IJsonOutputsSave {
     destination: string[]
 }
 
 interface IJsonInputsSave {
     source: string[]
 }
-class JsonInputsSave {
+class JsonInputsSave implements IJsonInputsSave{
     source: string[]
 }
 
 interface IJsonParamsSave {
     sliders: IJsonSliderSave[]
 }
-class JsonParamsSave {
+class JsonParamsSave implements IJsonParamsSave{
     sliders: IJsonSliderSave[]
 }
 
@@ -70,9 +73,18 @@ interface IJsonSliderSave {
     path: string;
     value: string;
 }
-class JsonSliderSave {
+class JsonSliderSave implements IJsonSliderSave {
     path: string;
     value: string;
+}
+
+interface IJsonFactorySave {
+    code: string;
+    name: string;
+}
+class JsonFactorySave implements IJsonFactorySave {
+    code: string;
+    name: string;
 }
 
 class Scene {
@@ -248,7 +260,7 @@ class Scene {
     //not used for now and not seriously typescripted//
     ///////////////////////////////////////////////////
 
-    saveScene():string {
+    saveScene(isPrecompiled: boolean): string {
 
         for (var i = 0; i < this.fModuleList.length; i++) {
             if (this.fModuleList[i].patchID != "output" && this.fModuleList[i].patchID != "input") {
@@ -308,6 +320,13 @@ class Scene {
                 jsonObject.outputs = jsonOutputs;
                 jsonObject.params = jsonParams;
 
+                var factorySave = faust.writeDSPFactoryToMachine(this.fModuleList[i].moduleFaust.factory);
+
+                if (factorySave && isPrecompiled) {
+                    jsonObject.factory = new JsonFactorySave();
+                    jsonObject.factory.name = factorySave[0];
+                    jsonObject.factory.code = factorySave[1];
+                }
             }
         }
 
@@ -333,7 +352,11 @@ class Scene {
     lunchModuleCreation() {
         if (this.arrayRecalScene.length != 0) {
             var jsonObject = this.arrayRecalScene[0]
-            if (jsonObject.patchId != "output" && jsonObject.patchId != "input") {
+            if (jsonObject.factory != undefined&& 1==0) {
+                this.parent.tempPatchId = jsonObject.patchId;
+                var factory: Factory = faust.readDSPFactoryFromMachine([jsonObject.factory.name, jsonObject.factory.code]);
+                this.createModule(factory)
+            }else if (jsonObject.patchId != "output" && jsonObject.patchId != "input") {
                 this.parent.tempPatchId = jsonObject.patchId;
                 this.parent.compileFaust(jsonObject.name, jsonObject.code, parseFloat(jsonObject.x), parseFloat(jsonObject.y), (factory) => { this.createModule(factory) });
             } else {
@@ -451,8 +474,8 @@ class Scene {
             input.style.boxShadow = "0 0 0 green inset";
             input.style.border = "none";
             input.value = Scene.sceneName;
-            var ev: Event;
-            input.onchange(ev);
+            var event: CustomEvent = new CustomEvent("updatename")
+            document.dispatchEvent(event);
             return true;
         } else {
             spanRule.style.opacity = "1";

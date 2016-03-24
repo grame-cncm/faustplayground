@@ -13,6 +13,7 @@ interface IfDSP {
 
 class ModuleFaust {
     fDSP: IfDSP;
+    factory: Factory;
     fSource: string;
     fTempSource: string;
     fName: string;

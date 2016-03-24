@@ -361,3 +361,40 @@ div#fullScreenButton {
     background: url("../img/checkBox.png") no-repeat 50%;
     background-size: 80%;
 }
+
+/*Save menu*/
+
+#labelDownload {
+    font-size: 0.8em;
+}
+
+#checkBoxPrecompile {
+    display: block;
+    float: left;
+    margin: 0.5em;
+}
+select#existingSceneSelect {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    color: white;
+    padding: 0.2em;
+}
+
+select::selection {
+    background: rgba(255, 255, 255, 0.53)!important;
+    color: black!important;
+    text-shadow: none;
+}
+
+select:focus {
+    border:none;
+    background: rgba(255, 255, 255, 0.53)!important;
+    
+}
+
+#dialogGoodNews {
+    -webkit-transition: all 500ms ease;
+	transition: all 500ms ease;
+}
+

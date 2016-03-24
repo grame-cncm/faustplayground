@@ -50,13 +50,15 @@ class Menu {
         this.save = new Save();
         this.save.saveView = this.menuView.saveView;
         this.save.setEventListeners();
+        this.save.fillSelectExistingScene();
         this.expor = new Export();
         this.expor.exportView = this.menuView.exportView;
         this.expor.uploadTargets();
         this.expor.setEventListeners();
         this.help = new Help();
         this.help.helpView = this.menuView.helpView;
-        this.menuView.exportView.inputNameApp.onchange = (e) => { this.updatePatchNameToInput(e) }
+        //this.menuView.exportView.inputNameApp.onchange = (e) => { this.updatePatchNameToInput(e) }
+        document.addEventListener("updatename", (e) => { this.updatePatchNameToInput(e) })
         this.mouseOverLowerMenu = (event: MouseEvent) => { this.raiseLibraryMenuEvent(event) }
         this.accEdit = new AccelerometerEdit(this.menuView.accEditView);
         document.addEventListener("codeeditevent", () => { this.customeCodeEditEvent() });
@@ -175,7 +177,7 @@ class Menu {
                 this.cleanMenu();
                 this.menuView.saveButton.style.backgroundColor = this.menuView.menuColorSelected;
                 this.menuView.saveButton.style.zIndex = "1";
-                this.menuView.saveButton.style.display = "inline-table";
+                this.menuView.saveContent.style.display = "inline-table";
                 this.currentMenuChoices = MenuChoices.save;
                 break;
         }
@@ -270,6 +272,11 @@ class Menu {
     }
     updatePatchNameToInput(e: Event) {
         this.menuView.patchNameScene.textContent = Scene.sceneName;
+        this.menuView.exportView.dynamicName.textContent = Scene.sceneName;
+        this.menuView.exportView.inputNameApp.value = Scene.sceneName;
+        this.menuView.saveView.dynamicName.textContent = Scene.sceneName;
+        this.menuView.saveView.inputDownload.value = Scene.sceneName;
+        this.menuView.saveView.inputLocalStorage.value = Scene.sceneName;
     }
 
     lowerLibraryMenu() {
@@ -349,16 +356,7 @@ class Menu {
 
         this.menuHandler(MenuChoices.null);
     }
-    saveGraph() {
-        var jsonScene = this.sceneCurrent.saveScene()
-        console.log(JSON.parse(jsonScene));
-        if (typeof sessionStorage != 'undefined') {
-            localStorage.setItem("save", jsonScene);
 
-        } else {
-            alert("sessionStorage n'est pas supporté");
-        }
-    }
     loadGraph() {
         App.showFullPageLoading();
         this.sceneCurrent.recallScene(localStorage.getItem(localStorage.key(0)))
