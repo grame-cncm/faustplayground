@@ -189,6 +189,7 @@ var App = (function () {
     //-- Init drag and drop reactions
     App.prototype.setGeneralAppListener = function (app) {
         var _this = this;
+        document.addEventListener("fileload", function (e) { _this.loadFileEvent(e); });
         window.ondragover = function () { this.className = 'hover'; return false; };
         window.ondragend = function () { this.className = ''; return false; };
         document.ondragstart = function () { _this.styleOnDragStart(); };
@@ -309,35 +310,45 @@ var App = (function () {
         }
         var request = new XMLHttpRequest();
         if (request.upload) {
-            var reader = new FileReader();
-            var ext = file.name.toString().split('.').pop();
-            var filename = file.name.toString().split('.').shift();
-            var type;
-            if (ext == "dsp") {
-                type = "dsp";
-                reader.readAsText(file);
-            }
-            else if (ext == "json") {
-                type = "json";
-                reader.readAsText(file);
-            }
-            else {
-                this.terminateUpload();
-            }
-            reader.onloadend = function (e) {
-                dsp_code = "process = vgroup(\"" + filename + "\",environment{" + reader.result + "}.process);";
-                if (!module && type == "dsp") {
-                    app.compileFaust(filename, dsp_code, x, y, function (factory) { app.createModule(factory); });
-                }
-                else if (type == "dsp") {
-                    module.update(filename, dsp_code);
-                }
-                else if (type == "json") {
-                    App.scene.recallScene(reader.result);
-                }
-                //app.terminateUpload();
-            };
+            this.loadFile(file, module, x, y, app);
         }
+    };
+    App.prototype.loadFile = function (file, module, x, y, app) {
+        var dsp_code;
+        var reader = new FileReader();
+        var ext = file.name.toString().split('.').pop();
+        var filename = file.name.toString().split('.').shift();
+        var type;
+        if (ext == "dsp") {
+            type = "dsp";
+            reader.readAsText(file);
+        }
+        else if (ext == "json") {
+            type = "json";
+            reader.readAsText(file);
+        }
+        else {
+            this.terminateUpload();
+        }
+        reader.onloadend = function (e) {
+            dsp_code = "process = vgroup(\"" + filename + "\",environment{" + reader.result + "}.process);";
+            if (!module && type == "dsp") {
+                app.compileFaust(filename, dsp_code, x, y, function (factory) { app.createModule(factory); });
+            }
+            else if (type == "dsp") {
+                module.update(filename, dsp_code);
+            }
+            else if (type == "json") {
+                App.scene.recallScene(reader.result);
+            }
+            //app.terminateUpload();
+        };
+    };
+    App.prototype.loadFileEvent = function (e) {
+        App.showFullPageLoading();
+        var file = e.detail;
+        var position = App.scene.positionDblTapModule();
+        this.loadFile(file, null, position.x, position.y, this);
     };
     App.prototype.dblTouchUpload = function (e) {
         App.showFullPageLoading();

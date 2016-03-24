@@ -18,7 +18,9 @@ div#menuContainer {
 div#closeButtonContainer {
     height: 25px;
 }
-
+.menuContent {
+    width:100%;
+}
 div#closeButton {
     background: url(../img/cross_close_menu.png);
     width: 15px;
@@ -373,7 +375,7 @@ div#fullScreenButton {
     float: left;
     margin: 0.5em;
 }
-select#existingSceneSelect {
+select.sceneSelect {
     width: 100%;
     background: rgba(255, 255, 255, 0.15);
     border: none;
@@ -398,3 +400,18 @@ select:focus {
 	transition: all 500ms ease;
 }
 
+/*load menu*/
+
+input[type="button"] {
+    border: none;
+    background-color: #E34050;
+    margin: 0 auto;
+    width: 98%;
+    max-width: 200px;
+    display: block;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.52);
+    opacity: 0.8;
+    color: white;
+    min-height:40px;
+
+}

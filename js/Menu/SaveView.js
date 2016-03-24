@@ -58,6 +58,7 @@ var SaveView = (function () {
         ////////////////////////////////////////local save
         var existingSceneSelect = document.createElement("select");
         existingSceneSelect.id = "existingSceneSelect";
+        existingSceneSelect.className = "sceneSelect";
         existingSceneSelect.size = 7;
         Ps.initialize(existingSceneSelect, { suppressScrollX: true, theme: 'my-theme-name' });
         this.existingSceneSelect = existingSceneSelect;

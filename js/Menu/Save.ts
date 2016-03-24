@@ -38,32 +38,14 @@
                     localStorage.setItem(name, jsonScene)
                 }
                 this.showGoodNews()
-                this.updateSelectExistingScene();
+                Menu.updateSelectExistingScene(this.saveView.existingSceneSelect);
 
             } else {
                 alert("sessionStorage n'est pas supporté");
             }
         }
     }
-    clearSelectExistingScene() {
-        this.saveView.existingSceneSelect.innerHTML = "";
-        
-    }
-    updateSelectExistingScene() {
-        this.clearSelectExistingScene();
-        this.fillSelectExistingScene();
-    }
-    fillSelectExistingScene() {
-        if (typeof sessionStorage != 'undefined') {
-            for (var i = 0; i < localStorage.length; i++) {
-                var option = document.createElement("option");
-                option.value = localStorage.key(i);
-                option.textContent = localStorage.key(i);
-                this.saveView.existingSceneSelect.add(option);
-            }
 
-        }
-    }
     isFileExisting(name: string): boolean {
         for (var i = 0; i < localStorage.length; i++) {
             if (localStorage.key(i) == name) {

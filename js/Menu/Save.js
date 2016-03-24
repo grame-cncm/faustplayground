@@ -36,27 +36,10 @@ var Save = (function () {
                     localStorage.setItem(name, jsonScene);
                 }
                 this.showGoodNews();
-                this.updateSelectExistingScene();
+                Menu.updateSelectExistingScene(this.saveView.existingSceneSelect);
             }
             else {
                 alert("sessionStorage n'est pas supporté");
-            }
-        }
-    };
-    Save.prototype.clearSelectExistingScene = function () {
-        this.saveView.existingSceneSelect.innerHTML = "";
-    };
-    Save.prototype.updateSelectExistingScene = function () {
-        this.clearSelectExistingScene();
-        this.fillSelectExistingScene();
-    };
-    Save.prototype.fillSelectExistingScene = function () {
-        if (typeof sessionStorage != 'undefined') {
-            for (var i = 0; i < localStorage.length; i++) {
-                var option = document.createElement("option");
-                option.value = localStorage.key(i);
-                option.textContent = localStorage.key(i);
-                this.saveView.existingSceneSelect.add(option);
             }
         }
     };

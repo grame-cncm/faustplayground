@@ -53,6 +53,7 @@ function init():void {
     accHandler.getAccelerometerValue(); 
 }
 window.addEventListener('touchend', IosInit , false);
+window.addEventListener('touchend', IosInit2, false);
 
 function IosInit(){
     var buffer = App.audioContext.createBuffer(1, 1, 22050);
@@ -67,6 +68,21 @@ function IosInit(){
         source.noteOn(0);
     }
     window.removeEventListener('touchend', IosInit, false)
+}
+
+function IosInit2() {
+    var buffer = App.audioContext.createBuffer(1, 1, 22050);
+    var source = App.audioContext.createBufferSource();
+    source.buffer = buffer;
+
+    // connect to output (your speakers)
+    source.connect(App.audioContext.destination);
+
+    // play the file
+    if (source.noteOn) {
+        source.noteOn(0);
+    }
+    window.removeEventListener('touchend', IosInit2, false)
 }
 
     /********************************************************************

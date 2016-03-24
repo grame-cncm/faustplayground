@@ -249,7 +249,7 @@ class App {
 
     //-- Init drag and drop reactions
     setGeneralAppListener(app: App): void {
-
+        document.addEventListener("fileload", (e: CustomEvent) => { this.loadFileEvent(e) })
         window.ondragover = function () { this.className = 'hover'; return false; };
         window.ondragend = function () { this.className = ''; return false; };
         document.ondragstart = () => { this.styleOnDragStart() };
@@ -392,41 +392,82 @@ class App {
 
         var request: XMLHttpRequest = new XMLHttpRequest();
         if (request.upload) {
+            this.loadFile(file, module, x, y, app); 
+            //var reader: FileReader = new FileReader();
 
-            var reader: FileReader = new FileReader();
+            //var ext: string = file.name.toString().split('.').pop();
 
-            var ext: string = file.name.toString().split('.').pop();
+            //var filename: string = file.name.toString().split('.').shift();
 
-            var filename: string = file.name.toString().split('.').shift();
+            //var type: string;
 
-            var type: string;
+            //if (ext == "dsp") {
+            //    type = "dsp";
+            //    reader.readAsText(file);
+            //}
+            //else if (ext == "json") {
+            //    type = "json";
+            //    reader.readAsText(file);
+            //} else {
+            //    this.terminateUpload();
+            //}
 
-            if (ext == "dsp") {
-                type = "dsp";
-                reader.readAsText(file);
-            }
-            else if (ext == "json") {
-                type = "json";
-                reader.readAsText(file);
-            } else {
-                this.terminateUpload();
-            }
+            //reader.onloadend = function (e) {
+            //    dsp_code = "process = vgroup(\"" + filename + "\",environment{" + reader.result + "}.process);";
 
-            reader.onloadend = function (e) {
-                dsp_code = "process = vgroup(\"" + filename + "\",environment{" + reader.result + "}.process);";
-
-                if (!module && type == "dsp") {
-                    app.compileFaust(filename, dsp_code, x, y, (factory) => { app.createModule(factory) });
-                } else if (type == "dsp") {
-                    module.update(filename, dsp_code);
-                } else if (type == "json") {
-                    App.scene.recallScene(reader.result);
-                }
+            //    if (!module && type == "dsp") {
+            //        app.compileFaust(filename, dsp_code, x, y, (factory) => { app.createModule(factory) });
+            //    } else if (type == "dsp") {
+            //        module.update(filename, dsp_code);
+            //    } else if (type == "json") {
+            //        App.scene.recallScene(reader.result);
+            //    }
                 //app.terminateUpload();
-            };
+            //};
         }
     }
 
+    loadFile(file: File, module: ModuleClass, x: number, y: number,app:App) {
+        var dsp_code: string;
+        var reader: FileReader = new FileReader();
+
+        var ext: string = file.name.toString().split('.').pop();
+
+        var filename: string = file.name.toString().split('.').shift();
+
+        var type: string;
+
+        if (ext == "dsp") {
+            type = "dsp";
+            reader.readAsText(file);
+        }
+        else if (ext == "json") {
+            type = "json";
+            reader.readAsText(file);
+        } else {
+            this.terminateUpload();
+        }
+
+        reader.onloadend = function (e) {
+            dsp_code = "process = vgroup(\"" + filename + "\",environment{" + reader.result + "}.process);";
+
+            if (!module && type == "dsp") {
+                app.compileFaust(filename, dsp_code, x, y, (factory) => { app.createModule(factory) });
+            } else if (type == "dsp") {
+                module.update(filename, dsp_code);
+            } else if (type == "json") {
+                App.scene.recallScene(reader.result);
+            }
+            //app.terminateUpload();
+        };
+    }
+    loadFileEvent(e: CustomEvent) {
+        App.showFullPageLoading();
+        var file: File = <File>e.detail;
+        var position: PositionModule = App.scene.positionDblTapModule();
+        this.loadFile(file, null, position.x, position.y, this)
+
+    }
     dblTouchUpload(e: CustomEvent) {
         App.showFullPageLoading();
         var position: PositionModule = App.scene.positionDblTapModule();

@@ -13,7 +13,8 @@ var MenuChoices;
     MenuChoices[MenuChoices["kids"] = 3] = "kids";
     MenuChoices[MenuChoices["edit"] = 4] = "edit";
     MenuChoices[MenuChoices["save"] = 5] = "save";
-    MenuChoices[MenuChoices["null"] = 6] = "null";
+    MenuChoices[MenuChoices["load"] = 6] = "load";
+    MenuChoices[MenuChoices["null"] = 7] = "null";
 })(MenuChoices || (MenuChoices = {}));
 var Menu = (function () {
     function Menu(htmlContainer) {
@@ -32,14 +33,18 @@ var Menu = (function () {
         this.menuView.fullScreenButton.addEventListener("click", function () { _this.fullScreen(); });
         this.menuView.accButton.addEventListener("click", function () { _this.accelerometer(); });
         this.menuView.saveButton.addEventListener("click", function () { _this.menuHandler(_this.menuChoices = MenuChoices.save); });
-        this.menuView.loadButton.addEventListener("click", function () { _this.loadGraph(); });
+        this.menuView.loadButton.addEventListener("click", function () { _this.menuHandler(_this.menuChoices = MenuChoices.load); });
         this.library = new Library();
         this.library.libraryView = this.menuView.libraryView;
         this.library.fillLibrary();
+        this.load = new Load();
+        this.load.loadView = this.menuView.loadView;
+        this.load.setEventListeners();
+        Menu.fillSelectExistingScene(this.load.loadView.existingSceneSelect);
         this.save = new Save();
         this.save.saveView = this.menuView.saveView;
         this.save.setEventListeners();
-        this.save.fillSelectExistingScene();
+        Menu.fillSelectExistingScene(this.save.saveView.existingSceneSelect);
         this.expor = new Export();
         this.expor.exportView = this.menuView.exportView;
         this.expor.uploadTargets();
@@ -56,6 +61,7 @@ var Menu = (function () {
     Menu.prototype.setMenuScene = function (scene) {
         this.sceneCurrent = scene;
         this.save.sceneCurrent = scene;
+        this.load.sceneCurrent = scene;
     };
     Menu.prototype.menuHandler = function (menuChoices) {
         this.help.stopVideo();
@@ -74,6 +80,9 @@ var Menu = (function () {
                 break;
             case MenuChoices.save:
                 this.saveMenu();
+                break;
+            case MenuChoices.load:
+                this.loadMenu();
                 break;
             case MenuChoices.null:
                 this.cleanMenu();
@@ -105,6 +114,31 @@ var Menu = (function () {
                 this.menuView.libraryButtonMenu.style.zIndex = "1";
                 this.menuView.libraryContent.style.display = "block";
                 this.currentMenuChoices = MenuChoices.library;
+                break;
+        }
+    };
+    Menu.prototype.loadMenu = function () {
+        switch (this.currentMenuChoices) {
+            case MenuChoices.null:
+                this.menuView.contentsMenu.style.display = "block";
+                this.menuView.loadContent.style.display = "inline-table";
+                this.currentMenuChoices = MenuChoices.load;
+                this.menuView.loadButton.style.backgroundColor = this.menuView.menuColorSelected;
+                this.menuView.loadButton.style.zIndex = "1";
+                break;
+            case MenuChoices.load:
+                this.menuView.contentsMenu.style.display = "none";
+                this.menuView.loadContent.style.display = "none";
+                this.currentMenuChoices = MenuChoices.null;
+                this.menuView.loadButton.style.backgroundColor = this.menuView.menuColorDefault;
+                this.menuView.loadButton.style.zIndex = "0";
+                break;
+            default:
+                this.cleanMenu();
+                this.menuView.loadButton.style.backgroundColor = this.menuView.menuColorSelected;
+                this.menuView.loadButton.style.zIndex = "1";
+                this.menuView.loadContent.style.display = "inline-table";
+                this.currentMenuChoices = MenuChoices.load;
                 break;
         }
     };
@@ -320,9 +354,22 @@ var Menu = (function () {
     Menu.prototype.customeCodeEditEvent = function () {
         this.menuHandler(MenuChoices.null);
     };
-    Menu.prototype.loadGraph = function () {
-        App.showFullPageLoading();
-        this.sceneCurrent.recallScene(localStorage.getItem(localStorage.key(0)));
+    Menu.clearSelectExistingScene = function (select) {
+        select.innerHTML = "";
+    };
+    Menu.updateSelectExistingScene = function (select) {
+        Menu.clearSelectExistingScene(select);
+        Menu.fillSelectExistingScene(select);
+    };
+    Menu.fillSelectExistingScene = function (select) {
+        if (typeof sessionStorage != 'undefined') {
+            for (var i = 0; i < localStorage.length; i++) {
+                var option = document.createElement("option");
+                option.value = localStorage.key(i);
+                option.textContent = localStorage.key(i);
+                select.add(option);
+            }
+        }
     };
     return Menu;
 })();

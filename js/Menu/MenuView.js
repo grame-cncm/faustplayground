@@ -66,7 +66,7 @@ var MenuView = (function () {
         buttonsMenu.appendChild(helpButtonMenu);
         buttonsMenu.appendChild(fullScreenButton);
         buttonsMenu.appendChild(accButton);
-        this.HTMLButtonsMenu.push(libraryButtonMenu, saveButtonMenu, exportButtonMenu, helpButtonMenu);
+        this.HTMLButtonsMenu.push(libraryButtonMenu, loadButtonMenu, saveButtonMenu, exportButtonMenu, helpButtonMenu);
         var myScene = document.createElement("div");
         myScene.id = "PatchName";
         myScene.className = "sceneTitle";
@@ -87,6 +87,10 @@ var MenuView = (function () {
         var libraryContent = libraryView.initLibraryView();
         libraryContent.style.display = "none";
         this.libraryView = libraryView;
+        var loadView = new LoadView();
+        var loadContent = loadView.initLoadView();
+        loadContent.style.display = "none";
+        this.loadView = loadView;
         var saveView = new SaveView();
         var saveContent = saveView.initSaveView();
         saveContent.style.display = "none";
@@ -105,6 +109,7 @@ var MenuView = (function () {
         this.accEditView = accEditView;
         contentsMenu.appendChild(CloseButtonContainer);
         contentsMenu.appendChild(libraryContent);
+        contentsMenu.appendChild(loadContent);
         contentsMenu.appendChild(saveContent);
         contentsMenu.appendChild(exportContent);
         contentsMenu.appendChild(helpContent);
@@ -112,8 +117,9 @@ var MenuView = (function () {
         menuContainer.appendChild(contentsMenu);
         menuContainer.appendChild(accEditContent);
         htmlContainer.appendChild(menuContainer);
-        this.HTMLElementsMenu.push(libraryContent, saveContent, exportContent, helpContent);
+        this.HTMLElementsMenu.push(libraryContent, loadContent, saveContent, exportContent, helpContent);
         this.libraryContent = libraryContent;
+        this.loadContent = loadContent;
         this.saveContent = saveContent;
         this.exportContent = exportContent;
         this.helpContent = helpContent;
