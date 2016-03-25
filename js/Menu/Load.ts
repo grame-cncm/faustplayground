@@ -1,4 +1,6 @@
-﻿class Load {
+﻿    /// <reference path="../DriveAPI.ts"/>   
+    
+class Load {
     loadView: LoadView;
     sceneCurrent: Scene;
     drive: DriveAPI;
