@@ -5,6 +5,9 @@
 /// <reference path="ExportView.ts"/>
 /// <reference path="Help.ts"/>
 /// <reference path="HelpView.ts"/>
+/// <reference path="Load.ts"/>
+/// <reference path="Save.ts"/>
+/// <reference path="AccelerometerEdit.ts"/>
 var MenuChoices;
 (function (MenuChoices) {
     MenuChoices[MenuChoices["library"] = 0] = "library";
@@ -40,11 +43,11 @@ var Menu = (function () {
         this.load = new Load();
         this.load.loadView = this.menuView.loadView;
         this.load.setEventListeners();
-        Menu.fillSelectExistingScene(this.load.loadView.existingSceneSelect);
+        this.fillSelectExistingScene(this.load.loadView.existingSceneSelect);
         this.save = new Save();
         this.save.saveView = this.menuView.saveView;
         this.save.setEventListeners();
-        Menu.fillSelectExistingScene(this.save.saveView.existingSceneSelect);
+        this.fillSelectExistingScene(this.save.saveView.existingSceneSelect);
         this.expor = new Export();
         this.expor.exportView = this.menuView.exportView;
         this.expor.uploadTargets();
@@ -56,6 +59,7 @@ var Menu = (function () {
         this.mouseOverLowerMenu = function (event) { _this.raiseLibraryMenuEvent(event); };
         this.accEdit = new AccelerometerEdit(this.menuView.accEditView);
         document.addEventListener("codeeditevent", function () { _this.customeCodeEditEvent(); });
+        document.addEventListener("updatelist", function () { _this.updatefillSelectExistingSceneEvent(); });
         //this.accEdit.accelerometerEditView = this.menuView.accEditView
     }
     Menu.prototype.setMenuScene = function (scene) {
@@ -354,14 +358,18 @@ var Menu = (function () {
     Menu.prototype.customeCodeEditEvent = function () {
         this.menuHandler(MenuChoices.null);
     };
-    Menu.clearSelectExistingScene = function (select) {
+    Menu.prototype.updatefillSelectExistingSceneEvent = function () {
+        this.updateSelectExistingScene(this.menuView.loadView.existingSceneSelect);
+        this.updateSelectExistingScene(this.menuView.saveView.existingSceneSelect);
+    };
+    Menu.prototype.clearSelectExistingScene = function (select) {
         select.innerHTML = "";
     };
-    Menu.updateSelectExistingScene = function (select) {
-        Menu.clearSelectExistingScene(select);
-        Menu.fillSelectExistingScene(select);
+    Menu.prototype.updateSelectExistingScene = function (select) {
+        this.clearSelectExistingScene(select);
+        this.fillSelectExistingScene(select);
     };
-    Menu.fillSelectExistingScene = function (select) {
+    Menu.prototype.fillSelectExistingScene = function (select) {
         if (typeof sessionStorage != 'undefined') {
             for (var i = 0; i < localStorage.length; i++) {
                 var option = document.createElement("option");

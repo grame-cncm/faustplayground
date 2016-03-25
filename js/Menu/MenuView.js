@@ -1,4 +1,8 @@
 //MenuView.ts : MenuView Class which contains all the graphical parts of the menu
+/// <reference path="../Accelerometer.ts"/>
+/// <reference path="AccelerometerEditView.ts"/>
+/// <reference path="LoadView.ts"/>
+/// <reference path="SaveView.ts"/>
 var MenuView = (function () {
     function MenuView() {
         this.HTMLElementsMenu = [];

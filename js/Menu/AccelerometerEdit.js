@@ -1,4 +1,5 @@
 //AccelerometerEdit
+/// <reference path="../CodeFaustParser.ts"/>
 "use strict";
 var AccelerometerEdit = (function () {
     function AccelerometerEdit(accelerometerEditView) {

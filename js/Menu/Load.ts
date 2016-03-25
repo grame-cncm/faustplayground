@@ -6,8 +6,11 @@
     setEventListeners() {
         this.loadView.loadFileButton.addEventListener("click", () => { this.openFile() })
         this.loadView.loadLocalButton.addEventListener("click", () => { this.localLoad() })
-        this.loadView.aBigExemple.addEventListener("click", () => { this.getBigEx() })
-        this.loadView.aLightExemple.addEventListener("click", () => { this.getLightEx() })
+        this.loadView.buttonLocalSuppr.addEventListener("click", () => { this.supprLocal() });
+        this.loadView.aBigExemple.addEventListener("click", (e) => { this.getEx(e) })
+        this.loadView.aLightExemple.addEventListener("click", (e) => { this.getEx(e) })
+        this.loadView.aBigPreExemple.addEventListener("click", (e) => { this.getEx(e) })
+        this.loadView.aLightPreExemple.addEventListener("click", (e) => { this.getEx(e) })
     }
 
     openFile() {
@@ -25,18 +28,24 @@
             this.sceneCurrent.recallScene(localStorage.getItem(name))
         }
     }
-    getBigEx() {
-        var file: File;
-        App.getXHR("json/patch_big.json", (json: string) => { this.loadEx(json) },null)
+    getEx(e: Event) {
+        e.preventDefault();
+        var anchorTarget = <HTMLAnchorElement>e.target;
+        App.getXHR(anchorTarget.href, (json: string) => { this.loadEx(json) }, null)
     }
     loadEx(json) {
         App.showFullPageLoading();
 
         this.sceneCurrent.recallScene(json);
     }
-    getLightEx() {
-        var file: File;
-        App.getXHR("json/patch_light.json", (json: string) => { this.loadEx(json) }, null)
+    supprLocal() {
+        if (this.loadView.existingSceneSelect.selectedIndex > -1) {
+
+            var name = this.loadView.existingSceneSelect.options[this.loadView.existingSceneSelect.selectedIndex].value
+            localStorage.removeItem(name)
+            var event: CustomEvent = new CustomEvent("updatelist")
+            document.dispatchEvent(event);
+        }
     }
 
 }

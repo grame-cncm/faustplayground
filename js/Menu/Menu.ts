@@ -55,11 +55,11 @@ class Menu {
         this.load = new Load();
         this.load.loadView = this.menuView.loadView;
         this.load.setEventListeners();
-        Menu.fillSelectExistingScene(this.load.loadView.existingSceneSelect);
+        this.fillSelectExistingScene(this.load.loadView.existingSceneSelect);
         this.save = new Save();
         this.save.saveView = this.menuView.saveView;
         this.save.setEventListeners();
-        Menu.fillSelectExistingScene(this.save.saveView.existingSceneSelect);
+        this.fillSelectExistingScene(this.save.saveView.existingSceneSelect);
         this.expor = new Export();
         this.expor.exportView = this.menuView.exportView;
         this.expor.uploadTargets();
@@ -71,6 +71,8 @@ class Menu {
         this.mouseOverLowerMenu = (event: MouseEvent) => { this.raiseLibraryMenuEvent(event) }
         this.accEdit = new AccelerometerEdit(this.menuView.accEditView);
         document.addEventListener("codeeditevent", () => { this.customeCodeEditEvent() });
+        document.addEventListener("updatelist", () => { this.updatefillSelectExistingSceneEvent() });
+
         //this.accEdit.accelerometerEditView = this.menuView.accEditView
 
     }
@@ -399,16 +401,21 @@ class Menu {
         this.menuHandler(MenuChoices.null);
     }
 
+    updatefillSelectExistingSceneEvent() {
+        this.updateSelectExistingScene(this.menuView.loadView.existingSceneSelect);
+        this.updateSelectExistingScene(this.menuView.saveView.existingSceneSelect)
+    }
 
-    static clearSelectExistingScene(select: HTMLSelectElement) {
+
+    clearSelectExistingScene(select: HTMLSelectElement) {
         select.innerHTML = "";
 
     }
-    static updateSelectExistingScene(select: HTMLSelectElement) {
-        Menu.clearSelectExistingScene(select);
-        Menu.fillSelectExistingScene(select);
+    updateSelectExistingScene(select: HTMLSelectElement) {
+        this.clearSelectExistingScene(select);
+        this.fillSelectExistingScene(select);
     }
-    static fillSelectExistingScene(select: HTMLSelectElement) {
+    fillSelectExistingScene(select: HTMLSelectElement) {
         if (typeof sessionStorage != 'undefined') {
             for (var i = 0; i < localStorage.length; i++) {
                 var option = document.createElement("option");

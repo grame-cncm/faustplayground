@@ -5,8 +5,11 @@ var Load = (function () {
         var _this = this;
         this.loadView.loadFileButton.addEventListener("click", function () { _this.openFile(); });
         this.loadView.loadLocalButton.addEventListener("click", function () { _this.localLoad(); });
-        this.loadView.aBigExemple.addEventListener("click", function () { _this.getBigEx(); });
-        this.loadView.aLightExemple.addEventListener("click", function () { _this.getLightEx(); });
+        this.loadView.buttonLocalSuppr.addEventListener("click", function () { _this.supprLocal(); });
+        this.loadView.aBigExemple.addEventListener("click", function (e) { _this.getEx(e); });
+        this.loadView.aLightExemple.addEventListener("click", function (e) { _this.getEx(e); });
+        this.loadView.aBigPreExemple.addEventListener("click", function (e) { _this.getEx(e); });
+        this.loadView.aLightPreExemple.addEventListener("click", function (e) { _this.getEx(e); });
     };
     Load.prototype.openFile = function () {
         if (this.loadView.loadFileInput.files.length > 0) {
@@ -22,19 +25,23 @@ var Load = (function () {
             this.sceneCurrent.recallScene(localStorage.getItem(name));
         }
     };
-    Load.prototype.getBigEx = function () {
+    Load.prototype.getEx = function (e) {
         var _this = this;
-        var file;
-        App.getXHR("json/patch_big.json", function (json) { _this.loadEx(json); }, null);
+        e.preventDefault();
+        var anchorTarget = e.target;
+        App.getXHR(anchorTarget.href, function (json) { _this.loadEx(json); }, null);
     };
     Load.prototype.loadEx = function (json) {
         App.showFullPageLoading();
         this.sceneCurrent.recallScene(json);
     };
-    Load.prototype.getLightEx = function () {
-        var _this = this;
-        var file;
-        App.getXHR("json/patch_light.json", function (json) { _this.loadEx(json); }, null);
+    Load.prototype.supprLocal = function () {
+        if (this.loadView.existingSceneSelect.selectedIndex > -1) {
+            var name = this.loadView.existingSceneSelect.options[this.loadView.existingSceneSelect.selectedIndex].value;
+            localStorage.removeItem(name);
+            var event = new CustomEvent("updatelist");
+            document.dispatchEvent(event);
+        }
     };
     return Load;
 })();

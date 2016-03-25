@@ -53,7 +53,7 @@ function init():void {
     accHandler.getAccelerometerValue(); 
 }
 window.addEventListener('touchend', IosInit , false);
-window.addEventListener('touchend', IosInit2, false);
+window.addEventListener('touchstart', IosInit2, false);
 
 function IosInit(){
     var buffer = App.audioContext.createBuffer(1, 1, 22050);
@@ -82,7 +82,7 @@ function IosInit2() {
     if (source.noteOn) {
         source.noteOn(0);
     }
-    window.removeEventListener('touchend', IosInit2, false)
+    window.removeEventListener('touchstart', IosInit2, false)
 }
 
     /********************************************************************

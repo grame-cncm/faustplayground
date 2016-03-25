@@ -8,6 +8,7 @@
     inputLocalStorage: HTMLInputElement;
     buttonDownloadApp: HTMLElement;
     buttonLocalSave: HTMLElement;
+    buttonLocalSuppr: HTMLElement;
     dialogGoodNews: HTMLDivElement;
 
     initSaveView() {
@@ -108,6 +109,13 @@
         dialogGoodNews.style.opacity = "0";
         this.dialogGoodNews = dialogGoodNews;
 
+        var localButtonSuppr: HTMLButtonElement = document.createElement("button");
+        localButtonSuppr.type = "button";
+        localButtonSuppr.id = "localButtonSuppr";
+        localButtonSuppr.className = "button"
+        localButtonSuppr.textContent = "supprimer la scene";
+        this.buttonLocalSuppr = localButtonSuppr;
+
         var localButton: HTMLButtonElement = document.createElement("button");
         localButton.type = "button";
         localButton.id = "localButton";
@@ -122,6 +130,7 @@
 
         localSaveContainer.appendChild(existingSceneSelect);
         localSaveContainer.appendChild(inputLocalStorage);
+        localSaveContainer.appendChild(localButtonSuppr);
         localSaveContainer.appendChild(dialogGoodNews);
         localSaveContainer.appendChild(localBottomButtonContainer);
 

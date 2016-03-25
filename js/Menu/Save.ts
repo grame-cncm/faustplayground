@@ -8,7 +8,8 @@ class Save {
     setEventListeners() {
         this.saveView.buttonDownloadApp.addEventListener("click", () => { this.downloadApp() })
         this.saveView.buttonLocalSave.addEventListener("click", () => { this.saveLocal() });
-        this.saveView.existingSceneSelect.addEventListener("change", () => { this.getNameSelected ()});
+        this.saveView.buttonLocalSuppr.addEventListener("click", () => { this.supprLocal() });
+        this.saveView.existingSceneSelect.addEventListener("change", () => { this.getNameSelected() });
     }
 
     downloadApp() {
@@ -41,7 +42,8 @@ class Save {
                     localStorage.setItem(name, jsonScene)
                 }
                 this.showGoodNews()
-                Menu.updateSelectExistingScene(this.saveView.existingSceneSelect);
+                var event: CustomEvent = new CustomEvent("updatelist")
+                document.dispatchEvent(event);
 
             } else {
                 alert("sessionStorage n'est pas supporté");
@@ -68,5 +70,14 @@ class Save {
     }
     getNameSelected() {
         this.saveView.inputLocalStorage.value = this.saveView.existingSceneSelect.options[this.saveView.existingSceneSelect.selectedIndex].value;
+    }
+    supprLocal() {
+        if (this.saveView.existingSceneSelect.selectedIndex > -1) {
+
+            var name = this.saveView.existingSceneSelect.options[this.saveView.existingSceneSelect.selectedIndex].value
+            localStorage.removeItem(name)
+            var event: CustomEvent = new CustomEvent("updatelist")
+            document.dispatchEvent(event);
+        }
     }
 }

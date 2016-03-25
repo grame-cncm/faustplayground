@@ -72,6 +72,12 @@ var SaveView = (function () {
         dialogGoodNews.textContent = "Sauvegarde bien effectuée";
         dialogGoodNews.style.opacity = "0";
         this.dialogGoodNews = dialogGoodNews;
+        var localButtonSuppr = document.createElement("button");
+        localButtonSuppr.type = "button";
+        localButtonSuppr.id = "localButtonSuppr";
+        localButtonSuppr.className = "button";
+        localButtonSuppr.textContent = "supprimer la scene";
+        this.buttonLocalSuppr = localButtonSuppr;
         var localButton = document.createElement("button");
         localButton.type = "button";
         localButton.id = "localButton";
@@ -83,6 +89,7 @@ var SaveView = (function () {
         localBottomButtonContainer.appendChild(localButton);
         localSaveContainer.appendChild(existingSceneSelect);
         localSaveContainer.appendChild(inputLocalStorage);
+        localSaveContainer.appendChild(localButtonSuppr);
         localSaveContainer.appendChild(dialogGoodNews);
         localSaveContainer.appendChild(localBottomButtonContainer);
         saveContainer.appendChild(downloadContainer);

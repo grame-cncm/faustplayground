@@ -241,8 +241,8 @@ var Scene = (function () {
                 var factorySave = faust.writeDSPFactoryToMachine(this.fModuleList[i].moduleFaust.factory);
                 if (factorySave && isPrecompiled) {
                     jsonObject.factory = new JsonFactorySave();
-                    jsonObject.factory.name = factorySave[0];
-                    jsonObject.factory.code = factorySave[1];
+                    jsonObject.factory.name = factorySave.name;
+                    jsonObject.factory.code = factorySave.code;
                 }
             }
         }
@@ -266,9 +266,10 @@ var Scene = (function () {
         var _this = this;
         if (this.arrayRecalScene.length != 0) {
             var jsonObject = this.arrayRecalScene[0];
-            if (jsonObject.factory != undefined && 1 == 0) {
+            if (jsonObject.factory != undefined) {
                 this.parent.tempPatchId = jsonObject.patchId;
-                var factory = faust.readDSPFactoryFromMachine([jsonObject.factory.name, jsonObject.factory.code]);
+                var factory = faust.readDSPFactoryFromMachine(jsonObject.factory);
+                this.updateAppTempModuleInfo(jsonObject);
                 this.createModule(factory);
             }
             else if (jsonObject.patchId != "output" && jsonObject.patchId != "input") {
@@ -290,6 +291,13 @@ var Scene = (function () {
             this.arrayRecalledModule = [];
             App.hideFullPageLoading();
         }
+    };
+    Scene.prototype.updateAppTempModuleInfo = function (jsonSaveObject) {
+        this.parent.tempModuleX = parseFloat(jsonSaveObject.x);
+        this.parent.tempModuleY = parseFloat(jsonSaveObject.y);
+        this.parent.tempModuleName = jsonSaveObject.name;
+        this.parent.tempModuleSourceCode = jsonSaveObject.code;
+        this.parent.tempPatchId = jsonSaveObject.patchId;
     };
     Scene.prototype.createModule = function (factory) {
         //---- This is very similar to "createFaustModule" from App.js

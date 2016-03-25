@@ -25,12 +25,30 @@ var LoadView = (function () {
         aLightExemple.id = "aLightExemple";
         aLightExemple.className = "exempleAnchor";
         aLightExemple.textContent = "Small exemple";
+        aLightExemple.href = "json/patch_light.json";
+        aLightExemple.draggable = false;
         this.aLightExemple = aLightExemple;
         var aBigExemple = document.createElement("a");
         aBigExemple.id = "aBigExemple";
         aBigExemple.className = "exempleAnchor";
         aBigExemple.textContent = "Big exemple";
+        aBigExemple.href = "json/patch_big.json";
+        aBigExemple.draggable = false;
         this.aBigExemple = aBigExemple;
+        var aLightPreExemple = document.createElement("a");
+        aLightPreExemple.id = "aLightPreExemple";
+        aLightPreExemple.className = "exempleAnchor";
+        aLightPreExemple.textContent = "Small exemple precompile";
+        aLightPreExemple.href = "json/patch_light_precompile.json";
+        aLightPreExemple.draggable = false;
+        this.aLightPreExemple = aLightPreExemple;
+        var aBigPreExemple = document.createElement("a");
+        aBigPreExemple.id = "aBigPreExemple";
+        aBigPreExemple.className = "exempleAnchor";
+        aBigPreExemple.textContent = "Big exemple precompile";
+        aBigPreExemple.href = "json/patch_big_precompile.json";
+        aBigPreExemple.draggable = false;
+        this.aBigPreExemple = aBigPreExemple;
         var loadFileButton = document.createElement("button");
         loadFileButton.type = "button";
         loadFileButton.id = "loadFileButton";
@@ -39,7 +57,9 @@ var LoadView = (function () {
         this.loadFileButton = loadFileButton;
         loadFileContainer.appendChild(loadFileInput);
         loadFileContainer.appendChild(aLightExemple);
+        loadFileContainer.appendChild(aLightPreExemple);
         loadFileContainer.appendChild(aBigExemple);
+        loadFileContainer.appendChild(aBigPreExemple);
         loadFileBottomButtonContainer.appendChild(loadFileButton);
         loadFileContainer.appendChild(loadFileBottomButtonContainer);
         ////////////////////////////////////////local load
@@ -49,6 +69,12 @@ var LoadView = (function () {
         existingSceneSelect.size = 7;
         Ps.initialize(existingSceneSelect, { suppressScrollX: true, theme: 'my-theme-name' });
         this.existingSceneSelect = existingSceneSelect;
+        var localButtonSuppr = document.createElement("button");
+        localButtonSuppr.type = "button";
+        localButtonSuppr.id = "localButtonSuppr";
+        localButtonSuppr.className = "button";
+        localButtonSuppr.textContent = "supprimer la scene";
+        this.buttonLocalSuppr = localButtonSuppr;
         var localButton = document.createElement("button");
         localButton.type = "button";
         localButton.id = "localLoadButton";
@@ -59,6 +85,7 @@ var LoadView = (function () {
         localBottomButtonContainer.className = "bottomButtonContainer";
         localBottomButtonContainer.appendChild(localButton);
         loadLocalContainer.appendChild(existingSceneSelect);
+        loadLocalContainer.appendChild(localButtonSuppr);
         loadLocalContainer.appendChild(localBottomButtonContainer);
         //////////////////////////////////////load Cloud
         var tempCloud = document.createElement("div");
