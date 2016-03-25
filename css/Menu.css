@@ -440,3 +440,11 @@ div#loadLocalContainer {
     display: block;
     line-height: 2em;
 }
+
+select#existingSceneSelectDrive {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    color: white;
+    padding: 0.2em;
+}

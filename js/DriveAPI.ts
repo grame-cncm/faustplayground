@@ -12,6 +12,9 @@ class DriveAPI{
     CLIENT_ID: string = '868894976686-v9jemj2h2ejkjhf0tplf6jp4v4vfleju.apps.googleusercontent.com';
 
     SCOPES: string[] = ['https://www.googleapis.com/auth/drive'];
+    faustFolder: string = "FaustPlayground";
+    isFaustFolderPresent: boolean = false;
+    faustFolderId: string;
 
     /**
      * Check if current user has authorized this application.
@@ -61,39 +64,85 @@ class DriveAPI{
      * Load Drive API client library.
      */
     loadDriveApi() {
-        gapi.client.load('drive', 'v2', () => { this.listFiles() });
+        gapi.client.load('drive', 'v2', () => { this.listFolder() });
     }
 
     /**
      * Print files.
      */
-    listFiles() {
+
+    listFolder() {
         var request = gapi.client.drive.files.list({
-            'maxResults': 1000
+            'maxResults': 10
         });
 
-        request.execute( (resp)=> {
+        request.execute((resp) => {
             var files = resp.items;
             if (files && files.length > 0) {
                 for (var i = 0; i < files.length; i++) {
                     var file = files[i];
-                    if (file.fileExtension=="json") {
-                        this.appendPre(file.title,file.id);
+                    if (file.mimeType == "application/vnd.google-apps.folder" && file.title=="FaustPlayground") {
+                        //this.appendPre(file.title,file.id);
+                        this.isFaustFolderPresent=true
+                        this.openFiles(file.id);
                     }
                 }
+                if (!this.isFaustFolderPresent){
+                    this.createFaustFolder();
+                }
             } else {
-                this.appendPre('No files found.',null);
+                //this.appendPre('No files found.',null);
+                this.appendPre('No files found.', null);
             }
         });
     }
-    findJson(fileName: string): boolean {
-        var pattern: RegExp = new RegExp(".json$");
-        if (pattern.test(fileName)) {
-            return true
-        } else {
-            return false
-        }
+    openFiles(folderId) {
+        var request=gapi.client.drive.children.list({
+            'folderId': folderId
+        });
+
+        request.execute((resp) => {
+            var files = resp.items;
+            if (files && files.length > 0) {
+                for (var i = 0; i < files.length; i++) {
+                    var file = files[i];
+                    this.getFileMetadata(file.id);
+                    if (file.fileExtension == "json") {
+                        //this.appendPre(file.title,file.id);
+                        this.appendPre(file.title, file.id);
+                    }
+                }
+            } else {
+                //this.appendPre('No files found.',null);
+                this.appendPre('No files found.', null);
+            }
+        })
+
     }
+    getFileMetadata(fileId) {
+        var request = gapi.client.drive.files.get({
+            'fileId': fileId
+        });
+        request.execute((file) => {
+            this.appendPre(file.title, file.id);
+        })
+    }
+    createFaustFolder() {
+        var body = {
+            'title': this.faustFolder,
+            'mimeType': "application/vnd.google-apps.folder"
+        };
+
+        var request = gapi.client.drive.files.insert({
+            'resource': body
+        });
+
+        request.execute((resp)=>{
+            console.log('Folder ID: ' + resp.id);
+            this.faustFolderId = resp.id;
+        });
+    }
+    
 
     /**
      * Append a pre element to the body containing the given message
@@ -145,4 +194,5 @@ class DriveAPI{
         });
         request.execute((resp) => { callback(resp) })
     }
+
 }

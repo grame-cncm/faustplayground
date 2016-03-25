@@ -2,6 +2,8 @@ var DriveAPI = (function () {
     function DriveAPI() {
         this.CLIENT_ID = '868894976686-v9jemj2h2ejkjhf0tplf6jp4v4vfleju.apps.googleusercontent.com';
         this.SCOPES = ['https://www.googleapis.com/auth/drive'];
+        this.faustFolder = "FaustPlayground";
+        this.isFaustFolderPresent = false;
     }
     /**
      * Check if current user has authorized this application.
@@ -48,39 +50,82 @@ var DriveAPI = (function () {
      */
     DriveAPI.prototype.loadDriveApi = function () {
         var _this = this;
-        gapi.client.load('drive', 'v2', function () { _this.listFiles(); });
+        gapi.client.load('drive', 'v2', function () { _this.listFolder(); });
     };
     /**
      * Print files.
      */
-    DriveAPI.prototype.listFiles = function () {
+    DriveAPI.prototype.listFolder = function () {
         var _this = this;
         var request = gapi.client.drive.files.list({
-            'maxResults': 1000
+            'maxResults': 10
         });
         request.execute(function (resp) {
             var files = resp.items;
             if (files && files.length > 0) {
                 for (var i = 0; i < files.length; i++) {
                     var file = files[i];
+                    if (file.mimeType == "application/vnd.google-apps.folder" && file.title == "FaustPlayground") {
+                        //this.appendPre(file.title,file.id);
+                        _this.isFaustFolderPresent = true;
+                        _this.openFiles(file.id);
+                    }
+                }
+                if (!_this.isFaustFolderPresent) {
+                    _this.createFaustFolder();
+                }
+            }
+            else {
+                //this.appendPre('No files found.',null);
+                _this.appendPre('No files found.', null);
+            }
+        });
+    };
+    DriveAPI.prototype.openFiles = function (folderId) {
+        var _this = this;
+        var request = gapi.client.drive.children.list({
+            'folderId': folderId
+        });
+        request.execute(function (resp) {
+            var files = resp.items;
+            if (files && files.length > 0) {
+                for (var i = 0; i < files.length; i++) {
+                    var file = files[i];
+                    _this.getFileMetadata(file.id);
                     if (file.fileExtension == "json") {
+                        //this.appendPre(file.title,file.id);
                         _this.appendPre(file.title, file.id);
                     }
                 }
             }
             else {
+                //this.appendPre('No files found.',null);
                 _this.appendPre('No files found.', null);
             }
         });
     };
-    DriveAPI.prototype.findJson = function (fileName) {
-        var pattern = new RegExp(".json$");
-        if (pattern.test(fileName)) {
-            return true;
-        }
-        else {
-            return false;
-        }
+    DriveAPI.prototype.getFileMetadata = function (fileId) {
+        var _this = this;
+        var request = gapi.client.drive.files.get({
+            'fileId': fileId
+        });
+        request.execute(function (file) {
+            _this.appendPre(file.title, file.id);
+        });
+    };
+    DriveAPI.prototype.createFaustFolder = function () {
+        var _this = this;
+        var body = {
+            'title': this.faustFolder,
+            'mimeType': "application/vnd.google-apps.folder"
+        };
+        var request = gapi.client.drive.files.insert({
+            'resource': body
+        });
+        request.execute(function (resp) {
+            console.log('Folder ID: ' + resp.id);
+            _this.faustFolderId = resp.id;
+        });
     };
     /**
      * Append a pre element to the body containing the given message
