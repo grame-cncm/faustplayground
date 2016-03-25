@@ -1,4 +1,7 @@
-﻿class Save {
+﻿   /// <reference path="../Lib/fileSaver.min.d.ts"/>
+
+
+class Save {
     saveView: SaveView;
     sceneCurrent: Scene;
 

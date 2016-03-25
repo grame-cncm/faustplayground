@@ -5,7 +5,11 @@
 	/// <reference path="Export.ts"/>
 	/// <reference path="ExportView.ts"/>
 	/// <reference path="Help.ts"/>
-/// <reference path="HelpView.ts"/>
+    /// <reference path="HelpView.ts"/>
+    /// <reference path="Load.ts"/>
+    /// <reference path="Save.ts"/>
+   /// <reference path="AccelerometerEdit.ts"/>
+    
 interface Document {
     cancelFullScreen: () => any;
     mozCancelFullScreen: () => any;
