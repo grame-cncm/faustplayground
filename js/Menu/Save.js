@@ -15,7 +15,7 @@ var Save = (function () {
         else {
             var jsonScene = this.sceneCurrent.saveScene(this.saveView.checkBoxPrecompile.checked);
             var blob = new Blob([jsonScene], {
-                type: "application/json;charset=utf-8;",
+                type: "application/vnd.google-apps.script+json;charset=utf-8;",
             });
             saveAs(blob, Scene.sceneName + ".json");
         }

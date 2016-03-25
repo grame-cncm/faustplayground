@@ -42,6 +42,8 @@ var Menu = (function () {
         this.library.fillLibrary();
         this.load = new Load();
         this.load.loadView = this.menuView.loadView;
+        this.drive = new DriveAPI();
+        this.load.drive = this.drive;
         this.load.setEventListeners();
         this.fillSelectExistingScene(this.load.loadView.existingSceneSelect);
         this.save = new Save();

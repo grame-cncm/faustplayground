@@ -337,16 +337,20 @@ class Scene {
     }
 
     recallScene(json: string):void {
-
-        var jsonObjectCollection: JsonSaveCollection = JSON.parse(json);
-        this.parent.currentNumberDSP = this.fModuleList.length;
-        var data: JSON = JSON.parse(json);
-        console.log(jsonObjectCollection)
-        for (var index in jsonObjectCollection) {
-            var jsonObject = jsonObjectCollection[index];
-            this.arrayRecalScene.push(jsonObject);
+        if (json != null) {
+            var jsonObjectCollection: JsonSaveCollection = JSON.parse(json);
+            this.parent.currentNumberDSP = this.fModuleList.length;
+            var data: JSON = JSON.parse(json);
+            console.log(jsonObjectCollection)
+            for (var index in jsonObjectCollection) {
+                var jsonObject = jsonObjectCollection[index];
+                this.arrayRecalScene.push(jsonObject);
+            }
+            this.lunchModuleCreation();
+        } else {
+            App.hideFullPageLoading
+            alert("erreur de chargement")
         }
-        this.lunchModuleCreation();
     }
 
     lunchModuleCreation() {

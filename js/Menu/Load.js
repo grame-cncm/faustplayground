@@ -4,8 +4,10 @@ var Load = (function () {
     Load.prototype.setEventListeners = function () {
         var _this = this;
         this.loadView.loadFileButton.addEventListener("click", function () { _this.openFile(); });
-        this.loadView.loadLocalButton.addEventListener("click", function () { _this.localLoad(); });
+        this.loadView.buttonLoadLocal.addEventListener("click", function () { _this.localLoad(); });
+        this.loadView.buttonLoadCloud.addEventListener("click", function () { _this.cloudLoad(); });
         this.loadView.buttonLocalSuppr.addEventListener("click", function () { _this.supprLocal(); });
+        this.loadView.buttonConnectDrive.addEventListener("click", function (e) { _this.drive.handleAuthClick(e); });
         this.loadView.aBigExemple.addEventListener("click", function (e) { _this.getEx(e); });
         this.loadView.aLightExemple.addEventListener("click", function (e) { _this.getEx(e); });
         this.loadView.aBigPreExemple.addEventListener("click", function (e) { _this.getEx(e); });
@@ -42,6 +44,20 @@ var Load = (function () {
             var event = new CustomEvent("updatelist");
             document.dispatchEvent(event);
         }
+    };
+    Load.prototype.cloudLoad = function () {
+        var _this = this;
+        if (this.loadView.cloudSelectFile.selectedIndex > -1) {
+            App.showFullPageLoading();
+            var id = this.loadView.cloudSelectFile.options[this.loadView.cloudSelectFile.selectedIndex].value;
+            var name = this.loadView.cloudSelectFile.options[this.loadView.cloudSelectFile.selectedIndex].name;
+            var file = this.drive.getFile(id, function (resp) { _this.getContent(resp); });
+            console.log(file);
+        }
+    };
+    Load.prototype.getContent = function (resp) {
+        var _this = this;
+        this.drive.downloadFile(resp, function (json) { _this.sceneCurrent.recallScene(json); });
     };
     return Load;
 })();

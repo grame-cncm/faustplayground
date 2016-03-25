@@ -3,12 +3,15 @@
     loadFileButton: HTMLButtonElement;
     loadFileInput: HTMLInputElement;
     existingSceneSelect: HTMLSelectElement;
-    loadLocalButton: HTMLButtonElement;
+    buttonLoadLocal: HTMLButtonElement;
     buttonLocalSuppr: HTMLElement;
+    buttonConnectDrive: HTMLElement;
+    buttonLoadCloud: HTMLElement;
     aBigExemple: HTMLAnchorElement;
     aLightExemple: HTMLAnchorElement;
     aBigPreExemple: HTMLAnchorElement;
     aLightPreExemple: HTMLAnchorElement;
+    cloudSelectFile: HTMLSelectElement;
 
 
     initLoadView():HTMLElement {
@@ -112,7 +115,7 @@
         localButton.id = "localLoadButton";
         localButton.className = "button"
         localButton.textContent = "charger une scene locale";
-        this.loadLocalButton = localButton;
+        this.buttonLoadLocal = localButton;
 
         var localBottomButtonContainer: HTMLElement = document.createElement("div");
         localBottomButtonContainer.className = "bottomButtonContainer";
@@ -128,7 +131,32 @@
         tempCloud.id = "tempCloud";
         tempCloud.textContent = "cloud load";
 
+        var buttonConnectDrive = document.createElement("button");
+        buttonConnectDrive.id = "buttonConnectDrive";
+        buttonConnectDrive.textContent = "connection à google drive";
+        this.buttonConnectDrive = buttonConnectDrive
+
+        var selectDrive = document.createElement("select");
+        selectDrive.size = 6;
+        selectDrive.id = "existingSceneSelectDrive";
+        selectDrive.style.display = "none";
+        this.cloudSelectFile = selectDrive;
+
+        var cloudButton: HTMLButtonElement = document.createElement("button");
+        cloudButton.type = "button";
+        cloudButton.id = "cloudLoadButton";
+        cloudButton.className = "button"
+        cloudButton.textContent = "charger une scene depuis le drive";
+        this.buttonLoadCloud = cloudButton;
+
+        var cloudBottomButtonContainer: HTMLElement = document.createElement("div");
+        cloudBottomButtonContainer.className = "bottomButtonContainer";
+        cloudBottomButtonContainer.appendChild(cloudButton);
+
         loadCloudContainer.appendChild(tempCloud);
+        loadCloudContainer.appendChild(buttonConnectDrive);
+        loadCloudContainer.appendChild(selectDrive);
+        loadCloudContainer.appendChild(cloudBottomButtonContainer);
 
         loadContainer.appendChild(loadFileContainer);
         loadContainer.appendChild(loadLocalContainer);

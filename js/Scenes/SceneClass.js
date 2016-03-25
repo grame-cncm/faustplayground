@@ -252,15 +252,21 @@ var Scene = (function () {
         return json;
     };
     Scene.prototype.recallScene = function (json) {
-        var jsonObjectCollection = JSON.parse(json);
-        this.parent.currentNumberDSP = this.fModuleList.length;
-        var data = JSON.parse(json);
-        console.log(jsonObjectCollection);
-        for (var index in jsonObjectCollection) {
-            var jsonObject = jsonObjectCollection[index];
-            this.arrayRecalScene.push(jsonObject);
+        if (json != null) {
+            var jsonObjectCollection = JSON.parse(json);
+            this.parent.currentNumberDSP = this.fModuleList.length;
+            var data = JSON.parse(json);
+            console.log(jsonObjectCollection);
+            for (var index in jsonObjectCollection) {
+                var jsonObject = jsonObjectCollection[index];
+                this.arrayRecalScene.push(jsonObject);
+            }
+            this.lunchModuleCreation();
         }
-        this.lunchModuleCreation();
+        else {
+            App.hideFullPageLoading;
+            alert("erreur de chargement");
+        }
     };
     Scene.prototype.lunchModuleCreation = function () {
         var _this = this;

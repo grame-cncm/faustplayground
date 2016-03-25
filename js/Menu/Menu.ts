@@ -36,6 +36,7 @@ class Menu {
     isMenuLow: boolean = false;
     isFullScreen: boolean = false;
     isAccelerometer: boolean = App.isAccelerometerOn;
+    drive: DriveAPI;
 
     constructor(htmlContainer: HTMLElement) {
         this.menuView = new MenuView();
@@ -54,7 +55,11 @@ class Menu {
         this.library.fillLibrary();
         this.load = new Load();
         this.load.loadView = this.menuView.loadView;
+        this.drive = new DriveAPI();
+        this.load.drive = this.drive;
         this.load.setEventListeners();
+
+        
         this.fillSelectExistingScene(this.load.loadView.existingSceneSelect);
         this.save = new Save();
         this.save.saveView = this.menuView.saveView;
