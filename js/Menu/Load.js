@@ -12,6 +12,7 @@ var Load = (function () {
         this.loadView.aLightExemple.addEventListener("click", function (e) { _this.getEx(e); });
         this.loadView.aBigPreExemple.addEventListener("click", function (e) { _this.getEx(e); });
         this.loadView.aLightPreExemple.addEventListener("click", function (e) { _this.getEx(e); });
+        this.loadView.buttonChangeAccount.addEventListener("click", function (e) { _this.logOut(); });
     };
     Load.prototype.openFile = function () {
         if (this.loadView.loadFileInput.files.length > 0) {
@@ -58,6 +59,10 @@ var Load = (function () {
     Load.prototype.getContent = function (resp) {
         var _this = this;
         this.drive.downloadFile(resp, function (json) { _this.sceneCurrent.recallScene(json); });
+    };
+    Load.prototype.logOut = function () {
+        var event = new CustomEvent("authoff");
+        document.dispatchEvent(event);
     };
     return Load;
 })();

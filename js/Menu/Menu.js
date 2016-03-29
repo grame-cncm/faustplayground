@@ -33,10 +33,11 @@ var Menu = (function () {
         this.menuView.helpButtonMenu.onclick = function () { _this.menuHandler(_this.menuChoices = MenuChoices.help); };
         this.menuView.editButtonMenu.addEventListener("click", function () { _this.menuHandler(_this.menuChoices = MenuChoices.edit); });
         this.menuView.closeButton.onclick = function () { _this.menuHandler(_this.menuChoices = MenuChoices.null); };
-        this.menuView.fullScreenButton.addEventListener("click", function () { _this.fullScreen(); });
-        this.menuView.accButton.addEventListener("click", function () { _this.accelerometer(); });
         this.menuView.saveButton.addEventListener("click", function () { _this.menuHandler(_this.menuChoices = MenuChoices.save); });
         this.menuView.loadButton.addEventListener("click", function () { _this.menuHandler(_this.menuChoices = MenuChoices.load); });
+        this.menuView.fullScreenButton.addEventListener("click", function () { _this.fullScreen(); });
+        this.menuView.accButton.addEventListener("click", function () { _this.accelerometer(); });
+        this.menuView.cleanButton.addEventListener("click", function () { _this.cleanScene(); });
         this.library = new Library();
         this.library.libraryView = this.menuView.libraryView;
         this.library.fillLibrary();
@@ -45,11 +46,11 @@ var Menu = (function () {
         this.drive = new DriveAPI();
         this.load.drive = this.drive;
         this.load.setEventListeners();
-        this.fillSelectExistingScene(this.load.loadView.existingSceneSelect);
+        this.fillSelectLocal(this.load.loadView.existingSceneSelect);
         this.save = new Save();
         this.save.saveView = this.menuView.saveView;
         this.save.setEventListeners();
-        this.fillSelectExistingScene(this.save.saveView.existingSceneSelect);
+        this.fillSelectLocal(this.save.saveView.existingSceneSelect);
         this.expor = new Export();
         this.expor.exportView = this.menuView.exportView;
         this.expor.uploadTargets();
@@ -61,7 +62,11 @@ var Menu = (function () {
         this.mouseOverLowerMenu = function (event) { _this.raiseLibraryMenuEvent(event); };
         this.accEdit = new AccelerometerEdit(this.menuView.accEditView);
         document.addEventListener("codeeditevent", function () { _this.customeCodeEditEvent(); });
-        document.addEventListener("updatelist", function () { _this.updatefillSelectExistingSceneEvent(); });
+        document.addEventListener("updatelist", function () { _this.updateSelectLocalEvent(); });
+        document.addEventListener("authon", function () { _this.authOn(); });
+        document.addEventListener("authoff", function () { _this.authOff(); });
+        document.addEventListener("fillselect", function (optionEvent) { _this.fillSelectCloud(optionEvent); });
+        document.addEventListener("updatecloudselect", function () { _this.updateSelectCloudEvent(); });
         //this.accEdit.accelerometerEditView = this.menuView.accEditView
     }
     Menu.prototype.setMenuScene = function (scene) {
@@ -279,6 +284,7 @@ var Menu = (function () {
         this.menuView.saveView.dynamicName.textContent = Scene.sceneName;
         this.menuView.saveView.inputDownload.value = Scene.sceneName;
         this.menuView.saveView.inputLocalStorage.value = Scene.sceneName;
+        this.menuView.saveView.inputCloudStorage.value = Scene.sceneName;
     };
     Menu.prototype.lowerLibraryMenu = function () {
         this.library.libraryView.effetLibrary.style.height = "150px";
@@ -360,24 +366,73 @@ var Menu = (function () {
     Menu.prototype.customeCodeEditEvent = function () {
         this.menuHandler(MenuChoices.null);
     };
-    Menu.prototype.updatefillSelectExistingSceneEvent = function () {
-        this.updateSelectExistingScene(this.menuView.loadView.existingSceneSelect);
-        this.updateSelectExistingScene(this.menuView.saveView.existingSceneSelect);
+    Menu.prototype.updateSelectLocalEvent = function () {
+        this.updateSelectLocal(this.menuView.loadView.existingSceneSelect);
+        this.updateSelectLocal(this.menuView.saveView.existingSceneSelect);
     };
-    Menu.prototype.clearSelectExistingScene = function (select) {
+    Menu.prototype.clearSelect = function (select) {
         select.innerHTML = "";
     };
-    Menu.prototype.updateSelectExistingScene = function (select) {
-        this.clearSelectExistingScene(select);
-        this.fillSelectExistingScene(select);
+    Menu.prototype.updateSelectLocal = function (select) {
+        this.clearSelect(select);
+        this.fillSelectLocal(select);
     };
-    Menu.prototype.fillSelectExistingScene = function (select) {
+    Menu.prototype.fillSelectLocal = function (select) {
+        var _this = this;
         if (typeof sessionStorage != 'undefined') {
             for (var i = 0; i < localStorage.length; i++) {
                 var option = document.createElement("option");
                 option.value = localStorage.key(i);
                 option.textContent = localStorage.key(i);
+                var close = document.createElement("div");
+                close.className = "supprOption";
+                close.addEventListener("click", function (e) { _this.supprOption(e); });
+                //option.appendChild(close);
                 select.add(option);
+            }
+        }
+    };
+    Menu.prototype.supprOption = function (e) {
+    };
+    Menu.prototype.setDriveApi = function (drive) {
+        this.drive = drive;
+        this.save.drive = drive;
+        this.load.drive = drive;
+    };
+    Menu.prototype.authOn = function () {
+        this.load.loadView.cloudSelectFile.style.display = "block";
+        this.save.saveView.cloudSelectFile.style.display = "block";
+        this.load.loadView.buttonChangeAccount.style.display = "block";
+        this.save.saveView.buttonChangeAccount.style.display = "block";
+        this.load.loadView.buttonConnectDrive.style.display = "none";
+        this.save.saveView.buttonConnectDrive.style.display = "none";
+    };
+    Menu.prototype.authOff = function () {
+        this.load.loadView.cloudSelectFile.style.display = "none";
+        this.save.saveView.cloudSelectFile.style.display = "none";
+        this.load.loadView.buttonChangeAccount.style.display = "none";
+        this.save.saveView.buttonChangeAccount.style.display = "none";
+        this.load.loadView.buttonConnectDrive.style.display = "block";
+        this.save.saveView.buttonConnectDrive.style.display = "block";
+        this.clearSelect(this.save.saveView.cloudSelectFile);
+        this.clearSelect(this.load.loadView.cloudSelectFile);
+        window.open("https://accounts.google.com/logout", "newwindow", "width=500,height=700");
+    };
+    Menu.prototype.fillSelectCloud = function (optionEvent) {
+        this.load.loadView.cloudSelectFile.add(optionEvent.detail);
+        var optionSave = optionEvent.detail.cloneNode(true);
+        this.save.saveView.cloudSelectFile.add(optionSave);
+    };
+    Menu.prototype.updateSelectCloudEvent = function () {
+        this.clearSelect(this.load.loadView.cloudSelectFile);
+        this.clearSelect(this.save.saveView.cloudSelectFile);
+        this.drive.checkAuth();
+    };
+    Menu.prototype.cleanScene = function () {
+        if (confirm("Voulez vous vraiment vider la scène ?")) {
+            var modules = this.sceneCurrent.getModules();
+            while (modules.length != 0) {
+                modules[0].deleteModule();
             }
         }
     };

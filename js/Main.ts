@@ -50,7 +50,10 @@ function init():void {
     app.showFirstScene();
     var accHandler: AccelerometerHandler = new AccelerometerHandler();
     App.accHandler = accHandler;
-    accHandler.getAccelerometerValue(); 
+    accHandler.getAccelerometerValue();
+    App.driveApi = new DriveAPI();
+    app.menu.setDriveApi(App.driveApi);
+    App.driveApi.checkAuth();
 }
 window.addEventListener('touchend', IosInit , false);
 window.addEventListener('touchstart', IosInit2, false);
