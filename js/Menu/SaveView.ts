@@ -6,10 +6,15 @@
     existingSceneSelect: HTMLSelectElement;
     inputDownload: HTMLInputElement;
     inputLocalStorage: HTMLInputElement;
+    inputCloudStorage: HTMLInputElement;
     buttonDownloadApp: HTMLElement;
     buttonLocalSave: HTMLElement;
     buttonLocalSuppr: HTMLElement;
+    buttonConnectDrive: HTMLElement;
+    buttonChangeAccount: HTMLElement;
     dialogGoodNews: HTMLDivElement;
+    cloudSelectFile: HTMLSelectElement;
+    buttonSaveCloud: HTMLElement;
 
     initSaveView() {
         var saveContainer = document.createElement("div");
@@ -129,10 +134,56 @@
         localBottomButtonContainer.appendChild(localButton);
 
         localSaveContainer.appendChild(existingSceneSelect);
-        localSaveContainer.appendChild(inputLocalStorage);
         localSaveContainer.appendChild(localButtonSuppr);
+        localSaveContainer.appendChild(inputLocalStorage);
         localSaveContainer.appendChild(dialogGoodNews);
         localSaveContainer.appendChild(localBottomButtonContainer);
+        ////////////////////////////////////////////cloud save
+
+
+        var buttonConnectDrive = document.createElement("button");
+        buttonConnectDrive.id = "buttonConnectSaveDrive";
+        buttonConnectDrive.textContent = "connection à google drive";
+        buttonConnectDrive.className = "button";
+        this.buttonConnectDrive = buttonConnectDrive
+
+        var selectDrive = document.createElement("select");
+        selectDrive.size = 6;
+        selectDrive.id = "saveSceneSelectDrive";
+        selectDrive.className = "sceneSelect "
+        selectDrive.style.display = "none";
+        this.cloudSelectFile = selectDrive;
+
+        var inputCloudStorage: HTMLInputElement = document.createElement("input");
+        inputCloudStorage.id = "inputNameApp";
+        inputCloudStorage.className = "inputExport";
+        inputCloudStorage.value = Scene.sceneName;
+        this.inputCloudStorage = inputCloudStorage;
+
+        var cloudButton: HTMLButtonElement = document.createElement("button");
+        cloudButton.type = "button";
+        cloudButton.id = "cloudSaveButton";
+        cloudButton.className = "button"
+        cloudButton.textContent = "sauver sur le drive";
+        this.buttonSaveCloud = cloudButton;
+
+        var changeAccountButton: HTMLButtonElement = document.createElement("button");
+        changeAccountButton.type = "button";
+        //changeAccountButton.id = "changeAccountButton";
+        changeAccountButton.className = "button changeAccountButton"
+        changeAccountButton.textContent = "changer de compte";
+        changeAccountButton.style.display = "none";
+        this.buttonChangeAccount = changeAccountButton;
+
+        var cloudBottomButtonContainer: HTMLElement = document.createElement("div");
+        cloudBottomButtonContainer.className = "bottomButtonContainer";
+        cloudBottomButtonContainer.appendChild(cloudButton);
+
+        cloudSaveContainer.appendChild(buttonConnectDrive);
+        cloudSaveContainer.appendChild(changeAccountButton);
+        cloudSaveContainer.appendChild(selectDrive);
+        cloudSaveContainer.appendChild(inputCloudStorage);
+        cloudSaveContainer.appendChild(cloudBottomButtonContainer);
 
         saveContainer.appendChild(downloadContainer);
         saveContainer.appendChild(localSaveContainer);

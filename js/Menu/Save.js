@@ -8,6 +8,8 @@ var Save = (function () {
         this.saveView.buttonLocalSave.addEventListener("click", function () { _this.saveLocal(); });
         this.saveView.buttonLocalSuppr.addEventListener("click", function () { _this.supprLocal(); });
         this.saveView.existingSceneSelect.addEventListener("change", function () { _this.getNameSelected(); });
+        this.saveView.buttonChangeAccount.addEventListener("click", function () { _this.logOut(); });
+        this.saveView.buttonSaveCloud.addEventListener("click", function () { _this.saveCloud(); });
     };
     Save.prototype.downloadApp = function () {
         if (this.saveView.inputDownload.nodeValue != Scene.sceneName && !Scene.rename(this.saveView.inputDownload, this.saveView.rulesName, this.saveView.dynamicName)) {
@@ -21,7 +23,7 @@ var Save = (function () {
         }
     };
     Save.prototype.saveLocal = function () {
-        if (this.saveView.inputDownload.nodeValue != Scene.sceneName && !Scene.rename(this.saveView.inputLocalStorage, this.saveView.rulesName, this.saveView.dynamicName)) {
+        if (this.saveView.inputLocalStorage.nodeValue != Scene.sceneName && !Scene.rename(this.saveView.inputLocalStorage, this.saveView.rulesName, this.saveView.dynamicName)) {
         }
         else {
             if (typeof sessionStorage != 'undefined') {
@@ -67,10 +69,27 @@ var Save = (function () {
     };
     Save.prototype.supprLocal = function () {
         if (this.saveView.existingSceneSelect.selectedIndex > -1) {
-            var name = this.saveView.existingSceneSelect.options[this.saveView.existingSceneSelect.selectedIndex].value;
-            localStorage.removeItem(name);
-            var event = new CustomEvent("updatelist");
-            document.dispatchEvent(event);
+            if (confirm("Voulez vous vraiment supprimer ce Patch ?")) {
+                var name = this.saveView.existingSceneSelect.options[this.saveView.existingSceneSelect.selectedIndex].value;
+                localStorage.removeItem(name);
+                var event = new CustomEvent("updatelist");
+                document.dispatchEvent(event);
+            }
+        }
+    };
+    Save.prototype.logOut = function () {
+        var event = new CustomEvent("authoff");
+        document.dispatchEvent(event);
+    };
+    Save.prototype.saveCloud = function () {
+        var _this = this;
+        if (this.saveView.inputCloudStorage.nodeValue != Scene.sceneName && !Scene.rename(this.saveView.inputCloudStorage, this.saveView.rulesName, this.saveView.dynamicName)) {
+        }
+        else {
+            var jsonScene = this.sceneCurrent.saveScene(true);
+            var blob = new Blob([jsonScene], { type: "application/json" });
+            this.drive.tempBlob = blob;
+            this.drive.createFile(Scene.sceneName, function (folderId, fileId) { _this.drive.removeFileFromRoot(folderId, fileId); });
         }
     };
     return Save;

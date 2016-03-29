@@ -15,6 +15,7 @@ class Load {
         this.loadView.aLightExemple.addEventListener("click", (e) => { this.getEx(e) })
         this.loadView.aBigPreExemple.addEventListener("click", (e) => { this.getEx(e) })
         this.loadView.aLightPreExemple.addEventListener("click", (e) => { this.getEx(e) })
+        this.loadView.buttonChangeAccount.addEventListener("click", (e) => { this.logOut()})
     }
 
     openFile() {
@@ -65,5 +66,9 @@ class Load {
     }
     getContent(resp: DriveFile) {
         this.drive.downloadFile(resp, (json) => { this.sceneCurrent.recallScene(json)})
+    }
+    logOut() {
+        var event = new CustomEvent("authoff");
+        document.dispatchEvent(event);
     }
 }

@@ -9,11 +9,12 @@ var DriveAPI = (function () {
      * Check if current user has authorized this application.
      */
     DriveAPI.prototype.checkAuth = function () {
+        var _this = this;
         gapi.auth.authorize({
             'client_id': this.CLIENT_ID,
             'scope': this.SCOPES.join(' '),
             'immediate': true
-        }, this.handleAuthResult);
+        }, function (authResult) { _this.handleAuthResult(authResult); });
     };
     /**
      * Handle response from authorization server.
@@ -21,18 +22,19 @@ var DriveAPI = (function () {
      * @param {Object} authResult Authorization result.
      */
     DriveAPI.prototype.handleAuthResult = function (authResult) {
-        var buttonConnect = document.getElementById('buttonConnectDrive');
+        var buttonConnect = document.getElementById('buttonConnectLoadDrive');
+        var buttonConnect2 = document.getElementById('buttonConnectSaveDrive');
         if (authResult && !authResult.error) {
             // Hide auth UI, then load client library.
-            buttonConnect.style.display = 'none';
-            var select = document.getElementById("existingSceneSelectDrive");
-            select.style.display = "block";
+            var event = new CustomEvent("authon");
+            document.dispatchEvent(event);
             this.loadDriveApi();
         }
         else {
             // Show auth UI, allowing the user to initiate authorization by
             // clicking authorize button.
-            buttonConnect.style.display = 'inline';
+            var event = new CustomEvent("authoff");
+            document.dispatchEvent(event);
         }
     };
     /**
@@ -68,6 +70,7 @@ var DriveAPI = (function () {
                     if (file.mimeType == "application/vnd.google-apps.folder" && file.title == "FaustPlayground") {
                         //this.appendPre(file.title,file.id);
                         _this.isFaustFolderPresent = true;
+                        _this.faustFolderId = file.id;
                         _this.openFiles(file.id);
                     }
                 }
@@ -84,7 +87,8 @@ var DriveAPI = (function () {
     DriveAPI.prototype.openFiles = function (folderId) {
         var _this = this;
         var request = gapi.client.drive.children.list({
-            'folderId': folderId
+            'folderId': folderId,
+            'q': 'trashed = false'
         });
         request.execute(function (resp) {
             var files = resp.items;
@@ -137,8 +141,8 @@ var DriveAPI = (function () {
         var option = document.createElement("option");
         option.value = id;
         option.textContent = name;
-        var select = document.getElementById('existingSceneSelectDrive');
-        select.options.add(option);
+        var event = new CustomEvent("fillselect", { 'detail': option });
+        document.dispatchEvent(event);
     };
     /**
  * Download a file's content.
@@ -170,10 +174,98 @@ var DriveAPI = (function () {
  * @param {String} fileId ID of the file to print metadata for.
  */
     DriveAPI.prototype.getFile = function (fileId, callback) {
+        var _this = this;
         var request = gapi.client.drive.files.get({
             'fileId': fileId,
         });
-        request.execute(function (resp) { callback(resp); });
+        request.execute(function (resp) {
+            _this.lastSavedFileMetadata = resp;
+            callback(resp);
+        });
+    };
+    DriveAPI.prototype.createFile = function (fileName, callback) {
+        var _this = this;
+        var faustFolderId = this.faustFolderId;
+        var request = gapi.client.request({
+            'path': '/drive/v2/files',
+            'method': 'POST',
+            'body': {
+                "title": fileName + ".json",
+                "mimeType": "application/json",
+            }
+        });
+        request.execute(function (resp) {
+            _this.lastSavedFileId = resp.id;
+            callback(resp.parents[0].id, resp.id);
+        });
+    };
+    DriveAPI.prototype.removeFileFromRoot = function (Id, fileId) {
+        var _this = this;
+        var request = gapi.client.drive.parents.delete({
+            'fileId': fileId,
+            'parentId': Id,
+        });
+        request.execute(function (resp) {
+            _this.insertFileIntoFolder(_this.faustFolderId, fileId);
+        });
+    };
+    DriveAPI.prototype.insertFileIntoFolder = function (folderId, fileId) {
+        var _this = this;
+        var body = { 'id': folderId };
+        var request = gapi.client.drive.parents.insert({
+            'fileId': fileId,
+            'resource': body
+        });
+        request.execute(function (resp) {
+            _this.getFile(_this.lastSavedFileId, function () {
+                _this.updateFile(_this.lastSavedFileId, _this.lastSavedFileMetadata, _this.tempBlob, null);
+            });
+        });
+    };
+    /**
+ * Update an existing file's metadata and content.
+ *
+ * @param {String} fileId ID of the file to update.
+ * @param {Object} fileMetadata existing Drive file's metadata.
+ * @param {File} fileData File object to read data from.
+ * @param {Function} callback Callback function to call when the request is complete.
+ */
+    DriveAPI.prototype.updateFile = function (fileId, fileMetadata, fileData, callback) {
+        var boundary = '-------314159265358979323846';
+        var delimiter = "\r\n--" + boundary + "\r\n";
+        var close_delim = "\r\n--" + boundary + "--";
+        var reader = new FileReader();
+        reader.readAsBinaryString(fileData);
+        reader.onload = function (e) {
+            var contentType = fileData.type || 'application/octet-stream';
+            // Updating the metadata is optional and you can instead use the value from drive.files.get.
+            var base64Data = btoa(reader.result);
+            var multipartRequestBody = delimiter +
+                'Content-Type: application/json\r\n\r\n' +
+                JSON.stringify(fileMetadata) +
+                delimiter +
+                'Content-Type: ' + contentType + '\r\n' +
+                'Content-Transfer-Encoding: base64\r\n' +
+                '\r\n' +
+                base64Data +
+                close_delim;
+            var request = gapi.client.request({
+                'path': '/upload/drive/v2/files/' + fileId,
+                'method': 'PUT',
+                'params': { 'uploadType': 'multipart', 'alt': 'json' },
+                'headers': {
+                    'Content-Type': 'multipart/mixed; boundary="' + boundary + '"'
+                },
+                'body': multipartRequestBody
+            });
+            if (!callback) {
+                callback = function () {
+                    var event = new CustomEvent("updatecloudselect");
+                    document.dispatchEvent(event);
+                };
+            }
+            request.execute(callback);
+        };
     };
     return DriveAPI;
 })();

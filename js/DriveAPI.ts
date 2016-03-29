@@ -15,6 +15,10 @@ class DriveAPI{
     faustFolder: string = "FaustPlayground";
     isFaustFolderPresent: boolean = false;
     faustFolderId: string;
+    lastSavedFileId: string;
+    lastSavedFileMetadata: string;
+    tempBlob: Blob;
+
 
     /**
      * Check if current user has authorized this application.
@@ -25,7 +29,7 @@ class DriveAPI{
                 'client_id': this.CLIENT_ID,
                 'scope': this.SCOPES.join(' '),
                 'immediate': true
-            }, this.handleAuthResult);
+            }, (authResult) => { this.handleAuthResult(authResult) });
     }
 
     /**
@@ -34,17 +38,19 @@ class DriveAPI{
      * @param {Object} authResult Authorization result.
      */
     handleAuthResult(authResult) {
-        var buttonConnect = document.getElementById('buttonConnectDrive');
+        var buttonConnect = document.getElementById('buttonConnectLoadDrive');
+        var buttonConnect2 = document.getElementById('buttonConnectSaveDrive');
         if (authResult && !authResult.error) {
             // Hide auth UI, then load client library.
-            buttonConnect.style.display = 'none';
-            var select = document.getElementById("existingSceneSelectDrive");
-            select.style.display = "block";
+
+            var event = new CustomEvent("authon")
+            document.dispatchEvent(event);
             this.loadDriveApi();
         } else {
             // Show auth UI, allowing the user to initiate authorization by
             // clicking authorize button.
-            buttonConnect.style.display = 'inline';
+            var event = new CustomEvent("authoff")
+            document.dispatchEvent(event);
         }
     }
 
@@ -83,7 +89,8 @@ class DriveAPI{
                     var file = files[i];
                     if (file.mimeType == "application/vnd.google-apps.folder" && file.title=="FaustPlayground") {
                         //this.appendPre(file.title,file.id);
-                        this.isFaustFolderPresent=true
+                        this.isFaustFolderPresent = true
+                        this.faustFolderId = file.id;
                         this.openFiles(file.id);
                     }
                 }
@@ -98,7 +105,8 @@ class DriveAPI{
     }
     openFiles(folderId) {
         var request=gapi.client.drive.children.list({
-            'folderId': folderId
+            'folderId': folderId,
+            'q': 'trashed = false'
         });
 
         request.execute((resp) => {
@@ -155,8 +163,8 @@ class DriveAPI{
         option.value = id;
         option.textContent = name;
 
-        var select = <HTMLSelectElement>document.getElementById('existingSceneSelectDrive');
-        select.options.add(option)
+        var event = new CustomEvent("fillselect", { 'detail': option })
+        document.dispatchEvent(event);
         
     }
     /**
@@ -192,7 +200,99 @@ class DriveAPI{
             'fileId': fileId,
 
         });
-        request.execute((resp) => { callback(resp) })
+        request.execute((resp) => {
+            this.lastSavedFileMetadata = resp;
+            callback(resp)
+        })
     }
 
+
+    createFile(fileName: string, callback) {
+        var faustFolderId = this.faustFolderId;
+
+        var request = gapi.client.request({
+            'path': '/drive/v2/files',
+            'method': 'POST',
+            'body': {
+                "title": fileName+".json",
+                "mimeType": "application/json",
+            }
+        });
+
+        request.execute((resp) => {
+            this.lastSavedFileId=resp.id
+            callback(resp.parents[0].id,resp.id)
+        });
+        
+    }
+    removeFileFromRoot(Id, fileId) {
+        var request = gapi.client.drive.parents.delete({
+            'fileId': fileId,
+            'parentId': Id,
+        });
+        request.execute((resp) => {
+            this.insertFileIntoFolder(this.faustFolderId, fileId)
+        });
+    }
+    insertFileIntoFolder(folderId, fileId) {
+        var body = { 'id': folderId };
+        var request = gapi.client.drive.parents.insert({
+            'fileId': fileId,
+            'resource': body
+        });
+        request.execute((resp) => {
+            this.getFile(this.lastSavedFileId, () => {
+                this.updateFile(this.lastSavedFileId, this.lastSavedFileMetadata, this.tempBlob, null)
+            });
+        });
+    }
+    /**
+ * Update an existing file's metadata and content.
+ *
+ * @param {String} fileId ID of the file to update.
+ * @param {Object} fileMetadata existing Drive file's metadata.
+ * @param {File} fileData File object to read data from.
+ * @param {Function} callback Callback function to call when the request is complete.
+ */
+updateFile(fileId, fileMetadata, fileData, callback) {
+    const boundary = '-------314159265358979323846';
+    const delimiter = "\r\n--" + boundary + "\r\n";
+    const close_delim = "\r\n--" + boundary + "--";
+
+    var reader = new FileReader();
+    reader.readAsBinaryString(fileData);
+    reader.onload = function (e) {
+        var contentType = fileData.type || 'application/octet-stream';
+        // Updating the metadata is optional and you can instead use the value from drive.files.get.
+        var base64Data = btoa(reader.result);
+        var multipartRequestBody =
+            delimiter +
+            'Content-Type: application/json\r\n\r\n' +
+            JSON.stringify(fileMetadata) +
+            delimiter +
+            'Content-Type: ' + contentType + '\r\n' +
+            'Content-Transfer-Encoding: base64\r\n' +
+            '\r\n' +
+            base64Data +
+            close_delim;
+
+        var request = gapi.client.request({
+            'path': '/upload/drive/v2/files/' + fileId,
+            'method': 'PUT',
+            'params': { 'uploadType': 'multipart', 'alt': 'json' },
+            'headers': {
+                'Content-Type': 'multipart/mixed; boundary="' + boundary + '"'
+            },
+            'body': multipartRequestBody
+        });
+        if (!callback) {
+            callback = () => {
+                var event = new CustomEvent("updatecloudselect");
+                document.dispatchEvent(event)
+
+            };
+        }
+        request.execute(callback);
+    }
+}
 }

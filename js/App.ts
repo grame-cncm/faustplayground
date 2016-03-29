@@ -65,6 +65,7 @@ class App {
     static isAccelerometerOn: boolean = false;
     static isAccelerometerEditOn: boolean = false;
     static accHandler: AccelerometerHandler;
+    static driveApi: DriveAPI;
     private static currentScene: number;
     private static src: IHTMLDivElementSrc;
     private static out: IHTMLDivElementOut;

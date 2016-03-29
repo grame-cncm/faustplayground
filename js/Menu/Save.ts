@@ -4,12 +4,15 @@
 class Save {
     saveView: SaveView;
     sceneCurrent: Scene;
+    drive: DriveAPI;
 
     setEventListeners() {
-        this.saveView.buttonDownloadApp.addEventListener("click", () => { this.downloadApp() })
+        this.saveView.buttonDownloadApp.addEventListener("click", () => { this.downloadApp() });
         this.saveView.buttonLocalSave.addEventListener("click", () => { this.saveLocal() });
         this.saveView.buttonLocalSuppr.addEventListener("click", () => { this.supprLocal() });
         this.saveView.existingSceneSelect.addEventListener("change", () => { this.getNameSelected() });
+        this.saveView.buttonChangeAccount.addEventListener("click", () => { this.logOut() });
+        this.saveView.buttonSaveCloud.addEventListener("click", () => { this.saveCloud() });
     }
 
     downloadApp() {
@@ -23,12 +26,12 @@ class Save {
             saveAs(blob, Scene.sceneName + ".json");
         }
 
-        
+
     }
 
     saveLocal() {
-        if (this.saveView.inputDownload.nodeValue != Scene.sceneName && !Scene.rename(this.saveView.inputLocalStorage, this.saveView.rulesName, this.saveView.dynamicName)) {
-        } else {            
+        if (this.saveView.inputLocalStorage.nodeValue != Scene.sceneName && !Scene.rename(this.saveView.inputLocalStorage, this.saveView.rulesName, this.saveView.dynamicName)) {
+        } else {
             if (typeof sessionStorage != 'undefined') {
                 var name = this.saveView.inputLocalStorage.value;
                 var jsonScene = this.sceneCurrent.saveScene(true)
@@ -66,18 +69,36 @@ class Save {
     }
     hideGoodNews() {
         this.saveView.dialogGoodNews.style.opacity = "0";
-        
+
     }
     getNameSelected() {
         this.saveView.inputLocalStorage.value = this.saveView.existingSceneSelect.options[this.saveView.existingSceneSelect.selectedIndex].value;
     }
     supprLocal() {
         if (this.saveView.existingSceneSelect.selectedIndex > -1) {
+            if (confirm("Voulez vous vraiment supprimer ce Patch ?")) {
 
-            var name = this.saveView.existingSceneSelect.options[this.saveView.existingSceneSelect.selectedIndex].value
-            localStorage.removeItem(name)
-            var event: CustomEvent = new CustomEvent("updatelist")
-            document.dispatchEvent(event);
+                var name = this.saveView.existingSceneSelect.options[this.saveView.existingSceneSelect.selectedIndex].value
+                localStorage.removeItem(name)
+                var event: CustomEvent = new CustomEvent("updatelist")
+                document.dispatchEvent(event);
+            }
+        }
+    }
+    logOut() {
+        var event = new CustomEvent("authoff");
+        document.dispatchEvent(event);
+    }
+
+    saveCloud() {
+        if (this.saveView.inputCloudStorage.nodeValue != Scene.sceneName && !Scene.rename(this.saveView.inputCloudStorage, this.saveView.rulesName, this.saveView.dynamicName)) {
+        } else {
+            var jsonScene = this.sceneCurrent.saveScene(true)
+            var blob = new Blob([jsonScene], { type: "application/json" });
+            this.drive.tempBlob = blob;
+            this.drive.createFile(Scene.sceneName, (folderId, fileId) => { this.drive.removeFileFromRoot(folderId, fileId) });
+            
+            //this.drive.updateFile(this.drive.lastSavedFileId,
         }
     }
 }

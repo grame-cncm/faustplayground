@@ -17,10 +17,13 @@ var LoadView = (function () {
         ////////////////////////////////////////load file
         var loadFileBottomButtonContainer = document.createElement("div");
         loadFileBottomButtonContainer.className = "bottomButtonContainer";
+        var loadFileDiv = document.createElement("div");
+        loadFileDiv.id = "loadFileDiv";
         var loadFileInput = document.createElement("input");
         loadFileInput.type = "file";
         loadFileInput.id = "loadFileInput";
         this.loadFileInput = loadFileInput;
+        loadFileDiv.appendChild(loadFileInput);
         var aLightExemple = document.createElement("a");
         aLightExemple.id = "aLightExemple";
         aLightExemple.className = "exempleAnchor";
@@ -55,7 +58,7 @@ var LoadView = (function () {
         loadFileButton.className = "button";
         loadFileButton.textContent = "Charger un fichier";
         this.loadFileButton = loadFileButton;
-        loadFileContainer.appendChild(loadFileInput);
+        loadFileContainer.appendChild(loadFileDiv);
         loadFileContainer.appendChild(aLightExemple);
         loadFileContainer.appendChild(aLightPreExemple);
         loadFileContainer.appendChild(aBigExemple);
@@ -85,21 +88,27 @@ var LoadView = (function () {
         localBottomButtonContainer.className = "bottomButtonContainer";
         localBottomButtonContainer.appendChild(localButton);
         loadLocalContainer.appendChild(existingSceneSelect);
-        loadLocalContainer.appendChild(localButtonSuppr);
+        //loadLocalContainer.appendChild(localButtonSuppr);
         loadLocalContainer.appendChild(localBottomButtonContainer);
         //////////////////////////////////////load Cloud
-        var tempCloud = document.createElement("div");
-        tempCloud.id = "tempCloud";
-        tempCloud.textContent = "cloud load";
         var buttonConnectDrive = document.createElement("button");
-        buttonConnectDrive.id = "buttonConnectDrive";
+        buttonConnectDrive.id = "buttonConnectLoadDrive";
         buttonConnectDrive.textContent = "connection à google drive";
+        buttonConnectDrive.className = "button";
         this.buttonConnectDrive = buttonConnectDrive;
         var selectDrive = document.createElement("select");
         selectDrive.size = 6;
-        selectDrive.id = "existingSceneSelectDrive";
+        selectDrive.id = "loadSceneSelectDrive";
+        selectDrive.className = "sceneSelect ";
         selectDrive.style.display = "none";
         this.cloudSelectFile = selectDrive;
+        var changeAccountButton = document.createElement("button");
+        changeAccountButton.type = "button";
+        //changeAccountButton.id = "changeAccountButton";
+        changeAccountButton.className = "button changeAccountButton";
+        changeAccountButton.textContent = "changer de compte";
+        changeAccountButton.style.display = "none";
+        this.buttonChangeAccount = changeAccountButton;
         var cloudButton = document.createElement("button");
         cloudButton.type = "button";
         cloudButton.id = "cloudLoadButton";
@@ -109,8 +118,8 @@ var LoadView = (function () {
         var cloudBottomButtonContainer = document.createElement("div");
         cloudBottomButtonContainer.className = "bottomButtonContainer";
         cloudBottomButtonContainer.appendChild(cloudButton);
-        loadCloudContainer.appendChild(tempCloud);
         loadCloudContainer.appendChild(buttonConnectDrive);
+        loadCloudContainer.appendChild(changeAccountButton);
         loadCloudContainer.appendChild(selectDrive);
         loadCloudContainer.appendChild(cloudBottomButtonContainer);
         loadContainer.appendChild(loadFileContainer);

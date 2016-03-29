@@ -55,6 +55,10 @@ var MenuView = (function () {
         accButton.id = "accButton";
         accButton.className = "buttonsLittleMenu";
         this.accButton = accButton;
+        var cleanButton = document.createElement("div");
+        cleanButton.id = "cleanButton";
+        cleanButton.className = "buttonsLittleMenu";
+        this.cleanButton = cleanButton;
         //var accEditButton: HTMLElement = document.createElement("div");
         //accEditButton.id = "accEditButton";
         //accEditButton.className = "buttonsLittleMenu";
@@ -70,6 +74,7 @@ var MenuView = (function () {
         buttonsMenu.appendChild(helpButtonMenu);
         buttonsMenu.appendChild(fullScreenButton);
         buttonsMenu.appendChild(accButton);
+        buttonsMenu.appendChild(cleanButton);
         this.HTMLButtonsMenu.push(libraryButtonMenu, loadButtonMenu, saveButtonMenu, exportButtonMenu, helpButtonMenu);
         var myScene = document.createElement("div");
         myScene.id = "PatchName";
