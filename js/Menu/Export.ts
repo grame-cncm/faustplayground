@@ -192,7 +192,7 @@ class Export{
 
         this.exportView.exportButton.addEventListener("click", this.eventExport)
         this.exportView.exportButton.style.opacity = "1";
-        App.removeLoadingLogo();
+        App.removeLoadingLogo("exportResultContainer");
 
     }
 

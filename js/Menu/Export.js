@@ -81,7 +81,7 @@ var Export = (function () {
             disposableExportDiv.appendChild(downloadBottomButtonContainer);
             _this.exportView.exportButton.addEventListener("click", _this.eventExport);
             _this.exportView.exportButton.style.opacity = "1";
-            App.removeLoadingLogo();
+            App.removeLoadingLogo("exportResultContainer");
         };
     }
     //------ Handle Combo Boxes

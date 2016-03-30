@@ -22,6 +22,7 @@ interface HTMLElement {
 enum MenuChoices { library, export, help, kids, edit, save, load, null }
 
 class Menu {
+    isMenuDriveLoading: boolean = false;
     sceneCurrent: Scene;
     menuChoices: MenuChoices;
     currentMenuChoices: MenuChoices = MenuChoices.null;
@@ -83,6 +84,8 @@ class Menu {
         document.addEventListener("authoff", () => { this.authOff() });
         document.addEventListener("fillselect", (optionEvent: CustomEvent) => { this.fillSelectCloud(optionEvent) })
         document.addEventListener("updatecloudselect", () => { this.updateSelectCloudEvent() });
+        document.addEventListener("startloaddrive", () => { this.startLoadingDrive()})
+        document.addEventListener("finishloaddrive", () => { this.finishLoadingDrive()})
         //this.accEdit.accelerometerEditView = this.menuView.accEditView
 
     }
@@ -492,5 +495,25 @@ class Menu {
             }
         }
         this.sceneCurrent.unmuteScene();
+    }
+    startLoadingDrive() {
+        if (!this.isMenuDriveLoading) {
+            this.isMenuDriveLoading = true;
+            this.save.saveView.driveContainer.style.display = "none";
+            this.load.loadView.driveContainer.style.display = "none";
+            App.addLoadingLogo("loadCloudContainer");
+            App.addLoadingLogo("cloudSaveContainer");
+
+        }
+    }
+    finishLoadingDrive() {
+        if (this.isMenuDriveLoading) {
+            this.isMenuDriveLoading = false;
+            this.save.saveView.driveContainer.style.display = "block";
+            this.load.loadView.driveContainer.style.display = "block";
+            App.removeLoadingLogo("loadCloudContainer");
+            App.removeLoadingLogo("cloudSaveContainer");
+
+        }
     }
 }

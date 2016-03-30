@@ -93,6 +93,9 @@ var SaveView = (function () {
         localSaveContainer.appendChild(dialogGoodNews);
         localSaveContainer.appendChild(localBottomButtonContainer);
         ////////////////////////////////////////////cloud save
+        var driveContainer = document.createElement("div");
+        driveContainer.id = "driveContainerSave";
+        this.driveContainer = driveContainer;
         var buttonConnectDrive = document.createElement("button");
         buttonConnectDrive.id = "buttonConnectSaveDrive";
         buttonConnectDrive.textContent = "connection à google drive";
@@ -125,11 +128,12 @@ var SaveView = (function () {
         var cloudBottomButtonContainer = document.createElement("div");
         cloudBottomButtonContainer.className = "bottomButtonContainer";
         cloudBottomButtonContainer.appendChild(cloudButton);
-        cloudSaveContainer.appendChild(buttonConnectDrive);
-        cloudSaveContainer.appendChild(changeAccountButton);
-        cloudSaveContainer.appendChild(selectDrive);
-        cloudSaveContainer.appendChild(inputCloudStorage);
-        cloudSaveContainer.appendChild(cloudBottomButtonContainer);
+        driveContainer.appendChild(buttonConnectDrive);
+        driveContainer.appendChild(changeAccountButton);
+        driveContainer.appendChild(selectDrive);
+        driveContainer.appendChild(inputCloudStorage);
+        driveContainer.appendChild(cloudBottomButtonContainer);
+        cloudSaveContainer.appendChild(driveContainer);
         saveContainer.appendChild(downloadContainer);
         saveContainer.appendChild(localSaveContainer);
         saveContainer.appendChild(cloudSaveContainer);

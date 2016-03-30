@@ -22,6 +22,7 @@ var MenuChoices;
 var Menu = (function () {
     function Menu(htmlContainer) {
         var _this = this;
+        this.isMenuDriveLoading = false;
         this.currentMenuChoices = MenuChoices.null;
         this.isMenuLow = false;
         this.isFullScreen = false;
@@ -67,6 +68,8 @@ var Menu = (function () {
         document.addEventListener("authoff", function () { _this.authOff(); });
         document.addEventListener("fillselect", function (optionEvent) { _this.fillSelectCloud(optionEvent); });
         document.addEventListener("updatecloudselect", function () { _this.updateSelectCloudEvent(); });
+        document.addEventListener("startloaddrive", function () { _this.startLoadingDrive(); });
+        document.addEventListener("finishloaddrive", function () { _this.finishLoadingDrive(); });
         //this.accEdit.accelerometerEditView = this.menuView.accEditView
     }
     Menu.prototype.setMenuScene = function (scene) {
@@ -439,6 +442,24 @@ var Menu = (function () {
             }
         }
         this.sceneCurrent.unmuteScene();
+    };
+    Menu.prototype.startLoadingDrive = function () {
+        if (!this.isMenuDriveLoading) {
+            this.isMenuDriveLoading = true;
+            this.save.saveView.driveContainer.style.display = "none";
+            this.load.loadView.driveContainer.style.display = "none";
+            App.addLoadingLogo("loadCloudContainer");
+            App.addLoadingLogo("cloudSaveContainer");
+        }
+    };
+    Menu.prototype.finishLoadingDrive = function () {
+        if (this.isMenuDriveLoading) {
+            this.isMenuDriveLoading = false;
+            this.save.saveView.driveContainer.style.display = "block";
+            this.load.loadView.driveContainer.style.display = "block";
+            App.removeLoadingLogo("loadCloudContainer");
+            App.removeLoadingLogo("cloudSaveContainer");
+        }
     };
     return Menu;
 })();

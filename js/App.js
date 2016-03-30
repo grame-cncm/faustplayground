@@ -384,21 +384,28 @@ var App = (function () {
     };
     ////////////////////////////// LOADINGS //////////////////////////////////////
     //add loading logo and text on export
-    App.addLoadingLogo = function (divTarget) {
+    App.addLoadingLogo = function (idTarget) {
         var loadingDiv = document.createElement("div");
-        loadingDiv.id = "loadingDiv";
+        loadingDiv.className = "loadingDiv";
         var loadingImg = document.createElement("img");
         loadingImg.src = App.baseImg + "logoAnim.gif";
         loadingImg.id = "loadingImg";
         var loadingText = document.createElement("span");
-        loadingText.textContent = "Compilation en cours...";
+        loadingText.textContent = "chargement en cours...";
         loadingText.id = "loadingText";
         loadingDiv.appendChild(loadingImg);
         loadingDiv.appendChild(loadingText);
-        document.getElementById(divTarget).appendChild(loadingDiv);
+        if (document.getElementById(idTarget) != null) {
+            document.getElementById(idTarget).appendChild(loadingDiv);
+        }
     };
-    App.removeLoadingLogo = function () {
-        document.getElementById("loadingDiv").remove();
+    App.removeLoadingLogo = function (idTarget) {
+        var divTarget = document.getElementById(idTarget);
+        if (divTarget != null && divTarget.getElementsByClassName("loadingDiv").length > 0) {
+            while (divTarget.getElementsByClassName("loadingDiv").length != 0) {
+                divTarget.getElementsByClassName("loadingDiv")[0].remove();
+            }
+        }
     };
     App.addFullPageLoading = function () {
         var loadingPage = document.createElement("div");

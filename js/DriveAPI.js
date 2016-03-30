@@ -52,6 +52,8 @@ var DriveAPI = (function () {
      */
     DriveAPI.prototype.loadDriveApi = function () {
         var _this = this;
+        var event = new CustomEvent("startloaddrive");
+        document.dispatchEvent(event);
         gapi.client.load('drive', 'v2', function () { _this.listFolder(); });
     };
     /**
@@ -92,6 +94,8 @@ var DriveAPI = (function () {
         });
         request.execute(function (resp) {
             var files = resp.items;
+            var event = new CustomEvent("finishloaddrive");
+            document.dispatchEvent(event);
             if (files && files.length > 0) {
                 for (var i = 0; i < files.length; i++) {
                     var file = files[i];
@@ -185,6 +189,8 @@ var DriveAPI = (function () {
     };
     DriveAPI.prototype.createFile = function (fileName, callback) {
         var _this = this;
+        var event = new CustomEvent("startloaddrive");
+        document.dispatchEvent(event);
         var faustFolderId = this.faustFolderId;
         var request = gapi.client.request({
             'path': '/drive/v2/files',

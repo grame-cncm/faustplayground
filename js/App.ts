@@ -511,22 +511,28 @@ class App {
     ////////////////////////////// LOADINGS //////////////////////////////////////
 
     //add loading logo and text on export
-    static addLoadingLogo(divTarget: string) {
+    static addLoadingLogo(idTarget: string) {
         var loadingDiv = document.createElement("div");
-        loadingDiv.id = "loadingDiv";
+        loadingDiv.className = "loadingDiv";
         var loadingImg = document.createElement("img");
         loadingImg.src = App.baseImg + "logoAnim.gif"
         loadingImg.id = "loadingImg";
         var loadingText = document.createElement("span");
-        loadingText.textContent = "Compilation en cours..."
+        loadingText.textContent = "chargement en cours..."
         loadingText.id = "loadingText";
         loadingDiv.appendChild(loadingImg);
         loadingDiv.appendChild(loadingText);
-
-        document.getElementById(divTarget).appendChild(loadingDiv);
+        if (document.getElementById(idTarget)!=null){
+            document.getElementById(idTarget).appendChild(loadingDiv);
+        }
     }
-    static removeLoadingLogo() {
-        document.getElementById("loadingDiv").remove();
+    static removeLoadingLogo(idTarget: string) {
+        var divTarget = <HTMLDivElement>document.getElementById(idTarget)
+        if (divTarget != null && divTarget.getElementsByClassName("loadingDiv").length > 0) {
+            while (divTarget.getElementsByClassName("loadingDiv").length != 0) {
+                divTarget.getElementsByClassName("loadingDiv")[0].remove();
+            }
+        }
     }
 
     static addFullPageLoading() {

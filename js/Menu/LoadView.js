@@ -91,6 +91,9 @@ var LoadView = (function () {
         //loadLocalContainer.appendChild(localButtonSuppr);
         loadLocalContainer.appendChild(localBottomButtonContainer);
         //////////////////////////////////////load Cloud
+        var driveContainer = document.createElement("div");
+        driveContainer.id = "driveContainerLoad";
+        this.driveContainer = driveContainer;
         var buttonConnectDrive = document.createElement("button");
         buttonConnectDrive.id = "buttonConnectLoadDrive";
         buttonConnectDrive.textContent = "connection à google drive";
@@ -118,10 +121,11 @@ var LoadView = (function () {
         var cloudBottomButtonContainer = document.createElement("div");
         cloudBottomButtonContainer.className = "bottomButtonContainer";
         cloudBottomButtonContainer.appendChild(cloudButton);
-        loadCloudContainer.appendChild(buttonConnectDrive);
-        loadCloudContainer.appendChild(changeAccountButton);
-        loadCloudContainer.appendChild(selectDrive);
-        loadCloudContainer.appendChild(cloudBottomButtonContainer);
+        driveContainer.appendChild(buttonConnectDrive);
+        driveContainer.appendChild(changeAccountButton);
+        driveContainer.appendChild(selectDrive);
+        driveContainer.appendChild(cloudBottomButtonContainer);
+        loadCloudContainer.appendChild(driveContainer);
         loadContainer.appendChild(loadFileContainer);
         loadContainer.appendChild(loadLocalContainer);
         loadContainer.appendChild(loadCloudContainer);
