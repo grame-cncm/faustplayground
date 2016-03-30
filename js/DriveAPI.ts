@@ -206,10 +206,14 @@ class DriveAPI{
             'fileId': fileId,
 
         });
-        request.execute((resp) => {
-            this.lastSavedFileMetadata = resp;
-            callback(resp)
-        })
+        try {
+            request.execute((resp) => {
+                this.lastSavedFileMetadata = resp;
+                callback(resp)
+            })
+        } catch (e) {
+            alert("erreur")
+        }
     }
 
 
@@ -304,5 +308,16 @@ class DriveAPI{
             }
             request.execute(callback);
         }
+    }
+    trashFile(fileId: string) {
+        var event = new CustomEvent("startloaddrive");
+        document.dispatchEvent(event);
+        var request = gapi.client.drive.files.trash({
+            'fileId': fileId
+        });
+        request.execute(function (resp) {
+            var event = new CustomEvent("updatecloudselect");
+            document.dispatchEvent(event)
+        });
     }
 }

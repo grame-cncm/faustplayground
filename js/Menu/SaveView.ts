@@ -10,6 +10,7 @@
     buttonDownloadApp: HTMLElement;
     buttonLocalSave: HTMLElement;
     buttonLocalSuppr: HTMLElement;
+    buttonCloudSuppr: HTMLElement;
     buttonConnectDrive: HTMLElement;
     buttonChangeAccount: HTMLElement;
     dialogGoodNews: HTMLDivElement;
@@ -164,6 +165,13 @@
         inputCloudStorage.value = App.scene.sceneName;
         this.inputCloudStorage = inputCloudStorage;
 
+        var cloudButtonSuppr: HTMLButtonElement = document.createElement("button");
+        cloudButtonSuppr.type = "button";
+        cloudButtonSuppr.id = "cloudButtonSuppr";
+        cloudButtonSuppr.className = "button"
+        cloudButtonSuppr.textContent = "supprimer la scene";
+        this.buttonCloudSuppr = cloudButtonSuppr;
+
         var cloudButton: HTMLButtonElement = document.createElement("button");
         cloudButton.type = "button";
         cloudButton.id = "cloudSaveButton";
@@ -186,6 +194,7 @@
         driveContainer.appendChild(buttonConnectDrive);
         driveContainer.appendChild(changeAccountButton);
         driveContainer.appendChild(selectDrive);
+        driveContainer.appendChild(cloudButtonSuppr);
         driveContainer.appendChild(inputCloudStorage);
         driveContainer.appendChild(cloudBottomButtonContainer);
 

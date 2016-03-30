@@ -12,8 +12,10 @@ class Save {
         this.saveView.buttonLocalSuppr.addEventListener("click", () => { this.supprLocal() });
         this.saveView.existingSceneSelect.addEventListener("change", () => { this.getNameSelected() });
         this.saveView.cloudSelectFile.addEventListener("change", () => { this.getNameSelectedCloud() });
+        this.saveView.buttonConnectDrive.addEventListener("click", (e) => { this.drive.handleAuthClick(e) })
         this.saveView.buttonChangeAccount.addEventListener("click", () => { this.logOut() });
         this.saveView.buttonSaveCloud.addEventListener("click", () => { this.saveCloud() });
+        this.saveView.buttonCloudSuppr.addEventListener("click", () => { this.supprCloud() });
     }
 
     downloadApp() {
@@ -146,5 +148,13 @@ class Save {
                 this.drive.createFile(App.scene.sceneName, (folderId, fileId) => { this.drive.removeFileFromRoot(folderId, fileId) });
             }
         }
+    }
+    supprCloud() {
+        this.sceneCurrent.muteScene()
+        if (this.saveView.cloudSelectFile.selectedIndex > -1) {
+            var id = this.saveView.cloudSelectFile.options[this.saveView.cloudSelectFile.selectedIndex].value
+            this.drive.trashFile(id);
+        }
+        this.sceneCurrent.unmuteScene();
     }
 }

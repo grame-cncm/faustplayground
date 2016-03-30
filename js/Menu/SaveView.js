@@ -112,6 +112,12 @@ var SaveView = (function () {
         inputCloudStorage.className = "inputExport";
         inputCloudStorage.value = App.scene.sceneName;
         this.inputCloudStorage = inputCloudStorage;
+        var cloudButtonSuppr = document.createElement("button");
+        cloudButtonSuppr.type = "button";
+        cloudButtonSuppr.id = "cloudButtonSuppr";
+        cloudButtonSuppr.className = "button";
+        cloudButtonSuppr.textContent = "supprimer la scene";
+        this.buttonCloudSuppr = cloudButtonSuppr;
         var cloudButton = document.createElement("button");
         cloudButton.type = "button";
         cloudButton.id = "cloudSaveButton";
@@ -131,6 +137,7 @@ var SaveView = (function () {
         driveContainer.appendChild(buttonConnectDrive);
         driveContainer.appendChild(changeAccountButton);
         driveContainer.appendChild(selectDrive);
+        driveContainer.appendChild(cloudButtonSuppr);
         driveContainer.appendChild(inputCloudStorage);
         driveContainer.appendChild(cloudBottomButtonContainer);
         cloudSaveContainer.appendChild(driveContainer);

@@ -9,8 +9,10 @@ var Save = (function () {
         this.saveView.buttonLocalSuppr.addEventListener("click", function () { _this.supprLocal(); });
         this.saveView.existingSceneSelect.addEventListener("change", function () { _this.getNameSelected(); });
         this.saveView.cloudSelectFile.addEventListener("change", function () { _this.getNameSelectedCloud(); });
+        this.saveView.buttonConnectDrive.addEventListener("click", function (e) { _this.drive.handleAuthClick(e); });
         this.saveView.buttonChangeAccount.addEventListener("click", function () { _this.logOut(); });
         this.saveView.buttonSaveCloud.addEventListener("click", function () { _this.saveCloud(); });
+        this.saveView.buttonCloudSuppr.addEventListener("click", function () { _this.supprCloud(); });
     };
     Save.prototype.downloadApp = function () {
         if (this.saveView.inputDownload.value != App.scene.sceneName && !Scene.rename(this.saveView.inputDownload, this.saveView.rulesName, this.saveView.dynamicName)) {
@@ -137,6 +139,14 @@ var Save = (function () {
                 this.drive.createFile(App.scene.sceneName, function (folderId, fileId) { _this.drive.removeFileFromRoot(folderId, fileId); });
             }
         }
+    };
+    Save.prototype.supprCloud = function () {
+        this.sceneCurrent.muteScene();
+        if (this.saveView.cloudSelectFile.selectedIndex > -1) {
+            var id = this.saveView.cloudSelectFile.options[this.saveView.cloudSelectFile.selectedIndex].value;
+            this.drive.trashFile(id);
+        }
+        this.sceneCurrent.unmuteScene();
     };
     return Save;
 })();

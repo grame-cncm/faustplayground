@@ -183,10 +183,15 @@ var DriveAPI = (function () {
         var request = gapi.client.drive.files.get({
             'fileId': fileId,
         });
-        request.execute(function (resp) {
-            _this.lastSavedFileMetadata = resp;
-            callback(resp);
-        });
+        try {
+            request.execute(function (resp) {
+                _this.lastSavedFileMetadata = resp;
+                callback(resp);
+            });
+        }
+        catch (e) {
+            alert("erreur");
+        }
     };
     DriveAPI.prototype.createFile = function (fileName, callback) {
         var _this = this;
@@ -275,6 +280,17 @@ var DriveAPI = (function () {
             }
             request.execute(callback);
         };
+    };
+    DriveAPI.prototype.trashFile = function (fileId) {
+        var event = new CustomEvent("startloaddrive");
+        document.dispatchEvent(event);
+        var request = gapi.client.drive.files.trash({
+            'fileId': fileId
+        });
+        request.execute(function (resp) {
+            var event = new CustomEvent("updatecloudselect");
+            document.dispatchEvent(event);
+        });
     };
     return DriveAPI;
 })();
