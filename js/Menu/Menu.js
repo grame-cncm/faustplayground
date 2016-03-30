@@ -429,6 +429,7 @@ var Menu = (function () {
         this.drive.checkAuth();
     };
     Menu.prototype.cleanScene = function () {
+        this.sceneCurrent.muteScene();
         if (confirm("Voulez vous vraiment vider la scène ?")) {
             var modules = this.sceneCurrent.getModules();
             while (modules.length != 0) {
@@ -437,6 +438,7 @@ var Menu = (function () {
                 }
             }
         }
+        this.sceneCurrent.unmuteScene();
     };
     return Menu;
 })();

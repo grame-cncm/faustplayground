@@ -77,6 +77,7 @@ class App {
     tempModuleSourceCode: string;
     tempModuleX: number;
     tempModuleY: number;
+    tempParams: IJsonParamsSave;
     currentNumberDSP: number;
     inputs: any[];
     outputs: any[];

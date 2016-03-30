@@ -29,13 +29,16 @@ var Save = (function () {
             if (typeof sessionStorage != 'undefined') {
                 var name = this.saveView.inputLocalStorage.value;
                 var jsonScene = this.sceneCurrent.saveScene(true);
-                if (this.isFileExisting(name))
+                if (this.isFileExisting(name)) {
+                    this.sceneCurrent.muteScene();
                     if (confirm("le nom que vous utilisez existe déjà si vous continuez vous le remplacerez. Continuer?")) {
                         localStorage.setItem(name, jsonScene);
                     }
                     else {
                         return;
                     }
+                    this.sceneCurrent.unmuteScene();
+                }
                 else {
                     localStorage.setItem(name, jsonScene);
                 }
@@ -68,6 +71,7 @@ var Save = (function () {
         this.saveView.inputLocalStorage.value = this.saveView.existingSceneSelect.options[this.saveView.existingSceneSelect.selectedIndex].value;
     };
     Save.prototype.supprLocal = function () {
+        this.sceneCurrent.muteScene();
         if (this.saveView.existingSceneSelect.selectedIndex > -1) {
             if (confirm("Voulez vous vraiment supprimer ce Patch ?")) {
                 var name = this.saveView.existingSceneSelect.options[this.saveView.existingSceneSelect.selectedIndex].value;
@@ -76,6 +80,7 @@ var Save = (function () {
                 document.dispatchEvent(event);
             }
         }
+        this.sceneCurrent.unmuteScene();
     };
     Save.prototype.logOut = function () {
         var event = new CustomEvent("authoff");

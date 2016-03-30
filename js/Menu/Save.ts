@@ -35,13 +35,15 @@ class Save {
             if (typeof sessionStorage != 'undefined') {
                 var name = this.saveView.inputLocalStorage.value;
                 var jsonScene = this.sceneCurrent.saveScene(true)
-                if (this.isFileExisting(name))
+                if (this.isFileExisting(name)) {
+                    this.sceneCurrent.muteScene();
                     if (confirm("le nom que vous utilisez existe déjà si vous continuez vous le remplacerez. Continuer?")) {
                         localStorage.setItem(name, jsonScene);
                     } else {
                         return;
                     }
-                else {
+                    this.sceneCurrent.unmuteScene();
+                }else {
                     localStorage.setItem(name, jsonScene)
                 }
                 this.showGoodNews()
@@ -75,6 +77,7 @@ class Save {
         this.saveView.inputLocalStorage.value = this.saveView.existingSceneSelect.options[this.saveView.existingSceneSelect.selectedIndex].value;
     }
     supprLocal() {
+        this.sceneCurrent.muteScene()
         if (this.saveView.existingSceneSelect.selectedIndex > -1) {
             if (confirm("Voulez vous vraiment supprimer ce Patch ?")) {
 
@@ -84,6 +87,7 @@ class Save {
                 document.dispatchEvent(event);
             }
         }
+        this.sceneCurrent.unmuteScene();
     }
     logOut() {
         var event = new CustomEvent("authoff");

@@ -304,6 +304,7 @@ var Scene = (function () {
         this.parent.tempModuleName = jsonSaveObject.name;
         this.parent.tempModuleSourceCode = jsonSaveObject.code;
         this.parent.tempPatchId = jsonSaveObject.patchId;
+        this.parent.tempParams = jsonSaveObject.params;
     };
     Scene.prototype.createModule = function (factory) {
         //---- This is very similar to "createFaustModule" from App.js
@@ -317,13 +318,12 @@ var Scene = (function () {
         module.moduleFaust.setSource(this.parent.tempModuleSourceCode);
         module.createDSP(factory);
         module.patchID = this.parent.tempPatchId;
-        if (this.parent.params) {
-            for (var i = 0; i < this.parent.params.length; i++) {
+        if (this.parent.tempParams) {
+            for (var i = 0; i < this.parent.tempParams.sliders.length; i++) {
                 //console.log("WINDOW.PARAMS");
                 //console.log(this.parent.params.length);
-                if (this.parent.params[i] && this.parent.params[i + 1]) {
-                    module.addInterfaceParam(this.parent.params[i]["path"], this.parent.params[i + 1]["value"]);
-                }
+                var slider = this.parent.tempParams.sliders[i];
+                module.addInterfaceParam(slider.path, parseFloat(slider.value));
             }
         }
         module.moduleFaust.recallInputsSource = this.arrayRecalScene[0].inputs.source;

@@ -482,6 +482,7 @@ class Menu {
         this.drive.checkAuth();
     }
     cleanScene() {
+        this.sceneCurrent.muteScene()
         if (confirm("Voulez vous vraiment vider la scène ?")) {  
             var modules = this.sceneCurrent.getModules()
             while (modules.length != 0) {
@@ -490,5 +491,6 @@ class Menu {
                 }
             }
         }
+        this.sceneCurrent.unmuteScene();
     }
 }
