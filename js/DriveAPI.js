@@ -4,6 +4,7 @@ var DriveAPI = (function () {
         this.SCOPES = ['https://www.googleapis.com/auth/drive'];
         this.faustFolder = "FaustPlayground";
         this.isFaustFolderPresent = false;
+        this.extension = ".json";
     }
     /**
      * Check if current user has authorized this application.
@@ -144,7 +145,7 @@ var DriveAPI = (function () {
     DriveAPI.prototype.appendPre = function (name, id) {
         var option = document.createElement("option");
         option.value = id;
-        option.textContent = name;
+        option.textContent = name.replace(/.json$/, '');
         var event = new CustomEvent("fillselect", { 'detail': option });
         document.dispatchEvent(event);
     };
@@ -196,7 +197,7 @@ var DriveAPI = (function () {
             'path': '/drive/v2/files',
             'method': 'POST',
             'body': {
-                "title": fileName + ".json",
+                "title": fileName + this.extension,
                 "mimeType": "application/json",
             }
         });
@@ -237,6 +238,8 @@ var DriveAPI = (function () {
  * @param {Function} callback Callback function to call when the request is complete.
  */
     DriveAPI.prototype.updateFile = function (fileId, fileMetadata, fileData, callback) {
+        var event = new CustomEvent("startloaddrive");
+        document.dispatchEvent(event);
         var boundary = '-------314159265358979323846';
         var delimiter = "\r\n--" + boundary + "\r\n";
         var close_delim = "\r\n--" + boundary + "--";

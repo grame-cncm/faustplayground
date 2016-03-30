@@ -328,13 +328,13 @@ class Menu {
         }
     }
     updatePatchNameToInput(e: Event) {
-        this.menuView.patchNameScene.textContent = Scene.sceneName;
-        this.menuView.exportView.dynamicName.textContent = Scene.sceneName;
-        this.menuView.exportView.inputNameApp.value = Scene.sceneName;
-        this.menuView.saveView.dynamicName.textContent = Scene.sceneName;
-        this.menuView.saveView.inputDownload.value = Scene.sceneName;
-        this.menuView.saveView.inputLocalStorage.value = Scene.sceneName;
-        this.menuView.saveView.inputCloudStorage.value = Scene.sceneName;
+        this.menuView.patchNameScene.textContent = App.scene.sceneName;
+        this.menuView.exportView.dynamicName.textContent = App.scene.sceneName;
+        this.menuView.exportView.inputNameApp.value = App.scene.sceneName;
+        this.menuView.saveView.dynamicName.textContent = App.scene.sceneName;
+        this.menuView.saveView.inputDownload.value = App.scene.sceneName;
+        this.menuView.saveView.inputLocalStorage.value = App.scene.sceneName;
+        this.menuView.saveView.inputCloudStorage.value = App.scene.sceneName;
     }
 
     lowerLibraryMenu() {

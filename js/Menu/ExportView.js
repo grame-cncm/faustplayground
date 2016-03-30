@@ -22,7 +22,7 @@ var ExportView = (function () {
         nameAppTitle.className = "exportTitle";
         var dynamicName = document.createElement("span");
         dynamicName.id = "dynamicName";
-        dynamicName.textContent = Scene.sceneName;
+        dynamicName.textContent = App.scene.sceneName;
         nameAppTitle.appendChild(dynamicName);
         this.dynamicName = dynamicName;
         var rulesName = document.createElement("span");
@@ -32,7 +32,7 @@ var ExportView = (function () {
         var input = document.createElement("input");
         input.id = "inputNameApp";
         input.className = "inputExport";
-        input.value = Scene.sceneName;
+        input.value = App.scene.sceneName;
         var renameBottomButtonContainer = document.createElement("div");
         renameBottomButtonContainer.className = "bottomButtonContainer";
         var renameButton = document.createElement("button");

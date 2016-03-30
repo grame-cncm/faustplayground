@@ -142,15 +142,15 @@ var Export = (function () {
     Export.prototype.exportPatch = function (event, expor) {
         this.exportView.exportButton.removeEventListener("click", this.eventExport);
         this.exportView.exportButton.style.opacity = "0.3";
-        var sceneName = Scene.sceneName;
+        var sceneName = App.scene.sceneName;
         if (sceneName == null || sceneName == "") {
             sceneName = "MonApplication";
         }
         this.removeQRCode();
         App.addLoadingLogo("exportResultContainer");
         var equivalentFaust = new EquivalentFaust();
-        var faustCode = equivalentFaust.getFaustEquivalent(App.scene, Scene.sceneName);
-        ExportLib.getSHAKey(document.getElementById("faustweburl").value, Scene.sceneName, faustCode, expor.exportFaustCode);
+        var faustCode = equivalentFaust.getFaustEquivalent(App.scene, App.scene.sceneName);
+        ExportLib.getSHAKey(document.getElementById("faustweburl").value, App.scene.sceneName, faustCode, expor.exportFaustCode);
     };
     Export.prototype.removeQRCode = function () {
         var disposableExportDiv = document.getElementById('disposableExportDiv');

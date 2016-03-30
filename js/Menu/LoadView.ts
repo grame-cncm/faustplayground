@@ -54,7 +54,7 @@
         aLightExemple.id = "aLightExemple";
         aLightExemple.className = "exempleAnchor"
         aLightExemple.textContent = "Small exemple";
-        aLightExemple.href = "json/patch_light.json"
+        aLightExemple.href = "json/Small_Exemple.json"
         aLightExemple.draggable = false;
         this.aLightExemple = aLightExemple;
 
@@ -62,7 +62,7 @@
         aBigExemple.id = "aBigExemple";
         aBigExemple.className = "exempleAnchor"
         aBigExemple.textContent = "Big exemple";
-        aBigExemple.href = "json/patch_big.json"
+        aBigExemple.href = "json/Big_Exemple.json"
         aBigExemple.draggable = false;
         this.aBigExemple = aBigExemple;
 
@@ -70,7 +70,7 @@
         aLightPreExemple.id = "aLightPreExemple";
         aLightPreExemple.className = "exempleAnchor"
         aLightPreExemple.textContent = "Small exemple precompile";
-        aLightPreExemple.href = "json/patch_light_precompile.json"
+        aLightPreExemple.href = "json/Small_Exemple_Precompile.json"
         aLightPreExemple.draggable = false;
         this.aLightPreExemple = aLightPreExemple;
 
@@ -78,7 +78,7 @@
         aBigPreExemple.id = "aBigPreExemple";
         aBigPreExemple.className = "exempleAnchor"
         aBigPreExemple.textContent = "Big exemple precompile";
-        aBigPreExemple.href = "json/patch_big_precompile.json"
+        aBigPreExemple.href = "json/Big_Exemple_Precompile.json"
         aBigPreExemple.draggable = false;
         this.aBigPreExemple = aBigPreExemple;
 

@@ -127,15 +127,15 @@ class Export{
     {
         this.exportView.exportButton.removeEventListener("click", this.eventExport)
         this.exportView.exportButton.style.opacity = "0.3";
-        var sceneName: string = Scene.sceneName;
+        var sceneName: string = App.scene.sceneName;
         if (sceneName == null || sceneName == "") {
             sceneName = "MonApplication";
         }
         this.removeQRCode();
         App.addLoadingLogo("exportResultContainer");
         var equivalentFaust: EquivalentFaust = new EquivalentFaust();
-        var faustCode:string = equivalentFaust.getFaustEquivalent(App.scene,Scene.sceneName);
-        ExportLib.getSHAKey((<HTMLInputElement>document.getElementById("faustweburl")).value, Scene.sceneName, faustCode, expor.exportFaustCode);
+        var faustCode: string = equivalentFaust.getFaustEquivalent(App.scene, App.scene.sceneName);
+        ExportLib.getSHAKey((<HTMLInputElement>document.getElementById("faustweburl")).value, App.scene.sceneName, faustCode, expor.exportFaustCode);
     }
 
     /******************************************************************** 

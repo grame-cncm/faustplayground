@@ -55,6 +55,7 @@ var Scene = (function () {
         this.isMute = false;
         //-- Modules contained in the scene
         this.fModuleList = [];
+        this.sceneName = "Patch";
         this.isInitLoading = true;
         this.isOutputTouch = false;
         this.parent = parent;
@@ -203,6 +204,7 @@ var Scene = (function () {
             if (this.fModuleList[i].patchID != "output" && this.fModuleList[i].patchID != "input") {
                 jsonObjectCollection[this.fModuleList[i].patchID.toString()] = new JsonSaveObject();
                 var jsonObject = jsonObjectCollection[this.fModuleList[i].patchID.toString()];
+                jsonObject.sceneName = this.sceneName;
                 jsonObject.patchId = this.fModuleList[i].patchID.toString();
                 jsonObject.code = this.fModuleList[i].moduleFaust.getSource();
                 jsonObject.name = this.fModuleList[i].moduleFaust.getName();
@@ -276,10 +278,12 @@ var Scene = (function () {
                 this.parent.tempPatchId = jsonObject.patchId;
                 var factory = faust.readDSPFactoryFromMachine(jsonObject.factory);
                 this.updateAppTempModuleInfo(jsonObject);
+                this.sceneName = jsonObject.sceneName;
                 this.createModule(factory);
             }
             else if (jsonObject.patchId != "output" && jsonObject.patchId != "input") {
                 this.parent.tempPatchId = jsonObject.patchId;
+                this.sceneName = jsonObject.sceneName;
                 this.parent.compileFaust(jsonObject.name, jsonObject.code, parseFloat(jsonObject.x), parseFloat(jsonObject.y), function (factory) { _this.createModule(factory); });
             }
             else {
@@ -295,6 +299,8 @@ var Scene = (function () {
                 delete this.arrayRecalledModule[i].patchID;
             }
             this.arrayRecalledModule = [];
+            var event = new CustomEvent("updatename");
+            document.dispatchEvent(event);
             App.hideFullPageLoading();
         }
     };
@@ -391,12 +397,12 @@ var Scene = (function () {
         var newName = input.value;
         newName = Scene.cleanName(newName);
         if (Scene.isNameValid(newName)) {
-            Scene.sceneName = newName;
-            spanDynamic.textContent = Scene.sceneName;
+            App.scene.sceneName = newName;
+            spanDynamic.textContent = App.scene.sceneName;
             spanRule.style.opacity = "0.6";
             input.style.boxShadow = "0 0 0 green inset";
             input.style.border = "none";
-            input.value = Scene.sceneName;
+            input.value = App.scene.sceneName;
             var event = new CustomEvent("updatename");
             document.dispatchEvent(event);
             return true;
@@ -445,7 +451,6 @@ var Scene = (function () {
         }
         ModuleClass.isNodesModuleUnstyle = true;
     };
-    Scene.sceneName = "Patch";
     return Scene;
 })();
 //# sourceMappingURL=SceneClass.js.map

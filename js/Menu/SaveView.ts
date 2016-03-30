@@ -44,7 +44,7 @@
 
         var dynamicName: HTMLSpanElement = document.createElement("span");
         dynamicName.id = "dynamicName";
-        dynamicName.textContent = Scene.sceneName;
+        dynamicName.textContent = App.scene.sceneName;
         nameAppTitle.appendChild(dynamicName);
         this.dynamicName = dynamicName;
 
@@ -67,7 +67,7 @@
         var inputDownload: HTMLInputElement = document.createElement("input");
         inputDownload.id = "inputNameApp";
         inputDownload.className = "inputExport";
-        inputDownload.value = Scene.sceneName;
+        inputDownload.value = App.scene.sceneName;
 
         var downloadBottomButtonContainer: HTMLElement = document.createElement("div");
         downloadBottomButtonContainer.className = "bottomButtonContainer";
@@ -106,7 +106,7 @@
         var inputLocalStorage: HTMLInputElement = document.createElement("input");
         inputLocalStorage.id = "inputNameApp";
         inputLocalStorage.className = "inputExport";
-        inputLocalStorage.value = Scene.sceneName;
+        inputLocalStorage.value = App.scene.sceneName;
         this.inputLocalStorage = inputLocalStorage;
 
         var dialogGoodNews = document.createElement("div");
@@ -161,7 +161,7 @@
         var inputCloudStorage: HTMLInputElement = document.createElement("input");
         inputCloudStorage.id = "inputNameApp";
         inputCloudStorage.className = "inputExport";
-        inputCloudStorage.value = Scene.sceneName;
+        inputCloudStorage.value = App.scene.sceneName;
         this.inputCloudStorage = inputCloudStorage;
 
         var cloudButton: HTMLButtonElement = document.createElement("button");

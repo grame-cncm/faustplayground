@@ -43,7 +43,7 @@ class ExportView {
 
         var dynamicName: HTMLSpanElement = document.createElement("span");
         dynamicName.id = "dynamicName";
-        dynamicName.textContent = Scene.sceneName;
+        dynamicName.textContent = App.scene.sceneName;
         nameAppTitle.appendChild(dynamicName);
         this.dynamicName = dynamicName;
 
@@ -55,7 +55,7 @@ class ExportView {
         var input: HTMLInputElement = document.createElement("input");
         input.id = "inputNameApp";
         input.className = "inputExport";
-        input.value = Scene.sceneName;
+        input.value = App.scene.sceneName;
 
         var renameBottomButtonContainer: HTMLElement = document.createElement("div");
         renameBottomButtonContainer.className = "bottomButtonContainer";
