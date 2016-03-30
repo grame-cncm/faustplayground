@@ -485,7 +485,9 @@ class Menu {
         if (confirm("Voulez vous vraiment vider la scène ?")) {  
             var modules = this.sceneCurrent.getModules()
             while (modules.length != 0) {
-                modules[0].deleteModule();
+                if (modules[0].patchID != "output" && modules[0].patchID != "input") {
+                    modules[0].deleteModule();
+                }
             }
         }
     }

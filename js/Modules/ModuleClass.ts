@@ -48,7 +48,7 @@ class ModuleClass implements IModule {
     moduleFaustInterface: FaustInterface;
     moduleControles: Controler[]=[];
     private deleteCallback: (module: ModuleClass, scene: Scene) => void;
-    private fModuleInterfaceParams: string[] = [];
+    private fModuleInterfaceParams: { [label: string]: string } = {};
     eventDraggingHandler: (event: MouseEvent) => void;
     eventConnectorHandler: (event: Event) => void;
     eventOpenEditHandler: () => void;
@@ -303,7 +303,11 @@ class ModuleClass implements IModule {
         this.moduleControles = [];
     }
 
-
+    setDSPValue() {
+        for (var i = 0; i < this.moduleControles.length; i++){
+            this.moduleFaust.fDSP.setValue(this.moduleControles[i].address, this.moduleControles[i].value)
+        }
+    }
 
     //---- Generic callback for Faust Interface
     //---- Called every time an element of the UI changes value
@@ -311,8 +315,8 @@ class ModuleClass implements IModule {
 
         var input: HTMLInputElement = controler.slider;
         var text: string = controler.address;
-
         var val = Number((parseFloat(input.value) * parseFloat(controler.step)) + parseFloat(controler.min)).toFixed(parseFloat(controler.precision));
+        controler.value = val;
 
         var output: HTMLElement = controler.output;
 
@@ -329,15 +333,13 @@ class ModuleClass implements IModule {
     private saveInterfaceParams(): void {
 
         var interfaceElements: NodeList = this.moduleView.fInterfaceContainer.childNodes;
+        var controls = this.moduleControles;
+        for (var j = 0; j < controls.length; j++) {
 
-        for (var j = 0; j < interfaceElements.length; j++) {
-            var interfaceElement: HTMLinterfaceElement = <HTMLinterfaceElement>interfaceElements[j];
-            if (interfaceElement.className == "control-group") {
+            var text: string = controls[j].address;
 
-                var text: string = interfaceElement.label;
-
-                this.fModuleInterfaceParams[text] = this.moduleFaust.fDSP.getValue(text);
-            }
+            this.fModuleInterfaceParams[text] = controls[j].value;
+            
         }
     }
     recallInterfaceParams(): void {
@@ -345,14 +347,14 @@ class ModuleClass implements IModule {
         for (var key in this.fModuleInterfaceParams)
             this.moduleFaust.fDSP.setValue(key, this.fModuleInterfaceParams[key]);
     }
-    getInterfaceParams(): string[] {
+    getInterfaceParams(): { [label: string]:string }{
         return this.fModuleInterfaceParams;
     }
-    setInterfaceParams(parameters: string[]): void {
+    setInterfaceParams(parameters: { [label: string]: string }): void {
         this.fModuleInterfaceParams = parameters;
     }
     addInterfaceParam(path: string, value: number): void {
-        this.fModuleInterfaceParams[path] = value;
+        this.fModuleInterfaceParams[path] = value.toString();
     }
 		
     /******************* GET/SET INPUT/OUTPUT NODES **********************/

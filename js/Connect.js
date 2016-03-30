@@ -35,6 +35,8 @@ var Connector = (function () {
         if (sourceDSP.getProcessor && destinationDSP.getProcessor()) {
             sourceDSP.getProcessor().connect(destinationDSP.getProcessor());
         }
+        source.setDSPValue();
+        destination.setDSPValue();
     };
     Connector.prototype.disconnectOutput = function (destination, source) {
         destination.audioNode.context.suspend();
