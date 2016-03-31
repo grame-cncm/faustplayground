@@ -26,7 +26,7 @@
             this.messageViewContainer.classList.toggle("messageHide")
             this.messageViewContainer.classList.toggle("messageShow")
             this.messageViewContainer.removeEventListener("click", this.removeEventHandler);
-            setTimeout(this.messageViewContainer.remove, 6000);
+            setTimeout(() => { this.messageViewContainer.remove() }, 4000);
         }
     }
     removeMessage() {

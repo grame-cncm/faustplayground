@@ -15,13 +15,14 @@ var Message = (function () {
         this.messageViewContainer.classList.toggle("messageShow");
     };
     Message.prototype.hideMessage = function () {
+        var _this = this;
         if (this.messageViewContainer != undefined) {
             this.messageViewContainer.classList.remove("messageTransitionIn");
             this.messageViewContainer.classList.add("messageTransitionOut");
             this.messageViewContainer.classList.toggle("messageHide");
             this.messageViewContainer.classList.toggle("messageShow");
             this.messageViewContainer.removeEventListener("click", this.removeEventHandler);
-            setTimeout(this.messageViewContainer.remove, 6000);
+            setTimeout(function () { _this.messageViewContainer.remove(); }, 4000);
         }
     };
     Message.prototype.removeMessage = function () {
