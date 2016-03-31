@@ -211,6 +211,33 @@ div#loadingPage {
 div#loadingTextBig {
     color: white;
     font-size: 2em;
-    margin: 25% auto;
-    width: 310px;
+    margin: 30vh auto;
+    text-align:center;
+}
+/*messages style*/
+.messageContainer {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    color: white;
+    background: rgba(0, 0, 255, 0.61);
+    text-align: center;
+
+}
+
+.messageShow {
+    opacity:1!important;
+}
+.messageHide {
+    opacity:0!important;
+}
+
+.messageTransitionOut {
+    -webkit-transition: all 6000ms ease;
+    transition: all 6000ms ease;
+}
+
+.messageTransitionIn {
+    -webkit-transition: all 500ms ease;
+    transition: all 500ms ease;
 }

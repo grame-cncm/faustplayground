@@ -141,6 +141,7 @@ class App {
             navigatorLoc.getUserMedia({ audio: true },  (mediaStream)=> { this.getDevice(mediaStream, this) }, function (e) {
                 scene.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)"
                 scene.fAudioInput.moduleView.fInterfaceContainer.title = App.messageRessource.errorGettingAudioInput;
+                var message = new Message(App.messageRessource.errorGettingAudioInput);
             });
         } else {
             scene.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)"
@@ -545,6 +546,7 @@ class App {
     }
 
     static showFullPageLoading() {
+
         document.getElementById("loadingPage").style.visibility = "visible";
         //too demanding for mobile firefox...
         //document.getElementById("Normal").style.filter = "blur(2px)"
