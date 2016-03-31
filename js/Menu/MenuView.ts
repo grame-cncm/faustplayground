@@ -48,37 +48,37 @@ class MenuView {
         var libraryButtonMenu: HTMLElement = document.createElement("div");
         libraryButtonMenu.id = "libraryButtonMenu";
         libraryButtonMenu.className = "buttonsMenu";
-        libraryButtonMenu.appendChild(document.createTextNode("Biblio"));
+        libraryButtonMenu.appendChild(document.createTextNode(App.messageRessource.buttonLibrary));
         this.libraryButtonMenu = libraryButtonMenu;
 
         var exportButtonMenu: HTMLElement = document.createElement("div");
         exportButtonMenu.id = "exportButtonMenu";
         exportButtonMenu.className = "buttonsMenu";
-        exportButtonMenu.appendChild(document.createTextNode("Export"));
+        exportButtonMenu.appendChild(document.createTextNode(App.messageRessource.buttonExport));
         this.exportButtonMenu = exportButtonMenu;
 
         var helpButtonMenu: HTMLElement = document.createElement("div");
         helpButtonMenu.id = "helpButtonMenu";
         helpButtonMenu.className = "buttonsMenu";
-        helpButtonMenu.appendChild(document.createTextNode("Aide"));
+        helpButtonMenu.appendChild(document.createTextNode(App.messageRessource.buttonHelp));
         this.helpButtonMenu = helpButtonMenu;
 
         var editButtonMenu: HTMLElement = document.createElement("div");
         editButtonMenu.id = "EditButtonMenu";
         editButtonMenu.className = "buttonsMenu";
-        editButtonMenu.appendChild(document.createTextNode("Editer"));
+        editButtonMenu.appendChild(document.createTextNode(App.messageRessource.buttonEdit));
         this.editButtonMenu = editButtonMenu;
 
         var loadButtonMenu: HTMLElement = document.createElement("div");
         loadButtonMenu.id = "loadButtonMenu";
         loadButtonMenu.className = "buttonsMenu";
-        loadButtonMenu.appendChild(document.createTextNode("Charger"));
+        loadButtonMenu.appendChild(document.createTextNode(App.messageRessource.buttonLoad));
         this.loadButton = loadButtonMenu;
 
         var saveButtonMenu: HTMLElement = document.createElement("div");
         saveButtonMenu.id = "saveButtonMenu";
         saveButtonMenu.className = "buttonsMenu";
-        saveButtonMenu.appendChild(document.createTextNode("Sauver"));
+        saveButtonMenu.appendChild(document.createTextNode(App.messageRessource.buttonSave));
         this.saveButton = saveButtonMenu;
 
         var fullScreenButton: HTMLElement = document.createElement("div");
@@ -121,7 +121,7 @@ class MenuView {
         var myScene: HTMLDivElement = document.createElement("div");
         myScene.id = "PatchName";
         myScene.className = "sceneTitle";
-        myScene.textContent = "Patch";
+        myScene.textContent = App.scene.sceneName;
         buttonsMenu.appendChild(myScene);
         this.patchNameScene = myScene;
 

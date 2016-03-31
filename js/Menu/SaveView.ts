@@ -40,18 +40,18 @@
 
         var nameAppTitle: HTMLSpanElement = document.createElement("span");
         nameAppTitle.id = "nameAppTitle";
-        nameAppTitle.textContent = " Telecharger la scene : ";
+        nameAppTitle.textContent = App.messageRessource.saveDownload;
         nameAppTitle.className = "exportTitle";
 
         var dynamicName: HTMLSpanElement = document.createElement("span");
         dynamicName.id = "dynamicName";
-        dynamicName.textContent = App.scene.sceneName;
+        dynamicName.textContent = App.messageRessource.defaultSceneName;
         nameAppTitle.appendChild(dynamicName);
         this.dynamicName = dynamicName;
 
         var rulesName: HTMLSpanElement = document.createElement("span");
         rulesName.id = "rulesName";
-        rulesName.textContent = "Seules les lettres de l'alphabet et les nombres sont acceptés. Les espaces, les apostrophes et les accents sont automatiquement remplacés. Le nom ne peut pas commencer par un nombre ; il doit comporter entre 1 et 50 caractères.";
+        rulesName.textContent = App.messageRessource.rulesSceneName;
         this.rulesName = rulesName;
 
         var checkBoxPrecompile = document.createElement("input");
@@ -61,7 +61,7 @@
 
         var label = document.createElement("label");
         label.id = "labelDownload";
-        label.textContent = "Précompilé (plus lourd)";
+        label.textContent = App.messageRessource.precompileOption;
         label.appendChild(checkBoxPrecompile);
 
 
@@ -78,7 +78,7 @@
         downloadButton.type = "button";
         downloadButton.id = "downloadButton";
         downloadButton.className = "button"
-        downloadButton.textContent = "télécharger l'application";
+        downloadButton.textContent = App.messageRessource.buttonDownloadApp;
 
         downloadBottomButtonContainer.appendChild(downloadButton)
 
@@ -112,7 +112,7 @@
 
         var dialogGoodNews = document.createElement("div");
         dialogGoodNews.id = "dialogGoodNews";
-        dialogGoodNews.textContent = "Sauvegarde bien effectuée"
+        dialogGoodNews.textContent = App.messageRessource.sucessSave;
         dialogGoodNews.style.opacity = "0";
         this.dialogGoodNews = dialogGoodNews;
 
@@ -120,14 +120,14 @@
         localButtonSuppr.type = "button";
         localButtonSuppr.id = "localButtonSuppr";
         localButtonSuppr.className = "button"
-        localButtonSuppr.textContent = "supprimer la scene";
+        localButtonSuppr.textContent = App.messageRessource.buttonSuppress;
         this.buttonLocalSuppr = localButtonSuppr;
 
         var localButton: HTMLButtonElement = document.createElement("button");
         localButton.type = "button";
         localButton.id = "localButton";
         localButton.className = "button"
-        localButton.textContent = "sauvegarder localement";
+        localButton.textContent = App.messageRessource.buttonLocalSave;
         this.buttonLocalSave = localButton;
 
         var localBottomButtonContainer: HTMLElement = document.createElement("div");
@@ -148,7 +148,7 @@
 
         var buttonConnectDrive = document.createElement("button");
         buttonConnectDrive.id = "buttonConnectSaveDrive";
-        buttonConnectDrive.textContent = "connection à google drive";
+        buttonConnectDrive.textContent = App.messageRessource.buttonConnectCloud;
         buttonConnectDrive.className = "button";
         this.buttonConnectDrive = buttonConnectDrive
 
@@ -169,21 +169,21 @@
         cloudButtonSuppr.type = "button";
         cloudButtonSuppr.id = "cloudButtonSuppr";
         cloudButtonSuppr.className = "button"
-        cloudButtonSuppr.textContent = "supprimer la scene";
+        cloudButtonSuppr.textContent = App.messageRessource.buttonSuppress;
         this.buttonCloudSuppr = cloudButtonSuppr;
 
         var cloudButton: HTMLButtonElement = document.createElement("button");
         cloudButton.type = "button";
         cloudButton.id = "cloudSaveButton";
         cloudButton.className = "button"
-        cloudButton.textContent = "sauver sur le drive";
+        cloudButton.textContent = App.messageRessource.buttonCloudSave;
         this.buttonSaveCloud = cloudButton;
 
         var changeAccountButton: HTMLButtonElement = document.createElement("button");
         changeAccountButton.type = "button";
         //changeAccountButton.id = "changeAccountButton";
         changeAccountButton.className = "button changeAccountButton"
-        changeAccountButton.textContent = "changer de compte";
+        changeAccountButton.textContent = App.messageRessource.buttonLogoutCloud;
         changeAccountButton.style.display = "none";
         this.buttonChangeAccount = changeAccountButton;
 

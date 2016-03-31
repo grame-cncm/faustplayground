@@ -109,7 +109,7 @@ var DriveAPI = (function () {
             }
             else {
                 //this.appendPre('No files found.',null);
-                _this.appendPre('No files found.', null);
+                _this.appendPre(App.messageRessource.noFileOnCloud, null);
             }
         });
     };

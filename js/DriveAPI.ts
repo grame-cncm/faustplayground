@@ -128,7 +128,7 @@ class DriveAPI{
                 }
             } else {
                 //this.appendPre('No files found.',null);
-                this.appendPre('No files found.', null);
+                this.appendPre(App.messageRessource.noFileOnCloud, null);
             }
         })
 

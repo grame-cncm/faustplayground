@@ -40,7 +40,7 @@ class Save {
                 var jsonScene = this.sceneCurrent.saveScene(true)
                 if (this.isFileExisting(name)) {
                     this.sceneCurrent.muteScene();
-                    if (confirm("le nom que vous utilisez existe déjà si vous continuez vous le remplacerez. Continuer?")) {
+                    if (confirm(App.messageRessource.confirmReplace)) {
                         localStorage.setItem(name, jsonScene);
                     } else {
                         return;
@@ -104,7 +104,7 @@ class Save {
     supprLocal() {
         this.sceneCurrent.muteScene()
         if (this.saveView.existingSceneSelect.selectedIndex > -1) {
-            if (confirm("Voulez vous vraiment supprimer ce Patch ?")) {
+            if (confirm(App.messageRessource.confirmSuppr)) {
 
                 var name = this.saveView.existingSceneSelect.options[this.saveView.existingSceneSelect.selectedIndex].value
                 localStorage.removeItem(name)
@@ -126,7 +126,7 @@ class Save {
             if (this.isFileCloudExisting(name)) {
                 this.sceneCurrent.muteScene();
 
-                if (confirm("le nom que vous utilisez existe déjà si vous continuez vous le remplacerez. Continuer?")) {
+                if (confirm(App.messageRessource.confirmReplace)) {
 
                     var jsonScene = this.sceneCurrent.saveScene(true)
                     var blob = new Blob([jsonScene], { type: "application/json" });
@@ -152,8 +152,10 @@ class Save {
     supprCloud() {
         this.sceneCurrent.muteScene()
         if (this.saveView.cloudSelectFile.selectedIndex > -1) {
-            var id = this.saveView.cloudSelectFile.options[this.saveView.cloudSelectFile.selectedIndex].value
-            this.drive.trashFile(id);
+            if (confirm(App.messageRessource.confirmSuppr)) {
+                var id = this.saveView.cloudSelectFile.options[this.saveView.cloudSelectFile.selectedIndex].value
+                this.drive.trashFile(id);
+            }
         }
         this.sceneCurrent.unmuteScene();
     }

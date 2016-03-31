@@ -56,8 +56,6 @@ var Drag = (function () {
         //touchEvent.stopPropagation();
     };
     Drag.prototype.startDraggingModule = function (el, x, y, module, event) {
-        console.log("start dragging module");
-        console.log(el.className);
         var moduleContainer = module.moduleView.getModuleContainer();
         // Get cursor position with respect to the page.
         // Save starting positions of cursor and element.
@@ -81,7 +79,6 @@ var Drag = (function () {
         event.preventDefault();
     };
     Drag.prototype.whileDraggingModule = function (el, x, y, module, event) {
-        console.log("drag module");
         var moduleContainer = module.moduleView.getModuleContainer();
         App.appTest++;
         // Get cursor position with respect to the page.
@@ -228,7 +225,6 @@ var Drag = (function () {
         this.connector.connectorShape = null;
     };
     Drag.prototype.startDraggingConnector = function (target, x, y, module, event) {
-        console.log("start dragging connection");
         this.startDraggingConnection(module, target);
         // Capture mousemove and mouseup events on the page.
         document.addEventListener("mousemove", module.eventConnectorHandler);

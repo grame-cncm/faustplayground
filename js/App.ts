@@ -66,6 +66,7 @@ class App {
     static isAccelerometerEditOn: boolean = false;
     static accHandler: AccelerometerHandler;
     static driveApi: DriveAPI;
+    static messageRessource: Ressources = new Ressources();
     private static currentScene: number;
     private static src: IHTMLDivElementSrc;
     private static out: IHTMLDivElementOut;
@@ -139,11 +140,11 @@ class App {
 
             navigatorLoc.getUserMedia({ audio: true },  (mediaStream)=> { this.getDevice(mediaStream, this) }, function (e) {
                 scene.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)"
-                scene.fAudioInput.moduleView.fInterfaceContainer.title = "Error getting audio input";
+                scene.fAudioInput.moduleView.fInterfaceContainer.title = App.messageRessource.errorGettingAudioInput;
             });
         } else {
             scene.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)"
-            scene.fAudioInput.moduleView.fInterfaceContainer.title = "Audio input API not available";
+            scene.fAudioInput.moduleView.fInterfaceContainer.title = App.messageRessource.errorInputAPINotAvailable;
         }
     }
 
@@ -342,7 +343,7 @@ class App {
             }
         } else { // CASE 4 : ANY OTHER STRANGE THING
             app.terminateUpload();
-            window.alert("THIS OBJECT IS NOT FAUST COMPILABLE");
+            window.alert(App.messageRessource.errorObjectNotFaustCompatible);
         }
     }
     //Upload Url
@@ -518,7 +519,7 @@ class App {
         loadingImg.src = App.baseImg + "logoAnim.gif"
         loadingImg.id = "loadingImg";
         var loadingText = document.createElement("span");
-        loadingText.textContent = "chargement en cours..."
+        loadingText.textContent = App.messageRessource.loading;
         loadingText.id = "loadingText";
         loadingDiv.appendChild(loadingImg);
         loadingDiv.appendChild(loadingText);
@@ -537,16 +538,10 @@ class App {
 
     static addFullPageLoading() {
         
-        var loadingPage = document.createElement("div");
-        loadingPage.id = "loadingPage";
-        loadingPage.className = "loadingPage";
-        var body = document.getElementsByTagName('body')[0];
-        var loadingText = document.createElement("div");
-        loadingText.id="loadingTextBig"
-        loadingText.textContent = "Chargement en cours";
-        loadingPage.appendChild(loadingText);
-        body.appendChild(loadingPage);
-        loadingPage.style.display = "none"
+
+        var loadingText = document.getElementById("loadingTextBig");
+        loadingText.id = "loadingTextBig"
+        loadingText.textContent = App.messageRessource.loading;
     }
 
     static showFullPageLoading() {
@@ -622,5 +617,21 @@ class App {
     }
     static replaceAll(str: String, find: string, replace: string) {
         return str.replace(new RegExp(find, 'g'), replace);
+    }
+    getRessources() {
+        // App.getXHR(
+        var localization = navigator.language;
+        if (localization == "fr" || localization == "fr-FR") {
+            App.getXHR("ressources/ressources_fr-FR.json", (ressource) => { this.loadMessages (ressource)}, this.errorCallBack)
+        } else {
+            App.getXHR("ressources/ressources_fr-FR.json", (ressource) => { this.loadMessages(ressource) }, this.errorCallBack)
+        }
+    }
+    loadMessages(ressourceJson: string) {
+        App.messageRessource = JSON.parse(ressourceJson);
+        resumeInit(this);
+    }
+    errorCallBack(message: string) {
+
     }
 }

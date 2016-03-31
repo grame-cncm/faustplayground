@@ -74,12 +74,12 @@ class SceneView{
         var linkWilson: HTMLDivElement = document.createElement("div");
         linkWilson.id = "ChrisLine"
         linkWilson.className = "link";
-        linkWilson.textContent = "Extension of the WebAudio Playground by ";
+        linkWilson.textContent = App.messageRessource.reference;
         container.appendChild(linkWilson);
 
         var alink: HTMLAnchorElement = document.createElement("a");
         alink.href = "https://github.com/cwilso/WebAudio";
-        alink.textContent = "Chris Wilson";
+        alink.textContent = App.messageRessource.chrisWilson;
         linkWilson.appendChild(alink);
 
         var srcDiv: HTMLDivElement = document.createElement("div");
@@ -105,7 +105,7 @@ class SceneView{
         this.dropElementScene = dropElementScene;
 
         var dropElementText = document.createElement("div");
-        dropElementText.textContent = "deposer ici";
+        dropElementText.textContent = App.messageRessource.drop;
         dropElementText.className = "dropElementText";
         dropElementScene.appendChild(dropElementText);
         

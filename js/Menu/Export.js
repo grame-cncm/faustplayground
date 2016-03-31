@@ -72,7 +72,7 @@ var Export = (function () {
             linkDownload.value = serverUrl + "/" + shaKey + "/" + plateforme + "/" + architecture + "/" + appType;
             linkDownload.id = "linkDownload";
             linkDownload.className = "button";
-            linkDownload.textContent = "Télécharger";
+            linkDownload.textContent = App.messageRessource.buttonDownloadApp;
             downloadBottomButtonContainer.appendChild(linkDownload);
             _this.exportView.downloadButton = linkDownload;
             _this.exportView.downloadButton.onclick = function () { window.location.href = _this.exportView.downloadButton.value; };

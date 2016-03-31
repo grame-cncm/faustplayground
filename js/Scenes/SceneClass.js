@@ -267,7 +267,7 @@ var Scene = (function () {
         }
         else {
             App.hideFullPageLoading();
-            alert("erreur de chargement");
+            alert(App.messageRessource.errorLoading);
         }
     };
     Scene.prototype.lunchModuleCreation = function () {

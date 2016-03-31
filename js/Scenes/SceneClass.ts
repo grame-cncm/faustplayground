@@ -355,7 +355,7 @@ class Scene {
             this.lunchModuleCreation();
         } else {
             App.hideFullPageLoading();
-            alert("erreur de chargement")
+            alert(App.messageRessource.errorLoading)
         }
     }
 

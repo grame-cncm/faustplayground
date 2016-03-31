@@ -74,7 +74,7 @@ class AccelerometerHandler {
             window.addEventListener("devicemotion", (event: DeviceMotionEvent) => { this.propagate(event) }, false);
         } else {
             // Browser doesn't support DeviceMotionEvent
-            console.log("Browser doesn't support DeviceMotionEvent")
+            console.log(App.messageRessource.noDeviceMotion)
         }
     }
 

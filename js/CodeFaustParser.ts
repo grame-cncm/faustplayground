@@ -23,7 +23,7 @@ class CodeFaustParser {
             if (this.indexSlider != null) {
                 return this.continueReplaceAccValue()
             } else {
-                alert("Slider : " + this.sliderName + " non trouvé, les changements sur ce slider ne seront pas exporté dans l'application finale")
+                alert(this.sliderName + App.messageRessource.errorAccSliderNotFound)
                 throw new Error("Slider non trouvé");
                 return this.originalCodeFaust;
             }
@@ -39,7 +39,7 @@ class CodeFaustParser {
             this.addNewAccValue();
             return this.recomposeCodeFaust();
         } else {
-            alert("Accelerometer non trouvé")
+            alert(App.messageRessource.errorAccelerometerNotFound)
             throw new Error("Accelerometer non trouvé");
             return this.originalCodeFaust;
         }

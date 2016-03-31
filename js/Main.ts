@@ -20,29 +20,18 @@ window.addEventListener('load', init, false);
 
 
 
-function init():void {
+function init(): void {
 
-    window.addEventListener("error", (e: ErrorEvent) => {
-        if (e.message == "Uncaught Error: workerError" || e.message =="Error: workerError") {
-            alert("une erreur s'est produite :" + e.message)
-            App.hideFullPageLoading();
-        }
-        if (e.message == "Uncaught Error: Upload2Error") {
-            
 
-            App.hideFullPageLoading();
-            e.preventDefault();
-        }
-        //e.preventDefault();
-
-    });
 
     var app: App = new App();
-
+    app.getRessources();
+}
+function resumeInit(app:App){
     try {
         App.audioContext = new AudioContext();
-    } catch(e) {
-        alert('The Web Audio API is apparently not supported in this browser.');
+    } catch (e) {
+        alert(App.messageRessource.errorNoWebAudioAPI);
     }
     App.addFullPageLoading();
     app.createAllScenes();
@@ -54,6 +43,20 @@ function init():void {
     App.driveApi = new DriveAPI();
     app.menu.setDriveApi(App.driveApi);
     App.driveApi.checkAuth();
+    window.addEventListener("error", (e: ErrorEvent) => {
+        if (e.message == "Uncaught Error: workerError" || e.message == "Error: workerError") {
+            alert(App.messageRessource.errorOccuredMessage + e.message)
+            App.hideFullPageLoading();
+        }
+        if (e.message == "Uncaught Error: Upload2Error") {
+
+
+            App.hideFullPageLoading();
+            e.preventDefault();
+        }
+        //e.preventDefault();
+
+    });
 }
 window.addEventListener('touchend', IosInit , false);
 window.addEventListener('touchstart', IosInit2, false);
@@ -162,4 +165,6 @@ interface Factory {
     sha_key: string;
     code: string;
 }
+
+
 

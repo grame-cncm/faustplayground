@@ -47,30 +47,29 @@
 
         var label1 = document.createElement("label");
         label1.className = "curve"
-        label1.id="curve1"
-        label1.textContent = "curve 1 : ";
+        label1.id = "curve1"
+        label1.textContent = App.messageRessource.curve1;
 
         var label2 = document.createElement("label");
         label2.className = "curve"
         label2.id = "curve2"
-        label2.textContent = "curve 2 : ";
+        label2.textContent = App.messageRessource.curve2;
 
         var label3 = document.createElement("label");
         label3.className = "curve"
         label3.id = "curve3"
-        label3.textContent = "curve 3 : ";
+        label3.textContent = App.messageRessource.curve3;
 
         var label4 = document.createElement("label");
         label4.className = "curve"
         label4.id = "curve4"
-        label4.textContent = "curve 4 : ";
+        label4.textContent = App.messageRessource.curve4;
 
         var radio1 = document.createElement("input");
         radio1.id = "radio1";
         radio1.type = "radio";
         radio1.className = "radio";
         radio1.name = "curve";
-        radio1.textContent = "curve 1";
         this.radioCurve1 = radio1;
         label1.appendChild(radio1);
 
@@ -79,7 +78,6 @@
         radio2.type = "radio";
         radio2.className = "radio";
         radio2.name = "curve";
-        radio2.textContent = "curve 2";
         this.radioCurve2 = radio2;
         label2.appendChild(radio2);
 
@@ -89,7 +87,6 @@
         radio3.type = "radio";
         radio3.className = "radio";
         radio3.name = "curve";
-        radio3.textContent = "curve 3";
         this.radioCurve3 = radio3;
         label3.appendChild(radio3);
 
@@ -98,7 +95,6 @@
         radio4.type = "radio";
         radio4.className = "radio";
         radio4.name = "curve";
-        radio4.textContent = "curve 4";
         this.radioCurve4 = radio4;
         label4.appendChild(radio4);
 
@@ -115,25 +111,23 @@
         var labelX = document.createElement("label");
         labelX.className = "axe";
         labelX.id = "axeX";
-        labelX.textContent = "axe X : ";
+        labelX.textContent = App.messageRessource.axisX;
 
         var labelY = document.createElement("label");
         labelY.className = "axe";
         labelY.id = "axeY";
-        labelY.textContent = "axe Y : ";
+        labelY.textContent = App.messageRessource.axisY;
 
         var labelZ = document.createElement("label");
         labelZ.className = "axe";
         labelZ.id = "axeZ";
-        labelZ.textContent = "axe Z : ";
+        labelZ.textContent = App.messageRessource.axisZ;
 
         var radioX = document.createElement("input");
         radioX.id = "radioX";
         radioX.type = "radio";
         radioX.className = "radio";
         radioX.name = "axis";
-        radioX.textContent = "axe X";
-        radioX.value = "axe X"
         this.radioAxisX = radioX;
         labelX.appendChild(radioX);
 
@@ -142,7 +136,6 @@
         radioY.type = "radio";
         radioY.className = "radio";
         radioY.name = "axis";
-        radioY.textContent = "axe Y";
         this.radioAxisY = radioY;
         labelY.appendChild(radioY);
 
@@ -151,7 +144,6 @@
         radioZ.type = "radio";
         radioZ.className = "radio";
         radioZ.name = "axis";
-        radioZ.textContent = "axe Z";
         this.radioAxisZ = radioZ;
         labelZ.appendChild(radioZ);
 
@@ -166,7 +158,7 @@
 
         var checkOnOffLabel = document.createElement("label");
         checkOnOffLabel.id = "checkOnOffLabel";
-        checkOnOffLabel.textContent = "On/Off accelerometre"
+        checkOnOffLabel.textContent = App.messageRessource.checkBox;
         checkOnOffContainer.appendChild(checkOnOffLabel);
 
         var checkOnOff = document.createElement("input");

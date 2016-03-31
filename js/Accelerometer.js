@@ -60,7 +60,7 @@ var AccelerometerHandler = (function () {
         }
         else {
             // Browser doesn't support DeviceMotionEvent
-            console.log("Browser doesn't support DeviceMotionEvent");
+            console.log(App.messageRessource.noDeviceMotion);
         }
     };
     // propagate the new x, y, z value of the accelerometer to the regisred object

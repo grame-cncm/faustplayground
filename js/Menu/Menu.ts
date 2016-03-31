@@ -486,7 +486,7 @@ class Menu {
     }
     cleanScene() {
         this.sceneCurrent.muteScene()
-        if (confirm("Voulez vous vraiment vider la scène ?")) {  
+        if (confirm(App.messageRessource.confirmEmptyScene)) {  
             var modules = this.sceneCurrent.getModules()
             while (modules.length != 0) {
                 if (modules[0].patchID != "output" && modules[0].patchID != "input") {

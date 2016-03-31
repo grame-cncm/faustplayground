@@ -181,7 +181,7 @@ class Export{
         linkDownload.value = serverUrl + "/" + shaKey + "/" + plateforme + "/" + architecture + "/" + appType;
         linkDownload.id = "linkDownload";
         linkDownload.className = "button";
-        linkDownload.textContent = "Télécharger";
+        linkDownload.textContent = App.messageRessource.buttonDownloadApp;
         downloadBottomButtonContainer.appendChild(linkDownload);
         this.exportView.downloadButton = linkDownload;
         this.exportView.downloadButton.onclick = () => { window.location.href = this.exportView.downloadButton.value };
