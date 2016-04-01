@@ -38,7 +38,7 @@ var Menu = (function () {
         this.menuView.loadButton.addEventListener("click", function () { _this.menuHandler(_this.menuChoices = MenuChoices.load); });
         this.menuView.fullScreenButton.addEventListener("click", function () { _this.fullScreen(); });
         this.menuView.accButton.addEventListener("click", function () { _this.accelerometer(); });
-        this.menuView.cleanButton.addEventListener("click", function () { _this.cleanScene(); });
+        this.menuView.cleanButton.addEventListener("click", function () { new Confirm(App.messageRessource.confirmEmptyScene, function (callback) { _this.cleanScene(callback); }); });
         this.library = new Library();
         this.library.libraryView = this.menuView.libraryView;
         this.library.fillLibrary();
@@ -431,17 +431,14 @@ var Menu = (function () {
         this.clearSelect(this.save.saveView.cloudSelectFile);
         this.drive.checkAuth();
     };
-    Menu.prototype.cleanScene = function () {
-        this.sceneCurrent.muteScene();
-        if (confirm(App.messageRessource.confirmEmptyScene)) {
-            var modules = this.sceneCurrent.getModules();
-            while (modules.length != 0) {
-                if (modules[0].patchID != "output" && modules[0].patchID != "input") {
-                    modules[0].deleteModule();
-                }
+    Menu.prototype.cleanScene = function (callBack) {
+        var modules = this.sceneCurrent.getModules();
+        while (modules.length != 0) {
+            if (modules[0].patchID != "output" && modules[0].patchID != "input") {
+                modules[0].deleteModule();
             }
         }
-        this.sceneCurrent.unmuteScene();
+        callBack();
     };
     Menu.prototype.startLoadingDrive = function () {
         if (!this.isMenuDriveLoading) {

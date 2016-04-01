@@ -221,6 +221,7 @@ div#dialogue {
     position: absolute;
     width: 100%;
 }
+
 .messageContainer {
     padding: 1em 0;
     position: relative;
@@ -245,4 +246,16 @@ div#dialogue {
 .messageTransitionIn {
     -webkit-transition: all 500ms ease;
     transition: all 500ms ease;
+}
+
+.messageTransitionOutFast {
+    -webkit-transition: all 500ms ease;
+    transition: all 500ms ease;
+}
+.validConfirmContainer {
+    position: relative;
+    bottom: 0px;
+    width: 100%;
+    margin-bottom: -1em;
+    margin-top:1em;
 }

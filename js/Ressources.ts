@@ -23,6 +23,7 @@
     errorCreateDSP: string;
     errorCreateModuleRecall: string;
     errorConnectionRecall: string;
+    errorLocalStorage: string;
 
   //SaveView messages
     saveDownload: string;

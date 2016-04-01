@@ -39,26 +39,27 @@ class Save {
                 var name = this.saveView.inputLocalStorage.value;
                 var jsonScene = this.sceneCurrent.saveScene(true)
                 if (this.isFileExisting(name)) {
-                    this.sceneCurrent.muteScene();
-                    if (confirm(App.messageRessource.confirmReplace)) {
-                        localStorage.setItem(name, jsonScene);
-                    } else {
-                        return;
-                    }
-                    this.sceneCurrent.unmuteScene();
+                    new Confirm(App.messageRessource.confirmReplace, (callback) => { this.replaceSaveLocal(name,jsonScene, callback) });
+                    return;
                 }else {
                     localStorage.setItem(name, jsonScene)
                 }
-                this.showGoodNews()
+                new Message(App.messageRessource.sucessSave,"messageTransitionOutFast",2000,500)
                 var event: CustomEvent = new CustomEvent("updatelist")
                 document.dispatchEvent(event);
 
             } else {
-                new Message("sessionStorage n'est pas supporté");
+                new Message(App.messageRessource.errorLocalStorage);
             }
         }
     }
-
+    replaceSaveLocal(name:string,jsonScene: string, confirmCallBack: () => void) {
+        localStorage.setItem(name, jsonScene);
+        new Message(App.messageRessource.sucessSave, "messageTransitionOutFast", 2000, 500)
+        var event: CustomEvent = new CustomEvent("updatelist")
+        document.dispatchEvent(event);
+        confirmCallBack();
+    }
     isFileExisting(name: string): boolean {
         for (var i = 0; i < localStorage.length; i++) {
             if (localStorage.key(i) == name) {
@@ -75,15 +76,7 @@ class Save {
         }
         return false;
     }
-    showGoodNews() {
-        this.saveView.dialogGoodNews.style.opacity = "1";
 
-        setTimeout(() => { this.hideGoodNews() }, 3000);
-    }
-    hideGoodNews() {
-        this.saveView.dialogGoodNews.style.opacity = "0";
-
-    }
     getNameSelected() {
         this.saveView.inputLocalStorage.value = this.saveView.existingSceneSelect.options[this.saveView.existingSceneSelect.selectedIndex].value;
     }
@@ -102,17 +95,17 @@ class Save {
 
 
     supprLocal() {
-        this.sceneCurrent.muteScene()
         if (this.saveView.existingSceneSelect.selectedIndex > -1) {
-            if (confirm(App.messageRessource.confirmSuppr)) {
-
-                var name = this.saveView.existingSceneSelect.options[this.saveView.existingSceneSelect.selectedIndex].value
-                localStorage.removeItem(name)
-                var event: CustomEvent = new CustomEvent("updatelist")
-                document.dispatchEvent(event);
-            }
+            new Confirm(App.messageRessource.confirmSuppr, (callbackConfirm) => { this.supprLocalCallback(callbackConfirm) })
         }
-        this.sceneCurrent.unmuteScene();
+    }
+
+    supprLocalCallback(callbackConfirm:()=>void) {
+        var name = this.saveView.existingSceneSelect.options[this.saveView.existingSceneSelect.selectedIndex].value
+        localStorage.removeItem(name)
+        var event: CustomEvent = new CustomEvent("updatelist")
+        document.dispatchEvent(event);
+        callbackConfirm();
     }
     logOut() {
         var event = new CustomEvent("authoff");
@@ -124,23 +117,10 @@ class Save {
         } else {
             var name = this.saveView.inputCloudStorage.value;
             if (this.isFileCloudExisting(name)) {
-                this.sceneCurrent.muteScene();
 
-                if (confirm(App.messageRessource.confirmReplace)) {
-
-                    var jsonScene = this.sceneCurrent.saveScene(true)
-                    var blob = new Blob([jsonScene], { type: "application/json" });
-                    this.drive.tempBlob = blob;
-                    var id = this.getValueByTextContent(this.saveView.cloudSelectFile, name);
-                    if (id != null) {
-                        this.drive.getFile(id, () => {
-                            this.drive.updateFile(id, this.drive.lastSavedFileMetadata, blob, null)
-                        });
-                    }
-                } else {
-                    return;
-                }
-                this.sceneCurrent.unmuteScene();
+                new Confirm(App.messageRessource.confirmReplace, (confirmCallback) => { this.replaceCloud(name,confirmCallback) })
+                return;
+                
             } else {
                 var jsonScene = this.sceneCurrent.saveScene(true)
                 var blob = new Blob([jsonScene], { type: "application/json" });
@@ -149,14 +129,28 @@ class Save {
             }
         }
     }
-    supprCloud() {
-        this.sceneCurrent.muteScene()
-        if (this.saveView.cloudSelectFile.selectedIndex > -1) {
-            if (confirm(App.messageRessource.confirmSuppr)) {
-                var id = this.saveView.cloudSelectFile.options[this.saveView.cloudSelectFile.selectedIndex].value
-                this.drive.trashFile(id);
-            }
+
+    replaceCloud(name: string,confirmCallback:()=>void) {
+        var jsonScene = this.sceneCurrent.saveScene(true)
+        var blob = new Blob([jsonScene], { type: "application/json" });
+        this.drive.tempBlob = blob;
+        var id = this.getValueByTextContent(this.saveView.cloudSelectFile, name);
+        if (id != null) {
+            this.drive.getFile(id, () => {
+                this.drive.updateFile(id, this.drive.lastSavedFileMetadata, blob, null)
+            });
         }
-        this.sceneCurrent.unmuteScene();
+        confirmCallback();
+    }
+    supprCloud() {
+        if (this.saveView.cloudSelectFile.selectedIndex > -1) {
+            new Confirm(App.messageRessource.confirmSuppr, (confirmCallBack) => { this.supprCloudCallback(confirmCallBack) })
+        }
+    }
+    supprCloudCallback(confirmCallBack:()=>void) {
+        var id = this.saveView.cloudSelectFile.options[this.saveView.cloudSelectFile.selectedIndex].value
+        this.drive.trashFile(id);
+        confirmCallBack();
+        
     }
 }
