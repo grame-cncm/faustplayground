@@ -185,6 +185,8 @@ var ModuleClass = (function () {
         this.deleteFaustInterface();
         this.moduleView.textArea.style.display = "block";
         this.moduleView.textArea.value = this.moduleFaust.fSource;
+        Connector.redrawInputConnections(this, this.drag);
+        Connector.redrawOutputConnections(this, this.drag);
         this.moduleView.fEditImg.style.backgroundImage = "url(" + App.baseImg + "enter.png)";
         this.moduleView.fEditImg.addEventListener("click", this.eventCloseEditHandler);
         this.moduleView.fEditImg.addEventListener("touchend", this.eventCloseEditHandler);
@@ -206,6 +208,8 @@ var ModuleClass = (function () {
         var buttonImage = event.target;
         var dsp_code = this.moduleView.textArea.value;
         this.moduleView.textArea.style.display = "none";
+        Connector.redrawOutputConnections(this, this.drag);
+        Connector.redrawInputConnections(this, this.drag);
         module.update(this.moduleView.fTitle.textContent, dsp_code);
         module.recallInterfaceParams();
         module.moduleView.fEditImg.style.backgroundImage = "url(" + App.baseImg + "edit.png)";

@@ -243,7 +243,8 @@ class ModuleClass implements IModule {
 
         this.moduleView.textArea.style.display = "block";
         this.moduleView.textArea.value = this.moduleFaust.fSource;
-
+        Connector.redrawInputConnections(this, this.drag);
+        Connector.redrawOutputConnections(this, this.drag);
         this.moduleView.fEditImg.style.backgroundImage = "url(" + App.baseImg + "enter.png)";
         this.moduleView.fEditImg.addEventListener("click", this.eventCloseEditHandler);
         this.moduleView.fEditImg.addEventListener("touchend", this.eventCloseEditHandler);
@@ -254,6 +255,7 @@ class ModuleClass implements IModule {
 
     //---- Update ModuleClass with new name/code source
     update(name: string, code: string): void {
+
         var event: CustomEvent = new CustomEvent("codeeditevent")
         document.dispatchEvent(event);
         this.moduleFaust.fTempName = name;
@@ -268,7 +270,8 @@ class ModuleClass implements IModule {
         var buttonImage: HTMLfEdit = <HTMLfEdit>event.target;
         var dsp_code: string = this.moduleView.textArea.value;
         this.moduleView.textArea.style.display = "none";
-
+        Connector.redrawOutputConnections(this, this.drag);
+        Connector.redrawInputConnections(this, this.drag)
         module.update(this.moduleView.fTitle.textContent, dsp_code);
         module.recallInterfaceParams();
 
