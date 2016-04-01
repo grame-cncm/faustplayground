@@ -85,7 +85,8 @@ class Menu {
         document.addEventListener("fillselect", (optionEvent: CustomEvent) => { this.fillSelectCloud(optionEvent) })
         document.addEventListener("updatecloudselect", () => { this.updateSelectCloudEvent() });
         document.addEventListener("startloaddrive", () => { this.startLoadingDrive()})
-        document.addEventListener("finishloaddrive", () => { this.finishLoadingDrive()})
+        document.addEventListener("finishloaddrive", () => { this.finishLoadingDrive() })
+        document.addEventListener("clouderror", (e:CustomEvent) => { this.connectionProblem(e)})
         //this.accEdit.accelerometerEditView = this.menuView.accEditView
 
     }
@@ -461,6 +462,8 @@ class Menu {
         this.save.saveView.buttonChangeAccount.style.display = "block";
         this.load.loadView.buttonConnectDrive.style.display = "none";
         this.save.saveView.buttonConnectDrive.style.display = "none";
+        this.save.saveView.buttonCloudSuppr.style.display = "block";
+        this.save.saveView.inputCloudStorage.style.display = "block";
     }
     authOff() {
         this.load.loadView.cloudSelectFile.style.display = "none";
@@ -469,10 +472,16 @@ class Menu {
         this.save.saveView.buttonChangeAccount.style.display = "none";
         this.load.loadView.buttonConnectDrive.style.display = "block";
         this.save.saveView.buttonConnectDrive.style.display = "block";
+        this.save.saveView.buttonCloudSuppr.style.display = "none";
+        this.save.saveView.inputCloudStorage.style.display = "none";
         this.clearSelect(this.save.saveView.cloudSelectFile);
         this.clearSelect(this.load.loadView.cloudSelectFile);
+
         window.open("https://accounts.google.com/logout", "newwindow", "width=500,height=700")
 
+    }
+    connectionProblem(event: CustomEvent) {
+        new Message(App.messageRessource.errorConnectionCloud + " : " + event.detail)
     }
     fillSelectCloud(optionEvent: CustomEvent) {
         this.load.loadView.cloudSelectFile.add(<HTMLOptionElement>optionEvent.detail);

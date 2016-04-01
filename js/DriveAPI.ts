@@ -53,6 +53,10 @@ class DriveAPI{
             var event = new CustomEvent("authoff")
             document.dispatchEvent(event);
         }
+        if (authResult.error) {
+            var event = new CustomEvent("clouderror", { 'detail': authResult.error })
+            document.dispatchEvent(event);
+         }
     }
 
     /**
@@ -302,6 +306,8 @@ class DriveAPI{
             if (!callback) {
                 callback = () => {
                     var event = new CustomEvent("updatecloudselect");
+                    document.dispatchEvent(event)
+                    event = new CustomEvent("successave");
                     document.dispatchEvent(event)
 
                 };

@@ -70,6 +70,7 @@ var Menu = (function () {
         document.addEventListener("updatecloudselect", function () { _this.updateSelectCloudEvent(); });
         document.addEventListener("startloaddrive", function () { _this.startLoadingDrive(); });
         document.addEventListener("finishloaddrive", function () { _this.finishLoadingDrive(); });
+        document.addEventListener("clouderror", function (e) { _this.connectionProblem(e); });
         //this.accEdit.accelerometerEditView = this.menuView.accEditView
     }
     Menu.prototype.setMenuScene = function (scene) {
@@ -409,6 +410,8 @@ var Menu = (function () {
         this.save.saveView.buttonChangeAccount.style.display = "block";
         this.load.loadView.buttonConnectDrive.style.display = "none";
         this.save.saveView.buttonConnectDrive.style.display = "none";
+        this.save.saveView.buttonCloudSuppr.style.display = "block";
+        this.save.saveView.inputCloudStorage.style.display = "block";
     };
     Menu.prototype.authOff = function () {
         this.load.loadView.cloudSelectFile.style.display = "none";
@@ -417,9 +420,14 @@ var Menu = (function () {
         this.save.saveView.buttonChangeAccount.style.display = "none";
         this.load.loadView.buttonConnectDrive.style.display = "block";
         this.save.saveView.buttonConnectDrive.style.display = "block";
+        this.save.saveView.buttonCloudSuppr.style.display = "none";
+        this.save.saveView.inputCloudStorage.style.display = "none";
         this.clearSelect(this.save.saveView.cloudSelectFile);
         this.clearSelect(this.load.loadView.cloudSelectFile);
         window.open("https://accounts.google.com/logout", "newwindow", "width=500,height=700");
+    };
+    Menu.prototype.connectionProblem = function (event) {
+        new Message(App.messageRessource.errorConnectionCloud + " : " + event.detail);
     };
     Menu.prototype.fillSelectCloud = function (optionEvent) {
         this.load.loadView.cloudSelectFile.add(optionEvent.detail);

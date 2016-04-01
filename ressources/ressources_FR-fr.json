@@ -19,6 +19,7 @@
   "errorCreateModuleRecall": "Une erreur c'est produite lors de la creation du module, le fichier de sauvegarde est probablement corrompue",
   "errorConnectionRecall": "Une erreur c'est produite lors de la connection des modules, le fichier de sauvegarde est probablement corrompue",
   "errorLocalStorage": "Votre navigateur ne permet pas la sauvegarde locale",
+  "errorConnectionCloud": "Connection à Google Drive impossible",
   "saveDownload": "Télécharger la scene : ",
   "rulesSceneName": "Seules les lettres de l'alphabet et les nombres sont acceptés. Les espaces, les apostrophes et les accents sont automatiquement remplacés. Le nom ne peut pas commencer par un nombre ; il doit comporter entre 1 et 50 caractères.",
   "precompileOption": "Précompilé (plus lourd)",

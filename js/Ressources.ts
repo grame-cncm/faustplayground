@@ -24,6 +24,7 @@
     errorCreateModuleRecall: string;
     errorConnectionRecall: string;
     errorLocalStorage: string;
+    errorConnectionCloud: string;
 
   //SaveView messages
     saveDownload: string;

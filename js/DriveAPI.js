@@ -37,6 +37,10 @@ var DriveAPI = (function () {
             var event = new CustomEvent("authoff");
             document.dispatchEvent(event);
         }
+        if (authResult.error) {
+            var event = new CustomEvent("clouderror", { 'detail': authResult.error });
+            document.dispatchEvent(event);
+        }
     };
     /**
      * Initiate auth flow in response to user clicking authorize button.
@@ -275,6 +279,8 @@ var DriveAPI = (function () {
             if (!callback) {
                 callback = function () {
                     var event = new CustomEvent("updatecloudselect");
+                    document.dispatchEvent(event);
+                    event = new CustomEvent("successave");
                     document.dispatchEvent(event);
                 };
             }

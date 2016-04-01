@@ -16,6 +16,7 @@ class Save {
         this.saveView.buttonChangeAccount.addEventListener("click", () => { this.logOut() });
         this.saveView.buttonSaveCloud.addEventListener("click", () => { this.saveCloud() });
         this.saveView.buttonCloudSuppr.addEventListener("click", () => { this.supprCloud() });
+        document.addEventListener("successave", () => { new Message(App.messageRessource.sucessSave,"messageTransitionOutFast",2000,500) })
     }
 
     downloadApp() {

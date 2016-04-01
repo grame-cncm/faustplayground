@@ -37,6 +37,7 @@ interface IJsonSaveObject {
     inputs: IJsonInputsSave;
     outputs: IJsonOutputsSave;
     params: IJsonParamsSave;
+    acc: IJsonAccSave;
     factory: IJsonFactorySave;
 }
 class JsonSaveObject implements IJsonSaveObject {
@@ -49,6 +50,7 @@ class JsonSaveObject implements IJsonSaveObject {
     inputs: IJsonInputsSave;
     outputs: IJsonOutputsSave;
     params: IJsonParamsSave
+    acc: IJsonAccSave;
     factory: IJsonFactorySave;
 
 }
@@ -73,14 +75,26 @@ interface IJsonParamsSave {
 class JsonParamsSave implements IJsonParamsSave{
     sliders: IJsonSliderSave[]
 }
+interface IJsonAccSave {
+    axis: string;
+    curve: string;
+}
+
+class JsonAccSave implements IJsonAccSave {
+    axis: string;
+    curve: string;
+
+}
 
 interface IJsonSliderSave {
     path: string;
     value: string;
+
 }
 class JsonSliderSave implements IJsonSliderSave {
     path: string;
     value: string;
+
 }
 
 interface IJsonFactorySave {
@@ -321,6 +335,14 @@ class Scene {
                         jsonParams.sliders.push(jsonSlider);
                     }
 
+                }
+                var acc = this.fModuleList[i].moduleControles;
+                for (var j = 0; j < acc.length; j++) {
+                    var jsonAcc: JsonAccSave = new JsonAccSave();
+
+                    //jsonAcc.axis = acc[j].accelerometerSlider.axis.toString();
+                    //jsonAcc.curve = acc[j].accelerometerSlider.curve.toString();
+                    //jsonParams.sliders.push(jsonSlider);
                 }
                 jsonObject.inputs = jsonInputs;
                 jsonObject.outputs = jsonOutputs;

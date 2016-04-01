@@ -38,6 +38,11 @@ var JsonParamsSave = (function () {
     }
     return JsonParamsSave;
 })();
+var JsonAccSave = (function () {
+    function JsonAccSave() {
+    }
+    return JsonAccSave;
+})();
 var JsonSliderSave = (function () {
     function JsonSliderSave() {
     }
@@ -236,6 +241,10 @@ var Scene = (function () {
                         jsonSlider.value = this.fModuleList[i].moduleFaust.getDSP().getValue(params[j]);
                         jsonParams.sliders.push(jsonSlider);
                     }
+                }
+                var acc = this.fModuleList[i].moduleControles;
+                for (var j = 0; j < acc.length; j++) {
+                    var jsonAcc = new JsonAccSave();
                 }
                 jsonObject.inputs = jsonInputs;
                 jsonObject.outputs = jsonOutputs;

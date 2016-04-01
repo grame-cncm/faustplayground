@@ -13,6 +13,7 @@ var Save = (function () {
         this.saveView.buttonChangeAccount.addEventListener("click", function () { _this.logOut(); });
         this.saveView.buttonSaveCloud.addEventListener("click", function () { _this.saveCloud(); });
         this.saveView.buttonCloudSuppr.addEventListener("click", function () { _this.supprCloud(); });
+        document.addEventListener("successave", function () { new Message(App.messageRessource.sucessSave, "messageTransitionOutFast", 2000, 500); });
     };
     Save.prototype.downloadApp = function () {
         if (this.saveView.inputDownload.value != App.scene.sceneName && !Scene.rename(this.saveView.inputDownload, this.saveView.rulesName, this.saveView.dynamicName)) {

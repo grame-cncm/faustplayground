@@ -163,12 +163,14 @@
         inputCloudStorage.id = "inputNameApp";
         inputCloudStorage.className = "inputExport";
         inputCloudStorage.value = App.scene.sceneName;
+        inputCloudStorage.style.display = "none";
         this.inputCloudStorage = inputCloudStorage;
 
         var cloudButtonSuppr: HTMLButtonElement = document.createElement("button");
         cloudButtonSuppr.type = "button";
         cloudButtonSuppr.id = "cloudButtonSuppr";
         cloudButtonSuppr.className = "button"
+        cloudButtonSuppr.style.display = "none";
         cloudButtonSuppr.textContent = App.messageRessource.buttonSuppress;
         this.buttonCloudSuppr = cloudButtonSuppr;
 
