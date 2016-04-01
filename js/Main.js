@@ -16,11 +16,12 @@ function init() {
     app.getRessources();
 }
 function resumeInit(app) {
+    app.createDialogue();
     try {
         App.audioContext = new AudioContext();
     }
     catch (e) {
-        alert(App.messageRessource.errorNoWebAudioAPI);
+        new Message(App.messageRessource.errorNoWebAudioAPI);
     }
     App.addFullPageLoading();
     app.createAllScenes();
@@ -34,7 +35,7 @@ function resumeInit(app) {
     App.driveApi.checkAuth();
     window.addEventListener("error", function (e) {
         if (e.message == "Uncaught Error: workerError" || e.message == "Error: workerError") {
-            alert(App.messageRessource.errorOccuredMessage + e.message);
+            new Message(App.messageRessource.errorOccuredMessage + e.message);
             App.hideFullPageLoading();
         }
         if (e.message == "Uncaught Error: Upload2Error") {

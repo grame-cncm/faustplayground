@@ -14,8 +14,8 @@ var CodeFaustParser = (function () {
                 return this.continueReplaceAccValue();
             }
             else {
-                alert(this.sliderName + App.messageRessource.errorAccSliderNotFound);
-                throw new Error("Slider non trouvé");
+                new Message(this.sliderName + App.messageRessource.errorAccSliderNotFound);
+                //throw new Error("Slider non trouvé");
                 return this.originalCodeFaust;
             }
         }
@@ -31,8 +31,8 @@ var CodeFaustParser = (function () {
             return this.recomposeCodeFaust();
         }
         else {
-            alert(App.messageRessource.errorAccelerometerNotFound);
-            throw new Error("Accelerometer non trouvé");
+            new Message(App.messageRessource.errorAccelerometerNotFound);
+            //throw new Error("Accelerometer non trouvé");
             return this.originalCodeFaust;
         }
     };

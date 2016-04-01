@@ -215,14 +215,19 @@ div#loadingTextBig {
     text-align:center;
 }
 /*messages style*/
-.messageContainer {
+
+div#dialogue {
+    z-index: 10;
     position: absolute;
-    top: 0;
+    width: 100%;
+}
+.messageContainer {
+    padding: 1em 0;
+    position: relative;
     width: 100%;
     color: white;
     background: rgba(0, 0, 255, 0.61);
     text-align: center;
-
 }
 
 .messageShow {

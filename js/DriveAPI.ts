@@ -212,7 +212,7 @@ class DriveAPI{
                 callback(resp)
             })
         } catch (e) {
-            alert("erreur")
+            new Message("erreur")
         }
     }
 

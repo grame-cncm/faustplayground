@@ -3,7 +3,7 @@
 class ErrorFaust {
 
     static errorCallBack(errorMessage: string) {
-        alert(errorMessage);
+        new Message(errorMessage);
 
     }
 }

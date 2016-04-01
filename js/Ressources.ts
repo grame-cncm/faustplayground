@@ -18,6 +18,11 @@
     errorAccelerometerNotFound: string;
     errorNoWebAudioAPI: string;
     errorOccuredMessage: string;
+    errorFactory: string;
+    errorJsonCorrupted: string;
+    errorCreateDSP: string;
+    errorCreateModuleRecall: string;
+    errorConnectionRecall: string;
 
   //SaveView messages
     saveDownload: string;

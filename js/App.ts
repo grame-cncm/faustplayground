@@ -125,6 +125,12 @@ class App {
         }, true);
     }
 
+    createDialogue() {
+        var dialogue = document.createElement("div");
+        dialogue.id = "dialogue";
+        document.getElementsByTagName("body")[0].appendChild(dialogue)
+    }
+
     /********************************************************************
     **********************  ACTIVATE PHYSICAL IN/OUTPUT *****************
     ********************************************************************/
@@ -141,10 +147,11 @@ class App {
             navigatorLoc.getUserMedia({ audio: true },  (mediaStream)=> { this.getDevice(mediaStream, this) }, function (e) {
                 scene.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)"
                 scene.fAudioInput.moduleView.fInterfaceContainer.title = App.messageRessource.errorGettingAudioInput;
-                var message = new Message(App.messageRessource.errorGettingAudioInput);
+                new Message(App.messageRessource.errorGettingAudioInput);
             });
         } else {
             scene.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)"
+            new Message(App.messageRessource.errorInputAPINotAvailable);
             scene.fAudioInput.moduleView.fInterfaceContainer.title = App.messageRessource.errorInputAPINotAvailable;
         }
     }
@@ -198,7 +205,7 @@ class App {
         try {
             this.factory = faust.createDSPFactory(sourcecode, args, (factory) => { callback(factory) });
         } catch (error) {
-            alert(error)
+            new Message(error)
         }
         
         //callback(this.factory)
@@ -209,7 +216,7 @@ class App {
     private createModule(factory: Factory): void {
 
         if (!factory) {
-            alert(faust.getErrorMessage());
+            new Message(App.messageRessource.errorFactory+faust.getErrorMessage());
             this.terminateUpload();
             return null;
         }
@@ -339,12 +346,13 @@ class App {
                 try {
                     this.uploadFile2(app, module, x, y, e, dsp_code)
                 } catch (error) {
-                    throw new Error("Upload2Error");
+                    new Message(error);
+                    App.hideFullPageLoading();
                 }
             }
         } else { // CASE 4 : ANY OTHER STRANGE THING
             app.terminateUpload();
-            window.alert(App.messageRessource.errorObjectNotFaustCompatible);
+            new Message(App.messageRessource.errorObjectNotFaustCompatible);
         }
     }
     //Upload Url
@@ -388,7 +396,7 @@ class App {
     }
 
     uploadFile2(app: App, module: ModuleClass, x: number, y: number, e: DragEvent, dsp_code: string) {
-        var files: FileList = e.dataTransfer.files;//e.target.files ||
+        var files: FileList = e.dataTransfer.files;
 
         var file: File = files[0];
 
@@ -397,37 +405,6 @@ class App {
         var request: XMLHttpRequest = new XMLHttpRequest();
         if (request.upload) {
             this.loadFile(file, module, x, y, app); 
-            //var reader: FileReader = new FileReader();
-
-            //var ext: string = file.name.toString().split('.').pop();
-
-            //var filename: string = file.name.toString().split('.').shift();
-
-            //var type: string;
-
-            //if (ext == "dsp") {
-            //    type = "dsp";
-            //    reader.readAsText(file);
-            //}
-            //else if (ext == "json") {
-            //    type = "json";
-            //    reader.readAsText(file);
-            //} else {
-            //    this.terminateUpload();
-            //}
-
-            //reader.onloadend = function (e) {
-            //    dsp_code = "process = vgroup(\"" + filename + "\",environment{" + reader.result + "}.process);";
-
-            //    if (!module && type == "dsp") {
-            //        app.compileFaust(filename, dsp_code, x, y, (factory) => { app.createModule(factory) });
-            //    } else if (type == "dsp") {
-            //        module.update(filename, dsp_code);
-            //    } else if (type == "json") {
-            //        App.scene.recallScene(reader.result);
-            //    }
-                //app.terminateUpload();
-            //};
         }
     }
 
@@ -449,6 +426,8 @@ class App {
             type = "json";
             reader.readAsText(file);
         } else {
+            throw new Error(App.messageRessource.errorObjectNotFaustCompatible);
+
             this.terminateUpload();
         }
 

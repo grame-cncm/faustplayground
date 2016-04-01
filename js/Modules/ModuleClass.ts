@@ -174,7 +174,12 @@ class ModuleClass implements IModule {
     //--- Create and Update are called once a source code is compiled and the factory exists
     createDSP(factory: Factory): void {
         this.moduleFaust.factory = factory;
-        this.moduleFaust.fDSP = faust.createDSPInstance(factory, App.audioContext, 1024);
+        try {
+            this.moduleFaust.fDSP = faust.createDSPInstance(factory, App.audioContext, 1024);
+        } catch (e) {
+            new Message(App.messageRessource.errorCreateDSP + " : " + e)
+            App.hideFullPageLoading();
+        }
     }
 
     //--- Update DSP in module 

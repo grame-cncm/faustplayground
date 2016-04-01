@@ -190,7 +190,7 @@ var DriveAPI = (function () {
             });
         }
         catch (e) {
-            alert("erreur");
+            new Message("erreur");
         }
     };
     DriveAPI.prototype.createFile = function (fileName, callback) {

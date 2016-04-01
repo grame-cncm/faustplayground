@@ -60,25 +60,33 @@ var Export = (function () {
             // 	Delete existing content if existing
         };
         this.setDownloadOptions = function (serverUrl, shaKey, plateforme, architecture, appType) {
-            var disposableExportDiv = document.createElement("div");
-            disposableExportDiv.id = "disposableExportDiv";
-            var qrDiv = document.createElement('div');
-            qrDiv.id = "qrcodeDiv";
-            var myWhiteDiv = ExportLib.getQrCode(serverUrl, shaKey, plateforme, architecture, appType, 120);
-            qrDiv.appendChild(myWhiteDiv);
-            var downloadBottomButtonContainer = document.createElement("div");
-            downloadBottomButtonContainer.className = "bottomButtonContainer";
-            var linkDownload = document.createElement('button');
-            linkDownload.value = serverUrl + "/" + shaKey + "/" + plateforme + "/" + architecture + "/" + appType;
-            linkDownload.id = "linkDownload";
-            linkDownload.className = "button";
-            linkDownload.textContent = App.messageRessource.buttonDownloadApp;
-            downloadBottomButtonContainer.appendChild(linkDownload);
-            _this.exportView.downloadButton = linkDownload;
-            _this.exportView.downloadButton.onclick = function () { window.location.href = _this.exportView.downloadButton.value; };
-            document.getElementById("exportResultContainer").appendChild(disposableExportDiv);
-            disposableExportDiv.appendChild(qrDiv);
-            disposableExportDiv.appendChild(downloadBottomButtonContainer);
+            if (shaKey.indexOf("ERROR") == -1) {
+                var disposableExportDiv = document.createElement("div");
+                disposableExportDiv.id = "disposableExportDiv";
+                var qrDiv = document.createElement('div');
+                qrDiv.id = "qrcodeDiv";
+                var myWhiteDiv = ExportLib.getQrCode(serverUrl, shaKey, plateforme, architecture, appType, 120);
+                qrDiv.appendChild(myWhiteDiv);
+                var downloadBottomButtonContainer = document.createElement("div");
+                downloadBottomButtonContainer.className = "bottomButtonContainer";
+                var linkDownload = document.createElement('button');
+                linkDownload.value = serverUrl + "/" + shaKey + "/" + plateforme + "/" + architecture + "/" + appType;
+                linkDownload.id = "linkDownload";
+                linkDownload.className = "button";
+                linkDownload.textContent = App.messageRessource.buttonDownloadApp;
+                downloadBottomButtonContainer.appendChild(linkDownload);
+                _this.exportView.downloadButton = linkDownload;
+                _this.exportView.downloadButton.onclick = function () { window.location.href = _this.exportView.downloadButton.value; };
+                document.getElementById("exportResultContainer").appendChild(disposableExportDiv);
+                disposableExportDiv.appendChild(qrDiv);
+                disposableExportDiv.appendChild(downloadBottomButtonContainer);
+                _this.exportView.exportButton.addEventListener("click", _this.eventExport);
+                _this.exportView.exportButton.style.opacity = "1";
+                App.removeLoadingLogo("exportResultContainer");
+            }
+            else {
+                new Message(shaKey);
+            }
             _this.exportView.exportButton.addEventListener("click", _this.eventExport);
             _this.exportView.exportButton.style.opacity = "1";
             App.removeLoadingLogo("exportResultContainer");

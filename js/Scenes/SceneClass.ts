@@ -337,17 +337,18 @@ class Scene {
         }
 
         json = JSON.stringify(jsonObjectCollection)
-        console.log(jsonObjectCollection)
-        // 	console.log(json);
         return json;
     }
 
     recallScene(json: string):void {
         if (json != null) {
-            var jsonObjectCollection: JsonSaveCollection = JSON.parse(json);
+            try {
+                var jsonObjectCollection: JsonSaveCollection = JSON.parse(json);
+            } catch (e) {
+                new Message(App.messageRessource.errorJsonCorrupted)
+                App.hideFullPageLoading();
+            }
             this.parent.currentNumberDSP = this.fModuleList.length;
-            var data: JSON = JSON.parse(json);
-            console.log(jsonObjectCollection)
             for (var index in jsonObjectCollection) {
                 var jsonObject = jsonObjectCollection[index];
                 this.arrayRecalScene.push(jsonObject);
@@ -355,7 +356,7 @@ class Scene {
             this.lunchModuleCreation();
         } else {
             App.hideFullPageLoading();
-            alert(App.messageRessource.errorLoading)
+            new Message(App.messageRessource.errorLoading)
         }
     }
 
@@ -400,54 +401,64 @@ class Scene {
         this.parent.tempParams = jsonSaveObject.params;
     }
     private createModule(factory:Factory):void {
-
-        //---- This is very similar to "createFaustModule" from App.js
-        //---- But as we need to set Params before calling "createFaustInterface", it is copied
-        //---- There probably is a better way to do this !!
-        if (!factory) {
-            alert(faust.getErrorMessage());
-            return;
-        }
-
-        var module: ModuleClass = new ModuleClass(App.idX++, this.parent.tempModuleX, this.parent.tempModuleY, this.parent.tempModuleName, this, document.getElementById("modules"), this.removeModule);
-        module.moduleFaust.setSource(this.parent.tempModuleSourceCode);
-        module.createDSP(factory);
-        module.patchID = this.parent.tempPatchId;
-        if (this.parent.tempParams) {
-            for (var i = 0; i < this.parent.tempParams.sliders.length; i++) {
-                //console.log("WINDOW.PARAMS");
-                //console.log(this.parent.params.length);
-                var slider = this.parent.tempParams.sliders[i];
-                module.addInterfaceParam(slider.path, parseFloat(slider.value));
-                
+        try {
+            //---- This is very similar to "createFaustModule" from App.js
+            //---- But as we need to set Params before calling "createFaustInterface", it is copied
+            //---- There probably is a better way to do this !!
+            if (!factory) {
+                new Message(faust.getErrorMessage());
+                App.hideFullPageLoading();
+                return;
             }
+
+            var module: ModuleClass = new ModuleClass(App.idX++, this.parent.tempModuleX, this.parent.tempModuleY, this.parent.tempModuleName, this, document.getElementById("modules"), this.removeModule);
+            module.moduleFaust.setSource(this.parent.tempModuleSourceCode);
+            module.createDSP(factory);
+            module.patchID = this.parent.tempPatchId;
+            if (this.parent.tempParams) {
+                for (var i = 0; i < this.parent.tempParams.sliders.length; i++) {
+                    //console.log("WINDOW.PARAMS");
+                    //console.log(this.parent.params.length);
+                    var slider = this.parent.tempParams.sliders[i];
+                    module.addInterfaceParam(slider.path, parseFloat(slider.value));
+
+                }
+            }
+            module.moduleFaust.recallInputsSource = this.arrayRecalScene[0].inputs.source;
+            module.moduleFaust.recallOutputsDestination = this.arrayRecalScene[0].outputs.destination;
+            this.arrayRecalledModule.push(module);
+            module.recallInterfaceParams();
+            module.createFaustInterface();
+            module.addInputOutputNodes();
+            this.addModule(module);
+            this.arrayRecalScene.shift();
+            this.lunchModuleCreation()
+        } catch (e) {
+            new Message(App.messageRessource.errorCreateModuleRecall);
+            this.arrayRecalScene.shift();
+            this.lunchModuleCreation()
         }
-        module.moduleFaust.recallInputsSource = this.arrayRecalScene[0].inputs.source;
-        module.moduleFaust.recallOutputsDestination = this.arrayRecalScene[0].outputs.destination;
-        this.arrayRecalledModule.push(module);
-        module.recallInterfaceParams();
-        module.createFaustInterface();
-        module.addInputOutputNodes();
-        this.addModule(module);
-        this.arrayRecalScene.shift();
-        this.lunchModuleCreation()
     }
 
     connectModule(module: ModuleClass) {
-        for (var i = 0; i < module.moduleFaust.recallInputsSource.length; i++) {
-            var moduleSource = this.getModuleByPatchId(module.moduleFaust.recallInputsSource[i]);
-            if (moduleSource != null) {
-                var connector: Connector = new Connector();
-                connector.createConnection(moduleSource, moduleSource.moduleView.getOutputNode(), module, module.moduleView.getInputNode());
+        try {
+            for (var i = 0; i < module.moduleFaust.recallInputsSource.length; i++) {
+                var moduleSource = this.getModuleByPatchId(module.moduleFaust.recallInputsSource[i]);
+                if (moduleSource != null) {
+                    var connector: Connector = new Connector();
+                    connector.createConnection(moduleSource, moduleSource.moduleView.getOutputNode(), module, module.moduleView.getInputNode());
+                }
             }
-        }
-        
-        for (var i = 0; i < module.moduleFaust.recallOutputsDestination.length; i++) {
-            var moduleDestination = this.getModuleByPatchId(module.moduleFaust.recallOutputsDestination[i]);
-            if (moduleDestination != null) {
-                var connector: Connector = new Connector();
-                connector.createConnection(module, module.moduleView.getOutputNode(), moduleDestination, moduleDestination.moduleView.getInputNode());
+
+            for (var i = 0; i < module.moduleFaust.recallOutputsDestination.length; i++) {
+                var moduleDestination = this.getModuleByPatchId(module.moduleFaust.recallOutputsDestination[i]);
+                if (moduleDestination != null) {
+                    var connector: Connector = new Connector();
+                    connector.createConnection(module, module.moduleView.getOutputNode(), moduleDestination, moduleDestination.moduleView.getInputNode());
+                }
             }
+        } catch (e) {
+            new Message(App.messageRessource.errorConnectionRecall)
         }
     }
 

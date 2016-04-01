@@ -76,6 +76,11 @@ var App = (function () {
             }
         }, true);
     };
+    App.prototype.createDialogue = function () {
+        var dialogue = document.createElement("div");
+        dialogue.id = "dialogue";
+        document.getElementsByTagName("body")[0].appendChild(dialogue);
+    };
     /********************************************************************
     **********************  ACTIVATE PHYSICAL IN/OUTPUT *****************
     ********************************************************************/
@@ -89,11 +94,12 @@ var App = (function () {
             navigatorLoc.getUserMedia({ audio: true }, function (mediaStream) { _this.getDevice(mediaStream, _this); }, function (e) {
                 scene.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)";
                 scene.fAudioInput.moduleView.fInterfaceContainer.title = App.messageRessource.errorGettingAudioInput;
-                var message = new Message(App.messageRessource.errorGettingAudioInput);
+                new Message(App.messageRessource.errorGettingAudioInput);
             });
         }
         else {
             scene.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)";
+            new Message(App.messageRessource.errorInputAPINotAvailable);
             scene.fAudioInput.moduleView.fInterfaceContainer.title = App.messageRessource.errorInputAPINotAvailable;
         }
     };
@@ -140,7 +146,7 @@ var App = (function () {
             this.factory = faust.createDSPFactory(sourcecode, args, function (factory) { callback(factory); });
         }
         catch (error) {
-            alert(error);
+            new Message(error);
         }
         //callback(this.factory)
         if (currentScene) {
@@ -151,7 +157,7 @@ var App = (function () {
     App.prototype.createModule = function (factory) {
         var _this = this;
         if (!factory) {
-            alert(faust.getErrorMessage());
+            new Message(App.messageRessource.errorFactory + faust.getErrorMessage());
             this.terminateUpload();
             return null;
         }
@@ -261,13 +267,14 @@ var App = (function () {
                     this.uploadFile2(app, module, x, y, e, dsp_code);
                 }
                 catch (error) {
-                    throw new Error("Upload2Error");
+                    new Message(error);
+                    App.hideFullPageLoading();
                 }
             }
         }
         else {
             app.terminateUpload();
-            window.alert(App.messageRessource.errorObjectNotFaustCompatible);
+            new Message(App.messageRessource.errorObjectNotFaustCompatible);
         }
     };
     //Upload Url
@@ -304,7 +311,7 @@ var App = (function () {
         //app.terminateUpload();
     };
     App.prototype.uploadFile2 = function (app, module, x, y, e, dsp_code) {
-        var files = e.dataTransfer.files; //e.target.files ||
+        var files = e.dataTransfer.files;
         var file = files[0];
         if (location.host.indexOf("sitepointstatic") >= 0) {
             return;
@@ -329,6 +336,7 @@ var App = (function () {
             reader.readAsText(file);
         }
         else {
+            throw new Error(App.messageRessource.errorObjectNotFaustCompatible);
             this.terminateUpload();
         }
         reader.onloadend = function (e) {

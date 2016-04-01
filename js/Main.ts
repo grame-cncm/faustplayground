@@ -27,15 +27,18 @@ function init(): void {
     var app: App = new App();
     app.getRessources();
 }
-function resumeInit(app:App){
+function resumeInit(app: App) {
+    app.createDialogue();
+
     try {
         App.audioContext = new AudioContext();
     } catch (e) {
-        alert(App.messageRessource.errorNoWebAudioAPI);
+        new Message(App.messageRessource.errorNoWebAudioAPI);
     }
     App.addFullPageLoading();
     app.createAllScenes();
     app.createMenu();
+    
     app.showFirstScene();
     var accHandler: AccelerometerHandler = new AccelerometerHandler();
     App.accHandler = accHandler;
@@ -45,7 +48,7 @@ function resumeInit(app:App){
     App.driveApi.checkAuth();
     window.addEventListener("error", (e: ErrorEvent) => {
         if (e.message == "Uncaught Error: workerError" || e.message == "Error: workerError") {
-            alert(App.messageRessource.errorOccuredMessage + e.message)
+            new Message(App.messageRessource.errorOccuredMessage + e.message)
             App.hideFullPageLoading();
         }
         if (e.message == "Uncaught Error: Upload2Error") {

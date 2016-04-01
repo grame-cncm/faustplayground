@@ -54,7 +54,7 @@ class Save {
                 document.dispatchEvent(event);
 
             } else {
-                alert("sessionStorage n'est pas supporté");
+                new Message("sessionStorage n'est pas supporté");
             }
         }
     }
