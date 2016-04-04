@@ -281,7 +281,6 @@ faust.createDSPFactoryAux = function (code, argv, max_polyphony, callback) {
 
     worker.addEventListener("message", function (event) {
         //alert(event.data);
-        console.log(event.data)
         if (event.data.factory_code != undefined) {
             var factory_code = event.data.factory_code;
             var factory = null;
@@ -331,7 +330,6 @@ faust.readDSPFactoryFromMachine = function (machine, max_polyphony)
 
 faust.readDSPFactoryFromMachineAux = function (factory_name, factory_code, sha_key, max_polyphony) {
     
-    console.log(factory_code);
 
     // 'libfaustworker.js' asm.js backend generates the ASM module + UI method, then we compile the code
     eval(factory_code);
@@ -428,269 +426,257 @@ faust.deletePolyDSPFactory = function (factory) { faust.factory_table[factory.sh
 
 // 'mono' DSP
 faust.createDSPInstance = function (factory, context, buffer_size) {
-
-    var dsp_num = factory.allocInstance();
-    console.log(factory.instances);
-    if (dsp_num === -1) {
-        console.log("Maximum of DSP instances reached!");
-        return null;
-    }
-    
-    var handler = null;
-    var ins, outs;
-    var numIn, numOut;
-    
-    var scriptProcessor; 
-    
-    var dspInChannnels = [];
-    var dspOutChannnels = [];
-
-    // bargraph
-    var ouputs_timer = 5;
-    var ouputs_items = [];
-     
-    // input items
-    var inputs_items = [];
-    
-    // Start of HEAP index
-    var audio_heap_ptr = factory.dsp_memory_size * dsp_num;
-     
-    // Setup pointers offset
-    var audio_heap_ptr_inputs = audio_heap_ptr; 
-    var audio_heap_ptr_outputs = audio_heap_ptr_inputs + (factory.getNumInputs() * faust.ptr_size);
-     
-    // Setup buffer offset
-    var audio_heap_inputs = audio_heap_ptr_outputs + (factory.getNumOutputs() * faust.ptr_size);
-    var audio_heap_outputs = audio_heap_inputs + (factory.getNumInputs() * buffer_size * faust.sample_size);
-     
-    // Setup DSP offset
-    var dsp_start = audio_heap_outputs + (factory.getNumOutputs() * buffer_size * faust.sample_size);
-     
-    // Start of DSP memory
-    var dsp = dsp_start;
-    
-    // Allocate table for 'setValue'
-    var value_table = [];
-    
-    function update_outputs () 
-    {
-        if (ouputs_items.length > 0 && handler && ouputs_timer-- === 0) {
-            ouputs_timer = 5;
-            for (var i = 0; i < ouputs_items.length; i++) {
-                handler(ouputs_items[i], factory.getValue(dsp, factory.pathTable[ouputs_items[i]]));
-            }
-        }
-    }
- 
-    function compute (e) 
-    {
-        var i, j;
-         
-        // Read inputs
-        for (i = 0; i < numIn; i++) {
-            var input = e.inputBuffer.getChannelData(i);
-            var dspInput = dspInChannnels[i];
-            for (j = 0; j < input.length; j++) {
-                dspInput[j] = input[j];
-            }
-        }
-        
-        // Update control state
-        for (i = 0; i < inputs_items.length; i++) {
-            var path = inputs_items[i];
-            var values = value_table[path];
-            factory.setValue(dsp, factory.pathTable[path], values[0]);
-            values[0] = values[1];
+    if (factory != null) {
+        var dsp_num = factory.allocInstance();
+        console.log(factory.instances);
+        if (dsp_num === -1) {
+            console.log("Maximum of DSP instances reached!");
+            return null;
         }
 
-        // Compute
-        factory.compute(dsp, buffer_size, ins, outs);
-       
-        // Update bargraph
-        update_outputs();
+        var handler = null;
+        var ins, outs;
+        var numIn, numOut;
 
-        // Write outputs
-        for (i = 0; i < numOut; i++) {
-            var output = e.outputBuffer.getChannelData(i);
-            var dspOutput = dspOutChannnels[i];
-            for (j = 0; j < output.length; j++) {
-                output[j] = dspOutput[j];
-            }
-        }
-    }
-     
-    // JSON parsing
-    function parse_ui (ui) 
-    {
-        for (var i = 0; i < ui.length; i++) {
-            parse_group(ui[i]);
-        }
-    }
-    
-    function parse_group (group) 
-    {
-        if (group.items) {
-            parse_items(group.items);
-        }
-    }
-    
-    function parse_items (items) 
-    {
-        for (var i = 0; i < items.length; i++) {
-            parse_item(items[i]);
-        }
-    }
-    
-    function parse_item (item) 
-    {
-        if (item.type === "vgroup" || item.type === "hgroup" || item.type === "tgroup") {
-            parse_items(item.items);
-        } else if (item.type === "hbargraph" || item.type === "vbargraph") {
-            // Keep bargraph adresses
-            ouputs_items.push(item.address);
-        } else if (item.type === "vslider" || item.type === "hslider" || item.type === "button" || item.type === "checkbox" || item.type === "nentry") {
-            // Keep inputs adresses
-            inputs_items.push(item.address);
-        }
-    }
-      
-    function init ()
-    {
-        // Setup web audio context
-        var i;
-         
-        // Get input / output counts
-        numIn = factory.getNumInputs(dsp);
-        numOut = factory.getNumOutputs(dsp);
-               
-        // Setup web audio context
-        console.log("buffer_size %d", buffer_size);
-        scriptProcessor = context.createScriptProcessor(buffer_size, numIn, numOut);
-        scriptProcessor.onaudioprocess = compute;
-        
-        if (numIn > 0) {
-            ins = audio_heap_ptr_inputs; 
-            for (i = 0; i < numIn; i++) { 
-                factory.HEAP32[(ins >> 2) + i] = audio_heap_inputs + ((buffer_size * faust.sample_size) * i);
-            }
-     
-            var dspInChans = factory.HEAP32.subarray(ins >> 2, (ins + numIn * faust.ptr_size) >> 2);
-            for (i = 0; i < numIn; i++) {
-                dspInChannnels[i] = factory.HEAPF32.subarray(dspInChans[i] >> 2, (dspInChans[i] + buffer_size * faust.sample_size) >> 2);
-            }
-        }
-        
-        if (numOut > 0) {
-            outs = audio_heap_ptr_outputs; 
-            for (i = 0; i < numOut; i++) { 
-                factory.HEAP32[(outs >> 2) + i] = audio_heap_outputs + ((buffer_size * faust.sample_size) * i);
-            }
-          
-            var dspOutChans = factory.HEAP32.subarray(outs >> 2, (outs + numOut * faust.ptr_size) >> 2);
-            for (i = 0; i < numOut; i++) {
-                dspOutChannnels[i] = factory.HEAPF32.subarray(dspOutChans[i] >> 2, (dspOutChans[i] + buffer_size * faust.sample_size) >> 2);
-            }
-        }
-                                   
+        var scriptProcessor;
+
+        var dspInChannnels = [];
+        var dspOutChannnels = [];
+
         // bargraph
-        parse_ui(JSON.parse(factory.getJSON()).ui);
+        var ouputs_timer = 5;
+        var ouputs_items = [];
 
-        // Init DSP
-        factory.init(dsp, context.sampleRate);
-        
-         // Init 'value' table
-        for (var i = 0; i < inputs_items.length; i++) {
-            var path = inputs_items[i];
-            var values = new Float32Array(2);
-            values[0] = values[1] = factory.getValue(dsp, factory.pathTable[path]);
-            value_table[path] = values;
+        // input items
+        var inputs_items = [];
+
+        // Start of HEAP index
+        var audio_heap_ptr = factory.dsp_memory_size * dsp_num;
+
+        // Setup pointers offset
+        var audio_heap_ptr_inputs = audio_heap_ptr;
+        var audio_heap_ptr_outputs = audio_heap_ptr_inputs + (factory.getNumInputs() * faust.ptr_size);
+
+        // Setup buffer offset
+        var audio_heap_inputs = audio_heap_ptr_outputs + (factory.getNumOutputs() * faust.ptr_size);
+        var audio_heap_outputs = audio_heap_inputs + (factory.getNumInputs() * buffer_size * faust.sample_size);
+
+        // Setup DSP offset
+        var dsp_start = audio_heap_outputs + (factory.getNumOutputs() * buffer_size * faust.sample_size);
+
+        // Start of DSP memory
+        var dsp = dsp_start;
+
+        // Allocate table for 'setValue'
+        var value_table = [];
+
+        function update_outputs() {
+            if (ouputs_items.length > 0 && handler && ouputs_timer-- === 0) {
+                ouputs_timer = 5;
+                for (var i = 0; i < ouputs_items.length; i++) {
+                    handler(ouputs_items[i], factory.getValue(dsp, factory.pathTable[ouputs_items[i]]));
+                }
+            }
         }
-    }
-   
-    init();
-    
-    // External API
-    return {
-    
-        getNumInputs : function () 
-        {
-            return factory.getNumInputs(dsp);
-        },
-        
-        getNumOutputs : function () 
-        {
-            return factory.getNumOutputs(dsp);
-        },
-        
-        // Connect/disconnect to another node
-        connect : function (node) 
-        {
-            if (node.getProcessor !== undefined) {
-                scriptProcessor.connect(node.getProcessor());
-            } else {
-                scriptProcessor.connect(node);
-            }
-        },
 
-        disconnect : function (node) 
-        {
-            if (node.getProcessor !== undefined) {
-                scriptProcessor.disconnect(node.getProcessor());
-            } else {
-                scriptProcessor.disconnect(node);
-            }
-        },
+        function compute(e) {
+            var i, j;
 
-        setHandler : function (hd)
-        {
-            handler = hd;
-        },
-        
-        start : function () 
-        {
-            scriptProcessor.connect(context.destination);
-        },
-
-        stop : function () 
-        {
-            scriptProcessor.disconnect(context.destination);
-        },
-        
-        setValue : function (path, val) 
-        {
-            var values = value_table[path];
-            if (values) {
-                if (factory.getValue(dsp, factory.pathTable[path]) == values[0]) {
-                    values[0] = val;
-                } 
-                values[1] = val;
+            // Read inputs
+            for (i = 0; i < numIn; i++) {
+                var input = e.inputBuffer.getChannelData(i);
+                var dspInput = dspInChannnels[i];
+                for (j = 0; j < input.length; j++) {
+                    dspInput[j] = input[j];
+                }
             }
-        },
-        
-        getValue : function (path) 
-        {
-            return factory.getValue(dsp, factory.pathTable[path]);
-        },
-        
-        controls : function ()
-        {
-            return inputs_items;
-        },
-        
-        json : function ()
-        {
-            return factory.getJSON();
-        },
-        
-        getProcessor : function ()
-        {
-            return scriptProcessor;
-        },
-        
-        destroy : function ()
-        {
-            factory.destroyInstance(dsp_num);
+
+            // Update control state
+            for (i = 0; i < inputs_items.length; i++) {
+                var path = inputs_items[i];
+                var values = value_table[path];
+                factory.setValue(dsp, factory.pathTable[path], values[0]);
+                values[0] = values[1];
+            }
+
+            // Compute
+            try {
+                factory.compute(dsp, buffer_size, ins, outs);
+            } catch (e) {
+                console.log(e);
+                return;
+            }
+
+            // Update bargraph
+            update_outputs();
+
+            // Write outputs
+            for (i = 0; i < numOut; i++) {
+                var output = e.outputBuffer.getChannelData(i);
+                var dspOutput = dspOutChannnels[i];
+                for (j = 0; j < output.length; j++) {
+                    output[j] = dspOutput[j];
+                }
+            }
         }
+
+        // JSON parsing
+        function parse_ui(ui) {
+            for (var i = 0; i < ui.length; i++) {
+                parse_group(ui[i]);
+            }
+        }
+
+        function parse_group(group) {
+            if (group.items) {
+                parse_items(group.items);
+            }
+        }
+
+        function parse_items(items) {
+            for (var i = 0; i < items.length; i++) {
+                parse_item(items[i]);
+            }
+        }
+
+        function parse_item(item) {
+            if (item.type === "vgroup" || item.type === "hgroup" || item.type === "tgroup") {
+                parse_items(item.items);
+            } else if (item.type === "hbargraph" || item.type === "vbargraph") {
+                // Keep bargraph adresses
+                ouputs_items.push(item.address);
+            } else if (item.type === "vslider" || item.type === "hslider" || item.type === "button" || item.type === "checkbox" || item.type === "nentry") {
+                // Keep inputs adresses
+                inputs_items.push(item.address);
+            }
+        }
+
+        function init() {
+            // Setup web audio context
+            var i;
+
+            // Get input / output counts
+            numIn = factory.getNumInputs(dsp);
+            numOut = factory.getNumOutputs(dsp);
+
+            // Setup web audio context
+            console.log("buffer_size %d", buffer_size);
+            scriptProcessor = context.createScriptProcessor(buffer_size, numIn, numOut);
+            scriptProcessor.onaudioprocess = compute;
+
+            if (numIn > 0) {
+                ins = audio_heap_ptr_inputs;
+                for (i = 0; i < numIn; i++) {
+                    factory.HEAP32[(ins >> 2) + i] = audio_heap_inputs + ((buffer_size * faust.sample_size) * i);
+                }
+
+                var dspInChans = factory.HEAP32.subarray(ins >> 2, (ins + numIn * faust.ptr_size) >> 2);
+                for (i = 0; i < numIn; i++) {
+                    dspInChannnels[i] = factory.HEAPF32.subarray(dspInChans[i] >> 2, (dspInChans[i] + buffer_size * faust.sample_size) >> 2);
+                }
+            }
+
+            if (numOut > 0) {
+                outs = audio_heap_ptr_outputs;
+                for (i = 0; i < numOut; i++) {
+                    factory.HEAP32[(outs >> 2) + i] = audio_heap_outputs + ((buffer_size * faust.sample_size) * i);
+                }
+
+                var dspOutChans = factory.HEAP32.subarray(outs >> 2, (outs + numOut * faust.ptr_size) >> 2);
+                for (i = 0; i < numOut; i++) {
+                    dspOutChannnels[i] = factory.HEAPF32.subarray(dspOutChans[i] >> 2, (dspOutChans[i] + buffer_size * faust.sample_size) >> 2);
+                }
+            }
+
+            // bargraph
+            parse_ui(JSON.parse(factory.getJSON()).ui);
+
+            // Init DSP
+            factory.init(dsp, context.sampleRate);
+
+            // Init 'value' table
+            for (var i = 0; i < inputs_items.length; i++) {
+                var path = inputs_items[i];
+                var values = new Float32Array(2);
+                values[0] = values[1] = factory.getValue(dsp, factory.pathTable[path]);
+                value_table[path] = values;
+            }
+        }
+
+        init();
+
+        // External API
+        return {
+
+            getNumInputs: function () {
+                return factory.getNumInputs(dsp);
+            },
+
+            getNumOutputs: function () {
+                return factory.getNumOutputs(dsp);
+            },
+
+            // Connect/disconnect to another node
+            connect: function (node) {
+                if (node.getProcessor !== undefined) {
+                    scriptProcessor.connect(node.getProcessor());
+                } else {
+                    scriptProcessor.connect(node);
+                }
+            },
+
+            disconnect: function (node) {
+                if (node.getProcessor !== undefined) {
+                    scriptProcessor.disconnect(node.getProcessor());
+                } else {
+                    scriptProcessor.disconnect(node);
+                }
+            },
+
+            setHandler: function (hd) {
+                handler = hd;
+            },
+
+            start: function () {
+                scriptProcessor.connect(context.destination);
+            },
+
+            stop: function () {
+                scriptProcessor.disconnect(context.destination);
+            },
+
+            setValue: function (path, val) {
+                var values = value_table[path];
+                if (values) {
+                    if (factory.getValue(dsp, factory.pathTable[path]) == values[0]) {
+                        values[0] = val;
+                    }
+                    values[1] = val;
+                }
+            },
+
+            getValue: function (path) {
+                return factory.getValue(dsp, factory.pathTable[path]);
+            },
+
+            controls: function () {
+                return inputs_items;
+            },
+
+            json: function () {
+                return factory.getJSON();
+            },
+
+            getProcessor: function () {
+                return scriptProcessor;
+            },
+
+            destroy: function () {
+                factory.destroyInstance(dsp_num);
+            }
+        }
+    } else {
+        throw new Error("null Factory, can't create DSP instance")
     }
 }
 

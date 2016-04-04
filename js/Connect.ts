@@ -53,6 +53,8 @@ class Connector {
         if (sourceDSP.getProcessor && destinationDSP.getProcessor()) {
             sourceDSP.getProcessor().connect(destinationDSP.getProcessor())
         }
+        source.setDSPValue();
+        destination.setDSPValue();
     }
     disconnectOutput(destination: IHTMLDivElementOut, source: ModuleClass):void {
         destination.audioNode.context.suspend();

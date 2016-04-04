@@ -18,6 +18,7 @@ class DriveAPI{
     lastSavedFileId: string;
     lastSavedFileMetadata: string;
     tempBlob: Blob;
+    extension: string = ".json";
 
 
     /**
@@ -52,6 +53,10 @@ class DriveAPI{
             var event = new CustomEvent("authoff")
             document.dispatchEvent(event);
         }
+        if (authResult.error) {
+            var event = new CustomEvent("clouderror", { 'detail': authResult.error })
+            document.dispatchEvent(event);
+         }
     }
 
     /**
@@ -70,6 +75,8 @@ class DriveAPI{
      * Load Drive API client library.
      */
     loadDriveApi() {
+        var event = new CustomEvent("startloaddrive");
+        document.dispatchEvent(event);
         gapi.client.load('drive', 'v2', () => { this.listFolder() });
     }
 
@@ -111,7 +118,10 @@ class DriveAPI{
 
         request.execute((resp) => {
             var files = resp.items;
+            var event = new CustomEvent("finishloaddrive")
+            document.dispatchEvent(event);
             if (files && files.length > 0) {
+        
                 for (var i = 0; i < files.length; i++) {
                     var file = files[i];
                     this.getFileMetadata(file.id);
@@ -122,7 +132,7 @@ class DriveAPI{
                 }
             } else {
                 //this.appendPre('No files found.',null);
-                this.appendPre('No files found.', null);
+                this.appendPre(App.messageRessource.noFileOnCloud, null);
             }
         })
 
@@ -158,10 +168,10 @@ class DriveAPI{
      *
      * @param {string} message Text to be placed in pre element.
      */
-    appendPre(name,id) {
+    appendPre(name:string,id:string) {
         var option = document.createElement("option");
         option.value = id;
-        option.textContent = name;
+        option.textContent = name.replace(/.json$/,'');
 
         var event = new CustomEvent("fillselect", { 'detail': option })
         document.dispatchEvent(event);
@@ -200,21 +210,27 @@ class DriveAPI{
             'fileId': fileId,
 
         });
-        request.execute((resp) => {
-            this.lastSavedFileMetadata = resp;
-            callback(resp)
-        })
+        try {
+            request.execute((resp) => {
+                this.lastSavedFileMetadata = resp;
+                callback(resp)
+            })
+        } catch (e) {
+            new Message("erreur")
+        }
     }
 
 
     createFile(fileName: string, callback) {
+        var event = new CustomEvent("startloaddrive");
+        document.dispatchEvent(event);
         var faustFolderId = this.faustFolderId;
 
         var request = gapi.client.request({
             'path': '/drive/v2/files',
             'method': 'POST',
             'body': {
-                "title": fileName+".json",
+                "title": fileName + this.extension,
                 "mimeType": "application/json",
             }
         });
@@ -254,45 +270,60 @@ class DriveAPI{
  * @param {File} fileData File object to read data from.
  * @param {Function} callback Callback function to call when the request is complete.
  */
-updateFile(fileId, fileMetadata, fileData, callback) {
-    const boundary = '-------314159265358979323846';
-    const delimiter = "\r\n--" + boundary + "\r\n";
-    const close_delim = "\r\n--" + boundary + "--";
+    updateFile(fileId, fileMetadata, fileData, callback) {
+        var event = new CustomEvent("startloaddrive");
+        document.dispatchEvent(event);
+        const boundary = '-------314159265358979323846';
+        const delimiter = "\r\n--" + boundary + "\r\n";
+        const close_delim = "\r\n--" + boundary + "--";
 
-    var reader = new FileReader();
-    reader.readAsBinaryString(fileData);
-    reader.onload = function (e) {
-        var contentType = fileData.type || 'application/octet-stream';
-        // Updating the metadata is optional and you can instead use the value from drive.files.get.
-        var base64Data = btoa(reader.result);
-        var multipartRequestBody =
-            delimiter +
-            'Content-Type: application/json\r\n\r\n' +
-            JSON.stringify(fileMetadata) +
-            delimiter +
-            'Content-Type: ' + contentType + '\r\n' +
-            'Content-Transfer-Encoding: base64\r\n' +
-            '\r\n' +
-            base64Data +
-            close_delim;
+        var reader = new FileReader();
+        reader.readAsBinaryString(fileData);
+        reader.onload = function (e) {
+            var contentType = fileData.type || 'application/octet-stream';
+            // Updating the metadata is optional and you can instead use the value from drive.files.get.
+            var base64Data = btoa(reader.result);
+            var multipartRequestBody =
+                delimiter +
+                'Content-Type: application/json\r\n\r\n' +
+                JSON.stringify(fileMetadata) +
+                delimiter +
+                'Content-Type: ' + contentType + '\r\n' +
+                'Content-Transfer-Encoding: base64\r\n' +
+                '\r\n' +
+                base64Data +
+                close_delim;
 
-        var request = gapi.client.request({
-            'path': '/upload/drive/v2/files/' + fileId,
-            'method': 'PUT',
-            'params': { 'uploadType': 'multipart', 'alt': 'json' },
-            'headers': {
-                'Content-Type': 'multipart/mixed; boundary="' + boundary + '"'
-            },
-            'body': multipartRequestBody
-        });
-        if (!callback) {
-            callback = () => {
-                var event = new CustomEvent("updatecloudselect");
-                document.dispatchEvent(event)
+            var request = gapi.client.request({
+                'path': '/upload/drive/v2/files/' + fileId,
+                'method': 'PUT',
+                'params': { 'uploadType': 'multipart', 'alt': 'json' },
+                'headers': {
+                    'Content-Type': 'multipart/mixed; boundary="' + boundary + '"'
+                },
+                'body': multipartRequestBody
+            });
+            if (!callback) {
+                callback = () => {
+                    var event = new CustomEvent("updatecloudselect");
+                    document.dispatchEvent(event)
+                    event = new CustomEvent("successave");
+                    document.dispatchEvent(event)
 
-            };
+                };
+            }
+            request.execute(callback);
         }
-        request.execute(callback);
     }
-}
+    trashFile(fileId: string) {
+        var event = new CustomEvent("startloaddrive");
+        document.dispatchEvent(event);
+        var request = gapi.client.drive.files.trash({
+            'fileId': fileId
+        });
+        request.execute(function (resp) {
+            var event = new CustomEvent("updatecloudselect");
+            document.dispatchEvent(event)
+        });
+    }
 }

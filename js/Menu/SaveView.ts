@@ -10,11 +10,13 @@
     buttonDownloadApp: HTMLElement;
     buttonLocalSave: HTMLElement;
     buttonLocalSuppr: HTMLElement;
+    buttonCloudSuppr: HTMLElement;
     buttonConnectDrive: HTMLElement;
     buttonChangeAccount: HTMLElement;
     dialogGoodNews: HTMLDivElement;
     cloudSelectFile: HTMLSelectElement;
     buttonSaveCloud: HTMLElement;
+    driveContainer: HTMLElement;
 
     initSaveView() {
         var saveContainer = document.createElement("div");
@@ -38,18 +40,18 @@
 
         var nameAppTitle: HTMLSpanElement = document.createElement("span");
         nameAppTitle.id = "nameAppTitle";
-        nameAppTitle.textContent = " Telecharger la scene : ";
+        nameAppTitle.textContent = App.messageRessource.saveDownload;
         nameAppTitle.className = "exportTitle";
 
         var dynamicName: HTMLSpanElement = document.createElement("span");
         dynamicName.id = "dynamicName";
-        dynamicName.textContent = Scene.sceneName;
+        dynamicName.textContent = App.messageRessource.defaultSceneName;
         nameAppTitle.appendChild(dynamicName);
         this.dynamicName = dynamicName;
 
         var rulesName: HTMLSpanElement = document.createElement("span");
         rulesName.id = "rulesName";
-        rulesName.textContent = "Seules les lettres de l'alphabet et les nombres sont acceptés. Les espaces, les apostrophes et les accents sont automatiquement remplacés. Le nom ne peut pas commencer par un nombre ; il doit comporter entre 1 et 50 caractères.";
+        rulesName.textContent = App.messageRessource.rulesSceneName;
         this.rulesName = rulesName;
 
         var checkBoxPrecompile = document.createElement("input");
@@ -59,14 +61,14 @@
 
         var label = document.createElement("label");
         label.id = "labelDownload";
-        label.textContent = "Précompilé (plus lourd)";
+        label.textContent = App.messageRessource.precompileOption;
         label.appendChild(checkBoxPrecompile);
 
 
         var inputDownload: HTMLInputElement = document.createElement("input");
         inputDownload.id = "inputNameApp";
         inputDownload.className = "inputExport";
-        inputDownload.value = Scene.sceneName;
+        inputDownload.value = App.scene.sceneName;
 
         var downloadBottomButtonContainer: HTMLElement = document.createElement("div");
         downloadBottomButtonContainer.className = "bottomButtonContainer";
@@ -76,7 +78,7 @@
         downloadButton.type = "button";
         downloadButton.id = "downloadButton";
         downloadButton.className = "button"
-        downloadButton.textContent = "télécharger l'application";
+        downloadButton.textContent = App.messageRessource.buttonDownloadApp;
 
         downloadBottomButtonContainer.appendChild(downloadButton)
 
@@ -105,12 +107,12 @@
         var inputLocalStorage: HTMLInputElement = document.createElement("input");
         inputLocalStorage.id = "inputNameApp";
         inputLocalStorage.className = "inputExport";
-        inputLocalStorage.value = Scene.sceneName;
+        inputLocalStorage.value = App.scene.sceneName;
         this.inputLocalStorage = inputLocalStorage;
 
         var dialogGoodNews = document.createElement("div");
         dialogGoodNews.id = "dialogGoodNews";
-        dialogGoodNews.textContent = "Sauvegarde bien effectuée"
+        dialogGoodNews.textContent = App.messageRessource.sucessSave;
         dialogGoodNews.style.opacity = "0";
         this.dialogGoodNews = dialogGoodNews;
 
@@ -118,14 +120,14 @@
         localButtonSuppr.type = "button";
         localButtonSuppr.id = "localButtonSuppr";
         localButtonSuppr.className = "button"
-        localButtonSuppr.textContent = "supprimer la scene";
+        localButtonSuppr.textContent = App.messageRessource.buttonSuppress;
         this.buttonLocalSuppr = localButtonSuppr;
 
         var localButton: HTMLButtonElement = document.createElement("button");
         localButton.type = "button";
         localButton.id = "localButton";
         localButton.className = "button"
-        localButton.textContent = "sauvegarder localement";
+        localButton.textContent = App.messageRessource.buttonLocalSave;
         this.buttonLocalSave = localButton;
 
         var localBottomButtonContainer: HTMLElement = document.createElement("div");
@@ -140,10 +142,13 @@
         localSaveContainer.appendChild(localBottomButtonContainer);
         ////////////////////////////////////////////cloud save
 
+        var driveContainer = document.createElement("div");
+        driveContainer.id = "driveContainerSave";
+        this.driveContainer = driveContainer;
 
         var buttonConnectDrive = document.createElement("button");
         buttonConnectDrive.id = "buttonConnectSaveDrive";
-        buttonConnectDrive.textContent = "connection à google drive";
+        buttonConnectDrive.textContent = App.messageRessource.buttonConnectCloud;
         buttonConnectDrive.className = "button";
         this.buttonConnectDrive = buttonConnectDrive
 
@@ -157,21 +162,30 @@
         var inputCloudStorage: HTMLInputElement = document.createElement("input");
         inputCloudStorage.id = "inputNameApp";
         inputCloudStorage.className = "inputExport";
-        inputCloudStorage.value = Scene.sceneName;
+        inputCloudStorage.value = App.scene.sceneName;
+        inputCloudStorage.style.display = "none";
         this.inputCloudStorage = inputCloudStorage;
+
+        var cloudButtonSuppr: HTMLButtonElement = document.createElement("button");
+        cloudButtonSuppr.type = "button";
+        cloudButtonSuppr.id = "cloudButtonSuppr";
+        cloudButtonSuppr.className = "button"
+        cloudButtonSuppr.style.display = "none";
+        cloudButtonSuppr.textContent = App.messageRessource.buttonSuppress;
+        this.buttonCloudSuppr = cloudButtonSuppr;
 
         var cloudButton: HTMLButtonElement = document.createElement("button");
         cloudButton.type = "button";
         cloudButton.id = "cloudSaveButton";
         cloudButton.className = "button"
-        cloudButton.textContent = "sauver sur le drive";
+        cloudButton.textContent = App.messageRessource.buttonCloudSave;
         this.buttonSaveCloud = cloudButton;
 
         var changeAccountButton: HTMLButtonElement = document.createElement("button");
         changeAccountButton.type = "button";
         //changeAccountButton.id = "changeAccountButton";
         changeAccountButton.className = "button changeAccountButton"
-        changeAccountButton.textContent = "changer de compte";
+        changeAccountButton.textContent = App.messageRessource.buttonLogoutCloud;
         changeAccountButton.style.display = "none";
         this.buttonChangeAccount = changeAccountButton;
 
@@ -179,11 +193,14 @@
         cloudBottomButtonContainer.className = "bottomButtonContainer";
         cloudBottomButtonContainer.appendChild(cloudButton);
 
-        cloudSaveContainer.appendChild(buttonConnectDrive);
-        cloudSaveContainer.appendChild(changeAccountButton);
-        cloudSaveContainer.appendChild(selectDrive);
-        cloudSaveContainer.appendChild(inputCloudStorage);
-        cloudSaveContainer.appendChild(cloudBottomButtonContainer);
+        driveContainer.appendChild(buttonConnectDrive);
+        driveContainer.appendChild(changeAccountButton);
+        driveContainer.appendChild(selectDrive);
+        driveContainer.appendChild(cloudButtonSuppr);
+        driveContainer.appendChild(inputCloudStorage);
+        driveContainer.appendChild(cloudBottomButtonContainer);
+
+        cloudSaveContainer.appendChild(driveContainer);
 
         saveContainer.appendChild(downloadContainer);
         saveContainer.appendChild(localSaveContainer);

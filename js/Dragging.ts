@@ -79,8 +79,6 @@ class Drag {
 
     startDraggingModule(el: HTMLElement, x: number, y: number, module: ModuleClass, event: Event): void {
 
-        console.log("start dragging module")
-        console.log(el.className)
 
         var moduleContainer: HTMLElement = module.moduleView.getModuleContainer();
 
@@ -110,7 +108,6 @@ class Drag {
 
     whileDraggingModule(el: HTMLElement, x: number, y: number, module: ModuleClass,event:Event): void {
 
-        console.log("drag module")
         var moduleContainer = module.moduleView.getModuleContainer();
 
         App.appTest++
@@ -313,7 +310,6 @@ class Drag {
     }
 
     startDraggingConnector(target: HTMLElement, x: number, y: number, module: ModuleClass, event: Event): void {
-        console.log("start dragging connection")
 
 
         this.startDraggingConnection(module,target);

@@ -30,7 +30,7 @@ var ModuleClass = (function () {
         this.drag = new Drag();
         this.dragList = [];
         this.moduleControles = [];
-        this.fModuleInterfaceParams = [];
+        this.fModuleInterfaceParams = {};
         this.sceneParent = sceneParent;
         var self = this;
         this.eventConnectorHandler = function (event) { _this.dragCnxCallback(event, _this); };
@@ -131,7 +131,13 @@ var ModuleClass = (function () {
     //--- Create and Update are called once a source code is compiled and the factory exists
     ModuleClass.prototype.createDSP = function (factory) {
         this.moduleFaust.factory = factory;
-        this.moduleFaust.fDSP = faust.createDSPInstance(factory, App.audioContext, 1024);
+        try {
+            this.moduleFaust.fDSP = faust.createDSPInstance(factory, App.audioContext, 1024);
+        }
+        catch (e) {
+            new Message(App.messageRessource.errorCreateDSP + " : " + e);
+            App.hideFullPageLoading();
+        }
     };
     //--- Update DSP in module 
     ModuleClass.prototype.updateDSP = function (factory, module) {
@@ -179,6 +185,8 @@ var ModuleClass = (function () {
         this.deleteFaustInterface();
         this.moduleView.textArea.style.display = "block";
         this.moduleView.textArea.value = this.moduleFaust.fSource;
+        Connector.redrawInputConnections(this, this.drag);
+        Connector.redrawOutputConnections(this, this.drag);
         this.moduleView.fEditImg.style.backgroundImage = "url(" + App.baseImg + "enter.png)";
         this.moduleView.fEditImg.addEventListener("click", this.eventCloseEditHandler);
         this.moduleView.fEditImg.addEventListener("touchend", this.eventCloseEditHandler);
@@ -200,6 +208,8 @@ var ModuleClass = (function () {
         var buttonImage = event.target;
         var dsp_code = this.moduleView.textArea.value;
         this.moduleView.textArea.style.display = "none";
+        Connector.redrawOutputConnections(this, this.drag);
+        Connector.redrawInputConnections(this, this.drag);
         module.update(this.moduleView.fTitle.textContent, dsp_code);
         module.recallInterfaceParams();
         module.moduleView.fEditImg.style.backgroundImage = "url(" + App.baseImg + "edit.png)";
@@ -231,12 +241,18 @@ var ModuleClass = (function () {
         }
         this.moduleControles = [];
     };
+    ModuleClass.prototype.setDSPValue = function () {
+        for (var i = 0; i < this.moduleControles.length; i++) {
+            this.moduleFaust.fDSP.setValue(this.moduleControles[i].address, this.moduleControles[i].value);
+        }
+    };
     //---- Generic callback for Faust Interface
     //---- Called every time an element of the UI changes value
     ModuleClass.prototype.interfaceCallback = function (event, controler, module) {
         var input = controler.slider;
         var text = controler.address;
         var val = Number((parseFloat(input.value) * parseFloat(controler.step)) + parseFloat(controler.min)).toFixed(parseFloat(controler.precision));
+        controler.value = val;
         var output = controler.output;
         //---- update the value text
         if (output)
@@ -247,12 +263,10 @@ var ModuleClass = (function () {
     // Save graphical parameters of a Faust Node
     ModuleClass.prototype.saveInterfaceParams = function () {
         var interfaceElements = this.moduleView.fInterfaceContainer.childNodes;
-        for (var j = 0; j < interfaceElements.length; j++) {
-            var interfaceElement = interfaceElements[j];
-            if (interfaceElement.className == "control-group") {
-                var text = interfaceElement.label;
-                this.fModuleInterfaceParams[text] = this.moduleFaust.fDSP.getValue(text);
-            }
+        var controls = this.moduleControles;
+        for (var j = 0; j < controls.length; j++) {
+            var text = controls[j].address;
+            this.fModuleInterfaceParams[text] = controls[j].value;
         }
     };
     ModuleClass.prototype.recallInterfaceParams = function () {
@@ -266,7 +280,7 @@ var ModuleClass = (function () {
         this.fModuleInterfaceParams = parameters;
     };
     ModuleClass.prototype.addInterfaceParam = function (path, value) {
-        this.fModuleInterfaceParams[path] = value;
+        this.fModuleInterfaceParams[path] = value.toString();
     };
     /******************* GET/SET INPUT/OUTPUT NODES **********************/
     ModuleClass.prototype.addInputOutputNodes = function () {

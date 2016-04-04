@@ -18,28 +18,28 @@ var ExportView = (function () {
         /////////////////////////////////  name App
         var nameAppTitle = document.createElement("span");
         nameAppTitle.id = "nameAppTitle";
-        nameAppTitle.textContent = " le nom de l'application est : ";
+        nameAppTitle.textContent = App.messageRessource.appNameExport;
         nameAppTitle.className = "exportTitle";
         var dynamicName = document.createElement("span");
         dynamicName.id = "dynamicName";
-        dynamicName.textContent = Scene.sceneName;
+        dynamicName.textContent = App.scene.sceneName;
         nameAppTitle.appendChild(dynamicName);
         this.dynamicName = dynamicName;
         var rulesName = document.createElement("span");
         rulesName.id = "rulesName";
-        rulesName.textContent = "Seules les lettres de l'alphabet et les nombres sont acceptés. Les espaces, les apostrophes et les accents sont automatiquement remplacés. Le nom ne peut pas commencer par un nombre ; il doit comporter entre 1 et 50 caractères.";
+        rulesName.textContent = App.messageRessource.rulesSceneName;
         this.rulesName = rulesName;
         var input = document.createElement("input");
         input.id = "inputNameApp";
         input.className = "inputExport";
-        input.value = Scene.sceneName;
+        input.value = App.scene.sceneName;
         var renameBottomButtonContainer = document.createElement("div");
         renameBottomButtonContainer.className = "bottomButtonContainer";
         var renameButton = document.createElement("button");
         renameButton.type = "button";
         renameButton.id = "buttonNameApp";
         renameButton.className = "button";
-        renameButton.textContent = "Modifier le nom de d'application";
+        renameButton.textContent = App.messageRessource.buttonChangeSceneName;
         renameBottomButtonContainer.appendChild(renameButton);
         nameAppContainer.appendChild(nameAppTitle);
         nameAppContainer.appendChild(rulesName);
@@ -59,14 +59,14 @@ var ExportView = (function () {
         this.optionContainer = optionContainer;
         var lessOptionDiv = document.createElement("div");
         lessOptionDiv.id = "lessOptionDiv";
-        lessOptionDiv.textContent = "- moins d'options";
+        lessOptionDiv.textContent = App.messageRessource.lessOptions;
         lessOptionDiv.style.display = "none";
         this.lessOptionDiv = lessOptionDiv;
         var urlDiv = document.createElement("div");
         urlDiv.id = "inputExport";
         var exportOptionTitle = document.createElement("span");
         exportOptionTitle.id = "exportOptionTitle";
-        exportOptionTitle.textContent = "Choix de l'export";
+        exportOptionTitle.textContent = App.messageRessource.titleExportOptions;
         exportOptionTitle.className = "exportTitle";
         var fwurl = document.createElement("input");
         fwurl.id = "faustweburl";
@@ -77,7 +77,7 @@ var ExportView = (function () {
         var exportChoiceDiv = document.createElement('div');
         exportChoiceDiv.id = "optionExportContainer";
         var refreshButton = document.createElement("button");
-        refreshButton.textContent = "Rafraîchir le serveur";
+        refreshButton.textContent = App.messageRessource.buttonRefresh;
         refreshButton.id = "refreshButton";
         refreshButton.className = "button";
         this.refreshButton = refreshButton;
@@ -99,7 +99,7 @@ var ExportView = (function () {
         exportButton.id = "exportButton";
         exportButton.type = "submit";
         exportButton.className = "button";
-        exportButton.value = "Exporter";
+        exportButton.value = App.messageRessource.buttonExportScene;
         this.exportButton = exportButton;
         var exportBottomButtonContainer = document.createElement("div");
         exportBottomButtonContainer.className = "bottomButtonContainer";
@@ -114,7 +114,7 @@ var ExportView = (function () {
         //////////////////////////// export Result
         var exportResultTitle = document.createElement("span");
         exportResultTitle.id = "exportResultTitle";
-        exportResultTitle.textContent = "Téléchargement";
+        exportResultTitle.textContent = App.messageRessource.titleDownlaodExport;
         exportResultTitle.className = "exportTitle";
         exportResultContainer.appendChild(exportResultTitle);
         exportContainer.appendChild(nameAppContainer);

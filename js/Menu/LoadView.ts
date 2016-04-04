@@ -13,6 +13,8 @@
     aBigPreExemple: HTMLAnchorElement;
     aLightPreExemple: HTMLAnchorElement;
     cloudSelectFile: HTMLSelectElement;
+    driveContainer: HTMLElement;
+
 
 
     initLoadView():HTMLElement {
@@ -52,7 +54,7 @@
         aLightExemple.id = "aLightExemple";
         aLightExemple.className = "exempleAnchor"
         aLightExemple.textContent = "Small exemple";
-        aLightExemple.href = "json/patch_light.json"
+        aLightExemple.href = "json/Small_Exemple.json"
         aLightExemple.draggable = false;
         this.aLightExemple = aLightExemple;
 
@@ -60,7 +62,7 @@
         aBigExemple.id = "aBigExemple";
         aBigExemple.className = "exempleAnchor"
         aBigExemple.textContent = "Big exemple";
-        aBigExemple.href = "json/patch_big.json"
+        aBigExemple.href = "json/Big_Exemple.json"
         aBigExemple.draggable = false;
         this.aBigExemple = aBigExemple;
 
@@ -68,7 +70,7 @@
         aLightPreExemple.id = "aLightPreExemple";
         aLightPreExemple.className = "exempleAnchor"
         aLightPreExemple.textContent = "Small exemple precompile";
-        aLightPreExemple.href = "json/patch_light_precompile.json"
+        aLightPreExemple.href = "json/Small_Exemple_Precompile.json"
         aLightPreExemple.draggable = false;
         this.aLightPreExemple = aLightPreExemple;
 
@@ -76,7 +78,7 @@
         aBigPreExemple.id = "aBigPreExemple";
         aBigPreExemple.className = "exempleAnchor"
         aBigPreExemple.textContent = "Big exemple precompile";
-        aBigPreExemple.href = "json/patch_big_precompile.json"
+        aBigPreExemple.href = "json/Big_Exemple_Precompile.json"
         aBigPreExemple.draggable = false;
         this.aBigPreExemple = aBigPreExemple;
 
@@ -85,7 +87,7 @@
         loadFileButton.type = "button";
         loadFileButton.id = "loadFileButton";
         loadFileButton.className = "button"
-        loadFileButton.textContent = "Charger un fichier";
+        loadFileButton.textContent = App.messageRessource.buttonLoadFile;
         this.loadFileButton = loadFileButton;
 
         loadFileContainer.appendChild(loadFileDiv);
@@ -113,14 +115,14 @@
         localButtonSuppr.type = "button";
         localButtonSuppr.id = "localButtonSuppr";
         localButtonSuppr.className = "button"
-        localButtonSuppr.textContent = "supprimer la scene";
+        localButtonSuppr.textContent = App.messageRessource.buttonSuppress;
         this.buttonLocalSuppr = localButtonSuppr;
 
         var localButton: HTMLButtonElement = document.createElement("button");
         localButton.type = "button";
         localButton.id = "localLoadButton";
         localButton.className = "button"
-        localButton.textContent = "charger une scene locale";
+        localButton.textContent = App.messageRessource.buttonLoadLocal;
         this.buttonLoadLocal = localButton;
 
         var localBottomButtonContainer: HTMLElement = document.createElement("div");
@@ -133,11 +135,13 @@
         loadLocalContainer.appendChild(localBottomButtonContainer);
         //////////////////////////////////////load Cloud
 
-
+        var driveContainer = document.createElement("div");
+        driveContainer.id = "driveContainerLoad";
+        this.driveContainer = driveContainer;
 
         var buttonConnectDrive = document.createElement("button");
         buttonConnectDrive.id = "buttonConnectLoadDrive";
-        buttonConnectDrive.textContent = "connection à google drive";
+        buttonConnectDrive.textContent = App.messageRessource.buttonConnectCloud;
         buttonConnectDrive.className = "button"
         this.buttonConnectDrive = buttonConnectDrive
 
@@ -152,7 +156,7 @@
         changeAccountButton.type = "button";
         //changeAccountButton.id = "changeAccountButton";
         changeAccountButton.className = "button changeAccountButton"
-        changeAccountButton.textContent = "changer de compte";
+        changeAccountButton.textContent = App.messageRessource.buttonLogoutCloud;
         changeAccountButton.style.display = "none";
         this.buttonChangeAccount = changeAccountButton;
 
@@ -160,17 +164,19 @@
         cloudButton.type = "button";
         cloudButton.id = "cloudLoadButton";
         cloudButton.className = "button"
-        cloudButton.textContent = "charger une scene depuis le drive";
+        cloudButton.textContent = App.messageRessource.buttonLoadCloud;
         this.buttonLoadCloud = cloudButton;
 
         var cloudBottomButtonContainer: HTMLElement = document.createElement("div");
         cloudBottomButtonContainer.className = "bottomButtonContainer";
         cloudBottomButtonContainer.appendChild(cloudButton);
 
-        loadCloudContainer.appendChild(buttonConnectDrive);
-        loadCloudContainer.appendChild(changeAccountButton);
-        loadCloudContainer.appendChild(selectDrive);
-        loadCloudContainer.appendChild(cloudBottomButtonContainer);
+        driveContainer.appendChild(buttonConnectDrive);
+        driveContainer.appendChild(changeAccountButton);
+        driveContainer.appendChild(selectDrive);
+        driveContainer.appendChild(cloudBottomButtonContainer);
+
+        loadCloudContainer.appendChild(driveContainer);
 
         loadContainer.appendChild(loadFileContainer);
         loadContainer.appendChild(loadLocalContainer);

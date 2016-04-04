@@ -22,6 +22,7 @@ interface HTMLElement {
 enum MenuChoices { library, export, help, kids, edit, save, load, null }
 
 class Menu {
+    isMenuDriveLoading: boolean = false;
     sceneCurrent: Scene;
     menuChoices: MenuChoices;
     currentMenuChoices: MenuChoices = MenuChoices.null;
@@ -50,7 +51,7 @@ class Menu {
         this.menuView.loadButton.addEventListener("click", () => { this.menuHandler(this.menuChoices = MenuChoices.load) });
         this.menuView.fullScreenButton.addEventListener("click", () => { this.fullScreen() });
         this.menuView.accButton.addEventListener("click", () => { this.accelerometer() });
-        this.menuView.cleanButton.addEventListener("click", () => { this.cleanScene() });
+        this.menuView.cleanButton.addEventListener("click", () => { new Confirm(App.messageRessource.confirmEmptyScene, (callback) => { this.cleanScene(callback) }) });
 
         this.library = new Library();
         this.library.libraryView = this.menuView.libraryView;
@@ -83,6 +84,9 @@ class Menu {
         document.addEventListener("authoff", () => { this.authOff() });
         document.addEventListener("fillselect", (optionEvent: CustomEvent) => { this.fillSelectCloud(optionEvent) })
         document.addEventListener("updatecloudselect", () => { this.updateSelectCloudEvent() });
+        document.addEventListener("startloaddrive", () => { this.startLoadingDrive()})
+        document.addEventListener("finishloaddrive", () => { this.finishLoadingDrive() })
+        document.addEventListener("clouderror", (e:CustomEvent) => { this.connectionProblem(e)})
         //this.accEdit.accelerometerEditView = this.menuView.accEditView
 
     }
@@ -325,13 +329,13 @@ class Menu {
         }
     }
     updatePatchNameToInput(e: Event) {
-        this.menuView.patchNameScene.textContent = Scene.sceneName;
-        this.menuView.exportView.dynamicName.textContent = Scene.sceneName;
-        this.menuView.exportView.inputNameApp.value = Scene.sceneName;
-        this.menuView.saveView.dynamicName.textContent = Scene.sceneName;
-        this.menuView.saveView.inputDownload.value = Scene.sceneName;
-        this.menuView.saveView.inputLocalStorage.value = Scene.sceneName;
-        this.menuView.saveView.inputCloudStorage.value = Scene.sceneName;
+        this.menuView.patchNameScene.textContent = App.scene.sceneName;
+        this.menuView.exportView.dynamicName.textContent = App.scene.sceneName;
+        this.menuView.exportView.inputNameApp.value = App.scene.sceneName;
+        this.menuView.saveView.dynamicName.textContent = App.scene.sceneName;
+        this.menuView.saveView.inputDownload.value = App.scene.sceneName;
+        this.menuView.saveView.inputLocalStorage.value = App.scene.sceneName;
+        this.menuView.saveView.inputCloudStorage.value = App.scene.sceneName;
     }
 
     lowerLibraryMenu() {
@@ -458,6 +462,8 @@ class Menu {
         this.save.saveView.buttonChangeAccount.style.display = "block";
         this.load.loadView.buttonConnectDrive.style.display = "none";
         this.save.saveView.buttonConnectDrive.style.display = "none";
+        this.save.saveView.buttonCloudSuppr.style.display = "block";
+        this.save.saveView.inputCloudStorage.style.display = "block";
     }
     authOff() {
         this.load.loadView.cloudSelectFile.style.display = "none";
@@ -466,10 +472,16 @@ class Menu {
         this.save.saveView.buttonChangeAccount.style.display = "none";
         this.load.loadView.buttonConnectDrive.style.display = "block";
         this.save.saveView.buttonConnectDrive.style.display = "block";
+        this.save.saveView.buttonCloudSuppr.style.display = "none";
+        this.save.saveView.inputCloudStorage.style.display = "none";
         this.clearSelect(this.save.saveView.cloudSelectFile);
         this.clearSelect(this.load.loadView.cloudSelectFile);
+
         window.open("https://accounts.google.com/logout", "newwindow", "width=500,height=700")
 
+    }
+    connectionProblem(event: CustomEvent) {
+        new Message(App.messageRessource.errorConnectionCloud + " : " + event.detail)
     }
     fillSelectCloud(optionEvent: CustomEvent) {
         this.load.loadView.cloudSelectFile.add(<HTMLOptionElement>optionEvent.detail);
@@ -481,12 +493,35 @@ class Menu {
         this.clearSelect(this.save.saveView.cloudSelectFile);
         this.drive.checkAuth();
     }
-    cleanScene() {
-        if (confirm("Voulez vous vraiment vider la scène ?")) {  
-            var modules = this.sceneCurrent.getModules()
-            while (modules.length != 0) {
+    cleanScene(callBack:()=>void) {
+ 
+        var modules = this.sceneCurrent.getModules()
+        while (modules.length != 0) {
+            if (modules[0].patchID != "output" && modules[0].patchID != "input") {
                 modules[0].deleteModule();
             }
+        }
+        callBack();
+    }
+    
+    startLoadingDrive() {
+        if (!this.isMenuDriveLoading) {
+            this.isMenuDriveLoading = true;
+            this.save.saveView.driveContainer.style.display = "none";
+            this.load.loadView.driveContainer.style.display = "none";
+            App.addLoadingLogo("loadCloudContainer");
+            App.addLoadingLogo("cloudSaveContainer");
+
+        }
+    }
+    finishLoadingDrive() {
+        if (this.isMenuDriveLoading) {
+            this.isMenuDriveLoading = false;
+            this.save.saveView.driveContainer.style.display = "block";
+            this.load.loadView.driveContainer.style.display = "block";
+            App.removeLoadingLogo("loadCloudContainer");
+            App.removeLoadingLogo("cloudSaveContainer");
+
         }
     }
 }

@@ -127,15 +127,15 @@ class Export{
     {
         this.exportView.exportButton.removeEventListener("click", this.eventExport)
         this.exportView.exportButton.style.opacity = "0.3";
-        var sceneName: string = Scene.sceneName;
+        var sceneName: string = App.scene.sceneName;
         if (sceneName == null || sceneName == "") {
             sceneName = "MonApplication";
         }
         this.removeQRCode();
         App.addLoadingLogo("exportResultContainer");
         var equivalentFaust: EquivalentFaust = new EquivalentFaust();
-        var faustCode:string = equivalentFaust.getFaustEquivalent(App.scene,Scene.sceneName);
-        ExportLib.getSHAKey((<HTMLInputElement>document.getElementById("faustweburl")).value, Scene.sceneName, faustCode, expor.exportFaustCode);
+        var faustCode: string = equivalentFaust.getFaustEquivalent(App.scene, App.scene.sceneName);
+        ExportLib.getSHAKey((<HTMLInputElement>document.getElementById("faustweburl")).value, App.scene.sceneName, faustCode, expor.exportFaustCode);
     }
 
     /******************************************************************** 
@@ -166,34 +166,39 @@ class Export{
     }
 
     setDownloadOptions = (serverUrl: string, shaKey: string, plateforme: string, architecture: string, appType: string) => {
-        
-        var disposableExportDiv: HTMLDivElement = document.createElement("div");
-        disposableExportDiv.id = "disposableExportDiv"
-        var qrDiv: HTMLElement = document.createElement('div');
-        qrDiv.id = "qrcodeDiv";
-        var myWhiteDiv: HTMLElement = ExportLib.getQrCode(serverUrl, shaKey, plateforme, architecture, appType, 120);
-        qrDiv.appendChild(myWhiteDiv);
+        if (shaKey.indexOf("ERROR") == -1) {
+            var disposableExportDiv: HTMLDivElement = document.createElement("div");
+            disposableExportDiv.id = "disposableExportDiv"
+            var qrDiv: HTMLElement = document.createElement('div');
+            qrDiv.id = "qrcodeDiv";
+            var myWhiteDiv: HTMLElement = ExportLib.getQrCode(serverUrl, shaKey, plateforme, architecture, appType, 120);
+            qrDiv.appendChild(myWhiteDiv);
 
-        var downloadBottomButtonContainer: HTMLElement = document.createElement("div");
-        downloadBottomButtonContainer.className = "bottomButtonContainer";
+            var downloadBottomButtonContainer: HTMLElement = document.createElement("div");
+            downloadBottomButtonContainer.className = "bottomButtonContainer";
 
-        var linkDownload: HTMLButtonElement = document.createElement('button');
-        linkDownload.value = serverUrl + "/" + shaKey + "/" + plateforme + "/" + architecture + "/" + appType;
-        linkDownload.id = "linkDownload";
-        linkDownload.className = "button";
-        linkDownload.textContent = "Télécharger";
-        downloadBottomButtonContainer.appendChild(linkDownload);
-        this.exportView.downloadButton = linkDownload;
-        this.exportView.downloadButton.onclick = () => { window.location.href = this.exportView.downloadButton.value };
+            var linkDownload: HTMLButtonElement = document.createElement('button');
+            linkDownload.value = serverUrl + "/" + shaKey + "/" + plateforme + "/" + architecture + "/" + appType;
+            linkDownload.id = "linkDownload";
+            linkDownload.className = "button";
+            linkDownload.textContent = App.messageRessource.buttonDownloadApp;
+            downloadBottomButtonContainer.appendChild(linkDownload);
+            this.exportView.downloadButton = linkDownload;
+            this.exportView.downloadButton.onclick = () => { window.location.href = this.exportView.downloadButton.value };
 
-        document.getElementById("exportResultContainer").appendChild(disposableExportDiv);
-        disposableExportDiv.appendChild(qrDiv);
-        disposableExportDiv.appendChild(downloadBottomButtonContainer);
+            document.getElementById("exportResultContainer").appendChild(disposableExportDiv);
+            disposableExportDiv.appendChild(qrDiv);
+            disposableExportDiv.appendChild(downloadBottomButtonContainer);
 
+            this.exportView.exportButton.addEventListener("click", this.eventExport)
+            this.exportView.exportButton.style.opacity = "1";
+            App.removeLoadingLogo("exportResultContainer");
+        } else {
+            new Message(shaKey)
+        }
         this.exportView.exportButton.addEventListener("click", this.eventExport)
         this.exportView.exportButton.style.opacity = "1";
-        App.removeLoadingLogo();
-
+        App.removeLoadingLogo("exportResultContainer");
     }
 
 

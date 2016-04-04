@@ -76,6 +76,11 @@ var App = (function () {
             }
         }, true);
     };
+    App.prototype.createDialogue = function () {
+        var dialogue = document.createElement("div");
+        dialogue.id = "dialogue";
+        document.getElementsByTagName("body")[0].appendChild(dialogue);
+    };
     /********************************************************************
     **********************  ACTIVATE PHYSICAL IN/OUTPUT *****************
     ********************************************************************/
@@ -88,12 +93,14 @@ var App = (function () {
         if (navigatorLoc.getUserMedia) {
             navigatorLoc.getUserMedia({ audio: true }, function (mediaStream) { _this.getDevice(mediaStream, _this); }, function (e) {
                 scene.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)";
-                scene.fAudioInput.moduleView.fInterfaceContainer.title = "Error getting audio input";
+                scene.fAudioInput.moduleView.fInterfaceContainer.title = App.messageRessource.errorGettingAudioInput;
+                new Message(App.messageRessource.errorGettingAudioInput);
             });
         }
         else {
             scene.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)";
-            scene.fAudioInput.moduleView.fInterfaceContainer.title = "Audio input API not available";
+            new Message(App.messageRessource.errorInputAPINotAvailable);
+            scene.fAudioInput.moduleView.fInterfaceContainer.title = App.messageRessource.errorInputAPINotAvailable;
         }
     };
     App.prototype.getDevice = function (device, app) {
@@ -139,7 +146,7 @@ var App = (function () {
             this.factory = faust.createDSPFactory(sourcecode, args, function (factory) { callback(factory); });
         }
         catch (error) {
-            alert(error);
+            new Message(error);
         }
         //callback(this.factory)
         if (currentScene) {
@@ -150,7 +157,7 @@ var App = (function () {
     App.prototype.createModule = function (factory) {
         var _this = this;
         if (!factory) {
-            alert(faust.getErrorMessage());
+            new Message(App.messageRessource.errorFactory + faust.getErrorMessage());
             this.terminateUpload();
             return null;
         }
@@ -260,13 +267,14 @@ var App = (function () {
                     this.uploadFile2(app, module, x, y, e, dsp_code);
                 }
                 catch (error) {
-                    throw new Error("Upload2Error");
+                    new Message(error);
+                    App.hideFullPageLoading();
                 }
             }
         }
         else {
             app.terminateUpload();
-            window.alert("THIS OBJECT IS NOT FAUST COMPILABLE");
+            new Message(App.messageRessource.errorObjectNotFaustCompatible);
         }
     };
     //Upload Url
@@ -303,7 +311,7 @@ var App = (function () {
         //app.terminateUpload();
     };
     App.prototype.uploadFile2 = function (app, module, x, y, e, dsp_code) {
-        var files = e.dataTransfer.files; //e.target.files ||
+        var files = e.dataTransfer.files;
         var file = files[0];
         if (location.host.indexOf("sitepointstatic") >= 0) {
             return;
@@ -328,6 +336,7 @@ var App = (function () {
             reader.readAsText(file);
         }
         else {
+            throw new Error(App.messageRessource.errorObjectNotFaustCompatible);
             this.terminateUpload();
         }
         reader.onloadend = function (e) {
@@ -384,33 +393,33 @@ var App = (function () {
     };
     ////////////////////////////// LOADINGS //////////////////////////////////////
     //add loading logo and text on export
-    App.addLoadingLogo = function (divTarget) {
+    App.addLoadingLogo = function (idTarget) {
         var loadingDiv = document.createElement("div");
-        loadingDiv.id = "loadingDiv";
+        loadingDiv.className = "loadingDiv";
         var loadingImg = document.createElement("img");
         loadingImg.src = App.baseImg + "logoAnim.gif";
         loadingImg.id = "loadingImg";
         var loadingText = document.createElement("span");
-        loadingText.textContent = "Compilation en cours...";
+        loadingText.textContent = App.messageRessource.loading;
         loadingText.id = "loadingText";
         loadingDiv.appendChild(loadingImg);
         loadingDiv.appendChild(loadingText);
-        document.getElementById(divTarget).appendChild(loadingDiv);
+        if (document.getElementById(idTarget) != null) {
+            document.getElementById(idTarget).appendChild(loadingDiv);
+        }
     };
-    App.removeLoadingLogo = function () {
-        document.getElementById("loadingDiv").remove();
+    App.removeLoadingLogo = function (idTarget) {
+        var divTarget = document.getElementById(idTarget);
+        if (divTarget != null && divTarget.getElementsByClassName("loadingDiv").length > 0) {
+            while (divTarget.getElementsByClassName("loadingDiv").length != 0) {
+                divTarget.getElementsByClassName("loadingDiv")[0].remove();
+            }
+        }
     };
     App.addFullPageLoading = function () {
-        var loadingPage = document.createElement("div");
-        loadingPage.id = "loadingPage";
-        loadingPage.className = "loadingPage";
-        var body = document.getElementsByTagName('body')[0];
-        var loadingText = document.createElement("div");
+        var loadingText = document.getElementById("loadingTextBig");
         loadingText.id = "loadingTextBig";
-        loadingText.textContent = "Chargement en cours";
-        loadingPage.appendChild(loadingText);
-        body.appendChild(loadingPage);
-        loadingPage.style.display = "none";
+        loadingText.textContent = App.messageRessource.loading;
     };
     App.showFullPageLoading = function () {
         document.getElementById("loadingPage").style.visibility = "visible";
@@ -481,12 +490,30 @@ var App = (function () {
     App.replaceAll = function (str, find, replace) {
         return str.replace(new RegExp(find, 'g'), replace);
     };
+    App.prototype.getRessources = function () {
+        var _this = this;
+        // App.getXHR(
+        var localization = navigator.language;
+        if (localization == "fr" || localization == "fr-FR") {
+            App.getXHR("ressources/ressources_fr-FR.json", function (ressource) { _this.loadMessages(ressource); }, this.errorCallBack);
+        }
+        else {
+            App.getXHR("ressources/ressources_fr-FR.json", function (ressource) { _this.loadMessages(ressource); }, this.errorCallBack);
+        }
+    };
+    App.prototype.loadMessages = function (ressourceJson) {
+        App.messageRessource = JSON.parse(ressourceJson);
+        resumeInit(this);
+    };
+    App.prototype.errorCallBack = function (message) {
+    };
     //************* Fields
     App.appTest = 0;
     App.idX = 0;
     App.baseImg = "img/";
     App.isAccelerometerOn = false;
     App.isAccelerometerEditOn = false;
+    App.messageRessource = new Ressources();
     return App;
 })();
 //# sourceMappingURL=App.js.map

@@ -3,7 +3,7 @@ var ErrorFaust = (function () {
     function ErrorFaust() {
     }
     ErrorFaust.errorCallBack = function (errorMessage) {
-        alert(errorMessage);
+        new Message(errorMessage);
     };
     return ErrorFaust;
 })();

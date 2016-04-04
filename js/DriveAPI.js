@@ -4,6 +4,7 @@ var DriveAPI = (function () {
         this.SCOPES = ['https://www.googleapis.com/auth/drive'];
         this.faustFolder = "FaustPlayground";
         this.isFaustFolderPresent = false;
+        this.extension = ".json";
     }
     /**
      * Check if current user has authorized this application.
@@ -36,6 +37,10 @@ var DriveAPI = (function () {
             var event = new CustomEvent("authoff");
             document.dispatchEvent(event);
         }
+        if (authResult.error) {
+            var event = new CustomEvent("clouderror", { 'detail': authResult.error });
+            document.dispatchEvent(event);
+        }
     };
     /**
      * Initiate auth flow in response to user clicking authorize button.
@@ -52,6 +57,8 @@ var DriveAPI = (function () {
      */
     DriveAPI.prototype.loadDriveApi = function () {
         var _this = this;
+        var event = new CustomEvent("startloaddrive");
+        document.dispatchEvent(event);
         gapi.client.load('drive', 'v2', function () { _this.listFolder(); });
     };
     /**
@@ -92,6 +99,8 @@ var DriveAPI = (function () {
         });
         request.execute(function (resp) {
             var files = resp.items;
+            var event = new CustomEvent("finishloaddrive");
+            document.dispatchEvent(event);
             if (files && files.length > 0) {
                 for (var i = 0; i < files.length; i++) {
                     var file = files[i];
@@ -104,7 +113,7 @@ var DriveAPI = (function () {
             }
             else {
                 //this.appendPre('No files found.',null);
-                _this.appendPre('No files found.', null);
+                _this.appendPre(App.messageRessource.noFileOnCloud, null);
             }
         });
     };
@@ -140,7 +149,7 @@ var DriveAPI = (function () {
     DriveAPI.prototype.appendPre = function (name, id) {
         var option = document.createElement("option");
         option.value = id;
-        option.textContent = name;
+        option.textContent = name.replace(/.json$/, '');
         var event = new CustomEvent("fillselect", { 'detail': option });
         document.dispatchEvent(event);
     };
@@ -178,19 +187,26 @@ var DriveAPI = (function () {
         var request = gapi.client.drive.files.get({
             'fileId': fileId,
         });
-        request.execute(function (resp) {
-            _this.lastSavedFileMetadata = resp;
-            callback(resp);
-        });
+        try {
+            request.execute(function (resp) {
+                _this.lastSavedFileMetadata = resp;
+                callback(resp);
+            });
+        }
+        catch (e) {
+            new Message("erreur");
+        }
     };
     DriveAPI.prototype.createFile = function (fileName, callback) {
         var _this = this;
+        var event = new CustomEvent("startloaddrive");
+        document.dispatchEvent(event);
         var faustFolderId = this.faustFolderId;
         var request = gapi.client.request({
             'path': '/drive/v2/files',
             'method': 'POST',
             'body': {
-                "title": fileName + ".json",
+                "title": fileName + this.extension,
                 "mimeType": "application/json",
             }
         });
@@ -231,6 +247,8 @@ var DriveAPI = (function () {
  * @param {Function} callback Callback function to call when the request is complete.
  */
     DriveAPI.prototype.updateFile = function (fileId, fileMetadata, fileData, callback) {
+        var event = new CustomEvent("startloaddrive");
+        document.dispatchEvent(event);
         var boundary = '-------314159265358979323846';
         var delimiter = "\r\n--" + boundary + "\r\n";
         var close_delim = "\r\n--" + boundary + "--";
@@ -262,10 +280,23 @@ var DriveAPI = (function () {
                 callback = function () {
                     var event = new CustomEvent("updatecloudselect");
                     document.dispatchEvent(event);
+                    event = new CustomEvent("successave");
+                    document.dispatchEvent(event);
                 };
             }
             request.execute(callback);
         };
+    };
+    DriveAPI.prototype.trashFile = function (fileId) {
+        var event = new CustomEvent("startloaddrive");
+        document.dispatchEvent(event);
+        var request = gapi.client.drive.files.trash({
+            'fileId': fileId
+        });
+        request.execute(function (resp) {
+            var event = new CustomEvent("updatecloudselect");
+            document.dispatchEvent(event);
+        });
     };
     return DriveAPI;
 })();

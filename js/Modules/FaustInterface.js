@@ -37,6 +37,7 @@ var FaustInterface = (function () {
         }
         else if (item.type === "vslider" || item.type === "hslider") {
             var controler = item;
+            controler.value = item.init;
             this.addFaustModuleSlider(module, controler);
             controler.slider.addEventListener("input", function (event) {
                 module.interfaceCallback(event, controler, module);

@@ -58,7 +58,7 @@ var Library = (function () {
             li.appendChild(a);
             a.href = options[i];
             a.draggable = true;
-            a.title = "Drag me ! Cliquez, glissez, d�posez !";
+            a.title = App.messageRessource.hoverLibraryElement;
             a.onclick = App.preventdefault;
             var dblckickHandler = this.dispatchEventLibrary.bind(this, a.href);
             a.ondblclick = dblckickHandler;

@@ -22,6 +22,7 @@ var MenuChoices;
 var Menu = (function () {
     function Menu(htmlContainer) {
         var _this = this;
+        this.isMenuDriveLoading = false;
         this.currentMenuChoices = MenuChoices.null;
         this.isMenuLow = false;
         this.isFullScreen = false;
@@ -37,7 +38,7 @@ var Menu = (function () {
         this.menuView.loadButton.addEventListener("click", function () { _this.menuHandler(_this.menuChoices = MenuChoices.load); });
         this.menuView.fullScreenButton.addEventListener("click", function () { _this.fullScreen(); });
         this.menuView.accButton.addEventListener("click", function () { _this.accelerometer(); });
-        this.menuView.cleanButton.addEventListener("click", function () { _this.cleanScene(); });
+        this.menuView.cleanButton.addEventListener("click", function () { new Confirm(App.messageRessource.confirmEmptyScene, function (callback) { _this.cleanScene(callback); }); });
         this.library = new Library();
         this.library.libraryView = this.menuView.libraryView;
         this.library.fillLibrary();
@@ -67,6 +68,9 @@ var Menu = (function () {
         document.addEventListener("authoff", function () { _this.authOff(); });
         document.addEventListener("fillselect", function (optionEvent) { _this.fillSelectCloud(optionEvent); });
         document.addEventListener("updatecloudselect", function () { _this.updateSelectCloudEvent(); });
+        document.addEventListener("startloaddrive", function () { _this.startLoadingDrive(); });
+        document.addEventListener("finishloaddrive", function () { _this.finishLoadingDrive(); });
+        document.addEventListener("clouderror", function (e) { _this.connectionProblem(e); });
         //this.accEdit.accelerometerEditView = this.menuView.accEditView
     }
     Menu.prototype.setMenuScene = function (scene) {
@@ -278,13 +282,13 @@ var Menu = (function () {
         }
     };
     Menu.prototype.updatePatchNameToInput = function (e) {
-        this.menuView.patchNameScene.textContent = Scene.sceneName;
-        this.menuView.exportView.dynamicName.textContent = Scene.sceneName;
-        this.menuView.exportView.inputNameApp.value = Scene.sceneName;
-        this.menuView.saveView.dynamicName.textContent = Scene.sceneName;
-        this.menuView.saveView.inputDownload.value = Scene.sceneName;
-        this.menuView.saveView.inputLocalStorage.value = Scene.sceneName;
-        this.menuView.saveView.inputCloudStorage.value = Scene.sceneName;
+        this.menuView.patchNameScene.textContent = App.scene.sceneName;
+        this.menuView.exportView.dynamicName.textContent = App.scene.sceneName;
+        this.menuView.exportView.inputNameApp.value = App.scene.sceneName;
+        this.menuView.saveView.dynamicName.textContent = App.scene.sceneName;
+        this.menuView.saveView.inputDownload.value = App.scene.sceneName;
+        this.menuView.saveView.inputLocalStorage.value = App.scene.sceneName;
+        this.menuView.saveView.inputCloudStorage.value = App.scene.sceneName;
     };
     Menu.prototype.lowerLibraryMenu = function () {
         this.library.libraryView.effetLibrary.style.height = "150px";
@@ -406,6 +410,8 @@ var Menu = (function () {
         this.save.saveView.buttonChangeAccount.style.display = "block";
         this.load.loadView.buttonConnectDrive.style.display = "none";
         this.save.saveView.buttonConnectDrive.style.display = "none";
+        this.save.saveView.buttonCloudSuppr.style.display = "block";
+        this.save.saveView.inputCloudStorage.style.display = "block";
     };
     Menu.prototype.authOff = function () {
         this.load.loadView.cloudSelectFile.style.display = "none";
@@ -414,9 +420,14 @@ var Menu = (function () {
         this.save.saveView.buttonChangeAccount.style.display = "none";
         this.load.loadView.buttonConnectDrive.style.display = "block";
         this.save.saveView.buttonConnectDrive.style.display = "block";
+        this.save.saveView.buttonCloudSuppr.style.display = "none";
+        this.save.saveView.inputCloudStorage.style.display = "none";
         this.clearSelect(this.save.saveView.cloudSelectFile);
         this.clearSelect(this.load.loadView.cloudSelectFile);
         window.open("https://accounts.google.com/logout", "newwindow", "width=500,height=700");
+    };
+    Menu.prototype.connectionProblem = function (event) {
+        new Message(App.messageRessource.errorConnectionCloud + " : " + event.detail);
     };
     Menu.prototype.fillSelectCloud = function (optionEvent) {
         this.load.loadView.cloudSelectFile.add(optionEvent.detail);
@@ -428,12 +439,31 @@ var Menu = (function () {
         this.clearSelect(this.save.saveView.cloudSelectFile);
         this.drive.checkAuth();
     };
-    Menu.prototype.cleanScene = function () {
-        if (confirm("Voulez vous vraiment vider la scène ?")) {
-            var modules = this.sceneCurrent.getModules();
-            while (modules.length != 0) {
+    Menu.prototype.cleanScene = function (callBack) {
+        var modules = this.sceneCurrent.getModules();
+        while (modules.length != 0) {
+            if (modules[0].patchID != "output" && modules[0].patchID != "input") {
                 modules[0].deleteModule();
             }
+        }
+        callBack();
+    };
+    Menu.prototype.startLoadingDrive = function () {
+        if (!this.isMenuDriveLoading) {
+            this.isMenuDriveLoading = true;
+            this.save.saveView.driveContainer.style.display = "none";
+            this.load.loadView.driveContainer.style.display = "none";
+            App.addLoadingLogo("loadCloudContainer");
+            App.addLoadingLogo("cloudSaveContainer");
+        }
+    };
+    Menu.prototype.finishLoadingDrive = function () {
+        if (this.isMenuDriveLoading) {
+            this.isMenuDriveLoading = false;
+            this.save.saveView.driveContainer.style.display = "block";
+            this.load.loadView.driveContainer.style.display = "block";
+            App.removeLoadingLogo("loadCloudContainer");
+            App.removeLoadingLogo("cloudSaveContainer");
         }
     };
     return Menu;

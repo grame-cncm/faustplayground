@@ -211,6 +211,51 @@ div#loadingPage {
 div#loadingTextBig {
     color: white;
     font-size: 2em;
-    margin: 25% auto;
-    width: 310px;
+    margin: 30vh auto;
+    text-align:center;
+}
+/*messages style*/
+
+div#dialogue {
+    z-index: 10;
+    position: absolute;
+    width: 100%;
+}
+
+.messageContainer {
+    padding: 1em 0;
+    position: relative;
+    width: 100%;
+    color: white;
+    background: rgba(0, 0, 255, 0.61);
+    text-align: center;
+}
+
+.messageShow {
+    opacity:1!important;
+}
+.messageHide {
+    opacity:0!important;
+}
+
+.messageTransitionOut {
+    -webkit-transition: all 6000ms ease;
+    transition: all 6000ms ease;
+}
+
+.messageTransitionIn {
+    -webkit-transition: all 500ms ease;
+    transition: all 500ms ease;
+}
+
+.messageTransitionOutFast {
+    -webkit-transition: all 500ms ease;
+    transition: all 500ms ease;
+}
+.validConfirmContainer {
+    position: relative;
+    bottom: 0px;
+    width: 100%;
+    margin-bottom: -1em;
+    margin-top:1em;
 }
