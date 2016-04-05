@@ -499,9 +499,14 @@ class Menu {
     cleanScene(callBack:()=>void) {
  
         var modules = this.sceneCurrent.getModules()
+
         while (modules.length != 0) {
             if (modules[0].patchID != "output" && modules[0].patchID != "input") {
                 modules[0].deleteModule();
+            }else if (modules[0].patchID == "output") {
+                modules.shift();
+            }else if (modules[0].patchID == "input") {
+                modules.shift();
             }
         }
         callBack();

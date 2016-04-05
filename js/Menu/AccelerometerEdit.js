@@ -57,8 +57,11 @@ var AccelerometerEdit = (function () {
         }
     };
     AccelerometerEdit.prototype.setSliderDisableValue = function (slider) {
-        if (slider.isActive) {
+        if (slider.isActive && slider.isEnabled) {
             slider.mySlider.disabled = true;
+        }
+        else if (!slider.isActive && slider.isEnabled) {
+            slider.mySlider.disabled = false;
         }
         else {
             slider.mySlider.disabled = false;
@@ -141,18 +144,21 @@ var AccelerometerEdit = (function () {
         if (this.accSlid.isEnabled) {
             this.accSlid.mySlider.parentElement.classList.remove("disabledAcc");
             if (this.accSlid.isActive) {
-                this.accSlid.mySlider.parentElement.classList.add("not-allowed");
-                this.accSlid.mySlider.parentElement.classList.remove("allowed");
+                this.accSlid.mySlider.classList.add("not-allowed");
+                this.accSlid.mySlider.classList.remove("allowed");
+                this.accSlid.mySlider.disabled = true;
             }
             else {
-                this.accSlid.mySlider.parentElement.classList.remove("not-allowed");
-                this.accSlid.mySlider.parentElement.classList.add("allowed");
+                this.accSlid.mySlider.classList.remove("not-allowed");
+                this.accSlid.mySlider.classList.add("allowed");
+                this.accSlid.mySlider.disabled = false;
             }
         }
         else {
             this.accSlid.mySlider.parentElement.classList.add("disabledAcc");
-            this.accSlid.mySlider.parentElement.classList.remove("not-allowed");
-            this.accSlid.mySlider.parentElement.classList.add("allowed");
+            this.accSlid.mySlider.classList.remove("not-allowed");
+            this.accSlid.mySlider.classList.add("allowed");
+            this.accSlid.mySlider.disabled = false;
         }
     };
     AccelerometerEdit.prototype.placeElement = function () {
