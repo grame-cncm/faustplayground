@@ -494,7 +494,7 @@ class Menu {
     updateSelectCloudEvent() {
         this.clearSelect(this.load.loadView.cloudSelectFile);
         this.clearSelect(this.save.saveView.cloudSelectFile);
-        this.drive.checkAuth();
+        this.drive.updateConnection();
     }
     cleanScene(callBack:()=>void) {
  

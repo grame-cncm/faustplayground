@@ -331,7 +331,7 @@ var App = (function () {
             type = "dsp";
             reader.readAsText(file);
         }
-        else if (ext == "json") {
+        else if (ext == "json" || ext == "jfaust") {
             type = "json";
             reader.readAsText(file);
         }

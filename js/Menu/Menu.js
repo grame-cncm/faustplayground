@@ -439,7 +439,7 @@ var Menu = (function () {
     Menu.prototype.updateSelectCloudEvent = function () {
         this.clearSelect(this.load.loadView.cloudSelectFile);
         this.clearSelect(this.save.saveView.cloudSelectFile);
-        this.drive.checkAuth();
+        this.drive.updateConnection();
     };
     Menu.prototype.cleanScene = function (callBack) {
         var modules = this.sceneCurrent.getModules();

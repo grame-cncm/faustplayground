@@ -27,7 +27,7 @@ class Save {
             var blob = new Blob([jsonScene], {
                 type: "application/vnd.google-apps.script+json;charset=utf-8;",
             });
-            saveAs(blob, App.scene.sceneName + ".json");
+            saveAs(blob, App.scene.sceneName + ".jfaust");
         }
 
 
@@ -126,7 +126,7 @@ class Save {
                 var jsonScene = this.sceneCurrent.saveScene(true)
                 var blob = new Blob([jsonScene], { type: "application/json" });
                 this.drive.tempBlob = blob;
-                this.drive.createFile(App.scene.sceneName, (folderId, fileId) => { this.drive.removeFileFromRoot(folderId, fileId) });
+                this.drive.createFile(App.scene.sceneName,null);
             }
         }
     }
