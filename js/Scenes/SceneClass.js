@@ -38,6 +38,11 @@ var JsonParamsSave = (function () {
     }
     return JsonParamsSave;
 })();
+var JsonAccSaves = (function () {
+    function JsonAccSaves() {
+    }
+    return JsonAccSaves;
+})();
 var JsonAccSave = (function () {
     function JsonAccSave() {
     }
@@ -243,12 +248,23 @@ var Scene = (function () {
                     }
                 }
                 var acc = this.fModuleList[i].moduleControles;
+                var jsonAccs = new JsonAccSaves();
+                jsonAccs.controles = [];
                 for (var j = 0; j < acc.length; j++) {
                     var jsonAcc = new JsonAccSave();
+                    jsonAcc.axis = acc[j].accelerometerSlider.axis.toString();
+                    jsonAcc.curve = acc[j].accelerometerSlider.curve.toString();
+                    jsonAcc.amin = acc[j].accelerometerSlider.amin.toString();
+                    jsonAcc.amid = acc[j].accelerometerSlider.amid.toString();
+                    jsonAcc.amax = acc[j].accelerometerSlider.amax.toString();
+                    jsonAcc.adress = acc[j].accelerometerSlider.label;
+                    jsonAcc.isEnabled = acc[j].accelerometerSlider.isEnabled;
+                    jsonAccs.controles.push(jsonAcc);
                 }
                 jsonObject.inputs = jsonInputs;
                 jsonObject.outputs = jsonOutputs;
                 jsonObject.params = jsonParams;
+                jsonObject.acc = jsonAccs;
                 var factorySave = faust.writeDSPFactoryToMachine(this.fModuleList[i].moduleFaust.factory);
                 if (factorySave && isPrecompiled) {
                     jsonObject.factory = new JsonFactorySave();
@@ -352,6 +368,7 @@ var Scene = (function () {
             module.createFaustInterface();
             module.addInputOutputNodes();
             this.addModule(module);
+            this.recallAccValues(this.arrayRecalScene[0].acc, module);
             this.arrayRecalScene.shift();
             this.lunchModuleCreation();
         }
@@ -359,6 +376,49 @@ var Scene = (function () {
             new Message(App.messageRessource.errorCreateModuleRecall);
             this.arrayRecalScene.shift();
             this.lunchModuleCreation();
+        }
+    };
+    Scene.prototype.recallAccValues = function (jsonAccs, module) {
+        if (jsonAccs != undefined) {
+            for (var i in jsonAccs.controles) {
+                var controle = jsonAccs.controles[i];
+                if (controle != undefined) {
+                    for (var j in module.moduleControles) {
+                        var moduleControle = module.moduleControles[j];
+                        if (moduleControle.address == controle.adress) {
+                            moduleControle.accelerometerSlider.acc = controle.axis + " " + controle.curve + " " + controle.amin + " " + controle.amid + " " + controle.amax;
+                            moduleControle.acc = controle.axis + " " + controle.curve + " " + controle.amin + " " + controle.amid + " " + controle.amax;
+                            moduleControle.accelerometerSlider.amax = parseFloat(controle.amax);
+                            moduleControle.accelerometerSlider.amid = parseFloat(controle.amid);
+                            moduleControle.accelerometerSlider.amin = parseFloat(controle.amin);
+                            moduleControle.accelerometerSlider.axis = parseFloat(controle.axis);
+                            moduleControle.accelerometerSlider.curve = parseFloat(controle.curve);
+                            moduleControle.accelerometerSlider.isEnabled = controle.isEnabled;
+                            AccelerometerHandler.curveSplitter(moduleControle.accelerometerSlider);
+                            moduleControle.accelerometerSlider.mySlider.parentElement.className = "control-group";
+                            moduleControle.accelerometerSlider.mySlider.parentElement.classList.add(Axis[controle.axis]);
+                            if (!controle.isEnabled) {
+                                moduleControle.accelerometerSlider.mySlider.parentElement.classList.add("disabledAcc");
+                                moduleControle.accelerometerSlider.mySlider.classList.add("allowed");
+                                moduleControle.accelerometerSlider.mySlider.classList.remove("not-allowed");
+                                moduleControle.accelerometerSlider.mySlider.disabled = false;
+                            }
+                            else {
+                                if (moduleControle.accelerometerSlider.isActive) {
+                                    moduleControle.accelerometerSlider.mySlider.classList.add("not-allowed");
+                                    moduleControle.accelerometerSlider.mySlider.classList.remove("allowed");
+                                    moduleControle.accelerometerSlider.mySlider.disabled = true;
+                                }
+                                else {
+                                    moduleControle.accelerometerSlider.mySlider.classList.add("allowed");
+                                    moduleControle.accelerometerSlider.mySlider.classList.remove("not-allowed");
+                                    moduleControle.accelerometerSlider.mySlider.disabled = false;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     };
     Scene.prototype.connectModule = function (module) {
