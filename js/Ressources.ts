@@ -84,6 +84,7 @@
     axisX: string;
     axisY: string;
     axisZ: string;
+    axis0: string;
     checkBox: string;
     noDeviceMotion: string;
 }

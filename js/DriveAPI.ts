@@ -25,12 +25,12 @@ class DriveAPI{
      * Check if current user has authorized this application.
      */
     checkAuth() {
-        gapi.auth.authorize(
-            {
-                'client_id': this.CLIENT_ID,
-                'scope': this.SCOPES.join(' '),
-                'immediate': true
-            }, (authResult) => { this.handleAuthResult(authResult) });
+        //gapi.auth.authorize(
+        //    {
+        //        'client_id': this.CLIENT_ID,
+        //        'scope': this.SCOPES.join(' '),
+        //        'immediate': true
+        //    }, (authResult) => { this.handleAuthResult(authResult) });
     }
 
     /**
@@ -38,7 +38,7 @@ class DriveAPI{
      *
      * @param {Object} authResult Authorization result.
      */
-    handleAuthResult(authResult) {
+    handleAuthResult(authResult,auto?) {
         var buttonConnect = document.getElementById('buttonConnectLoadDrive');
         var buttonConnect2 = document.getElementById('buttonConnectSaveDrive');
         if (authResult && !authResult.error) {

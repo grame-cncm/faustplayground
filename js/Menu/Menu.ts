@@ -388,25 +388,28 @@ class Menu {
             App.isAccelerometerOn = false;
             this.menuView.accButton.style.opacity = "0.3";
             for (var i = 0; i < AccelerometerHandler.accelerometerSliders.length; i++) {
-                AccelerometerHandler.accelerometerSliders[i].isActive = false;
-                //AccelerometerHandler.accelerometerSliders[i].mySlider.style.opacity = "1";
-                AccelerometerHandler.accelerometerSliders[i].mySlider.classList.remove("not-allowed");
-                AccelerometerHandler.accelerometerSliders[i].mySlider.classList.add("allowed");
-                if (!App.isAccelerometerEditOn) {
-                    AccelerometerHandler.accelerometerSliders[i].mySlider.disabled = false;
-                }
+                    AccelerometerHandler.accelerometerSliders[i].isActive = false;
+                    //AccelerometerHandler.accelerometerSliders[i].mySlider.style.opacity = "1";
+                    AccelerometerHandler.accelerometerSliders[i].mySlider.classList.remove("not-allowed");
+                    AccelerometerHandler.accelerometerSliders[i].mySlider.classList.add("allowed");
+                    if (!App.isAccelerometerEditOn) {
+                        AccelerometerHandler.accelerometerSliders[i].mySlider.disabled = false;
+                    }
+                
             }
         } else if (!this.isAccelerometer) {
             this.menuView.accButton.style.opacity = "1";
             this.isAccelerometer = true;
             App.isAccelerometerOn = true;
             for (var i = 0; i < AccelerometerHandler.accelerometerSliders.length; i++) {
-                AccelerometerHandler.accelerometerSliders[i].isActive = true;
-                //AccelerometerHandler.accelerometerSliders[i].mySlider.style.opacity = "0.5";
-                AccelerometerHandler.accelerometerSliders[i].mySlider.classList.add("not-allowed");
-                AccelerometerHandler.accelerometerSliders[i].mySlider.classList.remove("allowed");
-                if (!App.isAccelerometerEditOn) {
-                    AccelerometerHandler.accelerometerSliders[i].mySlider.disabled = true;
+                if (AccelerometerHandler.accelerometerSliders[i].isEnabled) {
+                    AccelerometerHandler.accelerometerSliders[i].isActive = true;
+                    //AccelerometerHandler.accelerometerSliders[i].mySlider.style.opacity = "0.5";
+                    AccelerometerHandler.accelerometerSliders[i].mySlider.classList.add("not-allowed");
+                    AccelerometerHandler.accelerometerSliders[i].mySlider.classList.remove("allowed");
+                    if (!App.isAccelerometerEditOn) {
+                        AccelerometerHandler.accelerometerSliders[i].mySlider.disabled = true;
+                    }
                 }
             }
         }

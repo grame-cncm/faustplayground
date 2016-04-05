@@ -61,6 +61,7 @@
   "axisX": "axe X : ",
   "axisY": "axe Y : ",
   "axisZ": "axe Z : ",
-  "checkBox": "activer/désactiver les accéléromètres",
+  "axis0": "off : ",
+  "checkBox": "activer/désactiver l'accéléromètre",
   "noDeviceMotion": "Il semblerait que votre navigateur ne supporte pas l'API Device Motion, vous n'aurez donc pas accés aux accéléromètres de votre appareil."
 }

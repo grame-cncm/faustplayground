@@ -25,7 +25,7 @@ form#radioCurveContainer {
 }
 form#radioAxisContainer {
     position:relative;
-    width: 50%;
+    width: 75%;
     margin: 0 auto;
 }
 [type="radio"], [type="checkbox"] {
@@ -74,7 +74,7 @@ label.axe {
     box-shadow: 0 0 5px rgb(0, 67, 255);
     border-radius: 5px;
     display: block;
-    width: 31%;
+    width: 23%;
     float: left;
     margin: 0 1%;
     opacity: 0.8;
@@ -234,6 +234,9 @@ input[type="range"]#accRangeMax::-webkit-slider-thumb {
 .z > input[type="range"]#accRangeCurrent::-webkit-slider-thumb {
     background-color: rgba(0, 68, 255, 0.60);
 }
+.disabledAcc > input[type="range"]#accRangeCurrent::-webkit-slider-thumb {
+    background-color: rgba(255, 255, 255, 0.60)!important;
+}
 .x > input[type="range"]#accRangeVirtual::-webkit-slider-thumb {
     background-color: rgba(255, 0, 47, 0.90);
 }
@@ -242,6 +245,9 @@ input[type="range"]#accRangeMax::-webkit-slider-thumb {
 }
 .z > input[type="range"]#accRangeVirtual::-webkit-slider-thumb {
     background-color: rgba(0, 68, 255, 0.90);
+}
+.disabledAcc > input[type="range"]#accRangeVirtual::-webkit-slider-thumb {
+    background-color: rgba(255, 255, 255, 0.90)!important;
 }
 #rangeContainer > input[type="range"] {
     -webkit-appearance: none;
@@ -331,6 +337,9 @@ input[type="range"]#accRangeMax::-moz-range-thumb {
 .z > input[type="range"]#accRangeCurrent::-moz-range-thumb {
     background-color: rgba(0, 68, 255, 0.60);
 }
+.disabledAcc > input[type="range"]#accRangeCurrent::-moz-range-thumb {
+    background-color: rgba(255, 255, 255, 0.60)!important;
+}
 .x > input[type="range"]#accRangeVirtual::-moz-range-thumb {
     background-color: rgba(255, 0, 47, 0.90);
 }
@@ -339,6 +348,9 @@ input[type="range"]#accRangeMax::-moz-range-thumb {
 }
 .z > input[type="range"]#accRangeVirtual::-moz-range-thumb {
     background-color: rgba(0, 68, 255, 0.90);
+}
+.disabledAcc > input[type="range"]#accRangeVirtual::-moz-range-thumb {
+    background-color: rgba(255, 255, 255, 0.90)!important;
 }
 
 

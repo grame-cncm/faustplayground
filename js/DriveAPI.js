@@ -10,19 +10,19 @@ var DriveAPI = (function () {
      * Check if current user has authorized this application.
      */
     DriveAPI.prototype.checkAuth = function () {
-        var _this = this;
-        gapi.auth.authorize({
-            'client_id': this.CLIENT_ID,
-            'scope': this.SCOPES.join(' '),
-            'immediate': true
-        }, function (authResult) { _this.handleAuthResult(authResult); });
+        //gapi.auth.authorize(
+        //    {
+        //        'client_id': this.CLIENT_ID,
+        //        'scope': this.SCOPES.join(' '),
+        //        'immediate': true
+        //    }, (authResult) => { this.handleAuthResult(authResult) });
     };
     /**
      * Handle response from authorization server.
      *
      * @param {Object} authResult Authorization result.
      */
-    DriveAPI.prototype.handleAuthResult = function (authResult) {
+    DriveAPI.prototype.handleAuthResult = function (authResult, auto) {
         var buttonConnect = document.getElementById('buttonConnectLoadDrive');
         var buttonConnect2 = document.getElementById('buttonConnectSaveDrive');
         if (authResult && !authResult.error) {

@@ -14,6 +14,7 @@
     radioCurve2: HTMLInputElement;
     radioCurve3: HTMLInputElement;
     radioCurve4: HTMLInputElement;
+    radioAxis0: HTMLInputElement;
     radioAxisX: HTMLInputElement;
     radioAxisY: HTMLInputElement;
     radioAxisZ: HTMLInputElement;
@@ -108,6 +109,11 @@
         radioAxisContainer.id = "radioAxisContainer"
         this.radioAxisContainer = radioAxisContainer;
 
+        var label0 = document.createElement("label");
+        label0.className = "axe";
+        label0.id = "axe0";
+        label0.textContent = App.messageRessource.axis0;
+
         var labelX = document.createElement("label");
         labelX.className = "axe";
         labelX.id = "axeX";
@@ -122,6 +128,15 @@
         labelZ.className = "axe";
         labelZ.id = "axeZ";
         labelZ.textContent = App.messageRessource.axisZ;
+
+        var radio0 = document.createElement("input");
+        radio0.id = "radio0";
+        //radio0.type = "radio";
+        radio0.type = "checkbox";
+        radio0.className = "radio";
+        radio0.name = "axis";
+        this.radioAxis0 = radio0;
+        label0.appendChild(radio0);
 
         var radioX = document.createElement("input");
         radioX.id = "radioX";
@@ -148,6 +163,7 @@
         labelZ.appendChild(radioZ);
 
 
+        radioAxisContainer.appendChild(label0)
         radioAxisContainer.appendChild(labelX)
         radioAxisContainer.appendChild(labelY)
         radioAxisContainer.appendChild(labelZ)

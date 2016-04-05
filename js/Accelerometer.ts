@@ -6,7 +6,16 @@ interface Window {
 enum Axis { x, y, z };
 enum Curve { Up, Down, UpDown, DownUp };
 
+class AccMeta {
+    axis: Axis;
+    curve: Curve;
+    amin: number;
+    amid: number;
+    amax: number
+}
+
 class AccelerometerSlider {
+
     name: string;
     axis: Axis;
     curve: Curve;
@@ -22,13 +31,19 @@ class AccelerometerSlider {
     precision: number;
     converter: UpdatableValueConverter;
     isActive: boolean;
+    isEnabled: boolean;
+    existed: boolean=false;
     mySlider: HTMLInputElement
     valueOutput: HTMLElement
     acc: string;
+    
+    noacc: string;
+    noAccObj: AccMeta;
     callbackEdit: any;
 
     constructor(controler: Controler) {
         if (controler != null) {
+            this.isEnabled = controler.isEnabled;
             this.acc = controler.acc;
             this.setAttributes(controler.acc);
             this.label = controler.address;
@@ -41,6 +56,9 @@ class AccelerometerSlider {
             this.isActive = App.isAccelerometerOn;
             this.precision = parseFloat(controler.precision);
             this.name = controler.label;
+            if (!this.isEnabled) {
+                this.mySlider.parentElement.classList.add("disabledAcc")
+            }
         }
     }
 
@@ -84,7 +102,7 @@ class AccelerometerHandler {
         var y = event.accelerationIncludingGravity.y;
         var z = event.accelerationIncludingGravity.z;
         for (var i = 0; i < AccelerometerHandler.accelerometerSliders.length; i++) {
-            if (AccelerometerHandler.accelerometerSliders[i].isActive) {
+            if (AccelerometerHandler.accelerometerSliders[i].isActive && AccelerometerHandler.accelerometerSliders[i].isEnabled) {
                 this.axisSplitter(AccelerometerHandler.accelerometerSliders[i], x, y, z, this.applyNewValueToModule)
             }
         }
@@ -105,7 +123,6 @@ class AccelerometerHandler {
                 AccelerometerHandler.sliderEdit = accelerometerSlide;
             }
             return accelerometerSlide;
-
     }
 
 
@@ -152,6 +169,8 @@ class AccelerometerHandler {
             case Curve.DownUp:
                 accelerometerSlide.converter = new AccDownUpConverter(accelerometerSlide.amin, accelerometerSlide.amid, accelerometerSlide.amax, accelerometerSlide.min, accelerometerSlide.ivalue, accelerometerSlide.max)
                 break;
+            default:
+                accelerometerSlide.converter = new AccUpConverter(accelerometerSlide.amin, accelerometerSlide.amid, accelerometerSlide.amax, accelerometerSlide.min, accelerometerSlide.ivalue, accelerometerSlide.max)
         }
     }
 }

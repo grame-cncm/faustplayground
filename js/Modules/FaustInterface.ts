@@ -34,12 +34,15 @@ interface Iitem{
     output: HTMLElement
     precision: string;
     hasAccelerometer: boolean;
+    isEnabled: boolean;
+    accDefault: string;
     acc: string;
     value:string
     accelerometerSlider: AccelerometerSlider;
 }
 interface FaustMeta {
     acc: string;
+    noacc: string;
 }
 class Controler implements Iitem {
     label: string;
@@ -56,6 +59,8 @@ class Controler implements Iitem {
     output: HTMLElement
     precision: string;
     hasAccelerometer: boolean;
+    isEnabled: boolean;
+    accDefault: string="0 0 -10 0 10";
     acc: string;
     value: string;
     accelerometerSlider: AccelerometerSlider;
@@ -182,39 +187,36 @@ class FaustInterface {
                 if (controler.meta[i].acc) {
                     controler.acc = controler.meta[i].acc;
                     controler.hasAccelerometer = true;
+                    controler.isEnabled = true;
                     controler.accelerometerSlider = AccelerometerHandler.registerAcceleratedSlider(controler, module)
                     slider.classList.add("allowed");
-                    //var checkbox = document.createElement("input");
-                    //checkbox.type = "checkbox";
+
                     if (App.isAccelerometerOn) {
                         slider.classList.remove("allowed");
                         slider.classList.add("not-allowed");
-                       // slider.style.opacity = "0.3";
                         slider.disabled = true;
-                    } 
-                    //checkbox.className = "accCheckbox";
-                    //checkbox.addEventListener("click", (event) => { event.stopPropagation(),false })
-                    //checkbox.addEventListener("touchstart", (event) => { event.stopPropagation(), false })
-                    //checkbox.addEventListener("change", (event) => {
-                    //    accSlide.switchActive(event)
-                    //}, false);
+                    }
+                    break;
+                } else if (controler.meta[i].noacc) {
+                    controler.hasAccelerometer = false;
+                    controler.isEnabled = false;
 
-                    //var titleAcc = document.createElement("span")
-                    //titleAcc.className = "titleAcc";
-                    //titleAcc.textContent = "Accelerometre";
-
-                    //var editAcc = document.createElement("button");
-                    //editAcc.type = "button";
-                    //editAcc.className = "accButton";
-                    //editAcc.textContent = "edite";
-                    //editAcc.addEventListener("click", module.sceneParent.eventEditAcc)
-
-                    //group.appendChild(checkbox);
-                    //group.appendChild(titleAcc);
-                    //group.appendChild(editAcc);
-
-                }
+                    controler.acc = controler.meta[i].noacc;
+                    controler.accelerometerSlider = AccelerometerHandler.registerAcceleratedSlider(controler, module)
+                    break;
+                } 
             }
+            if (controler.accelerometerSlider == undefined) {
+                controler.acc = "0 0 -10 0 10";
+                controler.isEnabled = false;
+                controler.hasAccelerometer = false;
+                controler.accelerometerSlider = AccelerometerHandler.registerAcceleratedSlider(controler, module)
+            }
+        } else {
+            controler.acc = "0 0 -10 0 10";
+            controler.isEnabled = false;
+            controler.hasAccelerometer = false;
+            controler.accelerometerSlider = AccelerometerHandler.registerAcceleratedSlider(controler, module)
         }
         module.moduleView.getInterfaceContainer().appendChild(group);
 	    return slider;
