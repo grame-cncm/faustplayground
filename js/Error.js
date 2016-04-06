@@ -1,3 +1,4 @@
+/// <reference path="Messages.ts"/>
 //class ErrorFaust
 var ErrorFaust = (function () {
     function ErrorFaust() {
