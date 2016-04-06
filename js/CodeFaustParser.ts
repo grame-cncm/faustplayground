@@ -1,4 +1,5 @@
-﻿//class CodeFaustParser
+﻿/// <reference path="Messages.ts"/>
+//class CodeFaustParser
 
 class CodeFaustParser {
     originalCodeFaust: string;

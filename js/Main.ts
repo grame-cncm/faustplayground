@@ -4,7 +4,7 @@
 
 
 
-	
+
 */
 
 /// <reference path="App.ts"/>
@@ -18,7 +18,7 @@ window.addEventListener('load', init, false);
 //worker.addEventListener("message", function (event) { console.log(event.data) }, false)
 
 
-   
+
 
 
 
@@ -40,7 +40,7 @@ function resumeInit(app: App) {
     App.addFullPageLoading();
     app.createAllScenes();
     app.createMenu();
-    
+
     app.showFirstScene();
     var accHandler: AccelerometerHandler = new AccelerometerHandler();
     App.accHandler = accHandler;
@@ -152,7 +152,7 @@ interface MediaStreamAudioDestinationNode extends AudioNode {
 }
 
 interface AudioContext {
-    state: string;
+//    state: string;
     close: () => void;
     createMediaStreamSource: (m: MediaStream) => MediaStreamAudioSourceNode;
     createMediaStreamDestination: () => any;
@@ -170,6 +170,3 @@ interface Factory {
     sha_key: string;
     code: string;
 }
-
-
-

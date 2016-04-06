@@ -9,7 +9,9 @@
     /// <reference path="Load.ts"/>
     /// <reference path="Save.ts"/>
     /// <reference path="AccelerometerEdit.ts"/>
-    /// <reference path="../DriveAPI.ts"/>   
+    /// <reference path="../DriveAPI.ts"/> 
+    /// <reference path="../Messages.ts"/>
+  
 interface Document {
     cancelFullScreen: () => any;
     mozCancelFullScreen: () => any;
@@ -466,6 +468,7 @@ class Menu {
         this.load.loadView.buttonConnectDrive.style.display = "none";
         this.save.saveView.buttonConnectDrive.style.display = "none";
         this.save.saveView.buttonCloudSuppr.style.display = "block";
+        this.save.saveView.inputCloudStorage.style.display = "block";
     }
     authOff() {
         this.load.loadView.cloudSelectFile.style.display = "none";
@@ -475,6 +478,7 @@ class Menu {
         this.load.loadView.buttonConnectDrive.style.display = "block";
         this.save.saveView.buttonConnectDrive.style.display = "block";
         this.save.saveView.buttonCloudSuppr.style.display = "none";
+        this.save.saveView.inputCloudStorage.style.display = "none";
         this.clearSelect(this.save.saveView.cloudSelectFile);
         this.clearSelect(this.load.loadView.cloudSelectFile);
 
