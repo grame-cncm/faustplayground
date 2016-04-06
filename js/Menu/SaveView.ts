@@ -51,6 +51,7 @@
 
         var rulesName: HTMLSpanElement = document.createElement("span");
         rulesName.id = "rulesName";
+        rulesName.style.display = "none";
         rulesName.textContent = App.messageRessource.rulesSceneName;
         this.rulesName = rulesName;
 
@@ -67,6 +68,7 @@
 
         var inputDownload: HTMLInputElement = document.createElement("input");
         inputDownload.id = "inputNameApp";
+        inputDownload.style.display = "none";
         inputDownload.className = "inputExport";
         inputDownload.value = App.scene.sceneName;
 
@@ -107,6 +109,7 @@
         var inputLocalStorage: HTMLInputElement = document.createElement("input");
         inputLocalStorage.id = "inputNameApp";
         inputLocalStorage.className = "inputExport";
+        inputLocalStorage.style.display = "none";
         inputLocalStorage.value = App.scene.sceneName;
         this.inputLocalStorage = inputLocalStorage;
 
