@@ -1,7 +1,7 @@
 /// <reference path="Messages.ts"/>
 var DriveAPI = (function () {
     function DriveAPI() {
-        this.CLIENT_ID = '868894976686-v9jemj2h2ejkjhf0tplf6jp4v4vfleju.apps.googleusercontent.com';
+        this.CLIENT_ID = '937268536763-j0tfilisap0274toolo0hehndnhgsrva.apps.googleusercontent.com';
         this.SCOPES = ['https://www.googleapis.com/auth/drive'];
         this.faustFolder = "FaustPlayground";
         this.isFaustFolderPresent = false;
@@ -157,7 +157,7 @@ var DriveAPI = (function () {
     DriveAPI.prototype.getFile = function (fileId, callback) {
         var _this = this;
         var request = gapi.client.drive.files.get({
-            'fileId': fileId
+            'fileId': fileId,
         });
         try {
             request.execute(function (resp) {
@@ -178,7 +178,7 @@ var DriveAPI = (function () {
             'method': 'POST',
             'body': {
                 "title": fileName + this.extension,
-                "mimeType": "application/json"
+                "mimeType": "application/json",
             }
         });
         request.execute(function (resp) {

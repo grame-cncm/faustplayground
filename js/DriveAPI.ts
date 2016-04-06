@@ -11,7 +11,7 @@ interface DriveFile {
 
 class DriveAPI{
 
-    CLIENT_ID: string = '868894976686-v9jemj2h2ejkjhf0tplf6jp4v4vfleju.apps.googleusercontent.com';
+    CLIENT_ID: string = '937268536763-j0tfilisap0274toolo0hehndnhgsrva.apps.googleusercontent.com';
 
     SCOPES: string[] = ['https://www.googleapis.com/auth/drive'];
     faustFolder: string = "FaustPlayground";
