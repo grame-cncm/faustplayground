@@ -25,7 +25,8 @@ var Load = (function () {
     Load.prototype.localLoad = function () {
         if (this.loadView.existingSceneSelect.selectedIndex > -1) {
             App.showFullPageLoading();
-            var name = this.loadView.existingSceneSelect.options[this.loadView.existingSceneSelect.selectedIndex].value;
+            var option = this.loadView.existingSceneSelect.options[this.loadView.existingSceneSelect.selectedIndex];
+            var name = option.value;
             this.sceneCurrent.recallScene(localStorage.getItem(name));
         }
     };
@@ -41,7 +42,8 @@ var Load = (function () {
     };
     Load.prototype.supprLocal = function () {
         if (this.loadView.existingSceneSelect.selectedIndex > -1) {
-            var name = this.loadView.existingSceneSelect.options[this.loadView.existingSceneSelect.selectedIndex].value;
+            var option = this.loadView.existingSceneSelect.options[this.loadView.existingSceneSelect.selectedIndex];
+            var name = option.value;
             localStorage.removeItem(name);
             var event = new CustomEvent("updatelist");
             document.dispatchEvent(event);
@@ -51,8 +53,8 @@ var Load = (function () {
         var _this = this;
         if (this.loadView.cloudSelectFile.selectedIndex > -1) {
             App.showFullPageLoading();
-            var id = this.loadView.cloudSelectFile.options[this.loadView.cloudSelectFile.selectedIndex].value;
-            var name = this.loadView.cloudSelectFile.options[this.loadView.cloudSelectFile.selectedIndex].name;
+            var option = this.loadView.cloudSelectFile.options[this.loadView.cloudSelectFile.selectedIndex];
+            var id = option.value;
             var file = this.drive.getFile(id, function (resp) { _this.getContent(resp); });
             console.log(file);
         }
@@ -66,5 +68,5 @@ var Load = (function () {
         document.dispatchEvent(event);
     };
     return Load;
-})();
+}());
 //# sourceMappingURL=Load.js.map

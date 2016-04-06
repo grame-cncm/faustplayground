@@ -110,7 +110,7 @@ class Drag {
 
         var moduleContainer = module.moduleView.getModuleContainer();
 
-        App.appTest++
+        //App.appTest++
 
 	    // Get cursor position with respect to the page.
        
@@ -339,7 +339,9 @@ class Drag {
             } else if (currentHoverElement.parentElement.classList.contains("node-output")) {
                 module.styleOutputNodeTouchDragOver(currentHoverElement.parentElement);
             } else if (!ModuleClass.isNodesModuleUnstyle) {
-                module.sceneParent.unstyleNode();
+                var customEvent = new CustomEvent("unstylenode")
+                document.dispatchEvent(customEvent);
+
             }
         }
 
@@ -408,7 +410,7 @@ class Drag {
         var arrivingHTMLParentNode: HTMLElement = <HTMLElement>arrivingHTMLNode.offsetParent;
         var arrivingNode: ModuleClass;
 
-        var modules: ModuleClass[] = module.sceneParent.getModules();
+        var modules: ModuleClass[] = Utilitary.currentScene.getModules();
 
         for (var i = 0; i < modules.length; i++){
             if ((this.isOriginInput && modules[i].moduleView.isPointInOutput(x, y)) || modules[i].moduleView.isPointInInput(x, y)) {
@@ -418,8 +420,8 @@ class Drag {
 	    }	
 
         if (arrivingHTMLParentNode!=undefined&&arrivingHTMLParentNode.classList.contains("node")) {
-            var outputModule = module.sceneParent.getAudioOutput();
-            var inputModule = module.sceneParent.getAudioInput();
+            var outputModule = Utilitary.currentScene.getAudioOutput();
+            var inputModule = Utilitary.currentScene.getAudioInput();
             if ((this.isOriginInput && outputModule.moduleView.isPointInOutput(x, y)) || outputModule.moduleView.isPointInInput(x, y) || arrivingHTMLParentNode.offsetParent.getAttribute("id") == "moduleOutput") {
                 arrivingNode = outputModule;
             } else if ((!this.isOriginInput && inputModule.moduleView.isPointInInput(x, y)) || inputModule.moduleView.isPointInOutput(x, y) || arrivingHTMLParentNode.offsetParent.getAttribute("id") == "moduleInput") {

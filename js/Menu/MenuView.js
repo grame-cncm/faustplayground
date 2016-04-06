@@ -79,7 +79,7 @@ var MenuView = (function () {
         var myScene = document.createElement("div");
         myScene.id = "PatchName";
         myScene.className = "sceneTitle";
-        myScene.textContent = App.scene.sceneName;
+        myScene.textContent = Utilitary.currentScene.sceneName;
         buttonsMenu.appendChild(myScene);
         this.patchNameScene = myScene;
         //create menu's Contents and there containers
@@ -135,5 +135,5 @@ var MenuView = (function () {
         this.contentsMenu = contentsMenu;
     };
     return MenuView;
-})();
+}());
 //# sourceMappingURL=MenuView.js.map

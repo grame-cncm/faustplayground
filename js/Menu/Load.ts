@@ -29,7 +29,8 @@ class Load {
         if (this.loadView.existingSceneSelect.selectedIndex > -1) {
 
             App.showFullPageLoading();
-            var name = this.loadView.existingSceneSelect.options[this.loadView.existingSceneSelect.selectedIndex].value
+            var option = <HTMLOptionElement>this.loadView.existingSceneSelect.options[this.loadView.existingSceneSelect.selectedIndex]
+            var name = option.value
             this.sceneCurrent.recallScene(localStorage.getItem(name))
         }
     }
@@ -45,8 +46,8 @@ class Load {
     }
     supprLocal() {
         if (this.loadView.existingSceneSelect.selectedIndex > -1) {
-
-            var name = this.loadView.existingSceneSelect.options[this.loadView.existingSceneSelect.selectedIndex].value
+            var option = <HTMLOptionElement>this.loadView.existingSceneSelect.options[this.loadView.existingSceneSelect.selectedIndex]
+            var name = option.value
             localStorage.removeItem(name)
             var event: CustomEvent = new CustomEvent("updatelist")
             document.dispatchEvent(event);
@@ -56,8 +57,8 @@ class Load {
 
         if (this.loadView.cloudSelectFile.selectedIndex > -1) {
             App.showFullPageLoading();
-            var id = this.loadView.cloudSelectFile.options[this.loadView.cloudSelectFile.selectedIndex].value
-            var name = this.loadView.cloudSelectFile.options[this.loadView.cloudSelectFile.selectedIndex].name
+            var option = <HTMLOptionElement>this.loadView.cloudSelectFile.options[this.loadView.cloudSelectFile.selectedIndex]
+            var id = option.value
             var file = this.drive.getFile(id, (resp) => {this.getContent(resp) });
             console.log(file);
             //this.drive.downloadFile({ name, id }, (json) => { this.loadEx(json) })

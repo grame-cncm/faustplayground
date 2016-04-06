@@ -26,25 +26,24 @@
 /// <reference path="../Messages.ts"/>
 "use strict";
 var ModuleClass = (function () {
-    function ModuleClass(id, x, y, name, sceneParent, htmlElementModuleContainer, removeModuleCallBack) {
+    function ModuleClass(id, x, y, name, htmlElementModuleContainer, removeModuleCallBack, compileFaust) {
         var _this = this;
         this.drag = new Drag();
         this.dragList = [];
         this.moduleControles = [];
         this.fModuleInterfaceParams = {};
-        this.sceneParent = sceneParent;
-        var self = this;
         this.eventConnectorHandler = function (event) { _this.dragCnxCallback(event, _this); };
         this.eventCloseEditHandler = function (event) { _this.recompileSource(event, _this); };
         this.eventOpenEditHandler = function () { _this.edit(); };
+        this.compileFaust = compileFaust;
         // ---- Capturing module instance	
         // ----- Delete Callback was added to make sure 
         // ----- the module is well deleted from the scene containing it
         this.deleteCallback = removeModuleCallBack;
-        this.eventDraggingHandler = function (event) { self.dragCallback(event, self); };
-        self.moduleView = new ModuleView();
-        self.moduleView.createModuleView(id, x, y, name, htmlElementModuleContainer, self);
-        self.moduleFaust = new ModuleFaust(name);
+        this.eventDraggingHandler = function (event) { _this.dragCallback(event, _this); };
+        this.moduleView = new ModuleView();
+        this.moduleView.createModuleView(id, x, y, name, htmlElementModuleContainer, this);
+        this.moduleFaust = new ModuleFaust(name);
     }
     /***************  PRIVATE METHODS  ******************************/
     ModuleClass.prototype.dragCallback = function (event, module) {
@@ -93,13 +92,14 @@ var ModuleClass = (function () {
             }
         }
         else if (event.type == "touchend") {
-            this.sceneParent.unstyleNode();
+            var customEvent = new CustomEvent("unstylenode");
+            document.dispatchEvent(customEvent);
             for (var i = 0; i < module.dragList.length; i++) {
                 if (module.dragList[i].originTarget == event.target) {
                     module.dragList[i].getDraggingTouchEvent(event, module, function (el, x, y, module) { module.dragList[i].stopDraggingConnector(el, x, y, module); });
                 }
             }
-            this.sceneParent.unstyleNode();
+            document.dispatchEvent(customEvent);
         }
     };
     /*******************************  PUBLIC METHODS  **********************************/
@@ -111,7 +111,7 @@ var ModuleClass = (function () {
         if (this.moduleView)
             this.moduleView.fModuleContainer.parentNode.removeChild(this.moduleView.fModuleContainer);
         this.deleteDSP(this.moduleFaust.fDSP);
-        this.deleteCallback(this, this.sceneParent);
+        this.deleteCallback(this);
     };
     ModuleClass.prototype.minModule = function () {
         this.moduleView.fInterfaceContainer.classList.add("mini");
@@ -206,7 +206,7 @@ var ModuleClass = (function () {
         this.moduleFaust.fTempName = name;
         this.moduleFaust.fTempSource = code;
         var module = this;
-        this.sceneParent.parent.compileFaust(name, code, this.moduleView.x, this.moduleView.y, function (factory) { module.updateDSP(factory, module); });
+        this.compileFaust({ name: name, sourceCode: code, x: this.moduleView.x, y: this.moduleView.y, callback: function (factory) { module.updateDSP(factory, module); } });
     };
     //---- React to recompilation triggered by click on icon
     ModuleClass.prototype.recompileSource = function (event, module) {
@@ -342,5 +342,5 @@ var ModuleClass = (function () {
     };
     ModuleClass.isNodesModuleUnstyle = true;
     return ModuleClass;
-})();
+}());
 //# sourceMappingURL=ModuleClass.js.map

@@ -6,5 +6,5 @@ var Help = (function () {
         //this.helpView.videoIframe.contentWindow.postMessage('{"event":"command","func":"' + 'stopVideo' + '","args":""}', '*');
     };
     return Help;
-})();
+}());
 //# sourceMappingURL=Help.js.map

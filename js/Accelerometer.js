@@ -17,7 +17,7 @@ var AccMeta = (function () {
     function AccMeta() {
     }
     return AccMeta;
-})();
+}());
 var AccelerometerSlider = (function () {
     function AccelerometerSlider(controler) {
         this.existed = false;
@@ -58,7 +58,7 @@ var AccelerometerSlider = (function () {
         this.amax = max;
     };
     return AccelerometerSlider;
-})();
+}());
 var AccelerometerHandler = (function () {
     function AccelerometerHandler() {
     }
@@ -146,7 +146,7 @@ var AccelerometerHandler = (function () {
     AccelerometerHandler.accelerometerSliders = [];
     AccelerometerHandler.sliderEdit = null;
     return AccelerometerHandler;
-})();
+}());
 var MinMaxClip = (function () {
     function MinMaxClip(x, y) {
         this.fLo = Math.min(x, y);
@@ -164,7 +164,7 @@ var MinMaxClip = (function () {
         }
     };
     return MinMaxClip;
-})();
+}());
 var Interpolator = (function () {
     function Interpolator(lo, hi, v1, v2) {
         this.range = new MinMaxClip(lo, hi);
@@ -186,7 +186,7 @@ var Interpolator = (function () {
         return { amin: this.range.fLo, amax: this.range.fHi };
     };
     return Interpolator;
-})();
+}());
 var Interpolator3pt = (function () {
     function Interpolator3pt(lo, mid, hi, v1, vMid, v2) {
         this.fSegment1 = new Interpolator(lo, mid, v1, vMid);
@@ -202,7 +202,7 @@ var Interpolator3pt = (function () {
         return { amin: lowHighSegment1.amin, amid: lowHighSegment2.amin, amax: lowHighSegment2.amax };
     };
     return Interpolator3pt;
-})();
+}());
 var AccUpConverter = (function () {
     function AccUpConverter(amin, amid, amax, fmin, fmid, fmax) {
         this.fActive = true;
@@ -226,7 +226,7 @@ var AccUpConverter = (function () {
     AccUpConverter.prototype.getActive = function () { return this.fActive; };
     ;
     return AccUpConverter;
-})();
+}());
 var AccDownConverter = (function () {
     function AccDownConverter(amin, amid, amax, fmin, fmid, fmax) {
         this.fActive = true;
@@ -250,7 +250,7 @@ var AccDownConverter = (function () {
     AccDownConverter.prototype.getActive = function () { return this.fActive; };
     ;
     return AccDownConverter;
-})();
+}());
 var AccUpDownConverter = (function () {
     function AccUpDownConverter(amin, amid, amax, fmin, fmid, fmax) {
         this.fActive = true;
@@ -274,7 +274,7 @@ var AccUpDownConverter = (function () {
     AccUpDownConverter.prototype.getActive = function () { return this.fActive; };
     ;
     return AccUpDownConverter;
-})();
+}());
 var AccDownUpConverter = (function () {
     function AccDownUpConverter(amin, amid, amax, fmin, fmid, fmax) {
         this.fActive = true;
@@ -298,5 +298,5 @@ var AccDownUpConverter = (function () {
     AccDownUpConverter.prototype.getActive = function () { return this.fActive; };
     ;
     return AccDownUpConverter;
-})();
+}());
 //# sourceMappingURL=Accelerometer.js.map

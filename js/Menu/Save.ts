@@ -21,21 +21,21 @@ class Save {
     }
 
     downloadApp() {
-        if (this.saveView.inputDownload.value != App.scene.sceneName && !Scene.rename(this.saveView.inputDownload, this.saveView.rulesName, this.saveView.dynamicName)) {
+        if (this.saveView.inputDownload.value != Utilitary.currentScene.sceneName && !Scene.rename(this.saveView.inputDownload, this.saveView.rulesName, this.saveView.dynamicName)) {
 
         } else {
             var jsonScene = this.sceneCurrent.saveScene(this.saveView.checkBoxPrecompile.checked)
             var blob = new Blob([jsonScene], {
                 type: "application/vnd.google-apps.script+json;charset=utf-8;",
             });
-            saveAs(blob, App.scene.sceneName + ".jfaust");
+            saveAs(blob, Utilitary.currentScene.sceneName + ".jfaust");
         }
 
 
     }
 
     saveLocal() {
-        if (this.saveView.inputLocalStorage.value != App.scene.sceneName && !Scene.rename(this.saveView.inputLocalStorage, this.saveView.rulesName, this.saveView.dynamicName)) {
+        if (this.saveView.inputLocalStorage.value != Utilitary.currentScene.sceneName && !Scene.rename(this.saveView.inputLocalStorage, this.saveView.rulesName, this.saveView.dynamicName)) {
         } else {
             if (typeof sessionStorage != 'undefined') {
                 var name = this.saveView.inputLocalStorage.value;
@@ -80,7 +80,8 @@ class Save {
     }
 
     getNameSelected() {
-        this.saveView.inputLocalStorage.value = this.saveView.existingSceneSelect.options[this.saveView.existingSceneSelect.selectedIndex].value;
+        var option = <HTMLOptionElement>this.saveView.existingSceneSelect.options[this.saveView.existingSceneSelect.selectedIndex]
+        this.saveView.inputLocalStorage.value = option.value;
     }
 
     getNameSelectedCloud() {
@@ -89,7 +90,8 @@ class Save {
     getValueByTextContent(select: HTMLSelectElement, name: string):string {
         for (var i = 0; i < select.options.length; i++) {
             if (select.options[i].textContent == name) {
-                return select.options[i].value;
+                var option = <HTMLOptionElement>select.options[i];
+                return option.value;
             }
         }
         return null;
@@ -102,8 +104,9 @@ class Save {
         }
     }
 
-    supprLocalCallback(callbackConfirm:()=>void) {
-        var name = this.saveView.existingSceneSelect.options[this.saveView.existingSceneSelect.selectedIndex].value
+    supprLocalCallback(callbackConfirm: () => void) {
+        var option = <HTMLOptionElement>this.saveView.existingSceneSelect.options[this.saveView.existingSceneSelect.selectedIndex];
+        var name = option.value
         localStorage.removeItem(name)
         var event: CustomEvent = new CustomEvent("updatelist")
         document.dispatchEvent(event);
@@ -115,7 +118,7 @@ class Save {
     }
 
     saveCloud() {
-        if (this.saveView.inputCloudStorage.value != App.scene.sceneName && !Scene.rename(this.saveView.inputCloudStorage, this.saveView.rulesName, this.saveView.dynamicName)) {
+        if (this.saveView.inputCloudStorage.value != Utilitary.currentScene.sceneName && !Scene.rename(this.saveView.inputCloudStorage, this.saveView.rulesName, this.saveView.dynamicName)) {
         } else {
             var name = this.saveView.inputCloudStorage.value;
             if (this.isFileCloudExisting(name)) {
@@ -127,7 +130,7 @@ class Save {
                 var jsonScene = this.sceneCurrent.saveScene(true)
                 var blob = new Blob([jsonScene], { type: "application/json" });
                 this.drive.tempBlob = blob;
-                this.drive.createFile(App.scene.sceneName,null);
+                this.drive.createFile(Utilitary.currentScene.sceneName,null);
             }
         }
     }
@@ -149,8 +152,9 @@ class Save {
             new Confirm(App.messageRessource.confirmSuppr, (confirmCallBack) => { this.supprCloudCallback(confirmCallBack) })
         }
     }
-    supprCloudCallback(confirmCallBack:()=>void) {
-        var id = this.saveView.cloudSelectFile.options[this.saveView.cloudSelectFile.selectedIndex].value
+    supprCloudCallback(confirmCallBack: () => void) {
+        var option = <HTMLOptionElement>this.saveView.cloudSelectFile.options[this.saveView.cloudSelectFile.selectedIndex];
+        var id = option.value
         this.drive.trashFile(id);
         confirmCallBack();
         

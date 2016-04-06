@@ -11,18 +11,18 @@ Create Factories and Modules
 
 DEPENDENCIES:
 - Accueil.js
-    - Finish.js
-    - Playground.js
-    - Pedagogie.js
-    - SceneClass.js
+   - Finish.js
+   - Playground.js
+   - Pedagogie.js
+   - SceneClass.js
 
-    - ModuleClass.js
-    - Connect.js
-    - libfaust.js
-    - webaudio - asm - wrapper.js
-    - Pedagogie / Tooltips.js
+   - ModuleClass.js
+   - Connect.js
+   - libfaust.js
+   - webaudio - asm - wrapper.js
+   - Pedagogie / Tooltips.js
 
-    */
+   */
 /// <reference path="Scenes/SceneClass.ts"/>
 /// <reference path="Modules/ModuleClass.ts"/>
 /// <reference path="Modules/ModuleView.ts"/>
@@ -51,11 +51,11 @@ var App = (function () {
     function App() {
     }
     App.prototype.showFirstScene = function () {
-        App.scene.showScene();
+        Utilitary.currentScene.showScene();
     };
     App.prototype.createAllScenes = function () {
         var sceneView = new SceneView();
-        App.scene = new Scene("Normal", this, sceneView);
+        Utilitary.currentScene = new Scene("Normal", this, this.compileFaust, sceneView);
         //App.scene.sceneView = sceneView;
         this.setGeneralAppListener(this);
         //sceneView.initNormalScene(App.scene);
@@ -64,14 +64,14 @@ var App = (function () {
     App.prototype.createMenu = function () {
         var _this = this;
         this.menu = new Menu(document.getElementsByTagName('body')[0]);
-        this.menu.setMenuScene(App.scene);
-        App.scene.getSceneContainer().addEventListener("mousedown", function () {
+        this.menu.setMenuScene(Utilitary.currentScene);
+        Utilitary.currentScene.getSceneContainer().addEventListener("mousedown", function () {
             if (!_this.menu.accEdit.isOn) {
                 _this.menu.menuChoices = MenuChoices.null;
                 _this.menu.menuHandler(_this.menu.menuChoices);
             }
         }, true);
-        App.scene.getSceneContainer().addEventListener("touchstart", function () {
+        Utilitary.currentScene.getSceneContainer().addEventListener("touchstart", function () {
             if (!_this.menu.accEdit.isOn) {
                 _this.menu.menuChoices = MenuChoices.null;
                 _this.menu.menuHandler(_this.menu.menuChoices);
@@ -84,53 +84,15 @@ var App = (function () {
         document.getElementsByTagName("body")[0].appendChild(dialogue);
     };
     /********************************************************************
-    **********************  ACTIVATE PHYSICAL IN/OUTPUT *****************
-    ********************************************************************/
-    App.prototype.activateAudioInput = function (scene) {
-        var _this = this;
-        var navigatorLoc = navigator;
-        if (!navigatorLoc.getUserMedia) {
-            navigatorLoc.getUserMedia = navigatorLoc.webkitGetUserMedia || navigatorLoc.mozGetUserMedia;
-        }
-        if (navigatorLoc.getUserMedia) {
-            navigatorLoc.getUserMedia({ audio: true }, function (mediaStream) { _this.getDevice(mediaStream, _this); }, function (e) {
-                scene.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)";
-                scene.fAudioInput.moduleView.fInterfaceContainer.title = App.messageRessource.errorGettingAudioInput;
-                new Message(App.messageRessource.errorGettingAudioInput);
-            });
-        }
-        else {
-            scene.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)";
-            new Message(App.messageRessource.errorInputAPINotAvailable);
-            scene.fAudioInput.moduleView.fInterfaceContainer.title = App.messageRessource.errorInputAPINotAvailable;
-        }
-    };
-    App.prototype.getDevice = function (device, app) {
-        // Create an AudioNode from the stream.
-        App.src = document.getElementById("input");
-        App.src.audioNode = App.audioContext.createMediaStreamSource(device);
-        var drag = new Drag();
-        var connect = new Connector();
-        connect.connectInput(App.scene.fAudioInput, App.src);
-    };
-    App.prototype.activateAudioOutput = function (sceneOutput) {
-        App.out = document.createElement("div");
-        App.out.id = "audioOutput";
-        App.out.audioNode = App.audioContext.destination;
-        document.body.appendChild(App.out);
-        var connect = new Connector();
-        connect.connectOutput(sceneOutput, App.out);
-    };
-    /********************************************************************
     ****************  CREATE FAUST FACTORIES AND MODULES ****************
     ********************************************************************/
-    App.prototype.compileFaust = function (name, sourcecode, x, y, callback) {
+    App.prototype.compileFaust = function (compileFaust) {
         //  Temporarily Saving parameters of compilation
-        this.tempModuleName = name;
-        this.tempModuleSourceCode = sourcecode;
-        this.tempModuleX = x;
-        this.tempModuleY = y;
-        var currentScene = App.scene;
+        this.tempModuleName = compileFaust.name;
+        this.tempModuleSourceCode = compileFaust.sourceCode;
+        this.tempModuleX = compileFaust.x;
+        this.tempModuleY = compileFaust.y;
+        var currentScene = Utilitary.currentScene;
         // To Avoid click during compilation
         if (currentScene) {
             currentScene.muteScene();
@@ -145,7 +107,7 @@ var App = (function () {
         //})
         //worker.postMessage(messageJson)
         try {
-            this.factory = faust.createDSPFactory(sourcecode, args, function (factory) { callback(factory); });
+            this.factory = faust.createDSPFactory(compileFaust.sourceCode, args, function (factory) { compileFaust.callback(factory); });
         }
         catch (error) {
             new Message(error);
@@ -165,7 +127,7 @@ var App = (function () {
         }
         // can't it be just window.scenes[window.currentScene] ???
         //if (App.isTooltipEnabled)
-        var module = new ModuleClass(App.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, App.scene, document.getElementById("modules"), App.scene.removeModule);
+        var module = new ModuleClass(App.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), function (module) { Utilitary.currentScene.removeModule(module); }, this.compileFaust);
         //else
         //    faustModule = new ModuleClass(this.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), this.scenes[0].removeModule);
         module.moduleFaust.setSource(this.tempModuleSourceCode);
@@ -187,8 +149,8 @@ var App = (function () {
             module.moduleView.fModuleContainer.style.opacity = "0.5";
             module.moduleView.fModuleContainer.style.boxShadow = "0 5px 10px rgba(0, 0, 0, 0.4)";
         };
-        App.scene.addModule(module);
-        if (!App.scene.isInitLoading) {
+        Utilitary.currentScene.addModule(module);
+        if (!Utilitary.currentScene.isInitLoading) {
             App.hideFullPageLoading();
         }
     };
@@ -289,7 +251,7 @@ var App = (function () {
             if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
                 var dsp_code = "process = vgroup(\"" + filename + "\",environment{" + xmlhttp.responseText + "}.process);";
                 if (module == null) {
-                    app.compileFaust(filename, dsp_code, x, y, function (factory) { app.createModule(factory); });
+                    app.compileFaust({ name: filename, sourceCode: dsp_code, x: x, y: y, callback: function (factory) { app.createModule(factory); } });
                 }
                 else {
                     module.update(filename, dsp_code);
@@ -305,7 +267,7 @@ var App = (function () {
     App.prototype.uploadCodeFaust = function (app, module, x, y, e, dsp_code) {
         dsp_code = "process = vgroup(\"" + "TEXT" + "\",environment{" + dsp_code + "}.process);";
         if (!module) {
-            app.compileFaust("TEXT", dsp_code, x, y, function (factory) { app.createModule(factory); });
+            app.compileFaust({ name: "TEXT", sourceCode: dsp_code, x: x, y: y, callback: function (factory) { app.createModule(factory); } });
         }
         else {
             module.update("TEXT", dsp_code);
@@ -339,18 +301,17 @@ var App = (function () {
         }
         else {
             throw new Error(App.messageRessource.errorObjectNotFaustCompatible);
-            this.terminateUpload();
         }
         reader.onloadend = function (e) {
             dsp_code = "process = vgroup(\"" + filename + "\",environment{" + reader.result + "}.process);";
             if (!module && type == "dsp") {
-                app.compileFaust(filename, dsp_code, x, y, function (factory) { app.createModule(factory); });
+                app.compileFaust({ name: filename, sourceCode: dsp_code, x: x, y: y, callback: function (factory) { app.createModule(factory); } });
             }
             else if (type == "dsp") {
                 module.update(filename, dsp_code);
             }
             else if (type == "json") {
-                App.scene.recallScene(reader.result);
+                Utilitary.currentScene.recallScene(reader.result);
             }
             //app.terminateUpload();
         };
@@ -358,12 +319,12 @@ var App = (function () {
     App.prototype.loadFileEvent = function (e) {
         App.showFullPageLoading();
         var file = e.detail;
-        var position = App.scene.positionDblTapModule();
+        var position = Utilitary.currentScene.positionDblTapModule();
         this.loadFile(file, null, position.x, position.y, this);
     };
     App.prototype.dblTouchUpload = function (e) {
         App.showFullPageLoading();
-        var position = App.scene.positionDblTapModule();
+        var position = Utilitary.currentScene.positionDblTapModule();
         this.uploadUrl(this, null, position.x, position.y, e.detail);
     };
     //Check in Url if the app should be for kids
@@ -444,9 +405,9 @@ var App = (function () {
     App.prototype.styleOnDragStart = function () {
         this.menu.menuView.menuContainer.style.opacity = "0.5";
         this.menu.menuView.menuContainer.classList.add("no_pointer");
-        App.scene.sceneView.dropElementScene.style.display = "block";
-        App.scene.getSceneContainer().style.boxShadow = "0 0 200px #00f inset";
-        var modules = App.scene.getModules();
+        Utilitary.currentScene.sceneView.dropElementScene.style.display = "block";
+        Utilitary.currentScene.getSceneContainer().style.boxShadow = "0 0 200px #00f inset";
+        var modules = Utilitary.currentScene.getModules();
         for (var i = 0; i < modules.length; i++) {
             modules[i].moduleView.fModuleContainer.style.opacity = "0.5";
         }
@@ -458,9 +419,9 @@ var App = (function () {
         //this.menu.lowerLibraryMenu();
         this.menu.menuView.menuContainer.classList.remove("no_pointer");
         this.menu.menuView.menuContainer.style.opacity = "1";
-        App.scene.sceneView.dropElementScene.style.display = "none";
-        App.scene.getSceneContainer().style.boxShadow = "none";
-        var modules = App.scene.getModules();
+        Utilitary.currentScene.sceneView.dropElementScene.style.display = "none";
+        Utilitary.currentScene.getSceneContainer().style.boxShadow = "none";
+        var modules = Utilitary.currentScene.getModules();
         for (var i = 0; i < modules.length; i++) {
             modules[i].moduleView.fModuleContainer.style.opacity = "1";
             modules[i].moduleView.fModuleContainer.style.boxShadow = "0 5px 10px rgba(0, 0, 0, 0.4)";
@@ -509,13 +470,12 @@ var App = (function () {
     };
     App.prototype.errorCallBack = function (message) {
     };
-    //************* Fields
-    App.appTest = 0;
     App.idX = 0;
+    //static scene: Scene;
     App.baseImg = "img/";
     App.isAccelerometerOn = false;
     App.isAccelerometerEditOn = false;
     App.messageRessource = new Ressources();
     return App;
-})();
+}());
 //# sourceMappingURL=App.js.map

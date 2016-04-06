@@ -11,7 +11,7 @@ var Controler = (function () {
         this.accDefault = "0 0 -10 0 10";
     }
     return Controler;
-})();
+}());
 var FaustInterface = (function () {
     function FaustInterface() {
     }
@@ -173,5 +173,5 @@ var FaustInterface = (function () {
         return button;
     };
     return FaustInterface;
-})();
+}());
 //# sourceMappingURL=FaustInterface.js.map

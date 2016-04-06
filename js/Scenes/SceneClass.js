@@ -1,10 +1,10 @@
 /*				SCENECLASS.JS
-    HAND-MADE JAVASCRIPT CLASS CONTAINING THE API OF A GENERIC SCENE
+   HAND-MADE JAVASCRIPT CLASS CONTAINING THE API OF A GENERIC SCENE
 
-    DEPENDENCIES :
-        - ModuleClass.js
-        - Main.js
-        - Connect.js
+   DEPENDENCIES :
+       - ModuleClass.js
+       - Main.js
+       - Connect.js
 */
 /// <reference path="../Connect.ts"/>
 /// <reference path="../Modules/ModuleClass.ts"/>
@@ -14,53 +14,9 @@
 /// <reference path="../App.ts"/>
 /// <reference path="../Messages.ts"/>
 "use strict";
-var JsonSaveCollection = (function () {
-    function JsonSaveCollection() {
-    }
-    return JsonSaveCollection;
-})();
-var JsonSaveObject = (function () {
-    function JsonSaveObject() {
-    }
-    return JsonSaveObject;
-})();
-var JsonOutputsSave = (function () {
-    function JsonOutputsSave() {
-    }
-    return JsonOutputsSave;
-})();
-var JsonInputsSave = (function () {
-    function JsonInputsSave() {
-    }
-    return JsonInputsSave;
-})();
-var JsonParamsSave = (function () {
-    function JsonParamsSave() {
-    }
-    return JsonParamsSave;
-})();
-var JsonAccSaves = (function () {
-    function JsonAccSaves() {
-    }
-    return JsonAccSaves;
-})();
-var JsonAccSave = (function () {
-    function JsonAccSave() {
-    }
-    return JsonAccSave;
-})();
-var JsonSliderSave = (function () {
-    function JsonSliderSave() {
-    }
-    return JsonSliderSave;
-})();
-var JsonFactorySave = (function () {
-    function JsonFactorySave() {
-    }
-    return JsonFactorySave;
-})();
 var Scene = (function () {
-    function Scene(identifiant, parent, /*onload?: (s: Scene) => void, onunload?: (s: Scene) => void, */ sceneView) {
+    function Scene(identifiant, parent, compileFaust, sceneView) {
+        var _this = this;
         this.arrayRecalScene = [];
         this.arrayRecalledModule = [];
         this.isMute = false;
@@ -69,11 +25,12 @@ var Scene = (function () {
         this.sceneName = "Patch";
         this.isInitLoading = true;
         this.isOutputTouch = false;
-        this.parent = parent;
+        this.compileFaust = compileFaust;
         this.sceneView = new SceneView();
         this.sceneView.initNormalScene(this);
         this.integrateSceneInBody();
         this.integrateOutput();
+        document.addEventListener("unstylenode", function () { _this.unstyleNode(); });
     }
     /******************CALLBACKS FOR LOADING/UNLOADING SCENE **************/
     Scene.prototype.onload = function (s) { };
@@ -144,13 +101,13 @@ var Scene = (function () {
     /******************** HANDLE MODULES IN SCENE ************************/
     Scene.prototype.getModules = function () { return this.fModuleList; };
     Scene.prototype.addModule = function (module) { this.fModuleList.push(module); };
-    Scene.prototype.removeModule = function (module, scene) {
-        scene.fModuleList.splice(scene.fModuleList.indexOf(module), 1);
+    Scene.prototype.removeModule = function (module) {
+        this.fModuleList.splice(this.fModuleList.indexOf(module), 1);
     };
     Scene.prototype.cleanModules = function () {
         for (var i = this.fModuleList.length - 1; i >= 0; i--) {
             this.fModuleList[i].deleteModule();
-            this.removeModule(this.fModuleList[i], this);
+            this.removeModule(this.fModuleList[i]);
         }
     };
     /*******************************  PUBLIC METHODS  **********************************/
@@ -164,25 +121,27 @@ var Scene = (function () {
     };
     /*************** ACTIONS ON AUDIO IN/OUTPUT ***************************/
     Scene.prototype.integrateInput = function () {
+        var _this = this;
         var positionInput = this.positionInputModule();
-        this.fAudioInput = new ModuleClass(App.idX++, positionInput.x, positionInput.y, "input", this, this.sceneView.inputOutputModuleContainer, this.removeModule);
+        this.fAudioInput = new ModuleClass(App.idX++, positionInput.x, positionInput.y, "input", this.sceneView.inputOutputModuleContainer, function (module) { _this.removeModule(module); }, this.compileFaust);
         this.fAudioInput.patchID = "input";
         var scene = this;
-        this.parent.compileFaust("input", "process=_,_;", positionInput.x, positionInput.y, function (factory) { scene.integrateAudioInput(factory); });
+        this.compileFaust({ name: "input", sourceCode: "process=_,_;", x: positionInput.x, y: positionInput.y, callback: function (factory) { scene.integrateAudioInput(factory); } });
     };
     Scene.prototype.integrateOutput = function () {
+        var _this = this;
         var positionOutput = this.positionOutputModule();
         var scene = this;
-        this.fAudioOutput = new ModuleClass(App.idX++, positionOutput.x, positionOutput.y, "output", this, this.sceneView.inputOutputModuleContainer, this.removeModule);
+        this.fAudioOutput = new ModuleClass(App.idX++, positionOutput.x, positionOutput.y, "output", this.sceneView.inputOutputModuleContainer, function (module) { _this.removeModule(module); }, this.compileFaust);
         this.fAudioOutput.patchID = "output";
         this.addMuteOutputListner(this.fAudioOutput);
-        this.parent.compileFaust("output", "process=_,_;", positionOutput.x, positionOutput.y, function (factory) { scene.integrateAudioOutput(factory); });
+        this.compileFaust({ name: "output", sourceCode: "process=_,_;", x: positionOutput.x, y: positionOutput.y, callback: function (factory) { scene.integrateAudioOutput(factory); } });
     };
     Scene.prototype.integrateAudioOutput = function (factory) {
         if (this.fAudioOutput) {
             this.fAudioOutput.moduleFaust.setSource("process=_,_;");
             this.fAudioOutput.createDSP(factory);
-            this.parent.activateAudioOutput(this.fAudioOutput);
+            this.activateAudioOutput(this.fAudioOutput);
         }
         this.fAudioOutput.addInputOutputNodes();
         this.integrateInput();
@@ -191,7 +150,7 @@ var Scene = (function () {
         if (this.fAudioInput) {
             this.fAudioInput.moduleFaust.setSource("process=_,_;");
             this.fAudioInput.createDSP(factory);
-            this.parent.activateAudioInput(this);
+            this.activateAudioInput();
         }
         this.fAudioInput.addInputOutputNodes();
         App.hideFullPageLoading();
@@ -199,10 +158,46 @@ var Scene = (function () {
     };
     Scene.prototype.getAudioOutput = function () { return this.fAudioOutput; };
     Scene.prototype.getAudioInput = function () { return this.fAudioInput; };
+    /********************************************************************
+**********************  ACTIVATE PHYSICAL IN/OUTPUT *****************
+********************************************************************/
+    Scene.prototype.activateAudioInput = function () {
+        var _this = this;
+        var navigatorLoc = navigator;
+        if (!navigatorLoc.getUserMedia) {
+            navigatorLoc.getUserMedia = navigatorLoc.webkitGetUserMedia || navigatorLoc.mozGetUserMedia;
+        }
+        if (navigatorLoc.getUserMedia) {
+            navigatorLoc.getUserMedia({ audio: true }, function (mediaStream) { _this.getDevice(mediaStream); }, function (e) {
+                _this.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)";
+                _this.fAudioInput.moduleView.fInterfaceContainer.title = App.messageRessource.errorGettingAudioInput;
+                new Message(App.messageRessource.errorGettingAudioInput);
+            });
+        }
+        else {
+            this.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)";
+            new Message(App.messageRessource.errorInputAPINotAvailable);
+            this.fAudioInput.moduleView.fInterfaceContainer.title = App.messageRessource.errorInputAPINotAvailable;
+        }
+    };
+    Scene.prototype.getDevice = function (device) {
+        // Create an AudioNode from the stream.
+        var src = document.getElementById("input");
+        src.audioNode = App.audioContext.createMediaStreamSource(device);
+        document.body.appendChild(src);
+        var drag = new Drag();
+        var connect = new Connector();
+        connect.connectInput(this.fAudioInput, src);
+    };
+    Scene.prototype.activateAudioOutput = function (sceneOutput) {
+        var out = document.createElement("div");
+        out.id = "audioOutput";
+        out.audioNode = App.audioContext.destination;
+        document.body.appendChild(out);
+        var connect = new Connector();
+        connect.connectOutput(sceneOutput, out);
+    };
     /*********************** SAVE/RECALL SCENE ***************************/
-    ///////////////////////////////////////////////////
-    //not used for now and not seriously typescripted//
-    ///////////////////////////////////////////////////
     Scene.prototype.saveScene = function (isPrecompiled) {
         for (var i = 0; i < this.fModuleList.length; i++) {
             if (this.fModuleList[i].patchID != "output" && this.fModuleList[i].patchID != "input") {
@@ -286,7 +281,7 @@ var Scene = (function () {
                 new Message(App.messageRessource.errorJsonCorrupted);
                 App.hideFullPageLoading();
             }
-            this.parent.currentNumberDSP = this.fModuleList.length;
+            //this.parent.currentNumberDSP = this.fModuleList.length;
             for (var index in jsonObjectCollection) {
                 var jsonObject = jsonObjectCollection[index];
                 this.arrayRecalScene.push(jsonObject);
@@ -303,16 +298,17 @@ var Scene = (function () {
         if (this.arrayRecalScene.length != 0) {
             var jsonObject = this.arrayRecalScene[0];
             if (jsonObject.factory != undefined) {
-                this.parent.tempPatchId = jsonObject.patchId;
+                this.tempPatchId = jsonObject.patchId;
                 var factory = faust.readDSPFactoryFromMachine(jsonObject.factory);
                 this.updateAppTempModuleInfo(jsonObject);
                 this.sceneName = jsonObject.sceneName;
                 this.createModule(factory);
             }
             else if (jsonObject.patchId != "output" && jsonObject.patchId != "input") {
-                this.parent.tempPatchId = jsonObject.patchId;
+                this.tempPatchId = jsonObject.patchId;
                 this.sceneName = jsonObject.sceneName;
-                this.parent.compileFaust(jsonObject.name, jsonObject.code, parseFloat(jsonObject.x), parseFloat(jsonObject.y), function (factory) { _this.createModule(factory); });
+                var argumentCompile = { name: jsonObject.name, sourceCode: jsonObject.code, x: parseFloat(jsonObject.x), y: parseFloat(jsonObject.y), callback: function (factory) { _this.createModule(factory); } };
+                this.compileFaust(argumentCompile);
             }
             else {
                 this.arrayRecalScene.shift();
@@ -333,14 +329,15 @@ var Scene = (function () {
         }
     };
     Scene.prototype.updateAppTempModuleInfo = function (jsonSaveObject) {
-        this.parent.tempModuleX = parseFloat(jsonSaveObject.x);
-        this.parent.tempModuleY = parseFloat(jsonSaveObject.y);
-        this.parent.tempModuleName = jsonSaveObject.name;
-        this.parent.tempModuleSourceCode = jsonSaveObject.code;
-        this.parent.tempPatchId = jsonSaveObject.patchId;
-        this.parent.tempParams = jsonSaveObject.params;
+        this.tempModuleX = parseFloat(jsonSaveObject.x);
+        this.tempModuleY = parseFloat(jsonSaveObject.y);
+        this.tempModuleName = jsonSaveObject.name;
+        this.tempModuleSourceCode = jsonSaveObject.code;
+        this.tempPatchId = jsonSaveObject.patchId;
+        this.tempParams = jsonSaveObject.params;
     };
     Scene.prototype.createModule = function (factory) {
+        var _this = this;
         try {
             //---- This is very similar to "createFaustModule" from App.js
             //---- But as we need to set Params before calling "createFaustInterface", it is copied
@@ -350,15 +347,15 @@ var Scene = (function () {
                 App.hideFullPageLoading();
                 return;
             }
-            var module = new ModuleClass(App.idX++, this.parent.tempModuleX, this.parent.tempModuleY, this.parent.tempModuleName, this, document.getElementById("modules"), this.removeModule);
-            module.moduleFaust.setSource(this.parent.tempModuleSourceCode);
+            var module = new ModuleClass(App.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), function (module) { _this.removeModule(module); }, this.compileFaust);
+            module.moduleFaust.setSource(this.tempModuleSourceCode);
             module.createDSP(factory);
-            module.patchID = this.parent.tempPatchId;
-            if (this.parent.tempParams) {
-                for (var i = 0; i < this.parent.tempParams.sliders.length; i++) {
+            module.patchID = this.tempPatchId;
+            if (this.tempParams) {
+                for (var i = 0; i < this.tempParams.sliders.length; i++) {
                     //console.log("WINDOW.PARAMS");
                     //console.log(this.parent.params.length);
-                    var slider = this.parent.tempParams.sliders[i];
+                    var slider = this.tempParams.sliders[i];
                     module.addInterfaceParam(slider.path, parseFloat(slider.value));
                 }
             }
@@ -482,12 +479,12 @@ var Scene = (function () {
         var newName = input.value;
         newName = Scene.cleanName(newName);
         if (Scene.isNameValid(newName)) {
-            App.scene.sceneName = newName;
-            spanDynamic.textContent = App.scene.sceneName;
+            Utilitary.currentScene.sceneName = newName;
+            spanDynamic.textContent = Utilitary.currentScene.sceneName;
             spanRule.style.opacity = "0.6";
             input.style.boxShadow = "0 0 0 green inset";
             input.style.border = "none";
-            input.value = App.scene.sceneName;
+            input.value = Utilitary.currentScene.sceneName;
             var event = new CustomEvent("updatename");
             document.dispatchEvent(event);
             return true;
@@ -537,5 +534,50 @@ var Scene = (function () {
         ModuleClass.isNodesModuleUnstyle = true;
     };
     return Scene;
-})();
+}());
+var JsonSaveCollection = (function () {
+    function JsonSaveCollection() {
+    }
+    return JsonSaveCollection;
+}());
+var JsonSaveObject = (function () {
+    function JsonSaveObject() {
+    }
+    return JsonSaveObject;
+}());
+var JsonOutputsSave = (function () {
+    function JsonOutputsSave() {
+    }
+    return JsonOutputsSave;
+}());
+var JsonInputsSave = (function () {
+    function JsonInputsSave() {
+    }
+    return JsonInputsSave;
+}());
+var JsonParamsSave = (function () {
+    function JsonParamsSave() {
+    }
+    return JsonParamsSave;
+}());
+var JsonAccSaves = (function () {
+    function JsonAccSaves() {
+    }
+    return JsonAccSaves;
+}());
+var JsonAccSave = (function () {
+    function JsonAccSave() {
+    }
+    return JsonAccSave;
+}());
+var JsonSliderSave = (function () {
+    function JsonSliderSave() {
+    }
+    return JsonSliderSave;
+}());
+var JsonFactorySave = (function () {
+    function JsonFactorySave() {
+    }
+    return JsonFactorySave;
+}());
 //# sourceMappingURL=SceneClass.js.map

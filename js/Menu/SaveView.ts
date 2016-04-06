@@ -70,7 +70,7 @@
         inputDownload.id = "inputNameApp";
         inputDownload.style.display = "none";
         inputDownload.className = "inputExport";
-        inputDownload.value = App.scene.sceneName;
+        inputDownload.value = Utilitary.currentScene.sceneName;
 
         var downloadBottomButtonContainer: HTMLElement = document.createElement("div");
         downloadBottomButtonContainer.className = "bottomButtonContainer";
@@ -110,7 +110,7 @@
         inputLocalStorage.id = "inputNameApp";
         inputLocalStorage.className = "inputExport";
         inputLocalStorage.style.display = "none";
-        inputLocalStorage.value = App.scene.sceneName;
+        inputLocalStorage.value = Utilitary.currentScene.sceneName;
         this.inputLocalStorage = inputLocalStorage;
 
         var dialogGoodNews = document.createElement("div");
@@ -165,7 +165,7 @@
         var inputCloudStorage: HTMLInputElement = document.createElement("input");
         inputCloudStorage.id = "inputNameApp";
         inputCloudStorage.className = "inputExport";
-        inputCloudStorage.value = App.scene.sceneName;
+        inputCloudStorage.value = Utilitary.currentScene.sceneName;
         inputCloudStorage.style.display = "none";
         this.inputCloudStorage = inputCloudStorage;
 

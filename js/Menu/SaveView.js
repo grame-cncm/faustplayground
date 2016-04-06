@@ -41,7 +41,7 @@ var SaveView = (function () {
         inputDownload.id = "inputNameApp";
         inputDownload.style.display = "none";
         inputDownload.className = "inputExport";
-        inputDownload.value = App.scene.sceneName;
+        inputDownload.value = Utilitary.currentScene.sceneName;
         var downloadBottomButtonContainer = document.createElement("div");
         downloadBottomButtonContainer.className = "bottomButtonContainer";
         var downloadButton = document.createElement("button");
@@ -68,7 +68,7 @@ var SaveView = (function () {
         inputLocalStorage.id = "inputNameApp";
         inputLocalStorage.className = "inputExport";
         inputLocalStorage.style.display = "none";
-        inputLocalStorage.value = App.scene.sceneName;
+        inputLocalStorage.value = Utilitary.currentScene.sceneName;
         this.inputLocalStorage = inputLocalStorage;
         var dialogGoodNews = document.createElement("div");
         dialogGoodNews.id = "dialogGoodNews";
@@ -113,7 +113,7 @@ var SaveView = (function () {
         var inputCloudStorage = document.createElement("input");
         inputCloudStorage.id = "inputNameApp";
         inputCloudStorage.className = "inputExport";
-        inputCloudStorage.value = App.scene.sceneName;
+        inputCloudStorage.value = Utilitary.currentScene.sceneName;
         inputCloudStorage.style.display = "none";
         this.inputCloudStorage = inputCloudStorage;
         var cloudButtonSuppr = document.createElement("button");
@@ -152,5 +152,5 @@ var SaveView = (function () {
         return saveContainer;
     };
     return SaveView;
-})();
+}());
 //# sourceMappingURL=SaveView.js.map

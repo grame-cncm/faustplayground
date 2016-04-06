@@ -32,49 +32,44 @@
 
 
 
-interface IModule {
-    sceneParent: Scene;
-}
 
 
 
-class ModuleClass implements IModule {
+class ModuleClass  {
     static isNodesModuleUnstyle: boolean = true;
     drag: Drag = new Drag()
     dragList: Drag[] = [];
     patchID: string;
-    sceneParent: Scene;
     moduleView: ModuleView;
     moduleFaust: ModuleFaust;
     moduleFaustInterface: FaustInterface;
     moduleControles: Controler[]=[];
-    private deleteCallback: (module: ModuleClass, scene: Scene) => void;
+    private deleteCallback: (module: ModuleClass) => void;
     private fModuleInterfaceParams: { [label: string]: string } = {};
     eventDraggingHandler: (event: MouseEvent) => void;
     eventConnectorHandler: (event: Event) => void;
     eventOpenEditHandler: () => void;
     eventCloseEditHandler: (event: Event) => void;
+    compileFaust: (conpileFaust: CompileFaust) => void;
 
 
 
 
 
-    constructor(id: number, x: number, y: number, name: string, sceneParent: Scene, htmlElementModuleContainer: HTMLElement, removeModuleCallBack: (m: ModuleClass, scene: Scene) => void) {
-        this.sceneParent = sceneParent;
-        var self: ModuleClass = this
+    constructor(id: number, x: number, y: number, name: string, htmlElementModuleContainer: HTMLElement, removeModuleCallBack: (m: ModuleClass) => void, compileFaust: (compileFaust:CompileFaust) => void) {
         this.eventConnectorHandler = (event: MouseEvent) => { this.dragCnxCallback(event, this) };
         this.eventCloseEditHandler = (event: MouseEvent) => { this.recompileSource(event, this) }
         this.eventOpenEditHandler = () => { this.edit() }
-
+        this.compileFaust = compileFaust;
         // ---- Capturing module instance	
         // ----- Delete Callback was added to make sure 
         // ----- the module is well deleted from the scene containing it
         this.deleteCallback = removeModuleCallBack;
-        this.eventDraggingHandler = function (event) { self.dragCallback(event, self) };
+        this.eventDraggingHandler = (event)=>{ this.dragCallback(event, this) };
 
-        self.moduleView = new ModuleView();
-        self.moduleView.createModuleView(id, x, y, name, htmlElementModuleContainer, self);
-        self.moduleFaust = new ModuleFaust(name);
+        this.moduleView = new ModuleView();
+        this.moduleView.createModuleView(id, x, y, name, htmlElementModuleContainer, this);
+        this.moduleFaust = new ModuleFaust(name);
 
     }
 
@@ -121,13 +116,14 @@ class ModuleClass implements IModule {
                 }
             }
         } else if (event.type == "touchend") {
-            this.sceneParent.unstyleNode()
+            var customEvent = new CustomEvent("unstylenode");
+            document.dispatchEvent(customEvent);
             for (var i = 0; i < module.dragList.length; i++) {
                 if (module.dragList[i].originTarget == event.target) {
                     module.dragList[i].getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module) => { module.dragList[i].stopDraggingConnector(el, x, y, module) });
                 }
             }
-            this.sceneParent.unstyleNode();
+            document.dispatchEvent(customEvent);
         }
     }
 
@@ -148,7 +144,7 @@ class ModuleClass implements IModule {
             this.moduleView.fModuleContainer.parentNode.removeChild(this.moduleView.fModuleContainer);
 
         this.deleteDSP(this.moduleFaust.fDSP);
-        this.deleteCallback(this, this.sceneParent);
+        this.deleteCallback(this);
 
     }
 	
@@ -266,7 +262,7 @@ class ModuleClass implements IModule {
         this.moduleFaust.fTempName = name;
         this.moduleFaust.fTempSource = code;
         var module: ModuleClass = this;
-        this.sceneParent.parent.compileFaust(name, code, this.moduleView.x, this.moduleView.y, function (factory) { module.updateDSP(factory, module) });
+        this.compileFaust({ name: name, sourceCode: code, x: this.moduleView.x, y: this.moduleView.y, callback: (factory) => { module.updateDSP(factory, module) }});
     }
 	
     //---- React to recompilation triggered by click on icon

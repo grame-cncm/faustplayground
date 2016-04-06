@@ -385,5 +385,5 @@ var AccelerometerEdit = (function () {
         App.accHandler.axisSplitter(this.accSlid, rangeVal, rangeVal, rangeVal, App.accHandler.applyNewValueToModule);
     };
     return AccelerometerEdit;
-})();
+}());
 //# sourceMappingURL=AccelerometerEdit.js.map

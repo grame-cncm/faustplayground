@@ -121,7 +121,7 @@ class MenuView {
         var myScene: HTMLDivElement = document.createElement("div");
         myScene.id = "PatchName";
         myScene.className = "sceneTitle";
-        myScene.textContent = App.scene.sceneName;
+        myScene.textContent = Utilitary.currentScene.sceneName;
         buttonsMenu.appendChild(myScene);
         this.patchNameScene = myScene;
 

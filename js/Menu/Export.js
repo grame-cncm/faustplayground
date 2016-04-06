@@ -1,9 +1,9 @@
 /*				EXPORT.JS
-    Handles Graphical elements for the Export Feature of the normal Playground
-        
-    DEPENDENCIES :
-        - ExportLib.js
-        - qrcode.js
+   Handles Graphical elements for the Export Feature of the normal Playground
+       
+   DEPENDENCIES :
+       - ExportLib.js
+       - qrcode.js
 */
 /// <reference path="../ExportLib.ts"/>
 /// <reference path="../EquivalentFaust.ts"/>
@@ -24,7 +24,8 @@ var Export = (function () {
             else {
                 var data = JSON.parse(App.jsonText);
                 var platformsSelect = document.getElementById('platforms'); //get the combobox
-                var selPlatform = platformsSelect.options[platformsSelect.selectedIndex].value;
+                var options = platformsSelect.options[platformsSelect.selectedIndex];
+                var selPlatform = options.value;
                 var dataCopy = data[selPlatform];
                 var iterator = 0;
                 for (var subData in dataCopy) {
@@ -49,9 +50,11 @@ var Export = (function () {
         ********************************************************************/
         this.exportFaustCode = function (shaKey) {
             var platformsSelect = document.getElementById("platforms"); //get the combobox
-            var platforme = platformsSelect.options[platformsSelect.selectedIndex].value;
+            var optionPlateform = platformsSelect.options[platformsSelect.selectedIndex];
+            var platforme = optionPlateform.value;
             var architecturesSelect = document.getElementById("architectures"); //get the combobox
-            var architecture = architecturesSelect.options[architecturesSelect.selectedIndex].value;
+            var optionArchi = platformsSelect.options[platformsSelect.selectedIndex];
+            var architecture = optionArchi.value;
             var serverUrl = document.getElementById("faustweburl").value;
             var appType = "binary.zip";
             if (architecture == "android")
@@ -114,7 +117,7 @@ var Export = (function () {
         var platformsSelect = document.getElementById(id);
         var option = document.createElement('option');
         option.text = itemText;
-        platformsSelect.options.add(option);
+        platformsSelect.add(option);
     };
     Export.prototype.clearComboBox = function (id) {
         if (document.getElementById(id) != undefined) {
@@ -140,7 +143,7 @@ var Export = (function () {
         var platefromSelect = document.getElementById("platforms");
         var options = platefromSelect.options;
         for (var i = 0; i < options.length; i++) {
-            if (options[i].text == "android") {
+            if (options[i].textContent == "android") {
                 platefromSelect.selectedIndex = i;
             }
         }
@@ -151,15 +154,15 @@ var Export = (function () {
     Export.prototype.exportPatch = function (event, expor) {
         this.exportView.exportButton.removeEventListener("click", this.eventExport);
         this.exportView.exportButton.style.opacity = "0.3";
-        var sceneName = App.scene.sceneName;
+        var sceneName = Utilitary.currentScene.sceneName;
         if (sceneName == null || sceneName == "") {
             sceneName = "MonApplication";
         }
         this.removeQRCode();
         App.addLoadingLogo("exportResultContainer");
         var equivalentFaust = new EquivalentFaust();
-        var faustCode = equivalentFaust.getFaustEquivalent(App.scene, App.scene.sceneName);
-        ExportLib.getSHAKey(document.getElementById("faustweburl").value, App.scene.sceneName, faustCode, expor.exportFaustCode);
+        var faustCode = equivalentFaust.getFaustEquivalent(Utilitary.currentScene, Utilitary.currentScene.sceneName);
+        ExportLib.getSHAKey(document.getElementById("faustweburl").value, Utilitary.currentScene.sceneName, faustCode, expor.exportFaustCode);
     };
     Export.prototype.removeQRCode = function () {
         var disposableExportDiv = document.getElementById('disposableExportDiv');
@@ -173,5 +176,5 @@ var Export = (function () {
     Export.exportUrl = "http://faustservice.grame.fr";
     Export.targetsUrl = "http://faustservice.grame.fr/targets";
     return Export;
-})();
+}());
 //# sourceMappingURL=Export.js.map

@@ -80,7 +80,7 @@ var Drag = (function () {
     };
     Drag.prototype.whileDraggingModule = function (el, x, y, module, event) {
         var moduleContainer = module.moduleView.getModuleContainer();
-        App.appTest++;
+        //App.appTest++
         // Get cursor position with respect to the page.
         // Move drag element by the same amount the cursor has moved.
         moduleContainer.style.left = (this.elementStartLeft + x - this.cursorStartX) + "px";
@@ -248,7 +248,8 @@ var Drag = (function () {
                 module.styleOutputNodeTouchDragOver(currentHoverElement.parentElement);
             }
             else if (!ModuleClass.isNodesModuleUnstyle) {
-                module.sceneParent.unstyleNode();
+                var customEvent = new CustomEvent("unstylenode");
+                document.dispatchEvent(customEvent);
             }
         }
         var toElem = target;
@@ -308,7 +309,7 @@ var Drag = (function () {
         var arrivingHTMLNode = target;
         var arrivingHTMLParentNode = arrivingHTMLNode.offsetParent;
         var arrivingNode;
-        var modules = module.sceneParent.getModules();
+        var modules = Utilitary.currentScene.getModules();
         for (var i = 0; i < modules.length; i++) {
             if ((this.isOriginInput && modules[i].moduleView.isPointInOutput(x, y)) || modules[i].moduleView.isPointInInput(x, y)) {
                 arrivingNode = modules[i];
@@ -316,8 +317,8 @@ var Drag = (function () {
             }
         }
         if (arrivingHTMLParentNode != undefined && arrivingHTMLParentNode.classList.contains("node")) {
-            var outputModule = module.sceneParent.getAudioOutput();
-            var inputModule = module.sceneParent.getAudioInput();
+            var outputModule = Utilitary.currentScene.getAudioOutput();
+            var inputModule = Utilitary.currentScene.getAudioInput();
             if ((this.isOriginInput && outputModule.moduleView.isPointInOutput(x, y)) || outputModule.moduleView.isPointInInput(x, y) || arrivingHTMLParentNode.offsetParent.getAttribute("id") == "moduleOutput") {
                 arrivingNode = outputModule;
             }
@@ -366,5 +367,5 @@ var Drag = (function () {
         return true;
     };
     return Drag;
-})();
+}());
 //# sourceMappingURL=Dragging.js.map

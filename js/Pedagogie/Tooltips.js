@@ -126,5 +126,5 @@ var Tooltips = (function () {
         }
     };
     return Tooltips;
-})();
+}());
 //# sourceMappingURL=Tooltips.js.map

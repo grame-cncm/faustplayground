@@ -14,7 +14,7 @@ var ModuleTree = (function () {
     function ModuleTree() {
     }
     return ModuleTree;
-})();
+}());
 var EquivalentFaust = (function () {
     function EquivalentFaust() {
     }
@@ -171,7 +171,7 @@ var EquivalentFaust = (function () {
             return null;
     };
     return EquivalentFaust;
-})();
+}());
 //--------Plus Utilisé ---------------Create Faust Equivalent Module of the Scene
 //    // To avoid sharing instances of a same factory in the resulting Faust Equivalent
 //    wrapSourceCodesInGroups(){

@@ -44,7 +44,7 @@ class Export{
         var platformsSelect: HTMLSelectElement = <HTMLSelectElement>document.getElementById(id);
         var option: HTMLOptionElement = document.createElement('option');
 	    option.text = itemText;
-        platformsSelect.options.add(option);
+        platformsSelect.add(option);
     }
 
     clearComboBox(id: string): boolean
@@ -70,7 +70,8 @@ class Export{
             var data:string[] = JSON.parse(App.jsonText);
 
             var platformsSelect: HTMLSelectElement = <HTMLSelectElement>document.getElementById('platforms');//get the combobox
-            var selPlatform: string = platformsSelect.options[platformsSelect.selectedIndex].value;
+            var options = <HTMLOptionElement>platformsSelect.options[platformsSelect.selectedIndex]
+            var selPlatform: string = options.value;
 
             var dataCopy :string[] = data[selPlatform];
             var iterator = 0;
@@ -113,7 +114,7 @@ class Export{
         var platefromSelect: HTMLSelectElement = <HTMLSelectElement>document.getElementById("platforms");
         var options = platefromSelect.options
         for (var i = 0; i < options.length; i++){
-            if (options[i].text == "android") {
+            if (options[i].textContent == "android") {
                 platefromSelect.selectedIndex = i;
             }
         }
@@ -128,15 +129,15 @@ class Export{
     {
         this.exportView.exportButton.removeEventListener("click", this.eventExport)
         this.exportView.exportButton.style.opacity = "0.3";
-        var sceneName: string = App.scene.sceneName;
+        var sceneName: string = Utilitary.currentScene.sceneName;
         if (sceneName == null || sceneName == "") {
             sceneName = "MonApplication";
         }
         this.removeQRCode();
         App.addLoadingLogo("exportResultContainer");
         var equivalentFaust: EquivalentFaust = new EquivalentFaust();
-        var faustCode: string = equivalentFaust.getFaustEquivalent(App.scene, App.scene.sceneName);
-        ExportLib.getSHAKey((<HTMLInputElement>document.getElementById("faustweburl")).value, App.scene.sceneName, faustCode, expor.exportFaustCode);
+        var faustCode: string = equivalentFaust.getFaustEquivalent(Utilitary.currentScene, Utilitary.currentScene.sceneName);
+        ExportLib.getSHAKey((<HTMLInputElement>document.getElementById("faustweburl")).value, Utilitary.currentScene.sceneName, faustCode, expor.exportFaustCode);
     }
 
     /******************************************************************** 
@@ -147,10 +148,12 @@ class Export{
     {
 
         var platformsSelect: HTMLSelectElement = <HTMLSelectElement>document.getElementById("platforms");//get the combobox
-        var platforme: string = platformsSelect.options[platformsSelect.selectedIndex].value;
+        var optionPlateform = <HTMLOptionElement>platformsSelect.options[platformsSelect.selectedIndex];
+        var platforme: string = optionPlateform.value;
 
         var architecturesSelect: HTMLSelectElement = <HTMLSelectElement>document.getElementById("architectures");//get the combobox
-        var architecture: string = architecturesSelect.options[architecturesSelect.selectedIndex].value;
+        var optionArchi = <HTMLOptionElement>platformsSelect.options[platformsSelect.selectedIndex];
+        var architecture: string = optionArchi.value;
 
         var serverUrl: string = (<HTMLInputElement>document.getElementById("faustweburl")).value;
 

@@ -246,5 +246,5 @@ var DriveAPI = (function () {
         });
     };
     return DriveAPI;
-})();
+}());
 //# sourceMappingURL=DriveAPI.js.map
