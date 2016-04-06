@@ -12,6 +12,7 @@
 /// <reference path="../webaudio-asm-wrapper.d.ts"/>
 /// <reference path="../Main.ts"/>
 /// <reference path="../App.ts"/>
+/// <reference path="../Messages.ts"/>
 
 
 "use strict";

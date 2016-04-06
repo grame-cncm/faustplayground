@@ -24,6 +24,7 @@
 /// <reference path="../Modules/FaustInterface.ts"/>
 /// <reference path="../Main.ts"/>
 /// <reference path="../App.ts"/>
+/// <reference path="../Messages.ts"/>
 
 
 

@@ -1,4 +1,5 @@
 ﻿   /// <reference path="../Lib/fileSaver.min.d.ts"/>
+    /// <reference path="../Messages.ts"/>
 
 
 class Save {

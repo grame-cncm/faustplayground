@@ -1,4 +1,6 @@
-﻿//class ErrorFaust
+﻿/// <reference path="Messages.ts"/>
+
+//class ErrorFaust
 
 class ErrorFaust {
 

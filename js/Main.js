@@ -7,6 +7,7 @@
     
 */
 /// <reference path="App.ts"/>
+/// <reference path="Messages.ts"/>
 "use strict";
 window.addEventListener('load', init, false);
 //var worker = new Worker("js/worker.js");

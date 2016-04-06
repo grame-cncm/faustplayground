@@ -8,6 +8,7 @@
 /// <reference path="Load.ts"/>
 /// <reference path="Save.ts"/>
 /// <reference path="AccelerometerEdit.ts"/>
+/// <reference path="../DriveAPI.ts"/>   
 var MenuChoices;
 (function (MenuChoices) {
     MenuChoices[MenuChoices["library"] = 0] = "library";

@@ -1,3 +1,4 @@
+/// <reference path="../DriveAPI.ts"/>   
 var Load = (function () {
     function Load() {
     }

@@ -8,6 +8,7 @@
 /// <reference path="../ExportLib.ts"/>
 /// <reference path="../EquivalentFaust.ts"/>
 /// <reference path="../Main.ts"/>
+/// <reference path="../Messages.ts"/>
 
 
 "use strict";

@@ -8,8 +8,8 @@
     /// <reference path="HelpView.ts"/>
     /// <reference path="Load.ts"/>
     /// <reference path="Save.ts"/>
-   /// <reference path="AccelerometerEdit.ts"/>
-    
+    /// <reference path="AccelerometerEdit.ts"/>
+    /// <reference path="../DriveAPI.ts"/>   
 interface Document {
     cancelFullScreen: () => any;
     mozCancelFullScreen: () => any;
