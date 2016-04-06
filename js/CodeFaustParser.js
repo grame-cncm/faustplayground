@@ -1,17 +1,18 @@
 //class CodeFaustParser
 var CodeFaustParser = (function () {
-    function CodeFaustParser(codeFaust, sliderName, newAccValue) {
+    function CodeFaustParser(codeFaust, sliderName, newAccValue, isEnabled) {
         this.originalCodeFaust = codeFaust;
         this.codeFaustArray = codeFaust.split("\n");
         this.sliderName = sliderName;
         this.newAccValue = newAccValue;
+        this.isEnabled = isEnabled;
     }
     CodeFaustParser.prototype.replaceAccValue = function () {
         this.indexSlider = this.findSliderIndex(this.sliderName);
         if (this.indexSlider == null) {
             this.indexSlider = this.findSliderIndexNoSpace(this.sliderName);
             if (this.indexSlider != null) {
-                return this.continueReplaceAccValue();
+                return this.tryReplaceAccValue();
             }
             else {
                 new Message(this.sliderName + App.messageRessource.errorAccSliderNotFound);
@@ -20,25 +21,39 @@ var CodeFaustParser = (function () {
             }
         }
         else if (this.indexSlider != null) {
-            return this.continueReplaceAccValue();
+            return this.tryReplaceAccValue();
         }
     };
-    CodeFaustParser.prototype.continueReplaceAccValue = function () {
+    CodeFaustParser.prototype.tryReplaceAccValue = function () {
         this.indexAccelerometer = this.findAccRank();
         if (this.indexAccelerometer != -1) {
-            this.removeOldAccValue();
+            this.removeOldAccValue("acc");
             this.addNewAccValue();
             return this.recomposeCodeFaust();
         }
         else {
-            new Message(App.messageRessource.errorAccelerometerNotFound);
-            //throw new Error("Accelerometer non trouvé");
-            return this.originalCodeFaust;
+            return this.tryReplaceNoAccValue();
         }
+    };
+    CodeFaustParser.prototype.tryReplaceNoAccValue = function () {
+        this.indexAccelerometer = this.findNoAccRank();
+        if (this.indexAccelerometer != -1) {
+            this.removeOldAccValue("noacc");
+            this.addNewAccValue();
+            return this.recomposeCodeFaust();
+        }
+        else {
+            return this.tryReplaceValue();
+        }
+    };
+    CodeFaustParser.prototype.tryReplaceValue = function () {
+        this.indexAccelerometer = this.codeFaustArray[this.indexSlider].indexOf(this.sliderName) + this.sliderName.length;
+        this.addNewAccValue();
+        return this.recomposeCodeFaust();
     };
     CodeFaustParser.prototype.findSliderIndex = function (sliderName) {
         for (var i = 0; i < this.codeFaustArray.length; i++) {
-            if (this.codeFaustArray[i].indexOf(sliderName) != -1 && this.codeFaustArray[i].indexOf("acc") != -1) {
+            if (this.codeFaustArray[i].indexOf(sliderName) != -1 && this.codeFaustArray[i].indexOf("vslider") != -1 || this.codeFaustArray[i].indexOf(sliderName) != -1 && this.codeFaustArray[i].indexOf("hslider") != -1) {
                 return i;
             }
         }
@@ -48,7 +63,7 @@ var CodeFaustParser = (function () {
         sliderName = App.replaceAll(sliderName, " ", "");
         for (var i = 0; i < this.codeFaustArray.length; i++) {
             var tempRowWithoutSpace = App.replaceAll(this.codeFaustArray[i], " ", "");
-            if (tempRowWithoutSpace.indexOf(sliderName) != -1 && tempRowWithoutSpace.indexOf("acc") != -1) {
+            if (tempRowWithoutSpace.indexOf(sliderName) != -1 && tempRowWithoutSpace.indexOf("vslider") != -1 || tempRowWithoutSpace.indexOf(sliderName) != -1 && tempRowWithoutSpace.indexOf("hslider") != -1) {
                 return i;
             }
         }
@@ -71,27 +86,51 @@ var CodeFaustParser = (function () {
             return -1;
         }
     };
-    CodeFaustParser.prototype.removeOldAccValue = function () {
-        var counter = 0;
-        while (this.codeFaustArray[this.indexSlider].charAt(this.indexAccelerometer) != ":" && counter < 8) {
-            this.indexAccelerometer++;
-            counter++;
+    CodeFaustParser.prototype.findNoAccRank = function () {
+        if (this.codeFaustArray[this.indexSlider].indexOf("[noacc:") != -1) {
+            return this.codeFaustArray[this.indexSlider].indexOf("[noacc:");
         }
-        this.indexAccelerometer++;
-        if (counter >= 8) {
-            throw new Error("couldNotRemoveOldAcc");
+        else if (this.codeFaustArray[this.indexSlider].indexOf("[ noacc:") != -1) {
+            return this.codeFaustArray[this.indexSlider].indexOf("[ noacc:");
+        }
+        else if (this.codeFaustArray[this.indexSlider].indexOf("[noacc :") != -1) {
+            return this.codeFaustArray[this.indexSlider].indexOf("[noacc :");
+        }
+        else if (this.codeFaustArray[this.indexSlider].indexOf("[ noacc :") != -1) {
+            return this.codeFaustArray[this.indexSlider].indexOf("[ noacc :");
         }
         else {
-            var stringSlider = this.codeFaustArray[this.indexSlider];
-            while (stringSlider.charAt(this.indexAccelerometer) != "]") {
-                stringSlider = stringSlider.slice(0, this.indexAccelerometer) + stringSlider.slice(this.indexAccelerometer + 1);
-            }
-            this.codeFaustArray[this.indexSlider] = stringSlider;
+            return -1;
         }
     };
-    CodeFaustParser.prototype.addNewAccValue = function () {
+    CodeFaustParser.prototype.removeOldAccValue = function (acc) {
+        var counter = 0;
+        //while (this.codeFaustArray[this.indexSlider].charAt(this.indexAccelerometer)!="["&&counter<2) {
+        //    this.indexAccelerometer++;
+        //    counter++;
+        //}
+        //this.indexAccelerometer++;
+        //if (counter >= 2) {
+        //    throw new Error("couldNotRemoveOldAcc");
+        //} else {
         var stringSlider = this.codeFaustArray[this.indexSlider];
-        stringSlider = stringSlider.slice(0, this.indexAccelerometer) + this.newAccValue + stringSlider.slice(this.indexAccelerometer);
+        while (stringSlider.charAt(this.indexAccelerometer) != "]") {
+            stringSlider = stringSlider.slice(0, this.indexAccelerometer) + stringSlider.slice(this.indexAccelerometer + 1);
+        }
+        stringSlider = stringSlider.slice(0, this.indexAccelerometer) + stringSlider.slice(this.indexAccelerometer + 1);
+        this.codeFaustArray[this.indexSlider] = stringSlider;
+        //}
+    };
+    CodeFaustParser.prototype.addNewAccValue = function () {
+        var accType;
+        if (this.isEnabled) {
+            accType = "[acc:";
+        }
+        else {
+            accType = "[noacc:";
+        }
+        var stringSlider = this.codeFaustArray[this.indexSlider];
+        stringSlider = stringSlider.slice(0, this.indexAccelerometer) + accType + this.newAccValue + "]" + stringSlider.slice(this.indexAccelerometer);
         this.codeFaustArray[this.indexSlider] = stringSlider;
     };
     CodeFaustParser.prototype.recomposeCodeFaust = function () {

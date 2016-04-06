@@ -37,7 +37,7 @@ interface IJsonSaveObject {
     inputs: IJsonInputsSave;
     outputs: IJsonOutputsSave;
     params: IJsonParamsSave;
-    acc: IJsonAccSave;
+    acc: IJsonAccSaves;
     factory: IJsonFactorySave;
 }
 class JsonSaveObject implements IJsonSaveObject {
@@ -50,7 +50,7 @@ class JsonSaveObject implements IJsonSaveObject {
     inputs: IJsonInputsSave;
     outputs: IJsonOutputsSave;
     params: IJsonParamsSave
-    acc: IJsonAccSave;
+    acc: IJsonAccSaves;
     factory: IJsonFactorySave;
 
 }
@@ -72,17 +72,34 @@ class JsonInputsSave implements IJsonInputsSave{
 interface IJsonParamsSave {
     sliders: IJsonSliderSave[]
 }
+
 class JsonParamsSave implements IJsonParamsSave{
     sliders: IJsonSliderSave[]
+}
+interface IJsonAccSaves {
+    controles: IJsonAccSave[];
+}
+class JsonAccSaves implements IJsonAccSaves {
+    controles: IJsonAccSave[]
 }
 interface IJsonAccSave {
     axis: string;
     curve: string;
+    amin: string;
+    amid: string;
+    amax: string;
+    adress: string;
+    isEnabled: boolean;
 }
 
 class JsonAccSave implements IJsonAccSave {
     axis: string;
     curve: string;
+    amin: string;
+    amid: string;
+    amax: string;
+    adress: string;
+    isEnabled: boolean;
 
 }
 
@@ -337,16 +354,25 @@ class Scene {
 
                 }
                 var acc = this.fModuleList[i].moduleControles;
+                var jsonAccs = new JsonAccSaves();
+                jsonAccs.controles = [];
                 for (var j = 0; j < acc.length; j++) {
                     var jsonAcc: JsonAccSave = new JsonAccSave();
 
-                    //jsonAcc.axis = acc[j].accelerometerSlider.axis.toString();
-                    //jsonAcc.curve = acc[j].accelerometerSlider.curve.toString();
+                    jsonAcc.axis = acc[j].accelerometerSlider.axis.toString();
+                    jsonAcc.curve = acc[j].accelerometerSlider.curve.toString();
+                    jsonAcc.amin = acc[j].accelerometerSlider.amin.toString();
+                    jsonAcc.amid = acc[j].accelerometerSlider.amid.toString();
+                    jsonAcc.amax = acc[j].accelerometerSlider.amax.toString();
+                    jsonAcc.adress = acc[j].accelerometerSlider.label;
+                    jsonAcc.isEnabled = acc[j].accelerometerSlider.isEnabled;
+                    jsonAccs.controles.push(jsonAcc);
                     //jsonParams.sliders.push(jsonSlider);
                 }
                 jsonObject.inputs = jsonInputs;
                 jsonObject.outputs = jsonOutputs;
                 jsonObject.params = jsonParams;
+                jsonObject.acc = jsonAccs;
 
                 var factorySave: JsonFactorySave = faust.writeDSPFactoryToMachine(this.fModuleList[i].moduleFaust.factory);
 
@@ -453,6 +479,7 @@ class Scene {
             module.createFaustInterface();
             module.addInputOutputNodes();
             this.addModule(module);
+            this.recallAccValues(this.arrayRecalScene[0].acc, module);
             this.arrayRecalScene.shift();
             this.lunchModuleCreation()
         } catch (e) {
@@ -461,7 +488,47 @@ class Scene {
             this.lunchModuleCreation()
         }
     }
-
+    recallAccValues(jsonAccs: IJsonAccSaves, module: ModuleClass) {
+        if (jsonAccs != undefined) {
+            for (var i in jsonAccs.controles) {
+                var controle = jsonAccs.controles[i];
+                if (controle != undefined) {
+                    for (var j in module.moduleControles) {
+                        var moduleControle = module.moduleControles[j];
+                        if (moduleControle.address == controle.adress) {
+                            moduleControle.accelerometerSlider.acc = controle.axis + " " + controle.curve + " " + controle.amin + " " + controle.amid + " " + controle.amax;
+                            moduleControle.acc = controle.axis + " " + controle.curve + " " + controle.amin + " " + controle.amid + " " + controle.amax;
+                            moduleControle.accelerometerSlider.amax = parseFloat(controle.amax);
+                            moduleControle.accelerometerSlider.amid = parseFloat(controle.amid);
+                            moduleControle.accelerometerSlider.amin = parseFloat(controle.amin);
+                            moduleControle.accelerometerSlider.axis = parseFloat(controle.axis);
+                            moduleControle.accelerometerSlider.curve = parseFloat(controle.curve);
+                            moduleControle.accelerometerSlider.isEnabled = controle.isEnabled;
+                            AccelerometerHandler.curveSplitter(moduleControle.accelerometerSlider);
+                            moduleControle.accelerometerSlider.mySlider.parentElement.className = "control-group";
+                            moduleControle.accelerometerSlider.mySlider.parentElement.classList.add(Axis[controle.axis]);
+                            if (!controle.isEnabled) {
+                                moduleControle.accelerometerSlider.mySlider.parentElement.classList.add("disabledAcc");
+                                moduleControle.accelerometerSlider.mySlider.classList.add("allowed");
+                                moduleControle.accelerometerSlider.mySlider.classList.remove("not-allowed");
+                                moduleControle.accelerometerSlider.mySlider.disabled = false;
+                            } else {
+                                if (moduleControle.accelerometerSlider.isActive) {
+                                    moduleControle.accelerometerSlider.mySlider.classList.add("not-allowed");
+                                    moduleControle.accelerometerSlider.mySlider.classList.remove("allowed");
+                                    moduleControle.accelerometerSlider.mySlider.disabled = true;
+                                } else {
+                                    moduleControle.accelerometerSlider.mySlider.classList.add("allowed");
+                                    moduleControle.accelerometerSlider.mySlider.classList.remove("not-allowed");
+                                    moduleControle.accelerometerSlider.mySlider.disabled = false;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
     connectModule(module: ModuleClass) {
         try {
             for (var i = 0; i < module.moduleFaust.recallInputsSource.length; i++) {

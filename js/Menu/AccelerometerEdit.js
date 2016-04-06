@@ -12,6 +12,7 @@ var AccelerometerEdit = (function () {
         this.accelerometerEditView.radioAxisX.addEventListener("change", function (event) { _this.radioAxisSplit(event); });
         this.accelerometerEditView.radioAxisY.addEventListener("change", function (event) { _this.radioAxisSplit(event); });
         this.accelerometerEditView.radioAxisZ.addEventListener("change", function (event) { _this.radioAxisSplit(event); });
+        this.accelerometerEditView.radioAxis0.addEventListener("change", function (event) { _this.disablerEnablerAcc(event); });
         this.accelerometerEditView.radioCurve1.addEventListener("change", function (event) { _this.radioCurveSplit(event); });
         this.accelerometerEditView.radioCurve2.addEventListener("change", function (event) { _this.radioCurveSplit(event); });
         this.accelerometerEditView.radioCurve3.addEventListener("change", function (event) { _this.radioCurveSplit(event); });
@@ -56,8 +57,11 @@ var AccelerometerEdit = (function () {
         }
     };
     AccelerometerEdit.prototype.setSliderDisableValue = function (slider) {
-        if (slider.isActive) {
+        if (slider.isActive && slider.isEnabled) {
             slider.mySlider.disabled = true;
+        }
+        else if (!slider.isActive && slider.isEnabled) {
+            slider.mySlider.disabled = false;
         }
         else {
             slider.mySlider.disabled = false;
@@ -82,6 +86,7 @@ var AccelerometerEdit = (function () {
         this.createCurrentControler(accSlider);
         this.applyRangeCurrentValues(accSlider);
         this.addCloneSlider(accSlider);
+        this.applyAccEnableDisable(accSlider);
     };
     AccelerometerEdit.prototype.addCloneSlider = function (accSlider) {
         this.originalSlider = accSlider.mySlider;
@@ -112,6 +117,7 @@ var AccelerometerEdit = (function () {
         AccelerometerHandler.curveSplitter(this.accSlid);
         this.accelerometerEditView.blockLayer.style.display = "none";
         this.removeCloneSlider(this.accSlid);
+        this.accSlid.isEnabled = this.originalEnabled;
     };
     AccelerometerEdit.prototype.applyAccelerometerEdit = function () {
         this.removeCloneSlider(this.accSlid);
@@ -128,9 +134,31 @@ var AccelerometerEdit = (function () {
         this.accSlid.callbackEdit = this.editEvent.bind(this, this.accSlid);
         this.accSlid.mySlider.parentElement.addEventListener("click", this.accSlid.callbackEdit, true);
         this.accSlid.mySlider.parentElement.addEventListener("touchstart", this.accSlid.callbackEdit, true);
-        if (this.originalAccValue != this.accSlid.acc) {
-            var newCodeFaust = new CodeFaustParser(this.accSlid.module.moduleFaust.fSource, this.accSlid.name, this.accSlid.acc);
+        if (this.originalAccValue != this.accSlid.acc || this.originalEnabled != this.accSlid.isEnabled) {
+            var newCodeFaust = new CodeFaustParser(this.accSlid.module.moduleFaust.fSource, this.accSlid.name, this.accSlid.acc, this.accSlid.isEnabled);
             this.accSlid.module.moduleFaust.fSource = newCodeFaust.replaceAccValue();
+        }
+        this.applyDisableEnableAcc();
+    };
+    AccelerometerEdit.prototype.applyDisableEnableAcc = function () {
+        if (this.accSlid.isEnabled) {
+            this.accSlid.mySlider.parentElement.classList.remove("disabledAcc");
+            if (this.accSlid.isActive) {
+                this.accSlid.mySlider.classList.add("not-allowed");
+                this.accSlid.mySlider.classList.remove("allowed");
+                this.accSlid.mySlider.disabled = true;
+            }
+            else {
+                this.accSlid.mySlider.classList.remove("not-allowed");
+                this.accSlid.mySlider.classList.add("allowed");
+                this.accSlid.mySlider.disabled = false;
+            }
+        }
+        else {
+            this.accSlid.mySlider.parentElement.classList.add("disabledAcc");
+            this.accSlid.mySlider.classList.remove("not-allowed");
+            this.accSlid.mySlider.classList.add("allowed");
+            this.accSlid.mySlider.disabled = false;
         }
     };
     AccelerometerEdit.prototype.placeElement = function () {
@@ -146,6 +174,7 @@ var AccelerometerEdit = (function () {
         this.originalAxis = Axis[accSlider.axis];
         this.originalAccValue = accSlider.acc;
         this.originalActive = accSlider.isActive;
+        this.originalEnabled = accSlider.isEnabled;
         this.originalDefaultVal = accSlider.ivalue;
         this.originalDefaultSliderVal = accSlider.mySlider.value;
         if (accSlider.isActive) {
@@ -153,6 +182,28 @@ var AccelerometerEdit = (function () {
         }
         else {
             this.originalSliderStyle = "allowed";
+        }
+    };
+    AccelerometerEdit.prototype.applyAccEnableDisable = function (accSlider) {
+        if (accSlider.isEnabled) {
+            this.accelerometerEditView.radioAxis0.checked = false;
+        }
+        else {
+            this.accelerometerEditView.radioAxis0.checked = true;
+        }
+    };
+    AccelerometerEdit.prototype.disablerEnablerAcc = function (e) {
+        if (this.accSlid.isEnabled) {
+            this.accSlid.isEnabled = false;
+            this.accelerometerEditView.cloneContainer.getElementsByTagName("div")[0].classList.add("disabledAcc");
+            this.accSlid.mySlider.parentElement.classList.add("disabledAcc");
+            this.accelerometerEditView.rangeContainer.classList.add("disabledAcc");
+        }
+        else {
+            this.accSlid.isEnabled = true;
+            this.accelerometerEditView.cloneContainer.getElementsByTagName("div")[0].classList.remove("disabledAcc");
+            this.accSlid.mySlider.parentElement.classList.remove("disabledAcc");
+            this.accelerometerEditView.rangeContainer.classList.remove("disabledAcc");
         }
     };
     AccelerometerEdit.prototype.selectDefaultCurve = function (accSlider) {
@@ -168,6 +219,9 @@ var AccelerometerEdit = (function () {
                 break;
             case Curve.DownUp:
                 this.accelerometerEditView.radioCurve4.checked = true;
+                break;
+            default:
+                this.accelerometerEditView.radioCurve1.checked = true;
                 break;
         }
     };
@@ -225,6 +279,7 @@ var AccelerometerEdit = (function () {
         this.accelerometerEditView.rangeCurrent.max = "20";
         this.accelerometerEditView.rangeCurrent.value = "0";
         this.accelerometerEditView.rangeCurrent.step = "0.1";
+        this.controler.isEnabled = accSlider.isEnabled;
         var accCurrentVal = AccelerometerHandler.registerAcceleratedSlider(this.controler, null);
         accCurrentVal.mySlider = this.accelerometerEditView.rangeCurrent;
         accCurrentVal.mySlider.parentElement.classList.add(Axis[accCurrentVal.axis]);
@@ -266,10 +321,11 @@ var AccelerometerEdit = (function () {
     AccelerometerEdit.prototype.editAxis = function (axe) {
         this.accelerometerEditView.cloneContainer.getElementsByTagName("div")[0].classList.remove(Axis[this.accSlid.axis]);
         this.accelerometerEditView.cloneContainer.getElementsByTagName("div")[0].classList.add(Axis[axe]);
+        var oldAxis = this.accSlid.axis;
         this.accSlid.axis = axe;
         var editAcc = AccelerometerHandler.sliderEdit;
         editAcc.axis = axe;
-        editAcc.mySlider.parentElement.className = "";
+        editAcc.mySlider.parentElement.classList.remove(Axis[oldAxis]);
         editAcc.mySlider.parentElement.classList.add(Axis[editAcc.axis]);
     };
     AccelerometerEdit.prototype.editCurve = function (curve) {
@@ -285,7 +341,12 @@ var AccelerometerEdit = (function () {
     AccelerometerEdit.prototype.accelerometerSwitch = function (isSliderActive) {
         if (isSliderActive) {
             this.accSlid.isActive = isSliderActive;
-            this.sliderStyle = "not-allowed";
+            if (this.accSlid.isEnabled) {
+                this.sliderStyle = "not-allowed";
+            }
+            else {
+                this.sliderStyle = "allowed";
+            }
         }
         else {
             this.sliderStyle = "allowed";

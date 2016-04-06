@@ -23,7 +23,7 @@ var Save = (function () {
             var blob = new Blob([jsonScene], {
                 type: "application/vnd.google-apps.script+json;charset=utf-8;",
             });
-            saveAs(blob, App.scene.sceneName + ".json");
+            saveAs(blob, App.scene.sceneName + ".jfaust");
         }
     };
     Save.prototype.saveLocal = function () {
@@ -118,7 +118,7 @@ var Save = (function () {
                 var jsonScene = this.sceneCurrent.saveScene(true);
                 var blob = new Blob([jsonScene], { type: "application/json" });
                 this.drive.tempBlob = blob;
-                this.drive.createFile(App.scene.sceneName, function (folderId, fileId) { _this.drive.removeFileFromRoot(folderId, fileId); });
+                this.drive.createFile(App.scene.sceneName, null);
             }
         }
     };

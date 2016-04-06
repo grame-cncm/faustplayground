@@ -357,12 +357,14 @@ var Menu = (function () {
             this.isAccelerometer = true;
             App.isAccelerometerOn = true;
             for (var i = 0; i < AccelerometerHandler.accelerometerSliders.length; i++) {
-                AccelerometerHandler.accelerometerSliders[i].isActive = true;
-                //AccelerometerHandler.accelerometerSliders[i].mySlider.style.opacity = "0.5";
-                AccelerometerHandler.accelerometerSliders[i].mySlider.classList.add("not-allowed");
-                AccelerometerHandler.accelerometerSliders[i].mySlider.classList.remove("allowed");
-                if (!App.isAccelerometerEditOn) {
-                    AccelerometerHandler.accelerometerSliders[i].mySlider.disabled = true;
+                if (AccelerometerHandler.accelerometerSliders[i].isEnabled) {
+                    AccelerometerHandler.accelerometerSliders[i].isActive = true;
+                    //AccelerometerHandler.accelerometerSliders[i].mySlider.style.opacity = "0.5";
+                    AccelerometerHandler.accelerometerSliders[i].mySlider.classList.add("not-allowed");
+                    AccelerometerHandler.accelerometerSliders[i].mySlider.classList.remove("allowed");
+                    if (!App.isAccelerometerEditOn) {
+                        AccelerometerHandler.accelerometerSliders[i].mySlider.disabled = true;
+                    }
                 }
             }
         }
@@ -437,13 +439,19 @@ var Menu = (function () {
     Menu.prototype.updateSelectCloudEvent = function () {
         this.clearSelect(this.load.loadView.cloudSelectFile);
         this.clearSelect(this.save.saveView.cloudSelectFile);
-        this.drive.checkAuth();
+        this.drive.updateConnection();
     };
     Menu.prototype.cleanScene = function (callBack) {
         var modules = this.sceneCurrent.getModules();
         while (modules.length != 0) {
             if (modules[0].patchID != "output" && modules[0].patchID != "input") {
                 modules[0].deleteModule();
+            }
+            else if (modules[0].patchID == "output") {
+                modules.shift();
+            }
+            else if (modules[0].patchID == "input") {
+                modules.shift();
             }
         }
         callBack();

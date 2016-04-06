@@ -4,12 +4,14 @@ var DriveAPI = (function () {
         this.SCOPES = ['https://www.googleapis.com/auth/drive'];
         this.faustFolder = "FaustPlayground";
         this.isFaustFolderPresent = false;
-        this.extension = ".json";
+        this.extension = ".jfaust";
     }
     /**
      * Check if current user has authorized this application.
      */
     DriveAPI.prototype.checkAuth = function () {
+    };
+    DriveAPI.prototype.updateConnection = function () {
         var _this = this;
         gapi.auth.authorize({
             'client_id': this.CLIENT_ID,
@@ -22,7 +24,7 @@ var DriveAPI = (function () {
      *
      * @param {Object} authResult Authorization result.
      */
-    DriveAPI.prototype.handleAuthResult = function (authResult) {
+    DriveAPI.prototype.handleAuthResult = function (authResult, auto) {
         var buttonConnect = document.getElementById('buttonConnectLoadDrive');
         var buttonConnect2 = document.getElementById('buttonConnectSaveDrive');
         if (authResult && !authResult.error) {
@@ -70,49 +72,18 @@ var DriveAPI = (function () {
             'maxResults': 10
         });
         request.execute(function (resp) {
-            var files = resp.items;
-            if (files && files.length > 0) {
-                for (var i = 0; i < files.length; i++) {
-                    var file = files[i];
-                    if (file.mimeType == "application/vnd.google-apps.folder" && file.title == "FaustPlayground") {
-                        //this.appendPre(file.title,file.id);
-                        _this.isFaustFolderPresent = true;
-                        _this.faustFolderId = file.id;
-                        _this.openFiles(file.id);
-                    }
-                }
-                if (!_this.isFaustFolderPresent) {
-                    _this.createFaustFolder();
-                }
-            }
-            else {
-                //this.appendPre('No files found.',null);
-                _this.appendPre('No files found.', null);
-            }
-        });
-    };
-    DriveAPI.prototype.openFiles = function (folderId) {
-        var _this = this;
-        var request = gapi.client.drive.children.list({
-            'folderId': folderId,
-            'q': 'trashed = false'
-        });
-        request.execute(function (resp) {
-            var files = resp.items;
             var event = new CustomEvent("finishloaddrive");
             document.dispatchEvent(event);
+            var files = resp.items;
             if (files && files.length > 0) {
                 for (var i = 0; i < files.length; i++) {
                     var file = files[i];
-                    _this.getFileMetadata(file.id);
-                    if (file.fileExtension == "json") {
-                        //this.appendPre(file.title,file.id);
+                    if (file.fileExtension == "jfaust") {
                         _this.appendPre(file.title, file.id);
                     }
                 }
             }
             else {
-                //this.appendPre('No files found.',null);
                 _this.appendPre(App.messageRessource.noFileOnCloud, null);
             }
         });
@@ -149,7 +120,7 @@ var DriveAPI = (function () {
     DriveAPI.prototype.appendPre = function (name, id) {
         var option = document.createElement("option");
         option.value = id;
-        option.textContent = name.replace(/.json$/, '');
+        option.textContent = name.replace(/.jfaust$/, '');
         var event = new CustomEvent("fillselect", { 'detail': option });
         document.dispatchEvent(event);
     };
@@ -201,7 +172,6 @@ var DriveAPI = (function () {
         var _this = this;
         var event = new CustomEvent("startloaddrive");
         document.dispatchEvent(event);
-        var faustFolderId = this.faustFolderId;
         var request = gapi.client.request({
             'path': '/drive/v2/files',
             'method': 'POST',
@@ -211,31 +181,7 @@ var DriveAPI = (function () {
             }
         });
         request.execute(function (resp) {
-            _this.lastSavedFileId = resp.id;
-            callback(resp.parents[0].id, resp.id);
-        });
-    };
-    DriveAPI.prototype.removeFileFromRoot = function (Id, fileId) {
-        var _this = this;
-        var request = gapi.client.drive.parents.delete({
-            'fileId': fileId,
-            'parentId': Id,
-        });
-        request.execute(function (resp) {
-            _this.insertFileIntoFolder(_this.faustFolderId, fileId);
-        });
-    };
-    DriveAPI.prototype.insertFileIntoFolder = function (folderId, fileId) {
-        var _this = this;
-        var body = { 'id': folderId };
-        var request = gapi.client.drive.parents.insert({
-            'fileId': fileId,
-            'resource': body
-        });
-        request.execute(function (resp) {
-            _this.getFile(_this.lastSavedFileId, function () {
-                _this.updateFile(_this.lastSavedFileId, _this.lastSavedFileMetadata, _this.tempBlob, null);
-            });
+            _this.getFile(resp.id, function (fileMetada) { _this.updateFile(resp.id, fileMetada, _this.tempBlob, null); });
         });
     };
     /**

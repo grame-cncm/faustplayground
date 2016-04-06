@@ -18,13 +18,17 @@ class DriveAPI{
     lastSavedFileId: string;
     lastSavedFileMetadata: string;
     tempBlob: Blob;
-    extension: string = ".json";
+    extension: string = ".jfaust";
 
 
     /**
      * Check if current user has authorized this application.
      */
     checkAuth() {
+
+    }
+
+    updateConnection() {
         gapi.auth.authorize(
             {
                 'client_id': this.CLIENT_ID,
@@ -38,7 +42,7 @@ class DriveAPI{
      *
      * @param {Object} authResult Authorization result.
      */
-    handleAuthResult(authResult) {
+    handleAuthResult(authResult,auto?) {
         var buttonConnect = document.getElementById('buttonConnectLoadDrive');
         var buttonConnect2 = document.getElementById('buttonConnectSaveDrive');
         if (authResult && !authResult.error) {
@@ -90,53 +94,24 @@ class DriveAPI{
         });
 
         request.execute((resp) => {
-            var files = resp.items;
-            if (files && files.length > 0) {
-                for (var i = 0; i < files.length; i++) {
-                    var file = files[i];
-                    if (file.mimeType == "application/vnd.google-apps.folder" && file.title=="FaustPlayground") {
-                        //this.appendPre(file.title,file.id);
-                        this.isFaustFolderPresent = true
-                        this.faustFolderId = file.id;
-                        this.openFiles(file.id);
-                    }
-                }
-                if (!this.isFaustFolderPresent){
-                    this.createFaustFolder();
-                }
-            } else {
-                //this.appendPre('No files found.',null);
-                this.appendPre('No files found.', null);
-            }
-        });
-    }
-    openFiles(folderId) {
-        var request=gapi.client.drive.children.list({
-            'folderId': folderId,
-            'q': 'trashed = false'
-        });
-
-        request.execute((resp) => {
-            var files = resp.items;
             var event = new CustomEvent("finishloaddrive")
             document.dispatchEvent(event);
+            var files = resp.items;
             if (files && files.length > 0) {
-        
                 for (var i = 0; i < files.length; i++) {
                     var file = files[i];
-                    this.getFileMetadata(file.id);
-                    if (file.fileExtension == "json") {
-                        //this.appendPre(file.title,file.id);
-                        this.appendPre(file.title, file.id);
+                    if (file.fileExtension == "jfaust") {
+                        this.appendPre(file.title,file.id);
+
                     }
                 }
+
             } else {
-                //this.appendPre('No files found.',null);
                 this.appendPre(App.messageRessource.noFileOnCloud, null);
             }
-        })
-
+        });
     }
+
     getFileMetadata(fileId) {
         var request = gapi.client.drive.files.get({
             'fileId': fileId
@@ -171,7 +146,7 @@ class DriveAPI{
     appendPre(name:string,id:string) {
         var option = document.createElement("option");
         option.value = id;
-        option.textContent = name.replace(/.json$/,'');
+        option.textContent = name.replace(/.jfaust$/,'');
 
         var event = new CustomEvent("fillselect", { 'detail': option })
         document.dispatchEvent(event);
@@ -224,7 +199,6 @@ class DriveAPI{
     createFile(fileName: string, callback) {
         var event = new CustomEvent("startloaddrive");
         document.dispatchEvent(event);
-        var faustFolderId = this.faustFolderId;
 
         var request = gapi.client.request({
             'path': '/drive/v2/files',
@@ -236,32 +210,11 @@ class DriveAPI{
         });
 
         request.execute((resp) => {
-            this.lastSavedFileId=resp.id
-            callback(resp.parents[0].id,resp.id)
+            this.getFile(resp.id, (fileMetada) => { this.updateFile(resp.id, fileMetada, this.tempBlob,null) })
         });
         
     }
-    removeFileFromRoot(Id, fileId) {
-        var request = gapi.client.drive.parents.delete({
-            'fileId': fileId,
-            'parentId': Id,
-        });
-        request.execute((resp) => {
-            this.insertFileIntoFolder(this.faustFolderId, fileId)
-        });
-    }
-    insertFileIntoFolder(folderId, fileId) {
-        var body = { 'id': folderId };
-        var request = gapi.client.drive.parents.insert({
-            'fileId': fileId,
-            'resource': body
-        });
-        request.execute((resp) => {
-            this.getFile(this.lastSavedFileId, () => {
-                this.updateFile(this.lastSavedFileId, this.lastSavedFileMetadata, this.tempBlob, null)
-            });
-        });
-    }
+
     /**
  * Update an existing file's metadata and content.
  *

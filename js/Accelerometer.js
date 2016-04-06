@@ -13,9 +13,16 @@ var Curve;
     Curve[Curve["DownUp"] = 3] = "DownUp";
 })(Curve || (Curve = {}));
 ;
+var AccMeta = (function () {
+    function AccMeta() {
+    }
+    return AccMeta;
+})();
 var AccelerometerSlider = (function () {
     function AccelerometerSlider(controler) {
+        this.existed = false;
         if (controler != null) {
+            this.isEnabled = controler.isEnabled;
             this.acc = controler.acc;
             this.setAttributes(controler.acc);
             this.label = controler.address;
@@ -28,6 +35,9 @@ var AccelerometerSlider = (function () {
             this.isActive = App.isAccelerometerOn;
             this.precision = parseFloat(controler.precision);
             this.name = controler.label;
+            if (!this.isEnabled) {
+                this.mySlider.parentElement.classList.add("disabledAcc");
+            }
         }
     }
     AccelerometerSlider.prototype.setAttributes = function (fMetaAcc) {
@@ -69,7 +79,7 @@ var AccelerometerHandler = (function () {
         var y = event.accelerationIncludingGravity.y;
         var z = event.accelerationIncludingGravity.z;
         for (var i = 0; i < AccelerometerHandler.accelerometerSliders.length; i++) {
-            if (AccelerometerHandler.accelerometerSliders[i].isActive) {
+            if (AccelerometerHandler.accelerometerSliders[i].isActive && AccelerometerHandler.accelerometerSliders[i].isEnabled) {
                 this.axisSplitter(AccelerometerHandler.accelerometerSliders[i], x, y, z, this.applyNewValueToModule);
             }
         }
@@ -129,6 +139,8 @@ var AccelerometerHandler = (function () {
             case Curve.DownUp:
                 accelerometerSlide.converter = new AccDownUpConverter(accelerometerSlide.amin, accelerometerSlide.amid, accelerometerSlide.amax, accelerometerSlide.min, accelerometerSlide.ivalue, accelerometerSlide.max);
                 break;
+            default:
+                accelerometerSlide.converter = new AccUpConverter(accelerometerSlide.amin, accelerometerSlide.amid, accelerometerSlide.amax, accelerometerSlide.min, accelerometerSlide.ivalue, accelerometerSlide.max);
         }
     };
     AccelerometerHandler.accelerometerSliders = [];
