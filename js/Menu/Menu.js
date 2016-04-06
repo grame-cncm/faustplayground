@@ -8,7 +8,8 @@
 /// <reference path="Load.ts"/>
 /// <reference path="Save.ts"/>
 /// <reference path="AccelerometerEdit.ts"/>
-/// <reference path="../DriveAPI.ts"/>   
+/// <reference path="../DriveAPI.ts"/> 
+/// <reference path="../Messages.ts"/>
 var MenuChoices;
 (function (MenuChoices) {
     MenuChoices[MenuChoices["library"] = 0] = "library";
@@ -414,6 +415,7 @@ var Menu = (function () {
         this.load.loadView.buttonConnectDrive.style.display = "none";
         this.save.saveView.buttonConnectDrive.style.display = "none";
         this.save.saveView.buttonCloudSuppr.style.display = "block";
+        this.save.saveView.inputCloudStorage.style.display = "block";
     };
     Menu.prototype.authOff = function () {
         this.load.loadView.cloudSelectFile.style.display = "none";
@@ -423,6 +425,7 @@ var Menu = (function () {
         this.load.loadView.buttonConnectDrive.style.display = "block";
         this.save.saveView.buttonConnectDrive.style.display = "block";
         this.save.saveView.buttonCloudSuppr.style.display = "none";
+        this.save.saveView.inputCloudStorage.style.display = "none";
         this.clearSelect(this.save.saveView.cloudSelectFile);
         this.clearSelect(this.load.loadView.cloudSelectFile);
         window.open("https://accounts.google.com/logout", "newwindow", "width=500,height=700");

@@ -1,3 +1,4 @@
+/// <reference path="Messages.ts"/>
 //class CodeFaustParser
 var CodeFaustParser = (function () {
     function CodeFaustParser(codeFaust, sliderName, newAccValue, isEnabled) {
