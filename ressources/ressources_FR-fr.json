@@ -31,7 +31,7 @@
   "buttonCloudSave": "Sauvegarder en ligne",
   "buttonLogoutCloud": "Déconnection",
   "confirmSuppr": "Voulez vous vraiment supprimer ce Patch ?",
-  "confirmReplace": "Le nom que vous utilisez existe déjà si vous continuez vous le remplacerez. Continuer?",
+  "confirmReplace": "Le nom que vous utilisez existe déjà si vous continuez vous le remplacerez, vous pouvez renommer la scene dans l'onglet Export. Continuer?",
   "buttonLibrary": "Biblio",
   "buttonLoad": "Charger",
   "buttonEdit": "Editer",

@@ -132,7 +132,12 @@ var ModuleClass = (function () {
     ModuleClass.prototype.createDSP = function (factory) {
         this.moduleFaust.factory = factory;
         try {
-            this.moduleFaust.fDSP = faust.createDSPInstance(factory, App.audioContext, 1024);
+            if (factory != null) {
+                this.moduleFaust.fDSP = faust.createDSPInstance(factory, App.audioContext, 1024);
+            }
+            else {
+                throw new Error("create DSP Error factory null");
+            }
         }
         catch (e) {
             new Message(App.messageRessource.errorCreateDSP + " : " + e);
