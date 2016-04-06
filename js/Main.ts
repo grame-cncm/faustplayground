@@ -6,7 +6,9 @@
 
 	
 */
-	/// <reference path="App.ts"/>
+
+/// <reference path="App.ts"/>
+/// <reference path="Messages.ts"/>
 
 "use strict";
 

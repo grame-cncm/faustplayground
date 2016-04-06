@@ -1,4 +1,6 @@
-﻿declare var gapi
+﻿/// <reference path="Messages.ts"/>
+
+declare var gapi
 
 interface DriveFile {
     id: string
