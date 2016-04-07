@@ -190,6 +190,7 @@ class App {
 
         module.moduleFaust.setSource(this.tempModuleSourceCode);
         module.createDSP(factory);
+        module.setFaustInterfaceControles();
         module.createFaustInterface();
         module.addInputOutputNodes();
         if (this.tempModuleName != "input" && this.tempModuleName != "output") {

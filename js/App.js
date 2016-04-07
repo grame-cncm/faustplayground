@@ -132,6 +132,7 @@ var App = (function () {
         //    faustModule = new ModuleClass(this.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), this.scenes[0].removeModule);
         module.moduleFaust.setSource(this.tempModuleSourceCode);
         module.createDSP(factory);
+        module.setFaustInterfaceControles();
         module.createFaustInterface();
         module.addInputOutputNodes();
         if (this.tempModuleName != "input" && this.tempModuleName != "output") {

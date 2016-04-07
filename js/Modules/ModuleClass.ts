@@ -42,8 +42,7 @@ class ModuleClass  {
     patchID: string;
     moduleView: ModuleView;
     moduleFaust: ModuleFaust;
-    moduleFaustInterface: FaustInterface;
-    moduleControles: Controler[]=[];
+    moduleControles: FaustInterfaceControler[] = [];
     private deleteCallback: (module: ModuleClass) => void;
     private fModuleInterfaceParams: { [label: string]: string } = {};
     eventDraggingHandler: (event: MouseEvent) => void;
@@ -237,7 +236,8 @@ class ModuleClass  {
 
         module.createDSP(factory);
         module.moduleFaust.fName = module.moduleFaust.fTempName;
-        module.moduleFaust.fSource = module.moduleFaust.fTempSource;
+        module.moduleFaust.fSource = module.moduleFaust.fTempSource
+        module.setFaustInterfaceControles()
         module.createFaustInterface();
         module.addInputOutputNodes();
 
@@ -320,13 +320,21 @@ class ModuleClass  {
     /***************** CREATE/DELETE the DSP Interface ********************/
 
     // Fill fInterfaceContainer with the DSP's Interface (--> see FaustInterface.js)
-    createFaustInterface(): void {
+    setFaustInterfaceControles(): void {
 
         this.moduleView.fTitle.textContent = this.moduleFaust.fName;
-        this.moduleFaustInterface = new FaustInterface()
-        this.moduleFaustInterface.parse_ui(JSON.parse(this.moduleFaust.fDSP.json()).ui, this);
+        var moduleFaustInterface = new FaustInterfaceControler()
+        this.moduleControles = moduleFaustInterface.parseFaustJsonUI(JSON.parse(this.moduleFaust.fDSP.json()).ui, this);
     }
-
+    createFaustInterface() {
+        for (var i = 0; i < this.moduleControles.length; i++) {
+            var faustInterfaceControler = this.moduleControles[i];
+            faustInterfaceControler.setParams();
+            faustInterfaceControler.faustInterfaceView = new FaustInterfaceView(faustInterfaceControler.itemParam.type)
+            this.moduleView.getInterfaceContainer().appendChild(faustInterfaceControler.createFaustInterfaceElement());
+            faustInterfaceControler.setEventListener((event) => { this.interfaceCallback(event, faustInterfaceControler) }); 
+        }
+    }
 
     private deleteFaustInterface(): void {
         this.deleteAccelerometerRef();
@@ -350,20 +358,20 @@ class ModuleClass  {
 
     setDSPValue() {
         for (var i = 0; i < this.moduleControles.length; i++){
-            this.moduleFaust.fDSP.setValue(this.moduleControles[i].address, this.moduleControles[i].value)
+            this.moduleFaust.fDSP.setValue(this.moduleControles[i].itemParam.address, this.moduleControles[i].value)
         }
     }
 
     //---- Generic callback for Faust Interface
     //---- Called every time an element of the UI changes value
-    interfaceCallback(event: Event, controler: Controler): any {
+    interfaceCallback(event: Event, faustControler: FaustInterfaceControler): any {
 
-        var input: HTMLInputElement = controler.slider;
-        var text: string = controler.address;
-        var val = Number((parseFloat(input.value) * parseFloat(controler.step)) + parseFloat(controler.min)).toFixed(parseFloat(controler.precision));
-        controler.value = val;
+        var input: HTMLInputElement = faustControler.faustInterfaceView.slider;
+        var text: string = faustControler.itemParam.address;
+        var val = Number((parseFloat(input.value) * parseFloat(faustControler.itemParam.step)) + parseFloat(faustControler.itemParam.min)).toFixed(parseFloat(faustControler.precision));
+        faustControler.value = val;
 
-        var output: HTMLElement = controler.output;
+        var output: HTMLElement = faustControler.faustInterfaceView.output;
 
         //---- update the value text
         if (output)
@@ -381,7 +389,7 @@ class ModuleClass  {
         var controls = this.moduleControles;
         for (var j = 0; j < controls.length; j++) {
 
-            var text: string = controls[j].address;
+            var text: string = controls[j].itemParam.address;
 
             this.fModuleInterfaceParams[text] = controls[j].value;
             

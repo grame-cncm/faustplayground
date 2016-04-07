@@ -190,6 +190,7 @@ var ModuleClass = (function () {
         module.createDSP(factory);
         module.moduleFaust.fName = module.moduleFaust.fTempName;
         module.moduleFaust.fSource = module.moduleFaust.fTempSource;
+        module.setFaustInterfaceControles();
         module.createFaustInterface();
         module.addInputOutputNodes();
         module.deleteDSP(toDelete);
@@ -256,10 +257,20 @@ var ModuleClass = (function () {
     };
     /***************** CREATE/DELETE the DSP Interface ********************/
     // Fill fInterfaceContainer with the DSP's Interface (--> see FaustInterface.js)
-    ModuleClass.prototype.createFaustInterface = function () {
+    ModuleClass.prototype.setFaustInterfaceControles = function () {
         this.moduleView.fTitle.textContent = this.moduleFaust.fName;
-        this.moduleFaustInterface = new FaustInterface();
-        this.moduleFaustInterface.parse_ui(JSON.parse(this.moduleFaust.fDSP.json()).ui, this);
+        var moduleFaustInterface = new FaustInterfaceControler();
+        this.moduleControles = moduleFaustInterface.parseFaustJsonUI(JSON.parse(this.moduleFaust.fDSP.json()).ui, this);
+    };
+    ModuleClass.prototype.createFaustInterface = function () {
+        var _this = this;
+        for (var i = 0; i < this.moduleControles.length; i++) {
+            var faustInterfaceControler = this.moduleControles[i];
+            faustInterfaceControler.setParams();
+            faustInterfaceControler.faustInterfaceView = new FaustInterfaceView(faustInterfaceControler.itemParam.type);
+            this.moduleView.getInterfaceContainer().appendChild(faustInterfaceControler.createFaustInterfaceElement());
+            faustInterfaceControler.setEventListener(function (event) { _this.interfaceCallback(event, faustInterfaceControler); });
+        }
     };
     ModuleClass.prototype.deleteFaustInterface = function () {
         this.deleteAccelerometerRef();
@@ -279,17 +290,17 @@ var ModuleClass = (function () {
     };
     ModuleClass.prototype.setDSPValue = function () {
         for (var i = 0; i < this.moduleControles.length; i++) {
-            this.moduleFaust.fDSP.setValue(this.moduleControles[i].address, this.moduleControles[i].value);
+            this.moduleFaust.fDSP.setValue(this.moduleControles[i].itemParam.address, this.moduleControles[i].value);
         }
     };
     //---- Generic callback for Faust Interface
     //---- Called every time an element of the UI changes value
-    ModuleClass.prototype.interfaceCallback = function (event, controler) {
-        var input = controler.slider;
-        var text = controler.address;
-        var val = Number((parseFloat(input.value) * parseFloat(controler.step)) + parseFloat(controler.min)).toFixed(parseFloat(controler.precision));
-        controler.value = val;
-        var output = controler.output;
+    ModuleClass.prototype.interfaceCallback = function (event, faustControler) {
+        var input = faustControler.faustInterfaceView.slider;
+        var text = faustControler.itemParam.address;
+        var val = Number((parseFloat(input.value) * parseFloat(faustControler.itemParam.step)) + parseFloat(faustControler.itemParam.min)).toFixed(parseFloat(faustControler.precision));
+        faustControler.value = val;
+        var output = faustControler.faustInterfaceView.output;
         //---- update the value text
         if (output)
             output.textContent = "" + val + " " + output.getAttribute("units");
@@ -301,7 +312,7 @@ var ModuleClass = (function () {
         var interfaceElements = this.moduleView.fInterfaceContainer.childNodes;
         var controls = this.moduleControles;
         for (var j = 0; j < controls.length; j++) {
-            var text = controls[j].address;
+            var text = controls[j].itemParam.address;
             this.fModuleInterfaceParams[text] = controls[j].value;
         }
     };

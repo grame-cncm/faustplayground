@@ -363,6 +363,7 @@ var Scene = (function () {
             module.moduleFaust.recallOutputsDestination = this.arrayRecalScene[0].outputs.destination;
             this.arrayRecalledModule.push(module);
             module.recallInterfaceParams();
+            module.setFaustInterfaceControles();
             module.createFaustInterface();
             module.addInputOutputNodes();
             this.addModule(module);
@@ -383,7 +384,7 @@ var Scene = (function () {
                 if (controle != undefined) {
                     for (var j in module.moduleControles) {
                         var moduleControle = module.moduleControles[j];
-                        if (moduleControle.address == controle.adress) {
+                        if (moduleControle.itemParam.address == controle.adress) {
                             moduleControle.accelerometerSlider.acc = controle.axis + " " + controle.curve + " " + controle.amin + " " + controle.amid + " " + controle.amax;
                             moduleControle.acc = controle.axis + " " + controle.curve + " " + controle.amin + " " + controle.amid + " " + controle.amax;
                             moduleControle.accelerometerSlider.amax = parseFloat(controle.amax);
