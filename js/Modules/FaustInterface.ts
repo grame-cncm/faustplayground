@@ -54,28 +54,7 @@ interface FaustMeta {
     noacc: string;
     unit: string;
 }
-class Controler implements Iitem {
-    label: string;
-    init: string;
-    address: string;
-    type: string;
-    items: Iitem[];
-    min: string;
-    max: string;
-    step: string;
-    meta: FaustMeta[];
-    unit: string;
-    slider: HTMLInputElement;
-    output: HTMLElement
-    precision: string;
-    hasAccelerometer: boolean;
-    isEnabled: boolean;
-    accDefault: string="0 0 -10 0 10";
-    acc: string;
-    value: string;
-    accelerometerSlider: AccelerometerSlider;
 
-}
 interface AccParams {
     isEnabled: boolean;
     acc: string;
@@ -86,6 +65,7 @@ interface AccParams {
 }
 class FaustInterfaceControler implements IFaustInterfaceControler {
     faustControlers: FaustInterfaceControler[];
+    name: string;
     itemParam: Iitem;
     unit: string;
     precision: string;
@@ -309,6 +289,7 @@ class FaustInterfaceView {
         var lab: HTMLSpanElement = document.createElement("span");
         lab.className = "label";
         lab.appendChild(document.createTextNode(itemParam.label));
+        this.label = lab;
         info.appendChild(lab);
         var val: HTMLSpanElement = document.createElement("span");
         val.className = "value";

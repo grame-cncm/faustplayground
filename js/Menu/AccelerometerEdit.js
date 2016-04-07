@@ -98,7 +98,8 @@ var AccelerometerEdit = (function () {
         this.originalSlider = faustView.slider;
         this.originalValueOutput = faustView.output;
         this.currentParentElemSliderClone = faustView.group.cloneNode(true);
-        var title = faustView.label.cloneNode(true);
+        var title = document.createElement("h6");
+        title.textContent = faustIControler.name;
         this.accelerometerEditView.container.insertBefore(title, this.accelerometerEditView.radioCurveContainer);
         this.accelerometerEditView.cloneContainer.appendChild(this.currentParentElemSliderClone);
         faustView.slider = this.currentParentElemSliderClone.getElementsByTagName("input")[0];
@@ -288,6 +289,7 @@ var AccelerometerEdit = (function () {
         this.accelerometerEditView.rangeCurrent.step = "0.1";
         this.accParams.isEnabled = accSlider.isEnabled;
         var faustInterfaceControlerEdit = new FaustInterfaceControler(null, null);
+        faustInterfaceControlerEdit.faustInterfaceView = new FaustInterfaceView("edit");
         AccelerometerHandler.registerAcceleratedSlider(this.accParams, faustInterfaceControlerEdit);
         var acc = faustInterfaceControlerEdit.accelerometerSlider;
         faustInterfaceControlerEdit.faustInterfaceView.slider = this.accelerometerEditView.rangeCurrent;

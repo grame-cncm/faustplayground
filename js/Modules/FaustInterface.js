@@ -6,12 +6,6 @@
     SECOND PART --> ADD GRAPHICAL OBJECTS TO INTERFACE
 */
 "use strict";
-var Controler = (function () {
-    function Controler() {
-        this.accDefault = "0 0 -10 0 10";
-    }
-    return Controler;
-}());
 var FaustInterfaceControler = (function () {
     function FaustInterfaceControler(interfaceCallback, setDSPValueCallback) {
         this.accDefault = "0 0 -10 0 10";
@@ -191,6 +185,7 @@ var FaustInterfaceView = (function () {
         var lab = document.createElement("span");
         lab.className = "label";
         lab.appendChild(document.createTextNode(itemParam.label));
+        this.label = lab;
         info.appendChild(lab);
         var val = document.createElement("span");
         val.className = "value";
