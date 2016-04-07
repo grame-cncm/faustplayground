@@ -23,42 +23,41 @@ class AccelerometerSlider {
     amid: number;
     amax: number;
     min: number;
-    ivalue: number;
+    init: number;
     max: number;
-    step: number;
-    module: ModuleClass;
-    label: string;
-    precision: number;
+    //step: number;
+    address: string;
+    //precision: number;
     converter: UpdatableValueConverter;
     isActive: boolean;
     isEnabled: boolean;
-    existed: boolean=false;
-    mySlider: HTMLInputElement
-    valueOutput: HTMLElement
+    //existed: boolean=false;
+    //mySlider: HTMLInputElement
+    //valueOutput: HTMLElement
     acc: string;
-    
     noacc: string;
     noAccObj: AccMeta;
     callbackEdit: any;
+    callbackValueChange: (address: string, value: number) => void
 
-    constructor(controler: Controler) {
-        if (controler != null) {
-            this.isEnabled = controler.isEnabled;
-            this.acc = controler.acc;
-            this.setAttributes(controler.acc);
-            this.label = controler.address;
-            this.min = parseFloat(controler.min);
-            this.max = parseFloat(controler.max);
-            this.ivalue = parseFloat(controler.init);
-            this.step = parseFloat(controler.step);
-            this.mySlider = controler.slider;
-            this.valueOutput = controler.output;
+    constructor(accParams: AccParams) {
+        if (accParams != null) {
+            this.isEnabled = accParams.isEnabled;
+            this.acc = accParams.acc;
+            this.setAttributes(accParams.acc);
+            this.address = accParams.address;
+            this.min = accParams.min;
+            this.max = accParams.max;
+            this.init = accParams.init;
+            //this.step = parseFloat(controler.step);
+            //this.mySlider = controler.slider;
+            //this.valueOutput = controler.output;
             this.isActive = App.isAccelerometerOn;
-            this.precision = parseFloat(controler.precision);
-            this.name = controler.label;
-            if (!this.isEnabled) {
-                this.mySlider.parentElement.classList.add("disabledAcc")
-            }
+            //this.precision = parseFloat(controler.precision);
+            //this.name = controler.label;
+            //if (!this.isEnabled) {
+            //    this.mySlider.parentElement.classList.add("disabledAcc")
+            //}
         }
     }
 
@@ -82,7 +81,7 @@ class AccelerometerSlider {
 }
 
 class AccelerometerHandler {
-    static accelerometerSliders: AccelerometerSlider[] = [];
+    static faustInterfaceControler: FaustInterfaceControler[] = [];
     static sliderEdit: AccelerometerSlider=null;
 
     // get Accelerometer value
@@ -101,9 +100,9 @@ class AccelerometerHandler {
         var x = event.accelerationIncludingGravity.x;
         var y = event.accelerationIncludingGravity.y;
         var z = event.accelerationIncludingGravity.z;
-        for (var i = 0; i < AccelerometerHandler.accelerometerSliders.length; i++) {
-            if (AccelerometerHandler.accelerometerSliders[i].isActive && AccelerometerHandler.accelerometerSliders[i].isEnabled) {
-                this.axisSplitter(AccelerometerHandler.accelerometerSliders[i], x, y, z, this.applyNewValueToModule)
+        for (var i = 0; i < AccelerometerHandler.faustInterfaceControler.length; i++) {
+            if (AccelerometerHandler.faustInterfaceControler[i].accelerometerSlider.isActive && AccelerometerHandler.faustInterfaceControler[i].accelerometerSlider.isEnabled) {
+                this.axisSplitter(AccelerometerHandler.faustInterfaceControler[i].accelerometerSlider, x, y, z, this.applyNewValueToModule)
             }
         }
         if (AccelerometerHandler.sliderEdit != null) {
@@ -111,18 +110,18 @@ class AccelerometerHandler {
         }
     }
     //static registerAcceleratedSlider(fMetaAcc: string, module: ModuleClass, label: string, min: number, ivalue: number, max: number, step: number, slider: HTMLInputElement, valueOutput: HTMLElement, precision: number): AccelerometerSlider {
-    static registerAcceleratedSlider(controler: Controler, module: ModuleClass): AccelerometerSlider {
+    static registerAcceleratedSlider(accParams: AccParams, faustInterfaceControler: FaustInterfaceControler) {
         
-            var accelerometerSlide: AccelerometerSlider = new AccelerometerSlider(controler);
-            accelerometerSlide.module = module;
+        var accelerometerSlide: AccelerometerSlider = new AccelerometerSlider(accParams);
+        faustInterfaceControler.accelerometerSlider = accelerometerSlide;
             AccelerometerHandler.curveSplitter(accelerometerSlide)
             if (module != null) {
-                AccelerometerHandler.accelerometerSliders.push(accelerometerSlide);
-                accelerometerSlide.mySlider.parentElement.classList.add(Axis[accelerometerSlide.axis])
+                AccelerometerHandler.faustInterfaceControler.push(faustInterfaceControler);
+                //accelerometerSlide.mySlider.parentElement.classList.add(Axis[accelerometerSlide.axis])
             } else {
                 AccelerometerHandler.sliderEdit = accelerometerSlide;
             }
-            return accelerometerSlide;
+            //return accelerometerSlide;
     }
 
 
@@ -145,11 +144,7 @@ class AccelerometerHandler {
     }
 
     applyNewValueToModule(accSlid: AccelerometerSlider, newVal: number, axeValue: number) {
-
-        accSlid.module.moduleFaust.fDSP.setValue(accSlid.label, String(newVal));
-        accSlid.mySlider.value = String((newVal - accSlid.min) / accSlid.step)
-        accSlid.valueOutput.textContent = String(newVal.toFixed(accSlid.precision));
-
+        accSlid.callbackValueChange(accSlid.address, newVal);
     }
     applyValueToEdit(accSlid: AccelerometerSlider, newVal: number, axeValue: number) {
         accSlid.mySlider.value = axeValue.toString();
@@ -158,19 +153,19 @@ class AccelerometerHandler {
     static curveSplitter(accelerometerSlide: AccelerometerSlider) {
         switch (accelerometerSlide.curve) {
             case Curve.Up:
-                accelerometerSlide.converter = new AccUpConverter(accelerometerSlide.amin, accelerometerSlide.amid, accelerometerSlide.amax, accelerometerSlide.min, accelerometerSlide.ivalue, accelerometerSlide.max)
+                accelerometerSlide.converter = new AccUpConverter(accelerometerSlide.amin, accelerometerSlide.amid, accelerometerSlide.amax, accelerometerSlide.min, accelerometerSlide.init, accelerometerSlide.max)
                 break;
             case Curve.Down:
-                accelerometerSlide.converter = new AccDownConverter(accelerometerSlide.amin, accelerometerSlide.amid, accelerometerSlide.amax, accelerometerSlide.min, accelerometerSlide.ivalue, accelerometerSlide.max)
+                accelerometerSlide.converter = new AccDownConverter(accelerometerSlide.amin, accelerometerSlide.amid, accelerometerSlide.amax, accelerometerSlide.min, accelerometerSlide.init, accelerometerSlide.max)
                 break;
             case Curve.UpDown:
-                accelerometerSlide.converter = new AccUpDownConverter(accelerometerSlide.amin, accelerometerSlide.amid, accelerometerSlide.amax, accelerometerSlide.min, accelerometerSlide.ivalue, accelerometerSlide.max)
+                accelerometerSlide.converter = new AccUpDownConverter(accelerometerSlide.amin, accelerometerSlide.amid, accelerometerSlide.amax, accelerometerSlide.min, accelerometerSlide.init, accelerometerSlide.max)
                 break;
             case Curve.DownUp:
-                accelerometerSlide.converter = new AccDownUpConverter(accelerometerSlide.amin, accelerometerSlide.amid, accelerometerSlide.amax, accelerometerSlide.min, accelerometerSlide.ivalue, accelerometerSlide.max)
+                accelerometerSlide.converter = new AccDownUpConverter(accelerometerSlide.amin, accelerometerSlide.amid, accelerometerSlide.amax, accelerometerSlide.min, accelerometerSlide.init, accelerometerSlide.max)
                 break;
             default:
-                accelerometerSlide.converter = new AccUpConverter(accelerometerSlide.amin, accelerometerSlide.amid, accelerometerSlide.amax, accelerometerSlide.min, accelerometerSlide.ivalue, accelerometerSlide.max)
+                accelerometerSlide.converter = new AccUpConverter(accelerometerSlide.amin, accelerometerSlide.amid, accelerometerSlide.amax, accelerometerSlide.min, accelerometerSlide.init, accelerometerSlide.max)
         }
     }
 }

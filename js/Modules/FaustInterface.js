@@ -13,8 +13,10 @@ var Controler = (function () {
     return Controler;
 }());
 var FaustInterfaceControler = (function () {
-    function FaustInterfaceControler() {
+    function FaustInterfaceControler(interfaceCallback, setDSPValueCallback) {
         this.accDefault = "0 0 -10 0 10";
+        this.interfaceCallback = interfaceCallback;
+        this.setDSPValueCallback = setDSPValueCallback;
     }
     FaustInterfaceControler.prototype.parseFaustJsonUI = function (ui, module) {
         this.faustControlers = [];
@@ -28,6 +30,7 @@ var FaustInterfaceControler = (function () {
             this.parse_items(group.items, module);
     };
     FaustInterfaceControler.prototype.parse_item = function (item, module) {
+        var _this = this;
         var params = module.getInterfaceParams();
         if (params && params[item.address]) {
             item.init = params[item.address];
@@ -37,7 +40,7 @@ var FaustInterfaceControler = (function () {
         }
         else if (item.type === "vslider" || item.type === "hslider") {
             var itemElement = item;
-            var controler = new FaustInterfaceControler();
+            var controler = new FaustInterfaceControler(function (faustInterface) { _this.interfaceCallback(faustInterface); }, function (adress, value) { _this.setDSPValueCallback(adress, value); });
             controler.itemParam = itemElement;
             controler.value = itemElement.init;
             //controler.slider.addEventListener("input", (event)=> {
@@ -52,13 +55,13 @@ var FaustInterfaceControler = (function () {
         }
         else if (item.type === "button") {
             var itemElement = item;
-            var controler = new FaustInterfaceControler();
+            var controler = new FaustInterfaceControler(function (faustInterface) { _this.interfaceCallback(faustInterface); }, function (adress, value) { _this.setDSPValueCallback(adress, value); });
             controler.itemParam = itemElement;
             this.faustControlers.push(controler);
         }
         else if (item.type === "checkbox") {
             var itemElement = item;
-            var controler = new FaustInterfaceControler();
+            var controler = new FaustInterfaceControler(function (faustInterface) { _this.interfaceCallback(faustInterface); }, function (adress, value) { _this.setDSPValueCallback(adress, value); });
             controler.itemParam = itemElement;
             this.faustControlers.push(controler);
         }
@@ -78,6 +81,14 @@ var FaustInterfaceControler = (function () {
         }
         var precision = this.itemParam.step.toString().split('.').pop().length;
         this.precision = String(precision);
+        this.accParams = {
+            isEnabled: this.isEnabled,
+            acc: this.acc,
+            address: this.itemParam.address,
+            init: parseFloat(this.itemParam.init),
+            max: parseFloat(this.itemParam.max),
+            min: parseFloat(this.itemParam.min)
+        };
     };
     FaustInterfaceControler.prototype.createFaustInterfaceElement = function () {
         if (this.faustInterfaceView && this.faustInterfaceView.type) {
@@ -110,6 +121,53 @@ var FaustInterfaceControler = (function () {
             else if (this.faustInterfaceView.type === "checkbox") {
             }
         }
+    };
+    FaustInterfaceControler.prototype.createAccelerometer = function () {
+        var _this = this;
+        if (this.itemParam.meta) {
+            var meta = this.itemParam.meta;
+            for (var i = 0; i < meta.length; i++) {
+                if (meta[i].acc) {
+                    this.acc = meta[i].acc;
+                    AccelerometerHandler.registerAcceleratedSlider(this.accParams, this);
+                    this.accelerometerSlider.callbackValueChange = function (address, value) { _this.callbackValueChange(address, value); };
+                    this.accelerometerSlider.isEnabled = true;
+                    this.faustInterfaceView.slider.classList.add("allowed");
+                    if (App.isAccelerometerOn) {
+                        this.accelerometerSlider.isActive = true;
+                        this.faustInterfaceView.slider.classList.remove("allowed");
+                        this.faustInterfaceView.slider.classList.add("not-allowed");
+                        this.faustInterfaceView.slider.disabled = true;
+                    }
+                }
+                else if (meta[i].noacc) {
+                    this.acc = meta[i].noacc;
+                    AccelerometerHandler.registerAcceleratedSlider(this.accParams, this);
+                    this.accelerometerSlider.callbackValueChange = function (address, value) { _this.callbackValueChange(address, value); };
+                    this.accelerometerSlider.isEnabled = false;
+                    this.faustInterfaceView.slider.parentElement.classList.add("disabledAcc");
+                }
+            }
+            if (this.accelerometerSlider == undefined) {
+                this.acc = this.accDefault;
+                AccelerometerHandler.registerAcceleratedSlider(this.accParams, this);
+                this.accelerometerSlider.callbackValueChange = function (address, value) { _this.callbackValueChange(address, value); };
+                this.accelerometerSlider.isEnabled = false;
+                this.faustInterfaceView.slider.parentElement.classList.add("disabledAcc");
+            }
+        }
+        else {
+            this.acc = this.accDefault;
+            AccelerometerHandler.registerAcceleratedSlider(this.accParams, this);
+            this.accelerometerSlider.callbackValueChange = function (address, value) { _this.callbackValueChange(address, value); };
+            this.accelerometerSlider.isEnabled = false;
+            this.faustInterfaceView.slider.parentElement.classList.add("disabledAcc");
+        }
+    };
+    FaustInterfaceControler.prototype.callbackValueChange = function (address, value) {
+        this.setDSPValueCallback(address, String(value));
+        this.faustInterfaceView.slider.value = String((value - parseFloat(this.itemParam.min)) / parseFloat(this.itemParam.step));
+        this.faustInterfaceView.output.textContent = String(value.toFixed(parseFloat(this.precision)));
     };
     return FaustInterfaceControler;
 }());
@@ -186,6 +244,7 @@ var FaustInterfaceView = (function () {
         //    controler.hasAccelerometer = false;
         //    controler.accelerometerSlider = AccelerometerHandler.registerAcceleratedSlider(controler, module)
         //}
+        this.group = group;
         return group;
     };
     FaustInterfaceView.prototype.addFaustCheckBox = function (ivalue) {

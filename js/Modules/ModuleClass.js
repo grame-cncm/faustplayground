@@ -258,8 +258,9 @@ var ModuleClass = (function () {
     /***************** CREATE/DELETE the DSP Interface ********************/
     // Fill fInterfaceContainer with the DSP's Interface (--> see FaustInterface.js)
     ModuleClass.prototype.setFaustInterfaceControles = function () {
+        var _this = this;
         this.moduleView.fTitle.textContent = this.moduleFaust.fName;
-        var moduleFaustInterface = new FaustInterfaceControler();
+        var moduleFaustInterface = new FaustInterfaceControler(function (faustInterface) { _this.interfaceCallback(faustInterface); }, function (adress, value) { _this.moduleFaust.fDSP.setValue(adress, value); });
         this.moduleControles = moduleFaustInterface.parseFaustJsonUI(JSON.parse(this.moduleFaust.fDSP.json()).ui, this);
     };
     ModuleClass.prototype.createFaustInterface = function () {
@@ -269,7 +270,8 @@ var ModuleClass = (function () {
             faustInterfaceControler.setParams();
             faustInterfaceControler.faustInterfaceView = new FaustInterfaceView(faustInterfaceControler.itemParam.type);
             this.moduleView.getInterfaceContainer().appendChild(faustInterfaceControler.createFaustInterfaceElement());
-            faustInterfaceControler.setEventListener(function (event) { _this.interfaceCallback(event, faustInterfaceControler); });
+            faustInterfaceControler.setEventListener(function () { _this.interfaceCallback(faustInterfaceControler); });
+            faustInterfaceControler.createAccelerometer();
         }
     };
     ModuleClass.prototype.deleteFaustInterface = function () {
@@ -293,9 +295,12 @@ var ModuleClass = (function () {
             this.moduleFaust.fDSP.setValue(this.moduleControles[i].itemParam.address, this.moduleControles[i].value);
         }
     };
+    ModuleClass.prototype.setDSPValueCallback = function (address, value) {
+        this.moduleFaust.fDSP.setValue(address, value);
+    };
     //---- Generic callback for Faust Interface
     //---- Called every time an element of the UI changes value
-    ModuleClass.prototype.interfaceCallback = function (event, faustControler) {
+    ModuleClass.prototype.interfaceCallback = function (faustControler) {
         var input = faustControler.faustInterfaceView.slider;
         var text = faustControler.itemParam.address;
         var val = Number((parseFloat(input.value) * parseFloat(faustControler.itemParam.step)) + parseFloat(faustControler.itemParam.min)).toFixed(parseFloat(faustControler.precision));
@@ -303,7 +308,7 @@ var ModuleClass = (function () {
         var output = faustControler.faustInterfaceView.output;
         //---- update the value text
         if (output)
-            output.textContent = "" + val + " " + output.getAttribute("units");
+            output.textContent = "" + val + " " + faustControler.unit;
         // 	Search for DSP then update the value of its parameter.
         this.moduleFaust.fDSP.setValue(text, val);
     };

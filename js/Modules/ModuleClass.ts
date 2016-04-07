@@ -323,7 +323,10 @@ class ModuleClass  {
     setFaustInterfaceControles(): void {
 
         this.moduleView.fTitle.textContent = this.moduleFaust.fName;
-        var moduleFaustInterface = new FaustInterfaceControler()
+        var moduleFaustInterface = new FaustInterfaceControler(
+            (faustInterface) => { this.interfaceCallback(faustInterface) },
+            (adress, value) => { this.moduleFaust.fDSP.setValue(adress, value) }
+            );
         this.moduleControles = moduleFaustInterface.parseFaustJsonUI(JSON.parse(this.moduleFaust.fDSP.json()).ui, this);
     }
     createFaustInterface() {
@@ -332,7 +335,8 @@ class ModuleClass  {
             faustInterfaceControler.setParams();
             faustInterfaceControler.faustInterfaceView = new FaustInterfaceView(faustInterfaceControler.itemParam.type)
             this.moduleView.getInterfaceContainer().appendChild(faustInterfaceControler.createFaustInterfaceElement());
-            faustInterfaceControler.setEventListener((event) => { this.interfaceCallback(event, faustInterfaceControler) }); 
+            faustInterfaceControler.setEventListener(() => { this.interfaceCallback(faustInterfaceControler) });
+            faustInterfaceControler.createAccelerometer();
         }
     }
 
@@ -361,10 +365,13 @@ class ModuleClass  {
             this.moduleFaust.fDSP.setValue(this.moduleControles[i].itemParam.address, this.moduleControles[i].value)
         }
     }
+    setDSPValueCallback(address: string, value: string) {
+        this.moduleFaust.fDSP.setValue(address, value)
+    }
 
     //---- Generic callback for Faust Interface
     //---- Called every time an element of the UI changes value
-    interfaceCallback(event: Event, faustControler: FaustInterfaceControler): any {
+    interfaceCallback(faustControler: FaustInterfaceControler): any {
 
         var input: HTMLInputElement = faustControler.faustInterfaceView.slider;
         var text: string = faustControler.itemParam.address;
@@ -375,7 +382,7 @@ class ModuleClass  {
 
         //---- update the value text
         if (output)
-            output.textContent = "" + val + " " + output.getAttribute("units");
+            output.textContent = "" + val + " " + faustControler.unit;
 
 
         // 	Search for DSP then update the value of its parameter.

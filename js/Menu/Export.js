@@ -1,9 +1,9 @@
 /*				EXPORT.JS
-   Handles Graphical elements for the Export Feature of the normal Playground
-       
-   DEPENDENCIES :
-       - ExportLib.js
-       - qrcode.js
+    Handles Graphical elements for the Export Feature of the normal Playground
+        
+    DEPENDENCIES :
+        - ExportLib.js
+        - qrcode.js
 */
 /// <reference path="../ExportLib.ts"/>
 /// <reference path="../EquivalentFaust.ts"/>

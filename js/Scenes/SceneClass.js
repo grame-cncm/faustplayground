@@ -1,10 +1,10 @@
 /*				SCENECLASS.JS
-   HAND-MADE JAVASCRIPT CLASS CONTAINING THE API OF A GENERIC SCENE
+    HAND-MADE JAVASCRIPT CLASS CONTAINING THE API OF A GENERIC SCENE
 
-   DEPENDENCIES :
-       - ModuleClass.js
-       - Main.js
-       - Connect.js
+    DEPENDENCIES :
+        - ModuleClass.js
+        - Main.js
+        - Connect.js
 */
 /// <reference path="../Connect.ts"/>
 /// <reference path="../Modules/ModuleClass.ts"/>

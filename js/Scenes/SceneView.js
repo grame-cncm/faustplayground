@@ -1,13 +1,13 @@
 /*				PLAYGROUND.JS
-   Init Normal Scene with all its graphical elements
+    Init Normal Scene with all its graphical elements
 
-   This is the unique scene of the Normal Playground
-       
-   DEPENDENCIES :
-       - Scene.js
-       - Connect.js
-       - Main.js
-       - Export.js
+    This is the unique scene of the Normal Playground
+        
+    DEPENDENCIES :
+        - Scene.js
+        - Connect.js
+        - Main.js
+        - Export.js
 */
 /// <reference path="../Scenes/SceneClass.ts"/>
 /// <reference path="../Menu/Export.ts"/>

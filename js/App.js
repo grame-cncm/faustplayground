@@ -11,18 +11,18 @@ Create Factories and Modules
 
 DEPENDENCIES:
 - Accueil.js
-   - Finish.js
-   - Playground.js
-   - Pedagogie.js
-   - SceneClass.js
+    - Finish.js
+    - Playground.js
+    - Pedagogie.js
+    - SceneClass.js
 
-   - ModuleClass.js
-   - Connect.js
-   - libfaust.js
-   - webaudio - asm - wrapper.js
-   - Pedagogie / Tooltips.js
+    - ModuleClass.js
+    - Connect.js
+    - libfaust.js
+    - webaudio - asm - wrapper.js
+    - Pedagogie / Tooltips.js
 
-   */
+    */
 /// <reference path="Scenes/SceneClass.ts"/>
 /// <reference path="Modules/ModuleClass.ts"/>
 /// <reference path="Modules/ModuleView.ts"/>
