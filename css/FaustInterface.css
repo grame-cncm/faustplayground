@@ -68,6 +68,13 @@
 	padding: 1em 1.25em 1.25em 1.25em;
 	position: relative;
 }
+.mini {
+    visibility: hidden;
+    height: 0px;
+    min-width: 0px!important;
+    padding: 0em! important;
+    width: 0em;
+}
 .moduleFaust .content img {
 	display: block;
 	margin: 0 auto;
@@ -78,6 +85,10 @@
 	margin: 1em 1em 1em;
 	text-align: center;
 	text-transform: uppercase;
+}
+
+.miniTitle {
+    margin: 1em 5em 1em !important;
 }
 
 /* Module nodes */
@@ -102,6 +113,32 @@
     position: absolute;
     right: 8px;
     top: 8px;
+    width: 15px;
+    opacity: 0.8;
+    cursor: pointer;
+}
+
+.moduleFaust .minus {
+    background: url('../img/minus.png') 0 0 no-repeat;
+    background-size: 100%;
+    height: 15px;
+    text-indent: -999em;
+    position: absolute;
+    right: 26px;
+    top: 8px;
+    width: 15px;
+    opacity: 0.8;
+    cursor: pointer;
+}
+.moduleFaust .max {
+    background: url('../img/big.png') 0 0 no-repeat;
+    background-size: 100%;
+    height: 15px;
+    text-indent: -999em;
+    position: absolute;
+    right: 26px;
+    top: 8px;
+    display:none;
     width: 15px;
     opacity: 0.8;
     cursor: pointer;
@@ -396,7 +433,9 @@ footer>img {
 
 /* Control group */
 .control-group {
-	margin: 0 0 1.2em;
+	margin: 0 0 0.2em;
+    width:100%;
+    display:table;
 }
 .control-group.last {
 	margin: 0;
@@ -479,6 +518,18 @@ footer>img {
 	right: 0;
 }
 
+input.not-allowed {
+    cursor:not-allowed;
+    opacity:0.5;
+}
+input.allowed {
+    cursor:pointer;
+    opacity:1;
+}
+input.edit {
+    cursor:pointer!important;
+}
+
 input[type="range"] {
 	-webkit-appearance: none;
 	background-color: #303030;
@@ -489,7 +540,7 @@ input[type="range"] {
 	width: 100%;
 }
 input[type=range]::-moz-range-track {
-    	background-color: #303030;
+    background-color: #303030;
 	height: 1px;
     border-style:none;
 	display: block;
@@ -498,26 +549,65 @@ input[type=range]::-moz-range-track {
 	width: 100%;
 }
 input[type="range"]::-webkit-slider-thumb {
-    background-color: rgb(255, 0, 50);
+    background-color: #fff;
     box-shadow: 0px 4px 5px rgba(0, 0, 0, 0.61);
 	-webkit-appearance: none;
 	position: relative;
 	top: 0px;
 	height: 20px;
     width: 20px;
-	cursor: pointer;
 	border-radius: 40px;
 }
 
+.x > input[type="range"]::-webkit-slider-thumb {
+    background-color: #ff002f;
+}
+.y > input[type="range"]::-webkit-slider-thumb {
+    background-color: #24d711;
+}
+.z > input[type="range"]::-webkit-slider-thumb {
+    background-color: #0044ff;
+}
+.disabledAcc > input[type="range"]::-webkit-slider-thumb {
+    background-color: white;
+}
 input[type=range]::-moz-range-thumb {
-    background-color: rgb(255, 0, 50);
+    background-color: #fff;
     box-shadow: 0px 4px 5px rgba(0, 0, 0, 0.61);
 	position: relative;
 	top: 0px;
 	height: 20px;
     width: 20px;
-	cursor: pointer;
 	border-radius: 40px;
     border-style:hidden;
 }
+.x > input[type="range"]::-moz-range-thumb {
+    background-color: #ff002f;
+}
+.y > input[type="range"]::-moz-range-thumb {
+    background-color: #24d711;
+}
+.z > input[type="range"]::-moz-range-thumb {
+    background-color: #0044ff;
+}
+.disabledAcc > input[type="range"]::-moz-range-thumb {
+    background-color: white;
+}
+
+input.accCheckbox {
+    display:block;
+    width: 1em;
+    height: 1em;
+    float: left;
+    margin-right: 0.3em;
+}
+
+span.titleAcc {
+    font-size: 0.7em;
+    line-height: 1.5em;
+    display: block;
+    float: left;
+    margin-right: 0.3em;
+}
+
 

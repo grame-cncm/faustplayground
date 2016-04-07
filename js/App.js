@@ -44,6 +44,8 @@ DEPENDENCIES:
 /// <reference path="ExportLib.ts"/>
 /// <reference path="EquivalentFaust.ts"/>
 /// <reference path="qrcode.d.ts"/>
+/// <reference path="Ressources.ts"/>
+/// <reference path="Messages.ts"/>
 /// <reference path="Lib/perfectScrollBar/js/perfect-ScrollBar.min.d.ts"/>
 var App = (function () {
     function App() {
@@ -62,10 +64,24 @@ var App = (function () {
     App.prototype.createMenu = function () {
         var _this = this;
         this.menu = new Menu(document.getElementsByTagName('body')[0]);
-        App.scene.getSceneContainer().onmousedown = function () {
-            _this.menu.menuChoices = MenuChoices.null;
-            _this.menu.menuHandler(_this.menu.menuChoices);
-        };
+        this.menu.setMenuScene(App.scene);
+        App.scene.getSceneContainer().addEventListener("mousedown", function () {
+            if (!_this.menu.accEdit.isOn) {
+                _this.menu.menuChoices = MenuChoices.null;
+                _this.menu.menuHandler(_this.menu.menuChoices);
+            }
+        }, true);
+        App.scene.getSceneContainer().addEventListener("touchstart", function () {
+            if (!_this.menu.accEdit.isOn) {
+                _this.menu.menuChoices = MenuChoices.null;
+                _this.menu.menuHandler(_this.menu.menuChoices);
+            }
+        }, true);
+    };
+    App.prototype.createDialogue = function () {
+        var dialogue = document.createElement("div");
+        dialogue.id = "dialogue";
+        document.getElementsByTagName("body")[0].appendChild(dialogue);
     };
     /********************************************************************
     **********************  ACTIVATE PHYSICAL IN/OUTPUT *****************
@@ -79,12 +95,14 @@ var App = (function () {
         if (navigatorLoc.getUserMedia) {
             navigatorLoc.getUserMedia({ audio: true }, function (mediaStream) { _this.getDevice(mediaStream, _this); }, function (e) {
                 scene.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)";
-                scene.fAudioInput.moduleView.fInterfaceContainer.title = "Error getting audio input";
+                scene.fAudioInput.moduleView.fInterfaceContainer.title = App.messageRessource.errorGettingAudioInput;
+                new Message(App.messageRessource.errorGettingAudioInput);
             });
         }
         else {
             scene.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)";
-            scene.fAudioInput.moduleView.fInterfaceContainer.title = "Audio input API not available";
+            new Message(App.messageRessource.errorInputAPINotAvailable);
+            scene.fAudioInput.moduleView.fInterfaceContainer.title = App.messageRessource.errorInputAPINotAvailable;
         }
     };
     App.prototype.getDevice = function (device, app) {
@@ -126,7 +144,12 @@ var App = (function () {
         //    sourcecode, args
         //})
         //worker.postMessage(messageJson)
-        this.factory = faust.createDSPFactory(sourcecode, args, function (factory) { callback(factory); });
+        try {
+            this.factory = faust.createDSPFactory(sourcecode, args, function (factory) { callback(factory); });
+        }
+        catch (error) {
+            new Message(error);
+        }
         //callback(this.factory)
         if (currentScene) {
             currentScene.unmuteScene();
@@ -136,7 +159,8 @@ var App = (function () {
     App.prototype.createModule = function (factory) {
         var _this = this;
         if (!factory) {
-            alert(faust.getErrorMessage());
+            new Message(App.messageRessource.errorFactory + faust.getErrorMessage());
+            this.terminateUpload();
             return null;
         }
         // can't it be just window.scenes[window.currentScene] ???
@@ -174,6 +198,7 @@ var App = (function () {
     //-- Init drag and drop reactions
     App.prototype.setGeneralAppListener = function (app) {
         var _this = this;
+        document.addEventListener("fileload", function (e) { _this.loadFileEvent(e); });
         window.ondragover = function () { this.className = 'hover'; return false; };
         window.ondragend = function () { this.className = ''; return false; };
         document.ondragstart = function () { _this.styleOnDragStart(); };
@@ -183,6 +208,15 @@ var App = (function () {
             }
             else {
                 _this.styleOnDragStart();
+            }
+        };
+        document.ondragleave = function (e) {
+            var elementTarget = e.target;
+            if (elementTarget.id == "svgCanvas") {
+                //alert("svg")
+                _this.styleOnDragEnd();
+                e.stopPropagation();
+                e.preventDefault();
             }
         };
         document.onscroll = function () {
@@ -211,8 +245,7 @@ var App = (function () {
         e.preventDefault();
     };
     App.prototype.terminateUpload = function () {
-        var uploadTitle = document.getElementById("upload");
-        uploadTitle.textContent = "";
+        App.hideFullPageLoading();
     };
     //-- Finds out if the drop was on an existing module or creating a new one
     //-- Upload content dropped on the page and create a Faust DSP with it
@@ -232,12 +265,18 @@ var App = (function () {
                 this.uploadCodeFaust(app, module, x, y, e, dsp_code);
             }
             else {
-                this.uploadFile2(app, module, x, y, e, dsp_code);
+                try {
+                    this.uploadFile2(app, module, x, y, e, dsp_code);
+                }
+                catch (error) {
+                    new Message(error);
+                    App.hideFullPageLoading();
+                }
             }
         }
         else {
             app.terminateUpload();
-            window.alert("THIS OBJECT IS NOT FAUST COMPILABLE");
+            new Message(App.messageRessource.errorObjectNotFaustCompatible);
         }
     };
     //Upload Url
@@ -256,7 +295,7 @@ var App = (function () {
                     module.update(filename, dsp_code);
                 }
             }
-            app.terminateUpload();
+            //app.terminateUpload();
         };
         xmlhttp.open("GET", url);
         // 	Avoid error "mal formé" on firefox
@@ -271,45 +310,56 @@ var App = (function () {
         else {
             module.update("TEXT", dsp_code);
         }
-        app.terminateUpload();
+        //app.terminateUpload();
     };
     App.prototype.uploadFile2 = function (app, module, x, y, e, dsp_code) {
-        var files = e.dataTransfer.files; //e.target.files ||
+        var files = e.dataTransfer.files;
         var file = files[0];
         if (location.host.indexOf("sitepointstatic") >= 0) {
             return;
         }
         var request = new XMLHttpRequest();
         if (request.upload) {
-            var reader = new FileReader();
-            var ext = file.name.toString().split('.').pop();
-            var filename = file.name.toString().split('.').shift();
-            var type;
-            if (ext == "dsp") {
-                type = "dsp";
-                reader.readAsText(file);
-            }
-            else if (ext == "json") {
-                type = "json";
-                reader.readAsText(file);
-            }
-            else {
-                this.terminateUpload();
-            }
-            reader.onloadend = function (e) {
-                dsp_code = "process = vgroup(\"" + filename + "\",environment{" + reader.result + "}.process);";
-                if (!module && type == "dsp") {
-                    app.compileFaust(filename, dsp_code, x, y, function (factory) { app.createModule(factory); });
-                }
-                else if (type == "dsp") {
-                    module.update(filename, dsp_code);
-                }
-                else if (type == "json") {
-                    app.scenes[App.currentScene].recallScene(reader.result);
-                }
-                app.terminateUpload();
-            };
+            this.loadFile(file, module, x, y, app);
         }
+    };
+    App.prototype.loadFile = function (file, module, x, y, app) {
+        var dsp_code;
+        var reader = new FileReader();
+        var ext = file.name.toString().split('.').pop();
+        var filename = file.name.toString().split('.').shift();
+        var type;
+        if (ext == "dsp") {
+            type = "dsp";
+            reader.readAsText(file);
+        }
+        else if (ext == "json" || ext == "jfaust") {
+            type = "json";
+            reader.readAsText(file);
+        }
+        else {
+            throw new Error(App.messageRessource.errorObjectNotFaustCompatible);
+            this.terminateUpload();
+        }
+        reader.onloadend = function (e) {
+            dsp_code = "process = vgroup(\"" + filename + "\",environment{" + reader.result + "}.process);";
+            if (!module && type == "dsp") {
+                app.compileFaust(filename, dsp_code, x, y, function (factory) { app.createModule(factory); });
+            }
+            else if (type == "dsp") {
+                module.update(filename, dsp_code);
+            }
+            else if (type == "json") {
+                App.scene.recallScene(reader.result);
+            }
+            //app.terminateUpload();
+        };
+    };
+    App.prototype.loadFileEvent = function (e) {
+        App.showFullPageLoading();
+        var file = e.detail;
+        var position = App.scene.positionDblTapModule();
+        this.loadFile(file, null, position.x, position.y, this);
     };
     App.prototype.dblTouchUpload = function (e) {
         App.showFullPageLoading();
@@ -345,33 +395,33 @@ var App = (function () {
     };
     ////////////////////////////// LOADINGS //////////////////////////////////////
     //add loading logo and text on export
-    App.addLoadingLogo = function (divTarget) {
+    App.addLoadingLogo = function (idTarget) {
         var loadingDiv = document.createElement("div");
-        loadingDiv.id = "loadingDiv";
+        loadingDiv.className = "loadingDiv";
         var loadingImg = document.createElement("img");
         loadingImg.src = App.baseImg + "logoAnim.gif";
         loadingImg.id = "loadingImg";
         var loadingText = document.createElement("span");
-        loadingText.textContent = "Compilation en cours...";
+        loadingText.textContent = App.messageRessource.loading;
         loadingText.id = "loadingText";
         loadingDiv.appendChild(loadingImg);
         loadingDiv.appendChild(loadingText);
-        document.getElementById(divTarget).appendChild(loadingDiv);
+        if (document.getElementById(idTarget) != null) {
+            document.getElementById(idTarget).appendChild(loadingDiv);
+        }
     };
-    App.removeLoadingLogo = function () {
-        document.getElementById("loadingDiv").remove();
+    App.removeLoadingLogo = function (idTarget) {
+        var divTarget = document.getElementById(idTarget);
+        if (divTarget != null && divTarget.getElementsByClassName("loadingDiv").length > 0) {
+            while (divTarget.getElementsByClassName("loadingDiv").length != 0) {
+                divTarget.getElementsByClassName("loadingDiv")[0].remove();
+            }
+        }
     };
     App.addFullPageLoading = function () {
-        var loadingPage = document.createElement("div");
-        loadingPage.id = "loadingPage";
-        loadingPage.className = "loadingPage";
-        var body = document.getElementsByTagName('body')[0];
-        var loadingText = document.createElement("div");
+        var loadingText = document.getElementById("loadingTextBig");
         loadingText.id = "loadingTextBig";
-        loadingText.textContent = "Chargement en cours";
-        loadingPage.appendChild(loadingText);
-        body.appendChild(loadingPage);
-        loadingPage.style.display = "none";
+        loadingText.textContent = App.messageRessource.loading;
     };
     App.showFullPageLoading = function () {
         document.getElementById("loadingPage").style.visibility = "visible";
@@ -393,6 +443,7 @@ var App = (function () {
     // manage style during a drag and drop event
     App.prototype.styleOnDragStart = function () {
         this.menu.menuView.menuContainer.style.opacity = "0.5";
+        this.menu.menuView.menuContainer.classList.add("no_pointer");
         App.scene.sceneView.dropElementScene.style.display = "block";
         App.scene.getSceneContainer().style.boxShadow = "0 0 200px #00f inset";
         var modules = App.scene.getModules();
@@ -404,7 +455,8 @@ var App = (function () {
         //var body: HTMLBodyElement = <HTMLBodyElement>document.getElementById("body")[0];
         //body.removeEventListener("ondragleave");
         //document.getElementById("body")[0].style.zIndex = "100";
-        this.menu.lowerLibraryMenu();
+        //this.menu.lowerLibraryMenu();
+        this.menu.menuView.menuContainer.classList.remove("no_pointer");
         this.menu.menuView.menuContainer.style.opacity = "1";
         App.scene.sceneView.dropElementScene.style.display = "none";
         App.scene.getSceneContainer().style.boxShadow = "none";
@@ -437,10 +489,33 @@ var App = (function () {
             document.getElementById("svgCanvas").style.height = "100%";
         }
     };
+    App.replaceAll = function (str, find, replace) {
+        return str.replace(new RegExp(find, 'g'), replace);
+    };
+    App.prototype.getRessources = function () {
+        var _this = this;
+        // App.getXHR(
+        var localization = navigator.language;
+        if (localization == "fr" || localization == "fr-FR") {
+            App.getXHR("ressources/ressources_fr-FR.json", function (ressource) { _this.loadMessages(ressource); }, this.errorCallBack);
+        }
+        else {
+            App.getXHR("ressources/ressources_fr-FR.json", function (ressource) { _this.loadMessages(ressource); }, this.errorCallBack);
+        }
+    };
+    App.prototype.loadMessages = function (ressourceJson) {
+        App.messageRessource = JSON.parse(ressourceJson);
+        resumeInit(this);
+    };
+    App.prototype.errorCallBack = function (message) {
+    };
     //************* Fields
     App.appTest = 0;
     App.idX = 0;
     App.baseImg = "img/";
+    App.isAccelerometerOn = false;
+    App.isAccelerometerEditOn = false;
+    App.messageRessource = new Ressources();
     return App;
 })();
 //# sourceMappingURL=App.js.map

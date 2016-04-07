@@ -12,7 +12,7 @@
 
 /// <reference path="Connect.ts"/>
 /// <reference path="App.ts"/>
-/// <reference path="main.ts"/>
+/// <reference path="Main.ts"/>
 /// <reference path="Modules/ModuleClass.ts"/>
 /// <reference path="Pedagogie/Tooltips.ts"/>
 
@@ -26,10 +26,7 @@
 /****** Node Dragging - these are used for dragging the audio modules interface*****/
 /***********************************************************************************/
 
-interface TouchEvent {
-    target: HTMLElement;
 
-}
 
 class Drag {
 
@@ -41,9 +38,9 @@ class Drag {
     elementStartTop: number;
     isOriginInput: boolean;
     connector: Connector = new Connector();
+    originTarget: HTMLElement;
     elemNode: HTMLElement;
     isDragConnector: boolean = false;
-    moduleTouchList: ModuleClass[]=[];
 
 
     getDraggingMouseEvent(mouseEvent: MouseEvent, module: ModuleClass, draggingFunction: (el: HTMLElement, x: number, y: number, module: ModuleClass, event: Event) => void) {
@@ -56,56 +53,32 @@ class Drag {
 
     getDraggingTouchEvent(touchEvent: TouchEvent, module: ModuleClass, draggingFunction: (el: HTMLElement, x: number, y: number, module: ModuleClass, event: Event) => void) {
         var event = <Event>touchEvent;
-        if (touchEvent.touches.length ==1) {
-            var touch: Touch = touchEvent.touches[0];
+        if (touchEvent.targetTouches.length > 0) {
+            var touch: Touch = touchEvent.targetTouches[0];
+            
             var el = <HTMLElement>touch.target;
             var x = touch.clientX + window.scrollX;
             var y = touch.clientY + window.scrollY;
             draggingFunction(el, x, y, module,event);
-         
-        } else if (touchEvent.touches.length > 1 ) {
-            for (var i = 0; i < touchEvent.touches.length; i++) {
-                var touch: Touch = touchEvent.touches[i];                
-                var el = <HTMLElement>touch.target;
-                var x = touch.clientX + window.scrollX;
-                var y = touch.clientY + window.scrollY;
-                if (module.moduleView.isPointInNode(x, y)) {
 
-                //if (touchEvent.target != touchEvent.touches[i].target) {
-                    draggingFunction(el, x, y, module, event);
-                }
-            }
+
         } else if (this.isDragConnector) {
             for (var i = 0; i < touchEvent.changedTouches.length; i++) {
                 var touch: Touch = touchEvent.changedTouches[i];
                 var x = touch.clientX + window.scrollX;
                 var y = touch.clientY + window.scrollY;
                 var el = <HTMLElement>document.elementFromPoint(x - scrollX, y - scrollY);
-                this.isDragConnector = false;
                 draggingFunction(el, x, y, module,event);
             }
         } else {
             draggingFunction(null, null, null, module,event);
         }
         //touchEvent.preventDefault();
+        //touchEvent.stopPropagation();
     }
 
     startDraggingModule(el: HTMLElement, x: number, y: number, module: ModuleClass, event: Event): void {
 
-  	
-    //   Avoid dragging ModuleClass when it's a Connector that needs dragging
-	    if (el.tagName == "SELECT" || el.classList.contains("node-button"))
-		    return;
-
-    //   Avoid dragging ModuleClass when it's a UI element that needs dragging
-	    if (el.nodeType == 3) // if it's a text node
-		    el = <HTMLElement>el.parentNode;
-	    if (el.classList.contains("module-title"))
-            el = <HTMLElement>el.parentNode;
-	    if (el.classList.contains("content"))
-            el = <HTMLElement>el.parentNode;
-	    if (!el.classList.contains("moduleFaust"))
-		    return;
 
         var moduleContainer: HTMLElement = module.moduleView.getModuleContainer();
 
@@ -119,23 +92,21 @@ class Drag {
         this.elementStartLeft = parseInt(moduleContainer.style.left, 10);
   	    this.elementStartTop   = parseInt(moduleContainer.style.top,  10);
 
-            if (isNaN(this.elementStartLeft)) this.elementStartLeft = 0;
-            if (isNaN(this.elementStartTop)) this.elementStartTop = 0;
+        if (isNaN(this.elementStartLeft)) { this.elementStartLeft = 0 };
+        if (isNaN(this.elementStartTop)) { this.elementStartTop = 0 };
 
   	    // Update element's z-index.
-	    //moduleContainer.style.zIndex = String(++this.zIndex);
 
         // Capture mousemove and mouseup events on the page.
-        module.addListener("mousemove", module);
-        module.addListener("mouseup", module);
-        module.addListener("touchmove", module);
-        module.addListener("touchend", module);
 
+        document.addEventListener("mouseup", module.eventDraggingHandler, false);
+        document.addEventListener("mousemove", module.eventDraggingHandler, false);
+
+        event.stopPropagation();
         event.preventDefault();
     }
 
     whileDraggingModule(el: HTMLElement, x: number, y: number, module: ModuleClass,event:Event): void {
-
 
         var moduleContainer = module.moduleView.getModuleContainer();
 
@@ -149,72 +120,24 @@ class Drag {
         moduleContainer.style.top = (this.elementStartTop + y - this.cursorStartY) + "px";
 
         if (module.moduleFaust.getInputConnections() != null) {	// update any lines that point in here.
+            Connector.redrawInputConnections(module, this) 
 
-            var offset: HTMLElement = module.moduleView.getInputNode();
-            x = module.moduleView.inputOutputNodeDimension/2// + window.scrollX ;
-            y = module.moduleView.inputOutputNodeDimension/2// + window.scrollY;
-
-            while (offset) {
-		
-                x += offset.offsetLeft;
-                y += offset.offsetTop;
-                offset = <HTMLDivElement>offset.offsetParent;
-		    }
-
-            for (var c = 0; c < module.moduleFaust.getInputConnections().length; c++) {
-
-                var currentConnectorShape: ConnectorShape = module.moduleFaust.getInputConnections()[c].connectorShape;
-                var x1 = x;
-                var y1 = y;
-                var x2 = currentConnectorShape.x2
-                var y2 = currentConnectorShape.y2
-                var d = this.setCurvePath(x1, y1, x2, y2, this.calculBezier1(x1, x2), this.calculBezier2(x1, x2))
-                currentConnectorShape.setAttributeNS(null, "d", d);
-                this.updateConnectorShapePath(currentConnectorShape, x1, x2, y1, y2);
-
-
-		    }
 	    }
 
         if (module.moduleFaust.getOutputConnections() != null) {	// update any lines that point out of here.
 		    
-
-            var offset = module.moduleView.getOutputNode();
-            x =  module.moduleView.inputOutputNodeDimension / 2;
-            y =  module.moduleView.inputOutputNodeDimension / 2;
-
-            while (offset) {
-                x += offset.offsetLeft;
-                y += offset.offsetTop;
-                offset = <HTMLDivElement>offset.offsetParent;
-		    }
-
-            for (var c = 0; c < module.moduleFaust.getOutputConnections().length; c++) {
-
-                if (module.moduleFaust.getOutputConnections()[c].connectorShape) {
-                    var currentConnectorShape: ConnectorShape = module.moduleFaust.getOutputConnections()[c].connectorShape;
-                    var x1 = currentConnectorShape.x1;
-                    var y1 = currentConnectorShape.y1;
-                    var x2 = x;
-                    var y2 = y;
-                    var d = this.setCurvePath(x1, y1, x2, y2, this.calculBezier1(x1, x2), this.calculBezier2(x1, x2))
-                    
-                    currentConnectorShape.setAttributeNS(null, "d", d);
-                    this.updateConnectorShapePath(currentConnectorShape,x1, x2, y1, y2);
-
-			    }
-		    }
+            Connector.redrawOutputConnections(module, this) 
 	    }
 
         //event.preventDefault();
+        event.stopPropagation();
     }
 
     stopDraggingModule(el: HTMLElement, x: number, y: number, module: ModuleClass, event: Event): void {
-      // Stop capturing mousemove and mouseup events.
-        module.removeListener("mousemove", null, document);
-        module.removeListener("mouseup", null, document);
-        module.removeListener("touchmove", null, document);
-        module.removeListener("touchend", null, document);
+        // Stop capturing mousemove and mouseup events.
+        document.removeEventListener("mouseup", module.eventDraggingHandler, false)
+        document.removeEventListener("mousemove", module.eventDraggingHandler, false)
+
     }
 
     /************************************************************************************/
@@ -232,14 +155,9 @@ class Drag {
         return "M" + x1 + "," + y1 + " C" + x1Bezier + "," + y1 + " " + x2Bezier + "," + y2 + " " + x2 + "," + y2;
 
     }
-    calculDistance(x1: number, x2: number): number{
-        return (x1 - x2) / 2;
-    }
-    calculBezier1(x1: number, x2: number): number {
-        return x1 - this.calculDistance(x1, x2);
-    }
-    calculBezier2(x1: number, x2: number): number {
-        return x2 + this.calculDistance(x1, x2);
+
+    calculBezier(x1: number, x2: number): number {
+        return x1 - (x1 - x2) / 2;;
     }
 
 
@@ -268,7 +186,7 @@ class Drag {
         this.isOriginInput = target.classList.contains("node-input");
 
         module.moduleView.getInterfaceContainer().unlitClassname = module.moduleView.getInterfaceContainer().className;
-        module.moduleView.getInterfaceContainer().className += " canConnect";
+        //module.moduleView.getInterfaceContainer().className += " canConnect";
 	
 	    // Create a connector visual line
 	    var svgns:string = "http://www.w3.org/2000/svg";
@@ -277,7 +195,7 @@ class Drag {
         var d = this.setCurvePath(x,y,x,y,x,x)
         curve.setAttributeNS(null, "d", d);
         curve.setAttributeNS(null, "stroke", "black");
-        curve.setAttributeNS(null, "stroke-width", "5");
+        curve.setAttributeNS(null, "stroke-width", "6");
         curve.setAttributeNS(null, "fill", "none");
         curve.id = String(Connector.connectorId);
         Connector.connectorId++
@@ -332,7 +250,7 @@ class Drag {
             var y1 = this.cursorStartY;
             var x2 = x;
             var y2 = y;
-            var d = this.setCurvePath(x1, y1, x2, y2, this.calculBezier1(x1, x2), this.calculBezier2(x1, x2))
+            var d = this.setCurvePath(x1, y1, x2, y2, this.calculBezier(x1, x2), this.calculBezier(x1, x2))
             this.connector.connectorShape.setAttributeNS(null, "d", d);
             this.updateConnectorShapePath(this.connector.connectorShape, x1, x2, y1, y2);
 
@@ -350,7 +268,7 @@ class Drag {
 			    if (toElem.classList.contains("node-input")) {
 
                     // Make sure the connector line points go from src->dest (x1->x2)
-                    var d = this.setCurvePath(x2, y2, x1, y1, this.calculBezier1(x1, x2), this.calculBezier2(x1, x2))
+                    var d = this.setCurvePath(x2, y2, x1, y1, this.calculBezier(x1, x2), this.calculBezier(x1, x2))
                     this.connector.connectorShape.setAttributeNS(null, "d", d);
                     this.updateConnectorShapePath(this.connector.connectorShape,x2, x1, y2, y1);
 
@@ -375,9 +293,8 @@ class Drag {
 
                 this.connector.destination = dst;
                 this.connector.source = src;
-                var drag: Drag = this
                 connector.saveConnection(src, dst, this.connector.connectorShape);
-                this.connector.connectorShape.onclick = function (event) { connector.deleteConnection(event,drag) };
+                this.connector.connectorShape.onclick = (event)=> { connector.deleteConnection(event,this) };
 
 			    //this.connectorShape = null;
                 
@@ -393,24 +310,40 @@ class Drag {
     }
 
     startDraggingConnector(target: HTMLElement, x: number, y: number, module: ModuleClass, event: Event): void {
+
+
         this.startDraggingConnection(module,target);
 
         // Capture mousemove and mouseup events on the page.
-        module.addCnxListener(target, "mousemove", module);
-        module.addCnxListener(target, "mouseup", module);
-        module.addCnxListener(target, "touchmove", module);
-        module.addCnxListener(target, "touchend", module);
+
+        document.addEventListener("mousemove", module.eventConnectorHandler);
+        document.addEventListener("mouseup", module.eventConnectorHandler);
+
 
         event.preventDefault();
-	    //event.stopPropagation();
+        event.stopPropagation();
     }
 
 
 
-    whileDraggingConnector(target: HTMLElement, x: number, y: number, module: ModuleClass,event:Event) {
+    whileDraggingConnector(target: HTMLElement, x: number, y: number, module: ModuleClass, event: Event) {
+
+        if (this.isDragConnector) {
+            var currentHoverElement = <HTMLElement>document.elementFromPoint(x - scrollX, y - scrollY);
+            if (currentHoverElement.classList.contains("node-input")) {
+                module.styleInputNodeTouchDragOver(currentHoverElement);
+            } else if (currentHoverElement.classList.contains("node-output")) {
+                module.styleOutputNodeTouchDragOver(currentHoverElement);
+            } else if (currentHoverElement.parentElement.classList.contains("node-input")) {
+                module.styleInputNodeTouchDragOver(currentHoverElement.parentElement);
+            } else if (currentHoverElement.parentElement.classList.contains("node-output")) {
+                module.styleOutputNodeTouchDragOver(currentHoverElement.parentElement);
+            } else if (!ModuleClass.isNodesModuleUnstyle) {
+                module.sceneParent.unstyleNode();
+            }
+        }
 
         var toElem: HTMLInterfaceContainer = <HTMLInterfaceContainer>target;
-        //console.log(this.connector.connectorShape.id);
         // Get cursor position with respect to the page.
         var x1: number = this.cursorStartX;
         var y1: number = this.cursorStartY;
@@ -418,9 +351,9 @@ class Drag {
         var y2: number = y //+ window.scrollY;
         var d: string;
         if (!this.isOriginInput) {
-            d = this.setCurvePath(x1, y1, x2, y2, this.calculBezier1(x1, x2), this.calculBezier2(x1, x2))
+            d = this.setCurvePath(x1, y1, x2, y2, this.calculBezier(x1, x2), this.calculBezier(x1, x2))
         } else {
-            d = this.setCurvePath(x1, y1, x2, y2, this.calculBezier1(x1, x2), this.calculBezier2(x1, x2))
+            d = this.setCurvePath(x1, y1, x2, y2, this.calculBezier(x1, x2), this.calculBezier(x1, x2))
         }
         // Move connector visual line
         this.connector.connectorShape.setAttributeNS(null, "d", d);
@@ -432,9 +365,7 @@ class Drag {
 	        if (toElem.classList.contains("node-button"))
                 toElem = <HTMLInterfaceContainer>toElem.parentNode;
 
-	        // if we're over our originating node, do nothing.
-	        if (toElem == this.elemNode)
-	    	    return;
+
 		
 		    // If we used to be lighting up a node, but we're not over it anymore,
 		    // unlight it.
@@ -449,31 +380,30 @@ class Drag {
                     if (this.isOriginInput) {
 					    if (toElem.classList.contains("node-output")) {
 						    toElem.unlitClassname = toElem.className;
-						    toElem.className += " canConnect";
+						    //toElem.className += " canConnect";
 						    this.lastLit = toElem;
 					    }
 				    } else {	// first node was an output, so we're looking for an input
 					    if (toElem.classList.contains("node-input")) {
 						    toElem.unlitClassname = toElem.className;
-						    toElem.className += " canConnect";
+						    //toElem.className += " canConnect";
 						    this.lastLit = toElem;
 					    }
 				    }
 			    }
-		    }
-	    }
+            }
+        }
         event.preventDefault();
-	    //event.stopPropagation();
+        event.stopPropagation();
     }
 
     stopDraggingConnector(target: HTMLElement, x: number, y: number, module: ModuleClass): void {
         x = x - window.scrollX;
         y = y - window.scrollY;
         // Stop capturing mousemove and mouseup events.
-        module.removeCnxListener(target, "mousemove", module);
-        module.removeCnxListener(target, "mouseup", module);
-        module.removeCnxListener(target, "touchmove", module);
-        module.removeCnxListener(target, "touchend", module);
+        document.removeEventListener("mousemove", module.eventConnectorHandler);
+        document.removeEventListener("mouseup", module.eventConnectorHandler);
+
         var arrivingHTMLNode: HTMLElement = target;
         var arrivingHTMLParentNode: HTMLElement = <HTMLElement>arrivingHTMLNode.offsetParent;
         var arrivingNode: ModuleClass;
@@ -496,7 +426,12 @@ class Drag {
                 arrivingNode = inputModule;
             }
         }
-        module.drag.stopDraggingConnection(module, arrivingNode, target);
+        this.stopDraggingConnection(module, arrivingNode, target);
+        var index = module.dragList.indexOf(this);
+        module.dragList.splice(index, 1);
+        this.isDragConnector = false;
+
+        
     }
     isConnectionValid(target: HTMLElement): boolean {
         if (target.classList.contains("node-button")) {

@@ -1,4 +1,8 @@
 //MenuView.ts : MenuView Class which contains all the graphical parts of the menu
+/// <reference path="../Accelerometer.ts"/>
+/// <reference path="AccelerometerEditView.ts"/>
+/// <reference path="LoadView.ts"/>
+/// <reference path="SaveView.ts"/>
 var MenuView = (function () {
     function MenuView() {
         this.HTMLElementsMenu = [];
@@ -16,31 +20,66 @@ var MenuView = (function () {
         var libraryButtonMenu = document.createElement("div");
         libraryButtonMenu.id = "libraryButtonMenu";
         libraryButtonMenu.className = "buttonsMenu";
-        libraryButtonMenu.appendChild(document.createTextNode("Biblio"));
+        libraryButtonMenu.appendChild(document.createTextNode(App.messageRessource.buttonLibrary));
         this.libraryButtonMenu = libraryButtonMenu;
         var exportButtonMenu = document.createElement("div");
         exportButtonMenu.id = "exportButtonMenu";
         exportButtonMenu.className = "buttonsMenu";
-        exportButtonMenu.appendChild(document.createTextNode("Export"));
+        exportButtonMenu.appendChild(document.createTextNode(App.messageRessource.buttonExport));
         this.exportButtonMenu = exportButtonMenu;
         var helpButtonMenu = document.createElement("div");
         helpButtonMenu.id = "helpButtonMenu";
         helpButtonMenu.className = "buttonsMenu";
-        helpButtonMenu.appendChild(document.createTextNode("Aide"));
+        helpButtonMenu.appendChild(document.createTextNode(App.messageRessource.buttonHelp));
         this.helpButtonMenu = helpButtonMenu;
+        var editButtonMenu = document.createElement("div");
+        editButtonMenu.id = "EditButtonMenu";
+        editButtonMenu.className = "buttonsMenu";
+        editButtonMenu.appendChild(document.createTextNode(App.messageRessource.buttonEdit));
+        this.editButtonMenu = editButtonMenu;
+        var loadButtonMenu = document.createElement("div");
+        loadButtonMenu.id = "loadButtonMenu";
+        loadButtonMenu.className = "buttonsMenu";
+        loadButtonMenu.appendChild(document.createTextNode(App.messageRessource.buttonLoad));
+        this.loadButton = loadButtonMenu;
+        var saveButtonMenu = document.createElement("div");
+        saveButtonMenu.id = "saveButtonMenu";
+        saveButtonMenu.className = "buttonsMenu";
+        saveButtonMenu.appendChild(document.createTextNode(App.messageRessource.buttonSave));
+        this.saveButton = saveButtonMenu;
         var fullScreenButton = document.createElement("div");
         fullScreenButton.id = "fullScreenButton";
         fullScreenButton.className = "buttonsLittleMenu";
         this.fullScreenButton = fullScreenButton;
+        var accButton = document.createElement("div");
+        accButton.id = "accButton";
+        accButton.className = "buttonsLittleMenu";
+        this.accButton = accButton;
+        var cleanButton = document.createElement("div");
+        cleanButton.id = "cleanButton";
+        cleanButton.className = "buttonsLittleMenu";
+        this.cleanButton = cleanButton;
+        //var accEditButton: HTMLElement = document.createElement("div");
+        //accEditButton.id = "accEditButton";
+        //accEditButton.className = "buttonsLittleMenu";
+        //this.accEditButton = accEditButton;
+        if (!App.isAccelerometerOn) {
+            accButton.style.opacity = "0.2";
+        }
         buttonsMenu.appendChild(libraryButtonMenu);
+        buttonsMenu.appendChild(loadButtonMenu);
+        buttonsMenu.appendChild(editButtonMenu);
+        buttonsMenu.appendChild(saveButtonMenu);
         buttonsMenu.appendChild(exportButtonMenu);
         buttonsMenu.appendChild(helpButtonMenu);
         buttonsMenu.appendChild(fullScreenButton);
-        this.HTMLButtonsMenu.push(libraryButtonMenu, exportButtonMenu, helpButtonMenu);
+        buttonsMenu.appendChild(accButton);
+        buttonsMenu.appendChild(cleanButton);
+        this.HTMLButtonsMenu.push(libraryButtonMenu, loadButtonMenu, saveButtonMenu, exportButtonMenu, helpButtonMenu);
         var myScene = document.createElement("div");
         myScene.id = "PatchName";
         myScene.className = "sceneTitle";
-        myScene.textContent = "Patch";
+        myScene.textContent = App.scene.sceneName;
         buttonsMenu.appendChild(myScene);
         this.patchNameScene = myScene;
         //create menu's Contents and there containers
@@ -57,6 +96,14 @@ var MenuView = (function () {
         var libraryContent = libraryView.initLibraryView();
         libraryContent.style.display = "none";
         this.libraryView = libraryView;
+        var loadView = new LoadView();
+        var loadContent = loadView.initLoadView();
+        loadContent.style.display = "none";
+        this.loadView = loadView;
+        var saveView = new SaveView();
+        var saveContent = saveView.initSaveView();
+        saveContent.style.display = "none";
+        this.saveView = saveView;
         var exportView = new ExportView();
         var exportContent = exportView.initExportView();
         exportContent.style.display = "none";
@@ -65,15 +112,24 @@ var MenuView = (function () {
         var helpContent = helpView.initHelpView();
         helpContent.style.display = "none";
         this.helpView = helpView;
+        var accEditView = new AccelerometerEditView();
+        var accEditContent = accEditView.initAccelerometerEdit();
+        accEditContent.style.display = "none";
+        this.accEditView = accEditView;
         contentsMenu.appendChild(CloseButtonContainer);
         contentsMenu.appendChild(libraryContent);
+        contentsMenu.appendChild(loadContent);
+        contentsMenu.appendChild(saveContent);
         contentsMenu.appendChild(exportContent);
         contentsMenu.appendChild(helpContent);
         menuContainer.appendChild(buttonsMenu);
         menuContainer.appendChild(contentsMenu);
+        menuContainer.appendChild(accEditContent);
         htmlContainer.appendChild(menuContainer);
-        this.HTMLElementsMenu.push(libraryContent, exportContent, helpContent);
+        this.HTMLElementsMenu.push(libraryContent, loadContent, saveContent, exportContent, helpContent);
         this.libraryContent = libraryContent;
+        this.loadContent = loadContent;
+        this.saveContent = saveContent;
         this.exportContent = exportContent;
         this.helpContent = helpContent;
         this.contentsMenu = contentsMenu;

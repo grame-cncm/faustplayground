@@ -33,6 +33,9 @@ class ModuleView {
     fInputNode: HTMLDivElement;
     fOutputNode: HTMLDivElement;
     contentModule: HTMLElement;
+    textArea: HTMLTextAreaElement;
+    miniButton: HTMLDivElement;
+    maxButton: HTMLDivElement;
     x: number;
     y: number;
 
@@ -60,31 +63,68 @@ class ModuleView {
         fModuleContainer.appendChild(fInterfaceContainer);
         //var eventHandler = function (event) { self.dragCallback(event, self) }
         this.fInterfaceContainer = fInterfaceContainer;
-        fModuleContainer.addEventListener("mousedown", module.eventDraggingHandler, true);
-        fModuleContainer.addEventListener("touchstart", module.eventDraggingHandler, true);
+        fModuleContainer.addEventListener("mousedown", module.eventDraggingHandler, false);
+        fModuleContainer.addEventListener("touchstart", module.eventDraggingHandler, false);
+        fModuleContainer.addEventListener("touchmove", module.eventDraggingHandler, false);
+        fModuleContainer.addEventListener("touchend", module.eventDraggingHandler, false);
 
         if (name == "input") {
             fModuleContainer.id = "moduleInput";
         } else if (name == "output") {
             fModuleContainer.id = "moduleOutput";
         } else {
+            var textArea: HTMLTextAreaElement = document.createElement("textarea");
+            textArea.rows = 15;
+            textArea.cols = 60;
+            textArea.className="textArea"
+            textArea.value = "";
+            textArea.style.display = "none";
+            textArea.contentEditable = "true";
+            this.textArea = textArea;
+            this.textArea.addEventListener("touchstart", (e) => { e.stopPropagation() });
+            this.textArea.addEventListener("touchend", (e) => { e.stopPropagation() });
+            this.textArea.addEventListener("touchmove", (e) => { e.stopPropagation() });
+            this.textArea.addEventListener("mousedown", (e) => { e.stopPropagation() });
+            fModuleContainer.appendChild(textArea);
+
             var fFooter: HTMLElement = document.createElement("footer");
             fFooter.id = "moduleFooter";
             fModuleContainer.id = "module" + ID;
+
             var fCloseButton: HTMLDivElement = document.createElement("div");
             fCloseButton.draggable = false;
             fCloseButton.className = "close";
             fCloseButton.addEventListener("click", ()=> { module.deleteModule(); });
             fCloseButton.addEventListener("touchend", () => { module.deleteModule(); });
+
+            var fMinButton: HTMLDivElement = document.createElement("div");
+            fMinButton.draggable = false;
+            fMinButton.className = "minus";
+            fMinButton.addEventListener("click", () => { module.minModule(); });
+            fMinButton.addEventListener("touchend", () => { module.minModule(); });
+            this.miniButton = fMinButton;
+
+            var fMaxButton: HTMLDivElement = document.createElement("div");
+            fMaxButton.draggable = false;
+            fMaxButton.className = "max";
+            fMaxButton.addEventListener("click", () => { module.maxModule(); });
+            fMaxButton.addEventListener("touchend", () => { module.maxModule(); });
+            this.maxButton = fMaxButton;
+
             fModuleContainer.appendChild(fCloseButton);
+            fModuleContainer.appendChild(fMinButton);
+            fModuleContainer.appendChild(fMaxButton);
+
             var fEditImg = <HTMLfEdit>document.createElement("div");
             fEditImg.className = "edit"
-            fEditImg.addEventListener("click", () => { module.edit(module) });
-            fEditImg.addEventListener("touchend", () => { module.edit(module) });
+            fEditImg.addEventListener("click",  module.eventOpenEditHandler);
+            fEditImg.addEventListener("touchend",  module.eventOpenEditHandler);
             fEditImg.draggable = false;
             this.fEditImg = fEditImg;
             fFooter.appendChild(fEditImg);
             fModuleContainer.appendChild(fFooter);
+
+
 
         }
         

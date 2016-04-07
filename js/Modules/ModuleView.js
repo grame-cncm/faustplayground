@@ -33,8 +33,10 @@ var ModuleView = (function () {
         fModuleContainer.appendChild(fInterfaceContainer);
         //var eventHandler = function (event) { self.dragCallback(event, self) }
         this.fInterfaceContainer = fInterfaceContainer;
-        fModuleContainer.addEventListener("mousedown", module.eventDraggingHandler, true);
-        fModuleContainer.addEventListener("touchstart", module.eventDraggingHandler, true);
+        fModuleContainer.addEventListener("mousedown", module.eventDraggingHandler, false);
+        fModuleContainer.addEventListener("touchstart", module.eventDraggingHandler, false);
+        fModuleContainer.addEventListener("touchmove", module.eventDraggingHandler, false);
+        fModuleContainer.addEventListener("touchend", module.eventDraggingHandler, false);
         if (name == "input") {
             fModuleContainer.id = "moduleInput";
         }
@@ -42,6 +44,19 @@ var ModuleView = (function () {
             fModuleContainer.id = "moduleOutput";
         }
         else {
+            var textArea = document.createElement("textarea");
+            textArea.rows = 15;
+            textArea.cols = 60;
+            textArea.className = "textArea";
+            textArea.value = "";
+            textArea.style.display = "none";
+            textArea.contentEditable = "true";
+            this.textArea = textArea;
+            this.textArea.addEventListener("touchstart", function (e) { e.stopPropagation(); });
+            this.textArea.addEventListener("touchend", function (e) { e.stopPropagation(); });
+            this.textArea.addEventListener("touchmove", function (e) { e.stopPropagation(); });
+            this.textArea.addEventListener("mousedown", function (e) { e.stopPropagation(); });
+            fModuleContainer.appendChild(textArea);
             var fFooter = document.createElement("footer");
             fFooter.id = "moduleFooter";
             fModuleContainer.id = "module" + ID;
@@ -50,11 +65,25 @@ var ModuleView = (function () {
             fCloseButton.className = "close";
             fCloseButton.addEventListener("click", function () { module.deleteModule(); });
             fCloseButton.addEventListener("touchend", function () { module.deleteModule(); });
+            var fMinButton = document.createElement("div");
+            fMinButton.draggable = false;
+            fMinButton.className = "minus";
+            fMinButton.addEventListener("click", function () { module.minModule(); });
+            fMinButton.addEventListener("touchend", function () { module.minModule(); });
+            this.miniButton = fMinButton;
+            var fMaxButton = document.createElement("div");
+            fMaxButton.draggable = false;
+            fMaxButton.className = "max";
+            fMaxButton.addEventListener("click", function () { module.maxModule(); });
+            fMaxButton.addEventListener("touchend", function () { module.maxModule(); });
+            this.maxButton = fMaxButton;
             fModuleContainer.appendChild(fCloseButton);
+            fModuleContainer.appendChild(fMinButton);
+            fModuleContainer.appendChild(fMaxButton);
             var fEditImg = document.createElement("div");
             fEditImg.className = "edit";
-            fEditImg.addEventListener("click", function () { module.edit(module); });
-            fEditImg.addEventListener("touchend", function () { module.edit(module); });
+            fEditImg.addEventListener("click", module.eventOpenEditHandler);
+            fEditImg.addEventListener("touchend", module.eventOpenEditHandler);
             fEditImg.draggable = false;
             this.fEditImg = fEditImg;
             fFooter.appendChild(fEditImg);

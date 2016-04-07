@@ -1,9 +1,11 @@
-﻿//class ErrorFaust
+﻿/// <reference path="Messages.ts"/>
+
+//class ErrorFaust
 
 class ErrorFaust {
 
     static errorCallBack(errorMessage: string) {
-        alert(errorMessage);
+        new Message(errorMessage);
 
     }
 }

@@ -7,7 +7,8 @@
 */
 /// <reference path="../ExportLib.ts"/>
 /// <reference path="../EquivalentFaust.ts"/>
-/// <reference path="../main.ts"/>
+/// <reference path="../Main.ts"/>
+/// <reference path="../Messages.ts"/>
 
 
 "use strict";
@@ -33,6 +34,9 @@ class Export{
         this.exportView.exportButton.addEventListener("click", this.eventExport);
         this.exportView.buttonNameApp.onclick = () => { this.renameScene() };
         this.exportView.inputNameApp.onkeypress = (e: KeyboardEvent) => { if (e.which == 13) { this.renameScene() } };
+        this.exportView.moreOptionDiv.addEventListener("click", () => { this.exportView.moreOptionDiv.style.display = "none"; this.exportView.lessOptionDiv.style.display = this.exportView.optionContainer.style.display = "block" }, false);
+        this.exportView.lessOptionDiv.addEventListener("click", () => { this.exportView.moreOptionDiv.style.display = "block"; this.exportView.lessOptionDiv.style.display = this.exportView.optionContainer.style.display = "none" }, false);
+
 
     }
     addItem(id: string, itemText:string):void
@@ -107,7 +111,13 @@ class Export{
     }	
     setDefaultSelect() {
         var platefromSelect: HTMLSelectElement = <HTMLSelectElement>document.getElementById("platforms");
-        platefromSelect.selectedIndex = 3;
+        var options = platefromSelect.options
+        for (var i = 0; i < options.length; i++){
+            if (options[i].text == "android") {
+                platefromSelect.selectedIndex = i;
+            }
+        }
+        
     }
 
     /******************************************************************** 
@@ -118,15 +128,15 @@ class Export{
     {
         this.exportView.exportButton.removeEventListener("click", this.eventExport)
         this.exportView.exportButton.style.opacity = "0.3";
-        var sceneName: string = Scene.sceneName;
+        var sceneName: string = App.scene.sceneName;
         if (sceneName == null || sceneName == "") {
             sceneName = "MonApplication";
         }
         this.removeQRCode();
         App.addLoadingLogo("exportResultContainer");
         var equivalentFaust: EquivalentFaust = new EquivalentFaust();
-        var faustCode:string = equivalentFaust.getFaustEquivalent(App.scene,Scene.sceneName);
-        ExportLib.getSHAKey((<HTMLInputElement>document.getElementById("faustweburl")).value, Scene.sceneName, faustCode, expor.exportFaustCode);
+        var faustCode: string = equivalentFaust.getFaustEquivalent(App.scene, App.scene.sceneName);
+        ExportLib.getSHAKey((<HTMLInputElement>document.getElementById("faustweburl")).value, App.scene.sceneName, faustCode, expor.exportFaustCode);
     }
 
     /******************************************************************** 
@@ -157,34 +167,39 @@ class Export{
     }
 
     setDownloadOptions = (serverUrl: string, shaKey: string, plateforme: string, architecture: string, appType: string) => {
-        
-        var disposableExportDiv: HTMLDivElement = document.createElement("div");
-        disposableExportDiv.id = "disposableExportDiv"
-        var qrDiv: HTMLElement = document.createElement('div');
-        qrDiv.id = "qrcodeDiv";
-        var myWhiteDiv: HTMLElement = ExportLib.getQrCode(serverUrl, shaKey, plateforme, architecture, appType, 120);
-        qrDiv.appendChild(myWhiteDiv);
+        if (shaKey.indexOf("ERROR") == -1) {
+            var disposableExportDiv: HTMLDivElement = document.createElement("div");
+            disposableExportDiv.id = "disposableExportDiv"
+            var qrDiv: HTMLElement = document.createElement('div');
+            qrDiv.id = "qrcodeDiv";
+            var myWhiteDiv: HTMLElement = ExportLib.getQrCode(serverUrl, shaKey, plateforme, architecture, appType, 120);
+            qrDiv.appendChild(myWhiteDiv);
 
-        var downloadBottomButtonContainer: HTMLElement = document.createElement("div");
-        downloadBottomButtonContainer.className = "bottomButtonContainer";
+            var downloadBottomButtonContainer: HTMLElement = document.createElement("div");
+            downloadBottomButtonContainer.className = "bottomButtonContainer";
 
-        var linkDownload: HTMLButtonElement = document.createElement('button');
-        linkDownload.value = serverUrl + "/" + shaKey + "/" + plateforme + "/" + architecture + "/" + appType;
-        linkDownload.id = "linkDownload";
-        linkDownload.className = "button";
-        linkDownload.textContent = "Télécharger";
-        downloadBottomButtonContainer.appendChild(linkDownload);
-        this.exportView.downloadButton = linkDownload;
-        this.exportView.downloadButton.onclick = () => { window.location.href = this.exportView.downloadButton.value };
+            var linkDownload: HTMLButtonElement = document.createElement('button');
+            linkDownload.value = serverUrl + "/" + shaKey + "/" + plateforme + "/" + architecture + "/" + appType;
+            linkDownload.id = "linkDownload";
+            linkDownload.className = "button";
+            linkDownload.textContent = App.messageRessource.buttonDownloadApp;
+            downloadBottomButtonContainer.appendChild(linkDownload);
+            this.exportView.downloadButton = linkDownload;
+            this.exportView.downloadButton.onclick = () => { window.location.href = this.exportView.downloadButton.value };
 
-        document.getElementById("exportResultContainer").appendChild(disposableExportDiv);
-        disposableExportDiv.appendChild(qrDiv);
-        disposableExportDiv.appendChild(downloadBottomButtonContainer);
+            document.getElementById("exportResultContainer").appendChild(disposableExportDiv);
+            disposableExportDiv.appendChild(qrDiv);
+            disposableExportDiv.appendChild(downloadBottomButtonContainer);
 
+            this.exportView.exportButton.addEventListener("click", this.eventExport)
+            this.exportView.exportButton.style.opacity = "1";
+            App.removeLoadingLogo("exportResultContainer");
+        } else {
+            new Message(shaKey)
+        }
         this.exportView.exportButton.addEventListener("click", this.eventExport)
         this.exportView.exportButton.style.opacity = "1";
-        App.removeLoadingLogo();
-
+        App.removeLoadingLogo("exportResultContainer");
     }
 
 
@@ -195,39 +210,8 @@ class Export{
         }
     }
     renameScene() {
+        Scene.rename(this.exportView.inputNameApp, this.exportView.rulesName, this.exportView.dynamicName);
 
-
-        var newName: string = this.exportView.inputNameApp.value;
-
-        newName = this.replaceAll(newName,"é", "e");
-        newName = this.replaceAll(newName, "è", "e");
-        newName = this.replaceAll(newName, "à", "a");
-        newName = this.replaceAll(newName, "ù", "u");
-        newName = this.replaceAll(newName, " ", "_");
-        newName = this.replaceAll(newName, "'", "_");
-        
-
-        var pattern: RegExp = new RegExp("^[a-zA-Z_][a-zA-Z_0-9]{1,50}$");
-
-        if (pattern.test(newName)) {
-            Scene.sceneName = newName;
-            this.exportView.dynamicName.textContent = Scene.sceneName;
-            this.exportView.rulesName.style.opacity = "0.6";
-            this.exportView.inputNameApp.style.boxShadow = "0 0 0 green inset";
-            this.exportView.inputNameApp.style.border = "none";
-            this.exportView.inputNameApp.value = Scene.sceneName;
-            var ev: Event;
-            this.exportView.inputNameApp.onchange(ev);
-
-        } else {
-            this.exportView.rulesName.style.opacity = "1";
-            this.exportView.inputNameApp.style.boxShadow = "0 0 6px yellow inset";
-            this.exportView.inputNameApp.style.border = "3px solid red";
-        }
-       
-    }
-    replaceAll(str: String, find: string, replace: string) {
-        return str.replace(new RegExp(find, 'g'), replace);
     }
 }
 

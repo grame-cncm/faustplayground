@@ -11,7 +11,7 @@
 
 /// <reference path="Modules/ModuleClass.ts"/>
 /// <reference path="Dragging.ts"/>
-/// <reference path="main.ts"/>
+/// <reference path="Main.ts"/>
 /// <reference path="App.ts"/>
 
 "use strict";
@@ -53,6 +53,8 @@ class Connector {
         if (sourceDSP.getProcessor && destinationDSP.getProcessor()) {
             sourceDSP.getProcessor().connect(destinationDSP.getProcessor())
         }
+        source.setDSPValue();
+        destination.setDSPValue();
     }
     disconnectOutput(destination: IHTMLDivElementOut, source: ModuleClass):void {
         destination.audioNode.context.suspend();
@@ -65,14 +67,15 @@ class Connector {
         var sourceCopy: ModuleClass = source;
         var sourceCopyDSP: IfDSP;
         // Searching for src/dst DSP if existing
-        if (sourceCopy.moduleFaust.getDSP) {
+
+        if (sourceCopy != undefined && sourceCopy.moduleFaust.getDSP) {
             sourceCopyDSP = sourceCopy.moduleFaust.getDSP();
             sourceCopyDSP.getProcessor().disconnect();
         }
         
 		
         // Reconnect all disconnected connections (because disconnect API cannot break a single connection)
-        if (source.moduleFaust.getOutputConnections()) {
+        if (source!=undefined&&source.moduleFaust.getOutputConnections()) {
             for (var i = 0; i < source.moduleFaust.getOutputConnections().length; i++){
                 if (source.moduleFaust.getOutputConnections()[i].destination != destination)
                     this.connectModules(source, source.moduleFaust.getOutputConnections()[i].destination);
@@ -114,16 +117,18 @@ class Connector {
         this.disconnectModules(source, destination);
 		
         // delete connection from src .outputConnections,
-        if (source.moduleFaust.getOutputConnections)
+        if (source != undefined && source.moduleFaust.getOutputConnections) {
             source.moduleFaust.removeOutputConnection(connector);
+        }
 
         // delete connection from dst .inputConnections,
-        if (destination.moduleFaust.getInputConnections)
+        if (destination != undefined && destination.moduleFaust.getInputConnections) {
             destination.moduleFaust.removeInputConnection(connector);
+        }
 		
 	    // and delete the connectorShape
 	    if(connector.connectorShape)
-		    connector.connectorShape.parentNode.removeChild( connector.connectorShape );
+		    connector.connectorShape.remove( );
     }
 
     // Disconnect a node from all its connections
@@ -141,6 +146,59 @@ class Connector {
             while (module.moduleFaust.getInputConnections().length > 0)
                 this.breakSingleInputConnection(module.moduleFaust.getInputConnections()[0].source, module, module.moduleFaust.getInputConnections()[0]);
 	    }
+    }
+
+    static redrawInputConnections(module: ModuleClass, drag: Drag) {
+        var offset: HTMLElement = module.moduleView.getInputNode();
+        var x = module.moduleView.inputOutputNodeDimension / 2// + window.scrollX ;
+        var y = module.moduleView.inputOutputNodeDimension / 2// + window.scrollY;
+
+        while (offset) {
+
+            x += offset.offsetLeft;
+            y += offset.offsetTop;
+            offset = <HTMLDivElement>offset.offsetParent;
+        }
+
+        for (var c = 0; c < module.moduleFaust.getInputConnections().length; c++) {
+
+            var currentConnectorShape: ConnectorShape = module.moduleFaust.getInputConnections()[c].connectorShape;
+            var x1 = x;
+            var y1 = y;
+            var x2 = currentConnectorShape.x2
+            var y2 = currentConnectorShape.y2
+            var d = drag.setCurvePath(x1, y1, x2, y2, drag.calculBezier(x1, x2), drag.calculBezier(x1, x2))
+            currentConnectorShape.setAttributeNS(null, "d", d);
+            drag.updateConnectorShapePath(currentConnectorShape, x1, x2, y1, y2);
+        }
+    }
+    static redrawOutputConnections(module: ModuleClass, drag: Drag) {
+        var offset: HTMLElement = module.moduleView.getOutputNode();
+        var x = module.moduleView.inputOutputNodeDimension / 2// + window.scrollX ;
+        var y = module.moduleView.inputOutputNodeDimension / 2// + window.scrollY;
+
+        while (offset) {
+
+            x += offset.offsetLeft;
+            y += offset.offsetTop;
+            offset = <HTMLDivElement>offset.offsetParent;
+        }
+
+        for (var c = 0; c < module.moduleFaust.getOutputConnections().length; c++) {
+
+                if (module.moduleFaust.getOutputConnections()[c].connectorShape) {
+                    var currentConnectorShape: ConnectorShape = module.moduleFaust.getOutputConnections()[c].connectorShape;
+                    var x1 = currentConnectorShape.x1;
+                    var y1 = currentConnectorShape.y1;
+                    var x2 = x;
+                    var y2 = y;
+                    var d = drag.setCurvePath(x1, y1, x2, y2, drag.calculBezier(x1, x2), drag.calculBezier(x1, x2))
+                    
+                    currentConnectorShape.setAttributeNS(null, "d", d);
+                    drag.updateConnectorShapePath(currentConnectorShape,x1, x2, y1, y2);
+
+			    }
+		    }
     }
 
 }

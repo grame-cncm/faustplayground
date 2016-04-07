@@ -13,13 +13,15 @@ interface IfDSP {
 
 class ModuleFaust {
     fDSP: IfDSP;
+    factory: Factory;
     fSource: string;
     fTempSource: string;
     fName: string;
     fTempName: string;
     fOutputConnections: Connector[] = [];
     fInputConnections: Connector[] = [];
-
+    recallOutputsDestination: string[]=[];
+    recallInputsSource: string[]=[];
     constructor(name: string) {
         this.fName = name;
     }

@@ -58,14 +58,11 @@ var Library = (function () {
             li.appendChild(a);
             a.href = options[i];
             a.draggable = true;
-            a.title = "Drag me ! Cliquez, glissez, d�posez !";
+            a.title = App.messageRessource.hoverLibraryElement;
             a.onclick = App.preventdefault;
-            //a.ondblclick = App.preventdefault;
+            var dblckickHandler = this.dispatchEventLibrary.bind(this, a.href);
+            a.ondblclick = dblckickHandler;
             a.ontouchstart = function (e) { _this.dbleTouchMenu(e); };
-            //a.ondragstart = (e) => { this.lowerMenu() }
-            //a.ondragend = (e) => { }
-            //a.ondrag = (e) => { console.log(e.clientX) }
-            //option.ondrag = this.selectDrag;
             a.text = this.cleanNameElement(options[i], stringStructureRemoved);
             subMenu.appendChild(li);
         }

@@ -10,7 +10,9 @@ class ExportView {
     dynamicName: HTMLSpanElement;
     rulesName: HTMLSpanElement;
     downloadButton: HTMLButtonElement;
-
+    moreOptionDiv: HTMLElement;
+    lessOptionDiv: HTMLElement;
+    optionContainer: HTMLElement;
     initExportView(): HTMLElement {
 
         var exportContainer: HTMLElement = document.createElement("div");
@@ -36,24 +38,24 @@ class ExportView {
 
         var nameAppTitle: HTMLSpanElement = document.createElement("span");
         nameAppTitle.id = "nameAppTitle";
-        nameAppTitle.textContent = " le nom de l'application est : ";
+        nameAppTitle.textContent = App.messageRessource.appNameExport;
         nameAppTitle.className = "exportTitle";
 
         var dynamicName: HTMLSpanElement = document.createElement("span");
         dynamicName.id = "dynamicName";
-        dynamicName.textContent = Scene.sceneName;
+        dynamicName.textContent = App.scene.sceneName;
         nameAppTitle.appendChild(dynamicName);
         this.dynamicName = dynamicName;
 
         var rulesName: HTMLSpanElement = document.createElement("span");
         rulesName.id = "rulesName";
-        rulesName.textContent = "Seul les lettres de l'alphabet et les nombres sont acceptés. Les espaces, les apostrophes et les accents sont automatiquement remplacés. Le nom ne peut commencer par un nombre, il doit comporter entre 1 et 50 caractères.";
+        rulesName.textContent = App.messageRessource.rulesSceneName;
         this.rulesName = rulesName;
 
         var input: HTMLInputElement = document.createElement("input");
         input.id = "inputNameApp";
         input.className = "inputExport";
-        input.value = Scene.sceneName;
+        input.value = App.scene.sceneName;
 
         var renameBottomButtonContainer: HTMLElement = document.createElement("div");
         renameBottomButtonContainer.className = "bottomButtonContainer";
@@ -62,8 +64,8 @@ class ExportView {
         var renameButton: HTMLButtonElement = document.createElement("button");
         renameButton.type = "button";
         renameButton.id = "buttonNameApp";
-        renameButton.className="button"
-        renameButton.textContent = "Modifier le nom de d'application";
+        renameButton.className = "button"
+        renameButton.textContent = App.messageRessource.buttonChangeSceneName;
 
         renameBottomButtonContainer.appendChild(renameButton)
 
@@ -77,7 +79,26 @@ class ExportView {
         this.buttonNameApp = renameButton;
 
 
-/////////////////////////////////  export Options
+        /////////////////////////////////  export Options
+        var moreOptionDiv = document.createElement("div");
+        moreOptionDiv.textContent = "+ plus d'options"
+        moreOptionDiv.id = "moreOptionDiv";
+        moreOptionDiv.style.display = "block";
+        this.moreOptionDiv = moreOptionDiv;
+
+
+        var optionContainer = document.createElement("div");
+        optionContainer.id = "optionContainer";
+        optionContainer.style.display = "none";
+        this.optionContainer = optionContainer;
+
+
+        var lessOptionDiv = document.createElement("div")
+        lessOptionDiv.id = "lessOptionDiv";
+        lessOptionDiv.textContent = App.messageRessource.lessOptions;
+        lessOptionDiv.style.display = "none";
+        this.lessOptionDiv = lessOptionDiv;
+
 
         var urlDiv: HTMLElement = document.createElement("div");
         urlDiv.id = "inputExport";
@@ -85,7 +106,7 @@ class ExportView {
 
         var exportOptionTitle: HTMLSpanElement = document.createElement("span");
         exportOptionTitle.id = "exportOptionTitle";
-        exportOptionTitle.textContent = "Choix de l'export";
+        exportOptionTitle.textContent = App.messageRessource.titleExportOptions;
         exportOptionTitle.className = "exportTitle";
 
         var fwurl: HTMLInputElement = document.createElement("input");
@@ -102,7 +123,7 @@ class ExportView {
 
 
         var refreshButton: HTMLButtonElement = document.createElement("button");
-        refreshButton.textContent="Rafraîchir le serveur"
+        refreshButton.textContent = App.messageRessource.buttonRefresh
         refreshButton.id = "refreshButton";
         refreshButton.className = "button";
         this.refreshButton = refreshButton;
@@ -128,7 +149,7 @@ class ExportView {
         exportButton.id = "exportButton";
         exportButton.type = "submit";
         exportButton.className = "button";
-        exportButton.value = "Exporter";
+        exportButton.value = App.messageRessource.buttonExportScene;
         this.exportButton = exportButton;
 
 
@@ -137,18 +158,19 @@ class ExportView {
 
         exportBottomButtonContainer.appendChild(exportButton);
 
-
-
-        exportOptionContainer.appendChild(exportOptionTitle);
-        exportOptionContainer.appendChild(urlDiv);
-        exportOptionContainer.appendChild(exportChoiceDiv);
+        optionContainer.appendChild(exportOptionTitle)
+        optionContainer.appendChild(urlDiv);
+        optionContainer.appendChild(exportChoiceDiv);
+        exportOptionContainer.appendChild(moreOptionDiv);
+        exportOptionContainer.appendChild(lessOptionDiv);
+        exportOptionContainer.appendChild(optionContainer);
         exportOptionContainer.appendChild(exportBottomButtonContainer);
 
 
 //////////////////////////// export Result
         var exportResultTitle: HTMLSpanElement = document.createElement("span");
         exportResultTitle.id = "exportResultTitle";
-        exportResultTitle.textContent = "Téléchargement";
+        exportResultTitle.textContent = App.messageRessource.titleDownlaodExport;
         exportResultTitle.className = "exportTitle";
 
 

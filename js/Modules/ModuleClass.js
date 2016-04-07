@@ -23,14 +23,20 @@
 /// <reference path="../Modules/FaustInterface.ts"/>
 /// <reference path="../Main.ts"/>
 /// <reference path="../App.ts"/>
+/// <reference path="../Messages.ts"/>
 "use strict";
 var ModuleClass = (function () {
     function ModuleClass(id, x, y, name, sceneParent, htmlElementModuleContainer, removeModuleCallBack) {
+        var _this = this;
         this.drag = new Drag();
-        this.fModuleInterfaceParams = [];
+        this.dragList = [];
+        this.moduleControles = [];
+        this.fModuleInterfaceParams = {};
         this.sceneParent = sceneParent;
         var self = this;
-        this.eventConnectorHandler = function (event) { self.dragCnxCallback(event, self); };
+        this.eventConnectorHandler = function (event) { _this.dragCnxCallback(event, _this); };
+        this.eventCloseEditHandler = function (event) { _this.recompileSource(event, _this); };
+        this.eventOpenEditHandler = function () { _this.edit(); };
         // ---- Capturing module instance	
         // ----- Delete Callback was added to make sure 
         // ----- the module is well deleted from the scene containing it
@@ -62,7 +68,6 @@ var ModuleClass = (function () {
         }
     };
     ModuleClass.prototype.dragCnxCallback = function (event, module) {
-        module.drag.isDragConnector = true;
         if (event.type == "mousedown") {
             module.drag.getDraggingMouseEvent(event, module, function (el, x, y, module, e) { module.drag.startDraggingConnector(el, x, y, module, e); });
         }
@@ -73,14 +78,28 @@ var ModuleClass = (function () {
             module.drag.getDraggingMouseEvent(event, module, function (el, x, y, module, e) { module.drag.whileDraggingConnector(el, x, y, module, e); });
         }
         else if (event.type == "touchstart") {
-            module.drag.getDraggingTouchEvent(event, module, function (el, x, y, module, e) { module.drag.startDraggingConnector(el, x, y, module, e); });
+            var newdrag = new Drag();
+            newdrag.isDragConnector = true;
+            newdrag.originTarget = event.target;
+            module.dragList.push(newdrag);
+            var index = module.dragList.length - 1;
+            module.dragList[index].getDraggingTouchEvent(event, module, function (el, x, y, module, e) { module.dragList[index].startDraggingConnector(el, x, y, module, e); });
         }
         else if (event.type == "touchmove") {
-            console.log(module.drag.connector.connectorShape.id);
-            module.drag.getDraggingTouchEvent(event, module, function (el, x, y, module, e) { module.drag.whileDraggingConnector(el, x, y, module, e); });
+            for (var i = 0; i < module.dragList.length; i++) {
+                if (module.dragList[i].originTarget == event.target) {
+                    module.dragList[i].getDraggingTouchEvent(event, module, function (el, x, y, module, e) { module.dragList[i].whileDraggingConnector(el, x, y, module, e); });
+                }
+            }
         }
         else if (event.type == "touchend") {
-            module.drag.getDraggingTouchEvent(event, module, function (el, x, y, module) { module.drag.stopDraggingConnector(el, x, y, module); });
+            this.sceneParent.unstyleNode();
+            for (var i = 0; i < module.dragList.length; i++) {
+                if (module.dragList[i].originTarget == event.target) {
+                    module.dragList[i].getDraggingTouchEvent(event, module, function (el, x, y, module) { module.dragList[i].stopDraggingConnector(el, x, y, module); });
+                }
+            }
+            this.sceneParent.unstyleNode();
         }
     };
     /*******************************  PUBLIC METHODS  **********************************/
@@ -94,9 +113,37 @@ var ModuleClass = (function () {
         this.deleteDSP(this.moduleFaust.fDSP);
         this.deleteCallback(this, this.sceneParent);
     };
+    ModuleClass.prototype.minModule = function () {
+        this.moduleView.fInterfaceContainer.classList.add("mini");
+        this.moduleView.fTitle.classList.add("miniTitle");
+        this.moduleView.miniButton.style.display = "none";
+        this.moduleView.maxButton.style.display = "block";
+        Connector.redrawInputConnections(this, this.drag);
+        Connector.redrawOutputConnections(this, this.drag);
+    };
+    ModuleClass.prototype.maxModule = function () {
+        this.moduleView.fInterfaceContainer.classList.remove("mini");
+        this.moduleView.fTitle.classList.remove("miniTitle");
+        this.moduleView.maxButton.style.display = "none";
+        this.moduleView.miniButton.style.display = "block";
+        Connector.redrawInputConnections(this, this.drag);
+        Connector.redrawOutputConnections(this, this.drag);
+    };
     //--- Create and Update are called once a source code is compiled and the factory exists
     ModuleClass.prototype.createDSP = function (factory) {
-        this.moduleFaust.fDSP = faust.createDSPInstance(factory, App.audioContext, 1024);
+        this.moduleFaust.factory = factory;
+        try {
+            if (factory != null) {
+                this.moduleFaust.fDSP = faust.createDSPInstance(factory, App.audioContext, 1024);
+            }
+            else {
+                throw new Error("create DSP Error factory null");
+            }
+        }
+        catch (e) {
+            new Message(App.messageRessource.errorCreateDSP + " : " + e);
+            App.hideFullPageLoading();
+        }
     };
     //--- Update DSP in module 
     ModuleClass.prototype.updateDSP = function (factory, module) {
@@ -137,21 +184,25 @@ var ModuleClass = (function () {
         // 		    faust.deleteDSPInstance(todelete);
     };
     /******************** EDIT SOURCE & RECOMPILE *************************/
-    ModuleClass.prototype.edit = function (module) {
-        module.saveInterfaceParams();
-        module.deleteFaustInterface();
-        var textArea = document.createElement("textarea");
-        textArea.rows = 15;
-        textArea.cols = 60;
-        textArea.value = this.moduleFaust.fSource;
-        module.moduleView.fInterfaceContainer.appendChild(textArea);
-        //module.moduleView.fEditImg.src = App.baseImg + "enter.png";
-        module.moduleView.fEditImg.style.backgroundImage = "url(" + App.baseImg + "enter.png)";
-        module.moduleView.fEditImg.onclick = function (event) { module.recompileSource(event, module); };
-        module.moduleView.fEditImg.area = textArea;
+    ModuleClass.prototype.edit = function () {
+        this.saveInterfaceParams();
+        var event = new CustomEvent("codeeditevent");
+        document.dispatchEvent(event);
+        this.deleteFaustInterface();
+        this.moduleView.textArea.style.display = "block";
+        this.moduleView.textArea.value = this.moduleFaust.fSource;
+        Connector.redrawInputConnections(this, this.drag);
+        Connector.redrawOutputConnections(this, this.drag);
+        this.moduleView.fEditImg.style.backgroundImage = "url(" + App.baseImg + "enter.png)";
+        this.moduleView.fEditImg.addEventListener("click", this.eventCloseEditHandler);
+        this.moduleView.fEditImg.addEventListener("touchend", this.eventCloseEditHandler);
+        this.moduleView.fEditImg.removeEventListener("click", this.eventOpenEditHandler);
+        this.moduleView.fEditImg.removeEventListener("touchend", this.eventOpenEditHandler);
     };
     //---- Update ModuleClass with new name/code source
     ModuleClass.prototype.update = function (name, code) {
+        var event = new CustomEvent("codeeditevent");
+        document.dispatchEvent(event);
         this.moduleFaust.fTempName = name;
         this.moduleFaust.fTempSource = code;
         var module = this;
@@ -161,62 +212,67 @@ var ModuleClass = (function () {
     ModuleClass.prototype.recompileSource = function (event, module) {
         App.showFullPageLoading();
         var buttonImage = event.target;
-        var dsp_code = buttonImage.area.value;
+        var dsp_code = this.moduleView.textArea.value;
+        this.moduleView.textArea.style.display = "none";
+        Connector.redrawOutputConnections(this, this.drag);
+        Connector.redrawInputConnections(this, this.drag);
         module.update(this.moduleView.fTitle.textContent, dsp_code);
         module.recallInterfaceParams();
         module.moduleView.fEditImg.style.backgroundImage = "url(" + App.baseImg + "edit.png)";
-        module.moduleView.fEditImg.onclick = function () { module.edit(module); };
+        module.moduleView.fEditImg.addEventListener("click", this.eventOpenEditHandler);
+        module.moduleView.fEditImg.addEventListener("touchend", this.eventOpenEditHandler);
+        module.moduleView.fEditImg.removeEventListener("click", this.eventCloseEditHandler);
+        module.moduleView.fEditImg.removeEventListener("touchend", this.eventCloseEditHandler);
     };
     /***************** CREATE/DELETE the DSP Interface ********************/
     // Fill fInterfaceContainer with the DSP's Interface (--> see FaustInterface.js)
     ModuleClass.prototype.createFaustInterface = function () {
         this.moduleView.fTitle.textContent = this.moduleFaust.fName;
-        var faustInterface = new FaustInterface();
-        faustInterface.parse_ui(JSON.parse(this.moduleFaust.fDSP.json()).ui, this);
+        this.moduleFaustInterface = new FaustInterface();
+        this.moduleFaustInterface.parse_ui(JSON.parse(this.moduleFaust.fDSP.json()).ui, this);
     };
     ModuleClass.prototype.deleteFaustInterface = function () {
-        while (this.moduleView.fInterfaceContainer.childNodes.length != 0)
+        this.deleteAccelerometerRef();
+        while (this.moduleView.fInterfaceContainer.childNodes.length != 0) {
             this.moduleView.fInterfaceContainer.removeChild(this.moduleView.fInterfaceContainer.childNodes[0]);
+        }
+    };
+    ModuleClass.prototype.deleteAccelerometerRef = function () {
+        for (var i = 0; i < this.moduleControles.length; i++) {
+            if (this.moduleControles[i].accelerometerSlider != null && this.moduleControles[i].accelerometerSlider != undefined) {
+                var index = AccelerometerHandler.accelerometerSliders.indexOf(this.moduleControles[i].accelerometerSlider);
+                AccelerometerHandler.accelerometerSliders.splice(index, 1);
+                delete this.moduleControles[i].accelerometerSlider;
+            }
+        }
+        this.moduleControles = [];
+    };
+    ModuleClass.prototype.setDSPValue = function () {
+        for (var i = 0; i < this.moduleControles.length; i++) {
+            this.moduleFaust.fDSP.setValue(this.moduleControles[i].address, this.moduleControles[i].value);
+        }
     };
     //---- Generic callback for Faust Interface
     //---- Called every time an element of the UI changes value
-    ModuleClass.prototype.interfaceCallback = function (event, module) {
-        //alert("I'm terribly touched")
-        console.log("touch my slider");
-        var input = event.target;
-        var groupInput = input.parentNode;
-        var elementInInterfaceGroup = groupInput.childNodes[0];
-        var text = groupInput.label;
-        var val = input.value;
-        val = Number((parseFloat(input.value) * parseFloat(elementInInterfaceGroup.getAttribute('step'))) + parseFloat(elementInInterfaceGroup.getAttribute('min'))).toFixed(parseFloat(elementInInterfaceGroup.getAttribute('precision')));
-        if (event.type == "mousedown")
-            val = "1";
-        else if (event.type == "mouseup")
-            val = "0";
-        //---- TODO: yes, this is lazy coding, and fragile. - Historical from Chris Web Audio Playground
-        //var output = event.target.parentNode.children[0].children[1];
-        var output = groupInput.getElementsByClassName("value")[0];
+    ModuleClass.prototype.interfaceCallback = function (event, controler, module) {
+        var input = controler.slider;
+        var text = controler.address;
+        var val = Number((parseFloat(input.value) * parseFloat(controler.step)) + parseFloat(controler.min)).toFixed(parseFloat(controler.precision));
+        controler.value = val;
+        var output = controler.output;
         //---- update the value text
         if (output)
-            output.innerHTML = "" + val.toString() + " " + output.getAttribute("units");
-        if (input.type == "submit")
-            val = String(App.buttonVal);
-        if (App.buttonVal == 0)
-            App.buttonVal = 1;
-        else
-            App.buttonVal = 0;
+            output.textContent = "" + val + " " + output.getAttribute("units");
         // 	Search for DSP then update the value of its parameter.
         module.moduleFaust.fDSP.setValue(text, val);
     };
     // Save graphical parameters of a Faust Node
     ModuleClass.prototype.saveInterfaceParams = function () {
         var interfaceElements = this.moduleView.fInterfaceContainer.childNodes;
-        for (var j = 0; j < interfaceElements.length; j++) {
-            var interfaceElement = interfaceElements[j];
-            if (interfaceElement.className == "control-group") {
-                var text = interfaceElement.label;
-                this.fModuleInterfaceParams[text] = this.moduleFaust.fDSP.getValue(text);
-            }
+        var controls = this.moduleControles;
+        for (var j = 0; j < controls.length; j++) {
+            var text = controls[j].address;
+            this.fModuleInterfaceParams[text] = controls[j].value;
         }
     };
     ModuleClass.prototype.recallInterfaceParams = function () {
@@ -230,60 +286,61 @@ var ModuleClass = (function () {
         this.fModuleInterfaceParams = parameters;
     };
     ModuleClass.prototype.addInterfaceParam = function (path, value) {
-        this.fModuleInterfaceParams[path] = value;
+        this.fModuleInterfaceParams[path] = value.toString();
     };
     /******************* GET/SET INPUT/OUTPUT NODES **********************/
     ModuleClass.prototype.addInputOutputNodes = function () {
         var module = this;
         if (this.moduleFaust.fDSP.getNumInputs() > 0 && this.moduleView.fName != "input") {
             this.moduleView.setInputNode();
-            this.addCnxListener(this.moduleView.fInputNode, "mousedown", module);
-            this.addCnxListener(this.moduleView.fInputNode, "touchstart", module);
+            this.moduleView.fInputNode.addEventListener("mousedown", this.eventConnectorHandler);
+            this.moduleView.fInputNode.addEventListener("touchstart", this.eventConnectorHandler);
+            this.moduleView.fInputNode.addEventListener("touchmove", this.eventConnectorHandler);
+            this.moduleView.fInputNode.addEventListener("touchend", this.eventConnectorHandler);
         }
         if (this.moduleFaust.fDSP.getNumOutputs() > 0 && this.moduleView.fName != "output") {
             this.moduleView.setOutputNode();
-            this.addCnxListener(this.moduleView.fOutputNode, "mousedown", module);
-            this.addCnxListener(this.moduleView.fOutputNode, "touchstart", module);
+            this.moduleView.fOutputNode.addEventListener("mousedown", this.eventConnectorHandler);
+            this.moduleView.fOutputNode.addEventListener("touchstart", this.eventConnectorHandler);
+            this.moduleView.fOutputNode.addEventListener("touchmove", this.eventConnectorHandler);
+            this.moduleView.fOutputNode.addEventListener("touchend", this.eventConnectorHandler);
         }
     };
-    // Added for physical Input and Output which are create outside of ModuleClass (--> see Playground.js or Pedagogie.js)
-    ModuleClass.prototype.setInputOutputNodes = function (input, output) {
-        var module = this;
-        this.moduleView.fInputNode = input;
-        if (this.moduleView.fInputNode) {
-            this.addCnxListener(this.moduleView.fInputNode, "mousedown", module);
-            this.addCnxListener(this.moduleView.fInputNode, "touchstart", module);
-        }
-        this.moduleView.fOutputNode = output;
-        if (this.moduleView.fOutputNode) {
-            this.addCnxListener(this.moduleView.fOutputNode, "mousedown", module);
-            this.addCnxListener(this.moduleView.fOutputNode, "touchstart", module);
-        }
+    ModuleClass.prototype.styleInputNodeTouchDragOver = function (el) {
+        el.style.border = "15px double rgb(0, 211, 255)";
+        el.style.left = "-32px";
+        el.style.marginTop = "-32px";
+        ModuleClass.isNodesModuleUnstyle = false;
+    };
+    ModuleClass.prototype.styleOutputNodeTouchDragOver = function (el) {
+        el.style.border = "15px double rgb(0, 211, 255)";
+        el.style.right = "-32px";
+        el.style.marginTop = "-32px";
+        ModuleClass.isNodesModuleUnstyle = false;
     };
     /****************** ADD/REMOVE ACTION LISTENERS **********************/
-    ModuleClass.prototype.addListener = function (type, module) {
-        document.addEventListener(type, module.eventDraggingHandler, true);
-    };
-    ModuleClass.prototype.removeListener = function (type, div, document) {
-        var module = this;
-        if (!document) {
-            div.removeEventListener(type, module.eventDraggingHandler, true);
-        }
-        else {
-            document.removeEventListener(type, module.eventDraggingHandler, true);
-        }
-    };
-    ModuleClass.prototype.addCnxListener = function (div, type, module) {
-        if (type == "mousedown" || type == "touchstart") {
-            div.addEventListener(type, module.eventConnectorHandler, true);
-        }
-        else {
-            document.addEventListener(type, module.eventConnectorHandler, true);
-        }
-    };
+    //addListener(type: string, module: ModuleClass): void {
+    //    document.addEventListener(type, module.eventDraggingHandler, false);
+    //}
+    //removeListener(type: string, div?: HTMLElement, document?: Document): void {
+    //    var module: ModuleClass = this;
+    //    if (!document) {
+    //        div.removeEventListener(type, module.eventDraggingHandler, false)
+    //    } else {
+    //        document.removeEventListener(type, module.eventDraggingHandler, false)
+    //    }
+    //}
+    //addCnxListener(div: HTMLElement, type: string, module: ModuleClass): void {
+    //    if (type == "mousedown" || type == "touchstart" || type == "touchmove" || type == "touchend"  ) {
+    //        div.addEventListener(type, module.eventConnectorHandler, false);
+    //    } else {
+    //        document.addEventListener(type, module.eventConnectorHandler, false);
+    //    }
+    //}
     ModuleClass.prototype.removeCnxListener = function (div, type, module) {
-        document.removeEventListener(type, module.eventConnectorHandler, true);
+        document.removeEventListener(type, module.eventConnectorHandler, false);
     };
+    ModuleClass.isNodesModuleUnstyle = true;
     return ModuleClass;
 })();
 //# sourceMappingURL=ModuleClass.js.map

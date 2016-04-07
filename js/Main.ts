@@ -4,9 +4,11 @@
 
 
 
-	
+
 */
-	/// <reference path="App.ts"/>
+
+/// <reference path="App.ts"/>
+/// <reference path="Messages.ts"/>
 
 "use strict";
 
@@ -16,29 +18,91 @@ window.addEventListener('load', init, false);
 //worker.addEventListener("message", function (event) { console.log(event.data) }, false)
 
 
-   
 
 
 
-function init():void {
+
+function init(): void {
+
+
 
     var app: App = new App();
+    app.getRessources();
+}
+function resumeInit(app: App) {
+    app.createDialogue();
 
     try {
         App.audioContext = new AudioContext();
-    } catch(e) {
-        alert('The Web Audio API is apparently not supported in this browser.');
+    } catch (e) {
+        new Message(App.messageRessource.errorNoWebAudioAPI);
     }
     App.addFullPageLoading();
     app.createAllScenes();
     app.createMenu();
-	app.showFirstScene();
+
+    app.showFirstScene();
+    var accHandler: AccelerometerHandler = new AccelerometerHandler();
+    App.accHandler = accHandler;
+    accHandler.getAccelerometerValue();
+    App.driveApi = new DriveAPI();
+    app.menu.setDriveApi(App.driveApi);
+    App.driveApi.checkAuth();
+    window.addEventListener("error", (e: ErrorEvent) => {
+        if (e.message == "Uncaught Error: workerError" || e.message == "Error: workerError") {
+            new Message(App.messageRessource.errorOccuredMessage + e.message)
+            App.hideFullPageLoading();
+        }
+        if (e.message == "Uncaught Error: Upload2Error") {
+
+
+            App.hideFullPageLoading();
+            e.preventDefault();
+        }
+        //e.preventDefault();
+
+    });
+}
+window.addEventListener('touchend', IosInit , false);
+window.addEventListener('touchstart', IosInit2, false);
+
+function IosInit(){
+    var buffer = App.audioContext.createBuffer(1, 1, 22050);
+    var source = App.audioContext.createBufferSource();
+    source.buffer = buffer;
+
+    // connect to output (your speakers)
+    source.connect(App.audioContext.destination);
+
+    // play the file
+    if (source.noteOn) {
+        source.noteOn(0);
+    }
+    window.removeEventListener('touchend', IosInit, false)
 }
 
+function IosInit2() {
+    var buffer = App.audioContext.createBuffer(1, 1, 22050);
+    var source = App.audioContext.createBufferSource();
+    source.buffer = buffer;
+
+    // connect to output (your speakers)
+    source.connect(App.audioContext.destination);
+
+    // play the file
+    if (source.noteOn) {
+        source.noteOn(0);
+    }
+    window.removeEventListener('touchstart', IosInit2, false)
+}
 
     /********************************************************************
     **************************  interfaces  *********************************
     ********************************************************************/
+
+interface AudioBufferSourceNode {
+    noteOn: (any:any) => any;
+}
 
 interface Navigator {
     //default way to get the devices of browsers
@@ -88,7 +152,7 @@ interface MediaStreamAudioDestinationNode extends AudioNode {
 }
 
 interface AudioContext {
-    state: string;
+//    state: string;
     close: () => void;
     createMediaStreamSource: (m: MediaStream) => MediaStreamAudioSourceNode;
     createMediaStreamDestination: () => any;
@@ -102,7 +166,7 @@ interface IHTMLDivElementOut extends HTMLDivElement{
     audioNode: AudioDestinationNode;
 }
 interface Factory {
-    factoryName: string;
-    shaKe: string;
+    name: string;
+    sha_key: string;
+    code: string;
 }
-

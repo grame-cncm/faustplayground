@@ -4,16 +4,23 @@
 
 /*layout menu general*/
 
+
 div#menuContainer {
     width: 100%;
     position: absolute;
     top: 0;
 }
 
+.no_pointer{
+    pointer-events:none;
+}
+
 div#closeButtonContainer {
     height: 25px;
 }
-
+.menuContent {
+    width:100%;
+}
 div#closeButton {
     background: url(../img/cross_close_menu.png);
     width: 15px;
@@ -71,7 +78,7 @@ div#contentsMenu {
     font-weight: 600;
     text-transform: uppercase;
     color: rgba(255, 255, 255, 0.9);
-    width: 139px;
+    width: 99px;
 }
 .buttonsMenu:hover {
     color:white;
@@ -107,8 +114,8 @@ ul.librarySelects {
     position: relative;
     box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.29);
     list-style: none;
-    height:calc(100% - 4em)
-
+    height:calc(100% - 4em);
+    
 }
 .librarySelects.ps-container > .ps-scrollbar-x-rail,
 .librarySelects.ps-container > .ps-scrollbar-y-rail
@@ -130,6 +137,7 @@ li {
 li>a {
     display: block;
     padding-left: 1em;
+    pointer-events:all!important;
 }
 
 li>a:hover {
@@ -218,6 +226,10 @@ input#inputNameApp {
     
 }
 
+.changeAccountButton {
+    margin-bottom: 1em;
+}
+
 .button:hover {
     box-shadow:0 0 5px black;
     opacity: 1;
@@ -265,6 +277,20 @@ div#exportOptionContainer{
 	position:relative; 
     width: 100%;
     float:left;
+}
+
+div#moreOptionDiv {
+    top: 40%;
+    margin: 0px auto;
+    width: inherit;
+    cursor: pointer;
+    text-align: center;
+    position: absolute;
+}
+
+div#lessOptionDiv {
+    cursor: pointer;
+    font-size: small;
 }
 
 #plateforms{
@@ -337,4 +363,98 @@ div#videoContainer {
 div#fullScreenButton {
     background: url("../img/fullscreen.png") no-repeat 50%;
     background-size: 80%;
+}
+div#accButton {
+    background: url("../img/checkBox.png") no-repeat 50%;
+    background-size: 80%;
+}
+ div#cleanButton {
+    background: url("../img/trash.png") no-repeat 50%;
+    background-size: 80%;
+}
+
+/*Save menu*/
+
+
+div#saveContainer {
+    height: 100%;
+}
+
+div#downloadContainer {
+    border-right-color:rgba(0, 0, 0, 0.2);
+    border-right-style: solid;
+    border-right-width: 2px;
+}
+div#localSaveContainer {
+    border-right-color: rgba(0, 0, 0, 0.2);
+    border-right-style: solid;
+    border-right-width: 2px;
+}
+
+#labelDownload {
+    font-size: 0.8em;
+}
+#checkBoxPrecompile {
+    display: block;
+    float: left;
+    margin: 0.5em;
+}
+select.sceneSelect {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    color: white;
+    padding: 0.2em;
+    margin-bottom: 1em;
+}
+
+select::selection {
+    background: rgba(255, 255, 255, 0.53)!important;
+    color: black!important;
+    text-shadow: none;
+}
+
+select:focus {
+    border:none;
+    background: rgba(255, 255, 255, 0.53)!important;
+    
+}
+
+#dialogGoodNews {
+    -webkit-transition: all 500ms ease;
+	transition: all 500ms ease;
+}
+
+/*load menu*/
+
+div#loadContainer {
+        height: 100px;
+}
+
+div#loadFileContainer {
+    border-right-color: rgba(0, 0, 0, 0.2);
+    border-right-style: solid;
+    border-right-width: 2px;
+}
+div#loadLocalContainer {
+    border-right-color: rgba(0, 0, 0, 0.2);
+    border-right-style: solid;
+    border-right-width: 2px;
+}
+
+#loadFileInput {
+    width: 100%;
+}
+
+.exempleAnchor {
+    display: block;
+    line-height: 2em;
+}
+
+select#existingSceneSelectDrive {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    color: white;
+    padding: 0.2em;
 }

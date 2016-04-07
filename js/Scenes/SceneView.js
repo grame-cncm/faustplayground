@@ -57,11 +57,11 @@ var SceneView = (function () {
         var linkWilson = document.createElement("div");
         linkWilson.id = "ChrisLine";
         linkWilson.className = "link";
-        linkWilson.textContent = "Extension of the WebAudio Playground by ";
+        linkWilson.textContent = App.messageRessource.reference;
         container.appendChild(linkWilson);
         var alink = document.createElement("a");
         alink.href = "https://github.com/cwilso/WebAudio";
-        alink.textContent = "Chris Wilson";
+        alink.textContent = App.messageRessource.chrisWilson;
         linkWilson.appendChild(alink);
         var srcDiv = document.createElement("div");
         srcDiv.id = "input";
@@ -79,7 +79,7 @@ var SceneView = (function () {
         dropElementScene.style.display = "none";
         this.dropElementScene = dropElementScene;
         var dropElementText = document.createElement("div");
-        dropElementText.textContent = "deposer ici";
+        dropElementText.textContent = App.messageRessource.drop;
         dropElementText.className = "dropElementText";
         dropElementScene.appendChild(dropElementText);
         container.appendChild(dropElementScene);

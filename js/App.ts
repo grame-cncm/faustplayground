@@ -44,6 +44,8 @@ DEPENDENCIES:
 /// <reference path="ExportLib.ts"/>
 /// <reference path="EquivalentFaust.ts"/>
 /// <reference path="qrcode.d.ts"/>
+/// <reference path="Ressources.ts"/>
+/// <reference path="Messages.ts"/>
 /// <reference path="Lib/perfectScrollBar/js/perfect-ScrollBar.min.d.ts"/>
 
 
@@ -62,16 +64,23 @@ class App {
     static recursiveMap: ModuleTree[];
     static jsonText: string;
     static exportURL: string;
+    static isAccelerometerOn: boolean = false;
+    static isAccelerometerEditOn: boolean = false;
+    static accHandler: AccelerometerHandler;
+    static driveApi: DriveAPI;
+    static messageRessource: Ressources = new Ressources();
     private static currentScene: number;
     private static src: IHTMLDivElementSrc;
     private static out: IHTMLDivElementOut;
     menu: Menu
 
-    private tempModuleName: string;
+    tempModuleName: string;
+    tempPatchId: string;
     scenes: Scene[];
     tempModuleSourceCode: string;
     tempModuleX: number;
     tempModuleY: number;
+    tempParams: IJsonParamsSave;
     currentNumberDSP: number;
     inputs: any[];
     outputs: any[];
@@ -103,10 +112,25 @@ class App {
 
     createMenu(): void {
         this.menu = new Menu(document.getElementsByTagName('body')[0])
-        App.scene.getSceneContainer().onmousedown = () => {
-            this.menu.menuChoices = MenuChoices.null
-            this.menu.menuHandler(this.menu.menuChoices)
-        };
+        this.menu.setMenuScene(App.scene);
+        App.scene.getSceneContainer().addEventListener("mousedown", () => {
+            if (!this.menu.accEdit.isOn) {
+                this.menu.menuChoices = MenuChoices.null
+                this.menu.menuHandler(this.menu.menuChoices)
+            }
+        }, true);
+        App.scene.getSceneContainer().addEventListener("touchstart", () => {
+            if (!this.menu.accEdit.isOn) {
+                this.menu.menuChoices = MenuChoices.null
+                this.menu.menuHandler(this.menu.menuChoices)
+            }
+        }, true);
+    }
+
+    createDialogue() {
+        var dialogue = document.createElement("div");
+        dialogue.id = "dialogue";
+        document.getElementsByTagName("body")[0].appendChild(dialogue)
     }
 
     /********************************************************************
@@ -124,11 +148,13 @@ class App {
 
             navigatorLoc.getUserMedia({ audio: true },  (mediaStream)=> { this.getDevice(mediaStream, this) }, function (e) {
                 scene.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)"
-                scene.fAudioInput.moduleView.fInterfaceContainer.title = "Error getting audio input";
+                scene.fAudioInput.moduleView.fInterfaceContainer.title = App.messageRessource.errorGettingAudioInput;
+                new Message(App.messageRessource.errorGettingAudioInput);
             });
         } else {
             scene.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)"
-            scene.fAudioInput.moduleView.fInterfaceContainer.title = "Audio input API not available";
+            new Message(App.messageRessource.errorInputAPINotAvailable);
+            scene.fAudioInput.moduleView.fInterfaceContainer.title = App.messageRessource.errorInputAPINotAvailable;
         }
     }
 
@@ -178,7 +204,11 @@ class App {
         //    sourcecode, args
         //})
         //worker.postMessage(messageJson)
-        this.factory = faust.createDSPFactory(sourcecode, args, (factory) => { callback(factory) });
+        try {
+            this.factory = faust.createDSPFactory(sourcecode, args, (factory) => { callback(factory) });
+        } catch (error) {
+            new Message(error)
+        }
         
         //callback(this.factory)
         if (currentScene) { currentScene.unmuteScene() };
@@ -188,7 +218,8 @@ class App {
     private createModule(factory: Factory): void {
 
         if (!factory) {
-            alert(faust.getErrorMessage());
+            new Message(App.messageRessource.errorFactory+faust.getErrorMessage());
+            this.terminateUpload();
             return null;
         }
 
@@ -231,7 +262,7 @@ class App {
 
     //-- Init drag and drop reactions
     setGeneralAppListener(app: App): void {
-
+        document.addEventListener("fileload", (e: CustomEvent) => { this.loadFileEvent(e) })
         window.ondragover = function () { this.className = 'hover'; return false; };
         window.ondragend = function () { this.className = ''; return false; };
         document.ondragstart = () => { this.styleOnDragStart() };
@@ -242,7 +273,15 @@ class App {
                 this.styleOnDragStart()
             }
         };
-
+        document.ondragleave = (e) => {
+            var elementTarget = <HTMLElement>e.target
+            if (elementTarget.id == "svgCanvas") {
+                //alert("svg")
+                this.styleOnDragEnd();
+                e.stopPropagation();
+                e.preventDefault()
+            }
+        }
         document.onscroll = () => {
             this.checkRealWindowSize()
         };
@@ -257,6 +296,7 @@ class App {
             this.uploadOn(this, null, x, y, e);
             this.menu.isMenuLow = true;            
         };
+        
 
         document.addEventListener("dbltouchlib", (e: CustomEvent) => { this.dblTouchUpload(e) });
     }
@@ -277,8 +317,7 @@ class App {
 
     private terminateUpload(): void {
 
-        var uploadTitle: HTMLElement = document.getElementById("upload");
-        uploadTitle.textContent = "";
+        App.hideFullPageLoading();
 
     }
 
@@ -306,11 +345,16 @@ class App {
             }
             // CASE 3 : THE DROPPED OBJECT IS A FILE CONTAINING SOME FAUST CODE
             else {
-                this.uploadFile2(app, module, x, y, e, dsp_code)
+                try {
+                    this.uploadFile2(app, module, x, y, e, dsp_code)
+                } catch (error) {
+                    new Message(error);
+                    App.hideFullPageLoading();
+                }
             }
         } else { // CASE 4 : ANY OTHER STRANGE THING
             app.terminateUpload();
-            window.alert("THIS OBJECT IS NOT FAUST COMPILABLE");
+            new Message(App.messageRessource.errorObjectNotFaustCompatible);
         }
     }
     //Upload Url
@@ -332,7 +376,7 @@ class App {
                 }
             }
 
-            app.terminateUpload();
+            //app.terminateUpload();
         }
 
         xmlhttp.open("GET", url);
@@ -350,11 +394,11 @@ class App {
             module.update("TEXT", dsp_code);
         }
 
-        app.terminateUpload();
+        //app.terminateUpload();
     }
 
     uploadFile2(app: App, module: ModuleClass, x: number, y: number, e: DragEvent, dsp_code: string) {
-        var files: FileList = e.dataTransfer.files;//e.target.files ||
+        var files: FileList = e.dataTransfer.files;
 
         var file: File = files[0];
 
@@ -362,41 +406,53 @@ class App {
 
         var request: XMLHttpRequest = new XMLHttpRequest();
         if (request.upload) {
-
-            var reader: FileReader = new FileReader();
-
-            var ext: string = file.name.toString().split('.').pop();
-
-            var filename: string = file.name.toString().split('.').shift();
-
-            var type: string;
-
-            if (ext == "dsp") {
-                type = "dsp";
-                reader.readAsText(file);
-            }
-            else if (ext == "json") {
-                type = "json";
-                reader.readAsText(file);
-            } else {
-                this.terminateUpload();
-            }
-
-            reader.onloadend = function (e) {
-                dsp_code = "process = vgroup(\"" + filename + "\",environment{" + reader.result + "}.process);";
-
-                if (!module && type == "dsp") {
-                    app.compileFaust(filename, dsp_code, x, y, (factory) => { app.createModule(factory) });
-                } else if (type == "dsp") {
-                    module.update(filename, dsp_code);
-                } else if (type == "json") {
-                    app.scenes[App.currentScene].recallScene(reader.result);
-                }
-                app.terminateUpload();
-            };
+            this.loadFile(file, module, x, y, app); 
         }
     }
 
+    loadFile(file: File, module: ModuleClass, x: number, y: number,app:App) {
+        var dsp_code: string;
+        var reader: FileReader = new FileReader();
+
+        var ext: string = file.name.toString().split('.').pop();
+
+        var filename: string = file.name.toString().split('.').shift();
+
+        var type: string;
+
+        if (ext == "dsp") {
+            type = "dsp";
+            reader.readAsText(file);
+        }
+        else if (ext == "json"||ext=="jfaust") {
+            type = "json";
+            reader.readAsText(file);
+        } else {
+            throw new Error(App.messageRessource.errorObjectNotFaustCompatible);
+
+            this.terminateUpload();
+        }
+
+        reader.onloadend = function (e) {
+            dsp_code = "process = vgroup(\"" + filename + "\",environment{" + reader.result + "}.process);";
+
+            if (!module && type == "dsp") {
+                app.compileFaust(filename, dsp_code, x, y, (factory) => { app.createModule(factory) });
+            } else if (type == "dsp") {
+                module.update(filename, dsp_code);
+            } else if (type == "json") {
+                App.scene.recallScene(reader.result);
+            }
+            //app.terminateUpload();
+        };
+    }
+    loadFileEvent(e: CustomEvent) {
+        App.showFullPageLoading();
+        var file: File = <File>e.detail;
+        var position: PositionModule = App.scene.positionDblTapModule();
+        this.loadFile(file, null, position.x, position.y, this)
+
+    }
     dblTouchUpload(e: CustomEvent) {
         App.showFullPageLoading();
         var position: PositionModule = App.scene.positionDblTapModule();
@@ -438,39 +494,40 @@ class App {
     ////////////////////////////// LOADINGS //////////////////////////////////////
 
     //add loading logo and text on export
-    static addLoadingLogo(divTarget: string) {
+    static addLoadingLogo(idTarget: string) {
         var loadingDiv = document.createElement("div");
-        loadingDiv.id = "loadingDiv";
+        loadingDiv.className = "loadingDiv";
         var loadingImg = document.createElement("img");
         loadingImg.src = App.baseImg + "logoAnim.gif"
         loadingImg.id = "loadingImg";
         var loadingText = document.createElement("span");
-        loadingText.textContent = "Compilation en cours..."
+        loadingText.textContent = App.messageRessource.loading;
         loadingText.id = "loadingText";
         loadingDiv.appendChild(loadingImg);
         loadingDiv.appendChild(loadingText);
-
-        document.getElementById(divTarget).appendChild(loadingDiv);
+        if (document.getElementById(idTarget)!=null){
+            document.getElementById(idTarget).appendChild(loadingDiv);
+        }
     }
-    static removeLoadingLogo() {
-        document.getElementById("loadingDiv").remove();
+    static removeLoadingLogo(idTarget: string) {
+        var divTarget = <HTMLDivElement>document.getElementById(idTarget)
+        if (divTarget != null && divTarget.getElementsByClassName("loadingDiv").length > 0) {
+            while (divTarget.getElementsByClassName("loadingDiv").length != 0) {
+                divTarget.getElementsByClassName("loadingDiv")[0].remove();
+            }
+        }
     }
 
     static addFullPageLoading() {
         
-        var loadingPage = document.createElement("div");
-        loadingPage.id = "loadingPage";
-        loadingPage.className = "loadingPage";
-        var body = document.getElementsByTagName('body')[0];
-        var loadingText = document.createElement("div");
-        loadingText.id="loadingTextBig"
-        loadingText.textContent = "Chargement en cours";
-        loadingPage.appendChild(loadingText);
-        body.appendChild(loadingPage);
-        loadingPage.style.display = "none"
+
+        var loadingText = document.getElementById("loadingTextBig");
+        loadingText.id = "loadingTextBig"
+        loadingText.textContent = App.messageRessource.loading;
     }
 
     static showFullPageLoading() {
+
         document.getElementById("loadingPage").style.visibility = "visible";
         //too demanding for mobile firefox...
         //document.getElementById("Normal").style.filter = "blur(2px)"
@@ -493,6 +550,7 @@ class App {
     // manage style during a drag and drop event
     styleOnDragStart() {
         this.menu.menuView.menuContainer.style.opacity = "0.5";
+        this.menu.menuView.menuContainer.classList.add("no_pointer");
         App.scene.sceneView.dropElementScene.style.display = "block";
         App.scene.getSceneContainer().style.boxShadow = "0 0 200px #00f inset";
         var modules: ModuleClass[] = App.scene.getModules();
@@ -504,7 +562,9 @@ class App {
         //var body: HTMLBodyElement = <HTMLBodyElement>document.getElementById("body")[0];
         //body.removeEventListener("ondragleave");
         //document.getElementById("body")[0].style.zIndex = "100";
-        this.menu.lowerLibraryMenu();
+        //this.menu.lowerLibraryMenu();
+        this.menu.menuView.menuContainer.classList.remove("no_pointer");
+
         this.menu.menuView.menuContainer.style.opacity = "1";
         App.scene.sceneView.dropElementScene.style.display = "none";
         App.scene.getSceneContainer().style.boxShadow = "none";
@@ -536,9 +596,25 @@ class App {
         } else {
             document.getElementsByTagName("html")[0].style.height = "100%";
             document.getElementById("svgCanvas").style.height = "100%";
+        } 
+    }
+    static replaceAll(str: String, find: string, replace: string) {
+        return str.replace(new RegExp(find, 'g'), replace);
+    }
+    getRessources() {
+        // App.getXHR(
+        var localization = navigator.language;
+        if (localization == "fr" || localization == "fr-FR") {
+            App.getXHR("ressources/ressources_fr-FR.json", (ressource) => { this.loadMessages (ressource)}, this.errorCallBack)
+        } else {
+            App.getXHR("ressources/ressources_fr-FR.json", (ressource) => { this.loadMessages(ressource) }, this.errorCallBack)
         }
+    }
+    loadMessages(ressourceJson: string) {
+        App.messageRessource = JSON.parse(ressourceJson);
+        resumeInit(this);
+    }
+    errorCallBack(message: string) {
 
-       
-        
     }
 }

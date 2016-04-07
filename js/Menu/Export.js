@@ -7,7 +7,8 @@
 */
 /// <reference path="../ExportLib.ts"/>
 /// <reference path="../EquivalentFaust.ts"/>
-/// <reference path="../main.ts"/>
+/// <reference path="../Main.ts"/>
+/// <reference path="../Messages.ts"/>
 "use strict";
 /********************************************************************
 *********************  HANDLE FAUST WEB TARGETS *********************
@@ -60,28 +61,36 @@ var Export = (function () {
             // 	Delete existing content if existing
         };
         this.setDownloadOptions = function (serverUrl, shaKey, plateforme, architecture, appType) {
-            var disposableExportDiv = document.createElement("div");
-            disposableExportDiv.id = "disposableExportDiv";
-            var qrDiv = document.createElement('div');
-            qrDiv.id = "qrcodeDiv";
-            var myWhiteDiv = ExportLib.getQrCode(serverUrl, shaKey, plateforme, architecture, appType, 120);
-            qrDiv.appendChild(myWhiteDiv);
-            var downloadBottomButtonContainer = document.createElement("div");
-            downloadBottomButtonContainer.className = "bottomButtonContainer";
-            var linkDownload = document.createElement('button');
-            linkDownload.value = serverUrl + "/" + shaKey + "/" + plateforme + "/" + architecture + "/" + appType;
-            linkDownload.id = "linkDownload";
-            linkDownload.className = "button";
-            linkDownload.textContent = "Télécharger";
-            downloadBottomButtonContainer.appendChild(linkDownload);
-            _this.exportView.downloadButton = linkDownload;
-            _this.exportView.downloadButton.onclick = function () { window.location.href = _this.exportView.downloadButton.value; };
-            document.getElementById("exportResultContainer").appendChild(disposableExportDiv);
-            disposableExportDiv.appendChild(qrDiv);
-            disposableExportDiv.appendChild(downloadBottomButtonContainer);
+            if (shaKey.indexOf("ERROR") == -1) {
+                var disposableExportDiv = document.createElement("div");
+                disposableExportDiv.id = "disposableExportDiv";
+                var qrDiv = document.createElement('div');
+                qrDiv.id = "qrcodeDiv";
+                var myWhiteDiv = ExportLib.getQrCode(serverUrl, shaKey, plateforme, architecture, appType, 120);
+                qrDiv.appendChild(myWhiteDiv);
+                var downloadBottomButtonContainer = document.createElement("div");
+                downloadBottomButtonContainer.className = "bottomButtonContainer";
+                var linkDownload = document.createElement('button');
+                linkDownload.value = serverUrl + "/" + shaKey + "/" + plateforme + "/" + architecture + "/" + appType;
+                linkDownload.id = "linkDownload";
+                linkDownload.className = "button";
+                linkDownload.textContent = App.messageRessource.buttonDownloadApp;
+                downloadBottomButtonContainer.appendChild(linkDownload);
+                _this.exportView.downloadButton = linkDownload;
+                _this.exportView.downloadButton.onclick = function () { window.location.href = _this.exportView.downloadButton.value; };
+                document.getElementById("exportResultContainer").appendChild(disposableExportDiv);
+                disposableExportDiv.appendChild(qrDiv);
+                disposableExportDiv.appendChild(downloadBottomButtonContainer);
+                _this.exportView.exportButton.addEventListener("click", _this.eventExport);
+                _this.exportView.exportButton.style.opacity = "1";
+                App.removeLoadingLogo("exportResultContainer");
+            }
+            else {
+                new Message(shaKey);
+            }
             _this.exportView.exportButton.addEventListener("click", _this.eventExport);
             _this.exportView.exportButton.style.opacity = "1";
-            App.removeLoadingLogo();
+            App.removeLoadingLogo("exportResultContainer");
         };
     }
     //------ Handle Combo Boxes
@@ -98,6 +107,8 @@ var Export = (function () {
         this.exportView.inputNameApp.onkeypress = function (e) { if (e.which == 13) {
             _this.renameScene();
         } };
+        this.exportView.moreOptionDiv.addEventListener("click", function () { _this.exportView.moreOptionDiv.style.display = "none"; _this.exportView.lessOptionDiv.style.display = _this.exportView.optionContainer.style.display = "block"; }, false);
+        this.exportView.lessOptionDiv.addEventListener("click", function () { _this.exportView.moreOptionDiv.style.display = "block"; _this.exportView.lessOptionDiv.style.display = _this.exportView.optionContainer.style.display = "none"; }, false);
     };
     Export.prototype.addItem = function (id, itemText) {
         var platformsSelect = document.getElementById(id);
@@ -127,7 +138,12 @@ var Export = (function () {
     };
     Export.prototype.setDefaultSelect = function () {
         var platefromSelect = document.getElementById("platforms");
-        platefromSelect.selectedIndex = 3;
+        var options = platefromSelect.options;
+        for (var i = 0; i < options.length; i++) {
+            if (options[i].text == "android") {
+                platefromSelect.selectedIndex = i;
+            }
+        }
     };
     /********************************************************************
     *********************  HANDLE POST TO FAUST WEB  ********************
@@ -135,15 +151,15 @@ var Export = (function () {
     Export.prototype.exportPatch = function (event, expor) {
         this.exportView.exportButton.removeEventListener("click", this.eventExport);
         this.exportView.exportButton.style.opacity = "0.3";
-        var sceneName = Scene.sceneName;
+        var sceneName = App.scene.sceneName;
         if (sceneName == null || sceneName == "") {
             sceneName = "MonApplication";
         }
         this.removeQRCode();
         App.addLoadingLogo("exportResultContainer");
         var equivalentFaust = new EquivalentFaust();
-        var faustCode = equivalentFaust.getFaustEquivalent(App.scene, Scene.sceneName);
-        ExportLib.getSHAKey(document.getElementById("faustweburl").value, Scene.sceneName, faustCode, expor.exportFaustCode);
+        var faustCode = equivalentFaust.getFaustEquivalent(App.scene, App.scene.sceneName);
+        ExportLib.getSHAKey(document.getElementById("faustweburl").value, App.scene.sceneName, faustCode, expor.exportFaustCode);
     };
     Export.prototype.removeQRCode = function () {
         var disposableExportDiv = document.getElementById('disposableExportDiv');
@@ -152,32 +168,7 @@ var Export = (function () {
         }
     };
     Export.prototype.renameScene = function () {
-        var newName = this.exportView.inputNameApp.value;
-        newName = this.replaceAll(newName, "é", "e");
-        newName = this.replaceAll(newName, "è", "e");
-        newName = this.replaceAll(newName, "à", "a");
-        newName = this.replaceAll(newName, "ù", "u");
-        newName = this.replaceAll(newName, " ", "_");
-        newName = this.replaceAll(newName, "'", "_");
-        var pattern = new RegExp("^[a-zA-Z_][a-zA-Z_0-9]{1,50}$");
-        if (pattern.test(newName)) {
-            Scene.sceneName = newName;
-            this.exportView.dynamicName.textContent = Scene.sceneName;
-            this.exportView.rulesName.style.opacity = "0.6";
-            this.exportView.inputNameApp.style.boxShadow = "0 0 0 green inset";
-            this.exportView.inputNameApp.style.border = "none";
-            this.exportView.inputNameApp.value = Scene.sceneName;
-            var ev;
-            this.exportView.inputNameApp.onchange(ev);
-        }
-        else {
-            this.exportView.rulesName.style.opacity = "1";
-            this.exportView.inputNameApp.style.boxShadow = "0 0 6px yellow inset";
-            this.exportView.inputNameApp.style.border = "3px solid red";
-        }
-    };
-    Export.prototype.replaceAll = function (str, find, replace) {
-        return str.replace(new RegExp(find, 'g'), replace);
+        Scene.rename(this.exportView.inputNameApp, this.exportView.rulesName, this.exportView.dynamicName);
     };
     Export.exportUrl = "http://faustservice.grame.fr";
     Export.targetsUrl = "http://faustservice.grame.fr/targets";

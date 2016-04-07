@@ -12,13 +12,63 @@
 /// <reference path="../webaudio-asm-wrapper.d.ts"/>
 /// <reference path="../Main.ts"/>
 /// <reference path="../App.ts"/>
+/// <reference path="../Messages.ts"/>
 "use strict";
+var JsonSaveCollection = (function () {
+    function JsonSaveCollection() {
+    }
+    return JsonSaveCollection;
+})();
+var JsonSaveObject = (function () {
+    function JsonSaveObject() {
+    }
+    return JsonSaveObject;
+})();
+var JsonOutputsSave = (function () {
+    function JsonOutputsSave() {
+    }
+    return JsonOutputsSave;
+})();
+var JsonInputsSave = (function () {
+    function JsonInputsSave() {
+    }
+    return JsonInputsSave;
+})();
+var JsonParamsSave = (function () {
+    function JsonParamsSave() {
+    }
+    return JsonParamsSave;
+})();
+var JsonAccSaves = (function () {
+    function JsonAccSaves() {
+    }
+    return JsonAccSaves;
+})();
+var JsonAccSave = (function () {
+    function JsonAccSave() {
+    }
+    return JsonAccSave;
+})();
+var JsonSliderSave = (function () {
+    function JsonSliderSave() {
+    }
+    return JsonSliderSave;
+})();
+var JsonFactorySave = (function () {
+    function JsonFactorySave() {
+    }
+    return JsonFactorySave;
+})();
 var Scene = (function () {
     function Scene(identifiant, parent, /*onload?: (s: Scene) => void, onunload?: (s: Scene) => void, */ sceneView) {
+        this.arrayRecalScene = [];
+        this.arrayRecalledModule = [];
         this.isMute = false;
         //-- Modules contained in the scene
         this.fModuleList = [];
+        this.sceneName = "Patch";
         this.isInitLoading = true;
+        this.isOutputTouch = false;
         this.parent = parent;
         this.sceneView = new SceneView();
         this.sceneView.initNormalScene(this);
@@ -53,7 +103,7 @@ var Scene = (function () {
     Scene.prototype.unmuteScene = function () {
         var _this = this;
         console.log("timeIn");
-        window.setTimeout(function () { _this.delayedUnmuteScene(); }, 1000);
+        window.setTimeout(function () { _this.delayedUnmuteScene(); }, 500);
     };
     Scene.prototype.delayedUnmuteScene = function () {
         console.log("timeout");
@@ -69,19 +119,34 @@ var Scene = (function () {
     //add listner on the output module to give the user the possibility to mute/onmute the scene
     Scene.prototype.addMuteOutputListner = function (moduleOutput) {
         var _this = this;
-        moduleOutput.moduleView.fModuleContainer.ondblclick = function () {
-            if (!_this.isMute) {
-                _this.muteScene();
-            }
-            else {
-                _this.unmuteScene();
-            }
-        };
+        moduleOutput.moduleView.fModuleContainer.ontouchstart = function () { _this.dbleTouchOutput(); };
+        moduleOutput.moduleView.fModuleContainer.ondblclick = function () { _this.dispatchEventMuteUnmute(); };
+    };
+    Scene.prototype.dbleTouchOutput = function () {
+        var _this = this;
+        if (!this.isOutputTouch) {
+            this.isOutputTouch = true;
+            window.setTimeout(function () { _this.isOutputTouch = false; }, 300);
+        }
+        else {
+            this.dispatchEventMuteUnmute();
+            this.isOutputTouch = false;
+        }
+    };
+    Scene.prototype.dispatchEventMuteUnmute = function () {
+        if (!this.isMute) {
+            this.muteScene();
+        }
+        else {
+            this.unmuteScene();
+        }
     };
     /******************** HANDLE MODULES IN SCENE ************************/
     Scene.prototype.getModules = function () { return this.fModuleList; };
     Scene.prototype.addModule = function (module) { this.fModuleList.push(module); };
-    Scene.prototype.removeModule = function (module, scene) { scene.fModuleList.splice(scene.fModuleList.indexOf(module), 1); };
+    Scene.prototype.removeModule = function (module, scene) {
+        scene.fModuleList.splice(scene.fModuleList.indexOf(module), 1);
+    };
     Scene.prototype.cleanModules = function () {
         for (var i = this.fModuleList.length - 1; i >= 0; i--) {
             this.fModuleList[i].deleteModule();
@@ -101,6 +166,7 @@ var Scene = (function () {
     Scene.prototype.integrateInput = function () {
         var positionInput = this.positionInputModule();
         this.fAudioInput = new ModuleClass(App.idX++, positionInput.x, positionInput.y, "input", this, this.sceneView.inputOutputModuleContainer, this.removeModule);
+        this.fAudioInput.patchID = "input";
         var scene = this;
         this.parent.compileFaust("input", "process=_,_;", positionInput.x, positionInput.y, function (factory) { scene.integrateAudioInput(factory); });
     };
@@ -108,6 +174,7 @@ var Scene = (function () {
         var positionOutput = this.positionOutputModule();
         var scene = this;
         this.fAudioOutput = new ModuleClass(App.idX++, positionOutput.x, positionOutput.y, "output", this, this.sceneView.inputOutputModuleContainer, this.removeModule);
+        this.fAudioOutput.patchID = "output";
         this.addMuteOutputListner(this.fAudioOutput);
         this.parent.compileFaust("output", "process=_,_;", positionOutput.x, positionOutput.y, function (factory) { scene.integrateAudioOutput(factory); });
     };
@@ -136,127 +203,300 @@ var Scene = (function () {
     ///////////////////////////////////////////////////
     //not used for now and not seriously typescripted//
     ///////////////////////////////////////////////////
-    Scene.prototype.saveScene = function () {
+    Scene.prototype.saveScene = function (isPrecompiled) {
         for (var i = 0; i < this.fModuleList.length; i++) {
-            this.fModuleList[i].patchID = String(i + 1);
+            if (this.fModuleList[i].patchID != "output" && this.fModuleList[i].patchID != "input") {
+                this.fModuleList[i].patchID = String(i + 1);
+            }
         }
-        this.fAudioOutput.patchID = String(0);
-        var json = '{';
+        var json;
+        var jsonObjectCollection = {};
         for (var i = 0; i < this.fModuleList.length; i++) {
-            if (i != 0)
-                json += ',';
-            json += '"' + this.fModuleList[i].patchID.toString() + '":[';
-            json += '{"x":"' + this.fModuleList[i].moduleView.getModuleContainer().getBoundingClientRect().left + '"},';
-            json += '{"y\":"' + this.fModuleList[i].moduleView.getModuleContainer().getBoundingClientRect().top + '"},';
-            json += '{"name\":"' + this.fModuleList[i].moduleFaust.getName() + '"},';
-            json += '{"code":' + JSON.stringify(this.fModuleList[i].moduleFaust.getSource()) + '},';
-            var inputs = this.fModuleList[i].moduleFaust.getInputConnections();
-            if (inputs) {
-                json += '{"inputs":[';
-                for (var j = 0; j < inputs.length; j++) {
-                    if (j != 0)
-                        json += ',';
-                    json += '{"src":"' + inputs[j].source.patchID.toString() + '"}';
+            if (this.fModuleList[i].patchID != "output" && this.fModuleList[i].patchID != "input") {
+                jsonObjectCollection[this.fModuleList[i].patchID.toString()] = new JsonSaveObject();
+                var jsonObject = jsonObjectCollection[this.fModuleList[i].patchID.toString()];
+                jsonObject.sceneName = this.sceneName;
+                jsonObject.patchId = this.fModuleList[i].patchID.toString();
+                jsonObject.code = this.fModuleList[i].moduleFaust.getSource();
+                jsonObject.name = this.fModuleList[i].moduleFaust.getName();
+                jsonObject.x = this.fModuleList[i].moduleView.getModuleContainer().getBoundingClientRect().left.toString();
+                jsonObject.y = this.fModuleList[i].moduleView.getModuleContainer().getBoundingClientRect().top.toString();
+                var inputs = this.fModuleList[i].moduleFaust.getInputConnections();
+                var jsonInputs = new JsonInputsSave();
+                jsonInputs.source = [];
+                if (inputs) {
+                    for (var j = 0; j < inputs.length; j++) {
+                        jsonInputs.source.push(inputs[j].source.patchID.toString());
+                    }
                 }
-                json += ']},';
-            }
-            var outputs = this.fModuleList[i].moduleFaust.getOutputConnections();
-            if (outputs) {
-                json += '{"outputs":[';
-                for (var j = 0; j < outputs.length; j++) {
-                    if (j != 0)
-                        json += ',';
-                    json += '{"dst":"' + outputs[j].destination.patchID.toString() + '"}';
+                var outputs = this.fModuleList[i].moduleFaust.getOutputConnections();
+                var jsonOutputs = new JsonOutputsSave();
+                jsonOutputs.destination = [];
+                if (outputs) {
+                    for (var j = 0; j < outputs.length; j++) {
+                        jsonOutputs.destination.push(outputs[j].destination.patchID.toString());
+                    }
                 }
-                json += ']},';
-            }
-            var params = this.fModuleList[i].moduleFaust.getDSP().controls();
-            if (params) {
-                json += '{"params":[';
-                for (var j = 0; j < params.length; j++) {
-                    if (j != 0)
-                        json += ',';
-                    json += '{"path":"' + params[j] + '"},';
-                    json += '{"value":"' + this.fModuleList[i].moduleFaust.getDSP().getValue(params[j]) + '"}';
+                var params = this.fModuleList[i].moduleFaust.getDSP().controls();
+                var jsonParams = new JsonParamsSave();
+                jsonParams.sliders = [];
+                if (params) {
+                    for (var j = 0; j < params.length; j++) {
+                        var jsonSlider = new JsonSliderSave();
+                        jsonSlider.path = params[j];
+                        jsonSlider.value = this.fModuleList[i].moduleFaust.getDSP().getValue(params[j]);
+                        jsonParams.sliders.push(jsonSlider);
+                    }
                 }
-                json += ']}';
+                var acc = this.fModuleList[i].moduleControles;
+                var jsonAccs = new JsonAccSaves();
+                jsonAccs.controles = [];
+                for (var j = 0; j < acc.length; j++) {
+                    var jsonAcc = new JsonAccSave();
+                    jsonAcc.axis = acc[j].accelerometerSlider.axis.toString();
+                    jsonAcc.curve = acc[j].accelerometerSlider.curve.toString();
+                    jsonAcc.amin = acc[j].accelerometerSlider.amin.toString();
+                    jsonAcc.amid = acc[j].accelerometerSlider.amid.toString();
+                    jsonAcc.amax = acc[j].accelerometerSlider.amax.toString();
+                    jsonAcc.adress = acc[j].accelerometerSlider.label;
+                    jsonAcc.isEnabled = acc[j].accelerometerSlider.isEnabled;
+                    jsonAccs.controles.push(jsonAcc);
+                }
+                jsonObject.inputs = jsonInputs;
+                jsonObject.outputs = jsonOutputs;
+                jsonObject.params = jsonParams;
+                jsonObject.acc = jsonAccs;
+                var factorySave = faust.writeDSPFactoryToMachine(this.fModuleList[i].moduleFaust.factory);
+                if (factorySave && isPrecompiled) {
+                    jsonObject.factory = new JsonFactorySave();
+                    jsonObject.factory.name = factorySave.name;
+                    jsonObject.factory.code = factorySave.code;
+                }
             }
-            json += ']';
         }
-        json += '}';
-        // 	console.log(json);
+        json = JSON.stringify(jsonObjectCollection);
         return json;
     };
     Scene.prototype.recallScene = function (json) {
-        this.parent.currentNumberDSP = this.fModuleList.length;
-        var data = JSON.parse(json);
-        for (var sel in data) {
-            var dataCopy = data[sel];
-            var newsel;
-            var name, code, x, y;
-            for (newsel in dataCopy) {
-                var mainData = dataCopy[newsel];
-                if (mainData["name"])
-                    name = mainData["name"];
-                else if (mainData["code"])
-                    code = mainData["code"];
-                else if (mainData["x"])
-                    x = mainData["x"];
-                else if (mainData["y"])
-                    y = mainData["y"];
-                else if (mainData["inputs"])
-                    this.parent.inputs = mainData["inputs"];
-                else if (mainData["outputs"])
-                    this.parent.outputs = mainData["outputs"];
-                else if (mainData["params"])
-                    this.parent.params = mainData["params"];
+        if (json != null) {
+            try {
+                var jsonObjectCollection = JSON.parse(json);
             }
-            this.parent.compileFaust(name, code, x, y, this.createModuleAndConnectIt);
+            catch (e) {
+                new Message(App.messageRessource.errorJsonCorrupted);
+                App.hideFullPageLoading();
+            }
+            this.parent.currentNumberDSP = this.fModuleList.length;
+            for (var index in jsonObjectCollection) {
+                var jsonObject = jsonObjectCollection[index];
+                this.arrayRecalScene.push(jsonObject);
+            }
+            this.lunchModuleCreation();
+        }
+        else {
+            App.hideFullPageLoading();
+            new Message(App.messageRessource.errorLoading);
         }
     };
-    Scene.prototype.createModuleAndConnectIt = function (factory) {
-        //---- This is very similar to "createFaustModule" from App.js
-        //---- But as we need to set Params before calling "createFaustInterface", it is copied
-        //---- There probably is a better way to do this !!
-        if (!factory) {
-            alert(faust.getErrorMessage());
-            return;
+    Scene.prototype.lunchModuleCreation = function () {
+        var _this = this;
+        if (this.arrayRecalScene.length != 0) {
+            var jsonObject = this.arrayRecalScene[0];
+            if (jsonObject.factory != undefined) {
+                this.parent.tempPatchId = jsonObject.patchId;
+                var factory = faust.readDSPFactoryFromMachine(jsonObject.factory);
+                this.updateAppTempModuleInfo(jsonObject);
+                this.sceneName = jsonObject.sceneName;
+                this.createModule(factory);
+            }
+            else if (jsonObject.patchId != "output" && jsonObject.patchId != "input") {
+                this.parent.tempPatchId = jsonObject.patchId;
+                this.sceneName = jsonObject.sceneName;
+                this.parent.compileFaust(jsonObject.name, jsonObject.code, parseFloat(jsonObject.x), parseFloat(jsonObject.y), function (factory) { _this.createModule(factory); });
+            }
+            else {
+                this.arrayRecalScene.shift();
+                this.lunchModuleCreation();
+            }
         }
-        var faustModule = new ModuleClass(App.idX++, this.parent.tempModuleX, this.parent.tempModuleY, window.name, this, document.getElementById("modules"), this.removeModule);
-        faustModule.moduleFaust.setSource(this.parent.tempModuleSourceCode);
-        faustModule.createDSP(factory);
-        if (this.parent.params) {
-            for (var i = 0; i < this.parent.params.length; i++) {
-                //console.log("WINDOW.PARAMS");
-                //console.log(this.parent.params.length);
-                if (this.parent.params[i] && this.parent.params[i + 1]) {
-                    faustModule.addInterfaceParam(this.parent.params[i]["path"], this.parent.params[i + 1]["value"]);
-                    i + 1;
+        else {
+            for (var i = 0; i < this.arrayRecalledModule.length; i++) {
+                this.connectModule(this.arrayRecalledModule[i]);
+            }
+            for (var i = 0; i < this.arrayRecalledModule.length; i++) {
+                delete this.arrayRecalledModule[i].patchID;
+            }
+            this.arrayRecalledModule = [];
+            var event = new CustomEvent("updatename");
+            document.dispatchEvent(event);
+            App.hideFullPageLoading();
+        }
+    };
+    Scene.prototype.updateAppTempModuleInfo = function (jsonSaveObject) {
+        this.parent.tempModuleX = parseFloat(jsonSaveObject.x);
+        this.parent.tempModuleY = parseFloat(jsonSaveObject.y);
+        this.parent.tempModuleName = jsonSaveObject.name;
+        this.parent.tempModuleSourceCode = jsonSaveObject.code;
+        this.parent.tempPatchId = jsonSaveObject.patchId;
+        this.parent.tempParams = jsonSaveObject.params;
+    };
+    Scene.prototype.createModule = function (factory) {
+        try {
+            //---- This is very similar to "createFaustModule" from App.js
+            //---- But as we need to set Params before calling "createFaustInterface", it is copied
+            //---- There probably is a better way to do this !!
+            if (!factory) {
+                new Message(faust.getErrorMessage());
+                App.hideFullPageLoading();
+                return;
+            }
+            var module = new ModuleClass(App.idX++, this.parent.tempModuleX, this.parent.tempModuleY, this.parent.tempModuleName, this, document.getElementById("modules"), this.removeModule);
+            module.moduleFaust.setSource(this.parent.tempModuleSourceCode);
+            module.createDSP(factory);
+            module.patchID = this.parent.tempPatchId;
+            if (this.parent.tempParams) {
+                for (var i = 0; i < this.parent.tempParams.sliders.length; i++) {
+                    //console.log("WINDOW.PARAMS");
+                    //console.log(this.parent.params.length);
+                    var slider = this.parent.tempParams.sliders[i];
+                    module.addInterfaceParam(slider.path, parseFloat(slider.value));
+                }
+            }
+            module.moduleFaust.recallInputsSource = this.arrayRecalScene[0].inputs.source;
+            module.moduleFaust.recallOutputsDestination = this.arrayRecalScene[0].outputs.destination;
+            this.arrayRecalledModule.push(module);
+            module.recallInterfaceParams();
+            module.createFaustInterface();
+            module.addInputOutputNodes();
+            this.addModule(module);
+            this.recallAccValues(this.arrayRecalScene[0].acc, module);
+            this.arrayRecalScene.shift();
+            this.lunchModuleCreation();
+        }
+        catch (e) {
+            new Message(App.messageRessource.errorCreateModuleRecall);
+            this.arrayRecalScene.shift();
+            this.lunchModuleCreation();
+        }
+    };
+    Scene.prototype.recallAccValues = function (jsonAccs, module) {
+        if (jsonAccs != undefined) {
+            for (var i in jsonAccs.controles) {
+                var controle = jsonAccs.controles[i];
+                if (controle != undefined) {
+                    for (var j in module.moduleControles) {
+                        var moduleControle = module.moduleControles[j];
+                        if (moduleControle.address == controle.adress) {
+                            moduleControle.accelerometerSlider.acc = controle.axis + " " + controle.curve + " " + controle.amin + " " + controle.amid + " " + controle.amax;
+                            moduleControle.acc = controle.axis + " " + controle.curve + " " + controle.amin + " " + controle.amid + " " + controle.amax;
+                            moduleControle.accelerometerSlider.amax = parseFloat(controle.amax);
+                            moduleControle.accelerometerSlider.amid = parseFloat(controle.amid);
+                            moduleControle.accelerometerSlider.amin = parseFloat(controle.amin);
+                            moduleControle.accelerometerSlider.axis = parseFloat(controle.axis);
+                            moduleControle.accelerometerSlider.curve = parseFloat(controle.curve);
+                            moduleControle.accelerometerSlider.isEnabled = controle.isEnabled;
+                            AccelerometerHandler.curveSplitter(moduleControle.accelerometerSlider);
+                            moduleControle.accelerometerSlider.mySlider.parentElement.className = "control-group";
+                            moduleControle.accelerometerSlider.mySlider.parentElement.classList.add(Axis[controle.axis]);
+                            if (!controle.isEnabled) {
+                                moduleControle.accelerometerSlider.mySlider.parentElement.classList.add("disabledAcc");
+                                moduleControle.accelerometerSlider.mySlider.classList.add("allowed");
+                                moduleControle.accelerometerSlider.mySlider.classList.remove("not-allowed");
+                                moduleControle.accelerometerSlider.mySlider.disabled = false;
+                            }
+                            else {
+                                if (moduleControle.accelerometerSlider.isActive) {
+                                    moduleControle.accelerometerSlider.mySlider.classList.add("not-allowed");
+                                    moduleControle.accelerometerSlider.mySlider.classList.remove("allowed");
+                                    moduleControle.accelerometerSlider.mySlider.disabled = true;
+                                }
+                                else {
+                                    moduleControle.accelerometerSlider.mySlider.classList.add("allowed");
+                                    moduleControle.accelerometerSlider.mySlider.classList.remove("not-allowed");
+                                    moduleControle.accelerometerSlider.mySlider.disabled = false;
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
-        faustModule.recallInterfaceParams();
-        faustModule.createFaustInterface();
-        faustModule.addInputOutputNodes();
-        this.addModule(faustModule);
-        // WARNING!!!!! Not right in an asynchroneous call of this.parent.compileFaust
-        if (this.parent.inputs) {
-            for (var i = 0; i < this.parent.inputs.length; i++) {
-                var src = this.getModules()[this.parent.inputs[i]["src"] - 1 + this.parent.currentNumberDSP];
-                if (src)
+    };
+    Scene.prototype.connectModule = function (module) {
+        try {
+            for (var i = 0; i < module.moduleFaust.recallInputsSource.length; i++) {
+                var moduleSource = this.getModuleByPatchId(module.moduleFaust.recallInputsSource[i]);
+                if (moduleSource != null) {
                     var connector = new Connector();
-                connector.createConnection(src, src.moduleView.getOutputNode(), faustModule, faustModule.moduleView.getInputNode());
+                    connector.createConnection(moduleSource, moduleSource.moduleView.getOutputNode(), module, module.moduleView.getInputNode());
+                }
+            }
+            for (var i = 0; i < module.moduleFaust.recallOutputsDestination.length; i++) {
+                var moduleDestination = this.getModuleByPatchId(module.moduleFaust.recallOutputsDestination[i]);
+                if (moduleDestination != null) {
+                    var connector = new Connector();
+                    connector.createConnection(module, module.moduleView.getOutputNode(), moduleDestination, moduleDestination.moduleView.getInputNode());
+                }
             }
         }
-        if (this.parent.outputs) {
-            for (var i = 0; i < this.parent.outputs.length; i++) {
-                var dst = this.getModules()[this.parent.outputs[i]["dst"] + this.parent.currentNumberDSP - 1];
-                var connector = new Connector();
-                if (this.parent.outputs[i]["dst"] == 0)
-                    connector.createConnection(faustModule, faustModule.moduleView.getOutputNode(), this.fAudioOutput, this.fAudioOutput.moduleView.getInputNode());
-                else if (dst)
-                    connector.createConnection(faustModule, faustModule.moduleView.getOutputNode(), dst, dst.moduleView.getInputNode());
+        catch (e) {
+            new Message(App.messageRessource.errorConnectionRecall);
+        }
+    };
+    Scene.prototype.getModuleByPatchId = function (patchId) {
+        if (patchId == "output") {
+            return this.fAudioOutput;
+        }
+        else if (patchId == "input") {
+            return this.fAudioInput;
+        }
+        else {
+            var arrayModules = this.getModules();
+            for (var i = 0; i < arrayModules.length; i++) {
+                if (arrayModules[i].patchID == patchId) {
+                    return arrayModules[i];
+                }
             }
+        }
+        return null;
+    };
+    Scene.cleanName = function (newName) {
+        newName = App.replaceAll(newName, "é", "e");
+        newName = App.replaceAll(newName, "è", "e");
+        newName = App.replaceAll(newName, "à", "a");
+        newName = App.replaceAll(newName, "ù", "u");
+        newName = App.replaceAll(newName, " ", "_");
+        newName = App.replaceAll(newName, "'", "_");
+        return newName;
+    };
+    Scene.isNameValid = function (newName) {
+        var pattern = new RegExp("^[a-zA-Z_][a-zA-Z_0-9]{1,50}$");
+        if (pattern.test(newName)) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    };
+    Scene.rename = function (input, spanRule, spanDynamic) {
+        var newName = input.value;
+        newName = Scene.cleanName(newName);
+        if (Scene.isNameValid(newName)) {
+            App.scene.sceneName = newName;
+            spanDynamic.textContent = App.scene.sceneName;
+            spanRule.style.opacity = "0.6";
+            input.style.boxShadow = "0 0 0 green inset";
+            input.style.border = "none";
+            input.value = App.scene.sceneName;
+            var event = new CustomEvent("updatename");
+            document.dispatchEvent(event);
+            return true;
+        }
+        else {
+            spanRule.style.opacity = "1";
+            input.style.boxShadow = "0 0 6px yellow inset";
+            input.style.border = "3px solid red";
+            return false;
         }
     };
     /***************** SET POSITION OF INPUT OUTPUT MODULE ***************/
@@ -278,7 +518,24 @@ var Scene = (function () {
         position.y = window.innerHeight / 2;
         return position;
     };
-    Scene.sceneName = "Patch";
+    Scene.prototype.unstyleNode = function () {
+        var modules = this.getModules();
+        modules.push(this.fAudioInput);
+        modules.push(this.fAudioOutput);
+        for (var i = 0; i < modules.length; i++) {
+            if (modules[i].moduleView.fInputNode) {
+                modules[i].moduleView.fInputNode.style.border = "none";
+                modules[i].moduleView.fInputNode.style.left = "-16px";
+                modules[i].moduleView.fInputNode.style.marginTop = "-18px";
+            }
+            if (modules[i].moduleView.fOutputNode) {
+                modules[i].moduleView.fOutputNode.style.border = "none";
+                modules[i].moduleView.fOutputNode.style.right = "-16px";
+                modules[i].moduleView.fOutputNode.style.marginTop = "-18px";
+            }
+        }
+        ModuleClass.isNodesModuleUnstyle = true;
+    };
     return Scene;
 })();
 //# sourceMappingURL=SceneClass.js.map
