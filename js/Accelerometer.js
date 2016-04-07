@@ -19,25 +19,19 @@ var AccMeta = (function () {
     return AccMeta;
 }());
 var AccelerometerSlider = (function () {
-    function AccelerometerSlider(controler) {
-        this.existed = false;
-        if (controler != null) {
-            this.isEnabled = controler.isEnabled;
-            this.acc = controler.acc;
-            this.setAttributes(controler.acc);
-            this.label = controler.address;
-            this.min = parseFloat(controler.min);
-            this.max = parseFloat(controler.max);
-            this.ivalue = parseFloat(controler.init);
-            this.step = parseFloat(controler.step);
-            this.mySlider = controler.slider;
-            this.valueOutput = controler.output;
+    function AccelerometerSlider(accParams) {
+        if (accParams != null) {
+            this.isEnabled = accParams.isEnabled;
+            this.acc = accParams.acc;
+            this.setAttributes(accParams.acc);
+            this.address = accParams.address;
+            this.min = accParams.min;
+            this.max = accParams.max;
+            this.init = accParams.init;
+            //this.step = parseFloat(controler.step);
+            //this.mySlider = controler.slider;
+            //this.valueOutput = controler.output;
             this.isActive = App.isAccelerometerOn;
-            this.precision = parseFloat(controler.precision);
-            this.name = controler.label;
-            if (!this.isEnabled) {
-                this.mySlider.parentElement.classList.add("disabledAcc");
-            }
         }
     }
     AccelerometerSlider.prototype.setAttributes = function (fMetaAcc) {
@@ -78,28 +72,26 @@ var AccelerometerHandler = (function () {
         var x = event.accelerationIncludingGravity.x;
         var y = event.accelerationIncludingGravity.y;
         var z = event.accelerationIncludingGravity.z;
-        for (var i = 0; i < AccelerometerHandler.accelerometerSliders.length; i++) {
-            if (AccelerometerHandler.accelerometerSliders[i].isActive && AccelerometerHandler.accelerometerSliders[i].isEnabled) {
-                this.axisSplitter(AccelerometerHandler.accelerometerSliders[i], x, y, z, this.applyNewValueToModule);
+        for (var i = 0; i < AccelerometerHandler.faustInterfaceControler.length; i++) {
+            if (AccelerometerHandler.faustInterfaceControler[i].accelerometerSlider.isActive && AccelerometerHandler.faustInterfaceControler[i].accelerometerSlider.isEnabled) {
+                this.axisSplitter(AccelerometerHandler.faustInterfaceControler[i].accelerometerSlider, x, y, z, this.applyNewValueToModule);
             }
         }
-        if (AccelerometerHandler.sliderEdit != null) {
-            this.axisSplitter(AccelerometerHandler.sliderEdit, x, y, z, this.applyValueToEdit);
+        if (AccelerometerHandler.faustInterfaceControlerEdit != null) {
+            this.axisSplitter(AccelerometerHandler.faustInterfaceControlerEdit.accelerometerSlider, x, y, z, this.applyValueToEdit);
         }
     };
     //static registerAcceleratedSlider(fMetaAcc: string, module: ModuleClass, label: string, min: number, ivalue: number, max: number, step: number, slider: HTMLInputElement, valueOutput: HTMLElement, precision: number): AccelerometerSlider {
-    AccelerometerHandler.registerAcceleratedSlider = function (controler, module) {
-        var accelerometerSlide = new AccelerometerSlider(controler);
-        accelerometerSlide.module = module;
+    AccelerometerHandler.registerAcceleratedSlider = function (accParams, faustInterfaceControler, sliderEdit) {
+        var accelerometerSlide = new AccelerometerSlider(accParams);
+        faustInterfaceControler.accelerometerSlider = accelerometerSlide;
         AccelerometerHandler.curveSplitter(accelerometerSlide);
-        if (module != null) {
-            AccelerometerHandler.accelerometerSliders.push(accelerometerSlide);
-            accelerometerSlide.mySlider.parentElement.classList.add(Axis[accelerometerSlide.axis]);
+        if (sliderEdit) {
+            AccelerometerHandler.faustInterfaceControlerEdit = faustInterfaceControler;
         }
         else {
-            AccelerometerHandler.sliderEdit = accelerometerSlide;
+            AccelerometerHandler.faustInterfaceControler.push(faustInterfaceControler);
         }
-        return accelerometerSlide;
     };
     AccelerometerHandler.prototype.axisSplitter = function (accelerometerSlide, x, y, z, callBack) {
         switch (accelerometerSlide.axis) {
@@ -118,33 +110,31 @@ var AccelerometerHandler = (function () {
         }
     };
     AccelerometerHandler.prototype.applyNewValueToModule = function (accSlid, newVal, axeValue) {
-        accSlid.module.moduleFaust.fDSP.setValue(accSlid.label, String(newVal));
-        accSlid.mySlider.value = String((newVal - accSlid.min) / accSlid.step);
-        accSlid.valueOutput.textContent = String(newVal.toFixed(accSlid.precision));
+        accSlid.callbackValueChange(accSlid.address, newVal);
     };
     AccelerometerHandler.prototype.applyValueToEdit = function (accSlid, newVal, axeValue) {
-        accSlid.mySlider.value = axeValue.toString();
+        AccelerometerHandler.faustInterfaceControlerEdit.faustInterfaceView.slider.value = axeValue.toString();
     };
     AccelerometerHandler.curveSplitter = function (accelerometerSlide) {
         switch (accelerometerSlide.curve) {
             case Curve.Up:
-                accelerometerSlide.converter = new AccUpConverter(accelerometerSlide.amin, accelerometerSlide.amid, accelerometerSlide.amax, accelerometerSlide.min, accelerometerSlide.ivalue, accelerometerSlide.max);
+                accelerometerSlide.converter = new AccUpConverter(accelerometerSlide.amin, accelerometerSlide.amid, accelerometerSlide.amax, accelerometerSlide.min, accelerometerSlide.init, accelerometerSlide.max);
                 break;
             case Curve.Down:
-                accelerometerSlide.converter = new AccDownConverter(accelerometerSlide.amin, accelerometerSlide.amid, accelerometerSlide.amax, accelerometerSlide.min, accelerometerSlide.ivalue, accelerometerSlide.max);
+                accelerometerSlide.converter = new AccDownConverter(accelerometerSlide.amin, accelerometerSlide.amid, accelerometerSlide.amax, accelerometerSlide.min, accelerometerSlide.init, accelerometerSlide.max);
                 break;
             case Curve.UpDown:
-                accelerometerSlide.converter = new AccUpDownConverter(accelerometerSlide.amin, accelerometerSlide.amid, accelerometerSlide.amax, accelerometerSlide.min, accelerometerSlide.ivalue, accelerometerSlide.max);
+                accelerometerSlide.converter = new AccUpDownConverter(accelerometerSlide.amin, accelerometerSlide.amid, accelerometerSlide.amax, accelerometerSlide.min, accelerometerSlide.init, accelerometerSlide.max);
                 break;
             case Curve.DownUp:
-                accelerometerSlide.converter = new AccDownUpConverter(accelerometerSlide.amin, accelerometerSlide.amid, accelerometerSlide.amax, accelerometerSlide.min, accelerometerSlide.ivalue, accelerometerSlide.max);
+                accelerometerSlide.converter = new AccDownUpConverter(accelerometerSlide.amin, accelerometerSlide.amid, accelerometerSlide.amax, accelerometerSlide.min, accelerometerSlide.init, accelerometerSlide.max);
                 break;
             default:
-                accelerometerSlide.converter = new AccUpConverter(accelerometerSlide.amin, accelerometerSlide.amid, accelerometerSlide.amax, accelerometerSlide.min, accelerometerSlide.ivalue, accelerometerSlide.max);
+                accelerometerSlide.converter = new AccUpConverter(accelerometerSlide.amin, accelerometerSlide.amid, accelerometerSlide.amax, accelerometerSlide.min, accelerometerSlide.init, accelerometerSlide.max);
         }
     };
-    AccelerometerHandler.accelerometerSliders = [];
-    AccelerometerHandler.sliderEdit = null;
+    AccelerometerHandler.faustInterfaceControler = [];
+    AccelerometerHandler.faustInterfaceControlerEdit = null;
     return AccelerometerHandler;
 }());
 var MinMaxClip = (function () {

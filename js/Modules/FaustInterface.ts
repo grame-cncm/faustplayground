@@ -134,21 +134,13 @@ class FaustInterfaceControler implements IFaustInterfaceControler {
 
         } else if (item.type === "vslider" || item.type === "hslider") {
             var itemElement = <Iitem>item;
+            
             var controler: FaustInterfaceControler = new FaustInterfaceControler(
-                (faustInterface) => { this.interfaceCallback(faustInterface) },
+                () => { this.interfaceCallback(controler) },
                 (adress, value) => { this.setDSPValueCallback(adress,value) }
             );
             controler.itemParam = itemElement
             controler.value = itemElement.init;
-
-            //controler.slider.addEventListener("input", (event)=> {
-            //    module.interfaceCallback(event, controler)
-            //    event.stopPropagation();
-            //    event.preventDefault();
-            //});
-            //controler.slider.addEventListener("mousedown", (e) => { e.stopPropagation() })
-            //controler.slider.addEventListener("touchstart", (e) => { e.stopPropagation() })
-            //controler.slider.addEventListener("touchmove", (e) => { e.stopPropagation() })
 
 
             this.faustControlers.push(controler)
@@ -215,11 +207,11 @@ class FaustInterfaceControler implements IFaustInterfaceControler {
             
         }
     }
-    setEventListener(callback) {
+    setEventListener() {
         if (this.faustInterfaceView && this.faustInterfaceView.type) {
             if (this.faustInterfaceView.type === "vslider" || this.faustInterfaceView.type === "hslider") {
                 this.faustInterfaceView.slider.addEventListener("input", (event) => {
-                    callback(this)
+                    this.interfaceCallback(this);
                     event.stopPropagation();
                     event.preventDefault();
                 });
@@ -240,10 +232,13 @@ class FaustInterfaceControler implements IFaustInterfaceControler {
             for (var i = 0; i < meta.length; i++) {
                 if (meta[i].acc) {
                     this.acc = meta[i].acc;
+                    this.accParams.acc=this.acc
+                    this.accParams.isEnabled = true;
                     AccelerometerHandler.registerAcceleratedSlider(this.accParams, this)
                     this.accelerometerSlider.callbackValueChange = (address, value) => { this.callbackValueChange(address, value) }
                     this.accelerometerSlider.isEnabled = true;
                     this.faustInterfaceView.slider.classList.add("allowed");
+                    this.faustInterfaceView.group.classList.add(Axis[this.accelerometerSlider.axis])
                     if (App.isAccelerometerOn) {
                         this.accelerometerSlider.isActive = true;
                         this.faustInterfaceView.slider.classList.remove("allowed");
@@ -252,6 +247,8 @@ class FaustInterfaceControler implements IFaustInterfaceControler {
                     }
                 } else if (meta[i].noacc) {
                     this.acc = meta[i].noacc;
+                    this.accParams.acc = this.acc;
+                    this.accParams.isEnabled = false;
                     AccelerometerHandler.registerAcceleratedSlider(this.accParams,this)
                     this.accelerometerSlider.callbackValueChange = (address, value) => { this.callbackValueChange(address, value) }
                     this.accelerometerSlider.isEnabled = false;
@@ -260,6 +257,8 @@ class FaustInterfaceControler implements IFaustInterfaceControler {
             }
             if (this.accelerometerSlider == undefined) {
                 this.acc = this.accDefault;
+                this.accParams.acc = this.acc;
+                this.accParams.isEnabled = false;
                 AccelerometerHandler.registerAcceleratedSlider(this.accParams, this)
                 this.accelerometerSlider.callbackValueChange = (address, value) => { this.callbackValueChange(address, value) }
                 this.accelerometerSlider.isEnabled = false;
@@ -267,6 +266,8 @@ class FaustInterfaceControler implements IFaustInterfaceControler {
             }
         } else {
             this.acc = this.accDefault;
+            this.accParams.acc = this.acc;
+            this.accParams.isEnabled = false;
             AccelerometerHandler.registerAcceleratedSlider(this.accParams, this)
             this.accelerometerSlider.callbackValueChange = (address, value) => { this.callbackValueChange(address, value) }
             this.accelerometerSlider.isEnabled = false;
@@ -335,42 +336,7 @@ class FaustInterfaceView {
         slider.step = "1";
         this.slider = slider;
         group.appendChild(slider);
-        //if (controler.meta != undefined) {
-        //    for (var i = 0; i < controler.meta.length; i++) {
-        //        if (controler.meta[i].acc) {
-        //            controler.acc = controler.meta[i].acc;
-        //            controler.hasAccelerometer = true;
-        //            controler.isEnabled = true;
-        //            controler.accelerometerSlider = AccelerometerHandler.registerAcceleratedSlider(controler, module)
-        //            slider.classList.add("allowed");
-
-        //            if (App.isAccelerometerOn) {
-        //                slider.classList.remove("allowed");
-        //                slider.classList.add("not-allowed");
-        //                slider.disabled = true;
-        //            }
-        //            break;
-        //        } else if (controler.meta[i].noacc) {
-        //            controler.hasAccelerometer = false;
-        //            controler.isEnabled = false;
-
-        //            controler.acc = controler.meta[i].noacc;
-        //            controler.accelerometerSlider = AccelerometerHandler.registerAcceleratedSlider(controler, module)
-        //            break;
-        //        } 
-        //    }
-        //    if (controler.accelerometerSlider == undefined) {
-        //        controler.acc = "0 0 -10 0 10";
-        //        controler.isEnabled = false;
-        //        controler.hasAccelerometer = false;
-        //        controler.accelerometerSlider = AccelerometerHandler.registerAcceleratedSlider(controler, module)
-        //    }
-        //} else {
-        //    controler.acc = "0 0 -10 0 10";
-        //    controler.isEnabled = false;
-        //    controler.hasAccelerometer = false;
-        //    controler.accelerometerSlider = AccelerometerHandler.registerAcceleratedSlider(controler, module)
-        //}
+        
         this.group = group
 	    return group;
     }

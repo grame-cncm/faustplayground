@@ -1,28 +1,28 @@
 /*				LIBRARY.JS
-    Creates Graphical Library of Faust Modules
-    Connects with faust.grame.fr to receive the json description of available modules
+   Creates Graphical Library of Faust Modules
+   Connects with faust.grame.fr to receive the json description of available modules
 
-    Interface structure
-    ===================
-    DIV --> PARENT
-        DIV --> libraryDiv
-            DIV --> libraryTitle
-            DIV --> imageNode
-            DIV --> fFooter
-            UL --> section 1
-                LI --> subsection 1
-                LI --> subsection 2
-                etc
-            UL --> section 2
-                LI --> subsection 1
-                LI --> subsection 2
-                etc
-    ===================
+   Interface structure
+   ===================
+   DIV --> PARENT
+       DIV --> libraryDiv
+           DIV --> libraryTitle
+           DIV --> imageNode
+           DIV --> fFooter
+           UL --> section 1
+               LI --> subsection 1
+               LI --> subsection 2
+               etc
+           UL --> section 2
+               LI --> subsection 1
+               LI --> subsection 2
+               etc
+   ===================
 
-    The library Div gets opened when passed over with the mouse
+   The library Div gets opened when passed over with the mouse
 
-    DEPENDENCIES :
-        - faust.grame.fr/www/pedagogie/index.json
+   DEPENDENCIES :
+       - faust.grame.fr/www/pedagogie/index.json
 */
 /// <reference path="../App.ts"/>
 /// <reference path="../Main.ts"/>

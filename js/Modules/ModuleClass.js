@@ -36,6 +36,7 @@ var ModuleClass = (function () {
         this.eventCloseEditHandler = function (event) { _this.recompileSource(event, _this); };
         this.eventOpenEditHandler = function () { _this.edit(); };
         this.compileFaust = compileFaust;
+        document.addEventListener("codefaustparser", function (event) { _this.updateCodeFaust(event.detail); });
         // ---- Capturing module instance	
         // ----- Delete Callback was added to make sure 
         // ----- the module is well deleted from the scene containing it
@@ -264,13 +265,13 @@ var ModuleClass = (function () {
         this.moduleControles = moduleFaustInterface.parseFaustJsonUI(JSON.parse(this.moduleFaust.fDSP.json()).ui, this);
     };
     ModuleClass.prototype.createFaustInterface = function () {
-        var _this = this;
         for (var i = 0; i < this.moduleControles.length; i++) {
             var faustInterfaceControler = this.moduleControles[i];
             faustInterfaceControler.setParams();
             faustInterfaceControler.faustInterfaceView = new FaustInterfaceView(faustInterfaceControler.itemParam.type);
             this.moduleView.getInterfaceContainer().appendChild(faustInterfaceControler.createFaustInterfaceElement());
-            faustInterfaceControler.setEventListener(function () { _this.interfaceCallback(faustInterfaceControler); });
+            faustInterfaceControler.interfaceCallback = this.interfaceCallback.bind(this);
+            faustInterfaceControler.setEventListener();
             faustInterfaceControler.createAccelerometer();
         }
     };
@@ -283,8 +284,8 @@ var ModuleClass = (function () {
     ModuleClass.prototype.deleteAccelerometerRef = function () {
         for (var i = 0; i < this.moduleControles.length; i++) {
             if (this.moduleControles[i].accelerometerSlider != null && this.moduleControles[i].accelerometerSlider != undefined) {
-                var index = AccelerometerHandler.accelerometerSliders.indexOf(this.moduleControles[i].accelerometerSlider);
-                AccelerometerHandler.accelerometerSliders.splice(index, 1);
+                var index = AccelerometerHandler.faustInterfaceControler.indexOf(this.moduleControles[i]);
+                AccelerometerHandler.faustInterfaceControler.splice(index, 1);
                 delete this.moduleControles[i].accelerometerSlider;
             }
         }
@@ -297,6 +298,10 @@ var ModuleClass = (function () {
     };
     ModuleClass.prototype.setDSPValueCallback = function (address, value) {
         this.moduleFaust.fDSP.setValue(address, value);
+    };
+    ModuleClass.prototype.updateCodeFaust = function (details) {
+        var newCodeFaust = new CodeFaustParser(this.moduleFaust.fSource, details.sliderName, details.newAccValue, details.isEnabled);
+        this.moduleFaust.fSource = newCodeFaust.replaceAccValue();
     };
     //---- Generic callback for Faust Interface
     //---- Called every time an element of the UI changes value

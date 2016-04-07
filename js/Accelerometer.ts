@@ -37,7 +37,7 @@ class AccelerometerSlider {
     acc: string;
     noacc: string;
     noAccObj: AccMeta;
-    callbackEdit: any;
+    //callbackEdit: any;
     callbackValueChange: (address: string, value: number) => void
 
     constructor(accParams: AccParams) {
@@ -82,7 +82,7 @@ class AccelerometerSlider {
 
 class AccelerometerHandler {
     static faustInterfaceControler: FaustInterfaceControler[] = [];
-    static sliderEdit: AccelerometerSlider=null;
+    static faustInterfaceControlerEdit: FaustInterfaceControler = null;
 
     // get Accelerometer value
 
@@ -105,23 +105,21 @@ class AccelerometerHandler {
                 this.axisSplitter(AccelerometerHandler.faustInterfaceControler[i].accelerometerSlider, x, y, z, this.applyNewValueToModule)
             }
         }
-        if (AccelerometerHandler.sliderEdit != null) {
-            this.axisSplitter(AccelerometerHandler.sliderEdit, x, y, z, this.applyValueToEdit)
+        if (AccelerometerHandler.faustInterfaceControlerEdit != null) {
+            this.axisSplitter(AccelerometerHandler.faustInterfaceControlerEdit.accelerometerSlider, x, y, z, this.applyValueToEdit)
         }
     }
     //static registerAcceleratedSlider(fMetaAcc: string, module: ModuleClass, label: string, min: number, ivalue: number, max: number, step: number, slider: HTMLInputElement, valueOutput: HTMLElement, precision: number): AccelerometerSlider {
-    static registerAcceleratedSlider(accParams: AccParams, faustInterfaceControler: FaustInterfaceControler) {
+    static registerAcceleratedSlider(accParams: AccParams, faustInterfaceControler: FaustInterfaceControler, sliderEdit?: boolean) {
         
         var accelerometerSlide: AccelerometerSlider = new AccelerometerSlider(accParams);
         faustInterfaceControler.accelerometerSlider = accelerometerSlide;
             AccelerometerHandler.curveSplitter(accelerometerSlide)
-            if (module != null) {
-                AccelerometerHandler.faustInterfaceControler.push(faustInterfaceControler);
-                //accelerometerSlide.mySlider.parentElement.classList.add(Axis[accelerometerSlide.axis])
+            if (sliderEdit) {
+                AccelerometerHandler.faustInterfaceControlerEdit = faustInterfaceControler
             } else {
-                AccelerometerHandler.sliderEdit = accelerometerSlide;
+                AccelerometerHandler.faustInterfaceControler.push(faustInterfaceControler);
             }
-            //return accelerometerSlide;
     }
 
 
@@ -147,7 +145,7 @@ class AccelerometerHandler {
         accSlid.callbackValueChange(accSlid.address, newVal);
     }
     applyValueToEdit(accSlid: AccelerometerSlider, newVal: number, axeValue: number) {
-        accSlid.mySlider.value = axeValue.toString();
+        AccelerometerHandler.faustInterfaceControlerEdit.faustInterfaceView.slider.value = axeValue.toString();
     }
 
     static curveSplitter(accelerometerSlide: AccelerometerSlider) {

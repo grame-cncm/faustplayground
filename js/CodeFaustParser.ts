@@ -1,6 +1,13 @@
 ﻿/// <reference path="Messages.ts"/>
 //class CodeFaustParser
 
+
+interface ElementCodeFaustParser {
+    sliderName: string,
+    newAccValue: string,
+    isEnabled: boolean
+}
+
 class CodeFaustParser {
     originalCodeFaust: string;
     newCodeFaust: string;
