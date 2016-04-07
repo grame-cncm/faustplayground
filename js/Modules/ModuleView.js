@@ -15,10 +15,6 @@ var ModuleView = (function () {
         this.inputOutputNodeDimension = 32;
     }
     ModuleView.prototype.createModuleView = function (ID, x, y, name, htmlParent, module) {
-        var self = this;
-        // ---- Capturing module instance	
-        // ----- Delete Callback was added to make sure 
-        // ----- the module is well deleted from the scene containing it
         //------- GRAPHICAL ELEMENTS OF MODULE
         var fModuleContainer = document.createElement("div");
         fModuleContainer.className = "moduleFaust";
@@ -31,12 +27,7 @@ var ModuleView = (function () {
         var fInterfaceContainer = document.createElement("div");
         fInterfaceContainer.className = "content";
         fModuleContainer.appendChild(fInterfaceContainer);
-        //var eventHandler = function (event) { self.dragCallback(event, self) }
         this.fInterfaceContainer = fInterfaceContainer;
-        fModuleContainer.addEventListener("mousedown", module.eventDraggingHandler, false);
-        fModuleContainer.addEventListener("touchstart", module.eventDraggingHandler, false);
-        fModuleContainer.addEventListener("touchmove", module.eventDraggingHandler, false);
-        fModuleContainer.addEventListener("touchend", module.eventDraggingHandler, false);
         if (name == "input") {
             fModuleContainer.id = "moduleInput";
         }
@@ -52,10 +43,6 @@ var ModuleView = (function () {
             textArea.style.display = "none";
             textArea.contentEditable = "true";
             this.textArea = textArea;
-            this.textArea.addEventListener("touchstart", function (e) { e.stopPropagation(); });
-            this.textArea.addEventListener("touchend", function (e) { e.stopPropagation(); });
-            this.textArea.addEventListener("touchmove", function (e) { e.stopPropagation(); });
-            this.textArea.addEventListener("mousedown", function (e) { e.stopPropagation(); });
             fModuleContainer.appendChild(textArea);
             var fFooter = document.createElement("footer");
             fFooter.id = "moduleFooter";
@@ -63,39 +50,26 @@ var ModuleView = (function () {
             var fCloseButton = document.createElement("div");
             fCloseButton.draggable = false;
             fCloseButton.className = "close";
-            fCloseButton.addEventListener("click", function () { module.deleteModule(); });
-            fCloseButton.addEventListener("touchend", function () { module.deleteModule(); });
+            this.closeButton = fCloseButton;
             var fMinButton = document.createElement("div");
             fMinButton.draggable = false;
             fMinButton.className = "minus";
-            fMinButton.addEventListener("click", function () { module.minModule(); });
-            fMinButton.addEventListener("touchend", function () { module.minModule(); });
             this.miniButton = fMinButton;
             var fMaxButton = document.createElement("div");
             fMaxButton.draggable = false;
             fMaxButton.className = "max";
-            fMaxButton.addEventListener("click", function () { module.maxModule(); });
-            fMaxButton.addEventListener("touchend", function () { module.maxModule(); });
             this.maxButton = fMaxButton;
             fModuleContainer.appendChild(fCloseButton);
             fModuleContainer.appendChild(fMinButton);
             fModuleContainer.appendChild(fMaxButton);
             var fEditImg = document.createElement("div");
             fEditImg.className = "edit";
-            fEditImg.addEventListener("click", module.eventOpenEditHandler);
-            fEditImg.addEventListener("touchend", module.eventOpenEditHandler);
             fEditImg.draggable = false;
             this.fEditImg = fEditImg;
             fFooter.appendChild(fEditImg);
             fModuleContainer.appendChild(fFooter);
         }
-        //fModuleContainer.ondrop = function (e) {
-        //    module.sceneParent.parent.uploadOn(module.sceneParent.parent, module, 0, 0, e);
-        //    return true;
-        //};
-        // add the node into the soundfield
         htmlParent.appendChild(fModuleContainer);
-        //---- Redirect drop to main.js
         this.fName = name;
         this.fModuleContainer = fModuleContainer;
         this.fInterfaceContainer = fInterfaceContainer;

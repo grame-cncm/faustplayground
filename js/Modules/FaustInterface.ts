@@ -66,8 +66,26 @@ class Controler implements Iitem {
     accelerometerSlider: AccelerometerSlider;
 
 }
-class FaustInterface {
-   
+class FaustInterface implements Iitem{
+    label: string;
+    init: string;
+    address: string;
+    type: string;
+    items: Iitem[];
+    min: string;
+    max: string;
+    step: string;
+    meta: FaustMeta[];
+    unit: string;
+    slider: HTMLInputElement;
+    output: HTMLElement
+    precision: string;
+    hasAccelerometer: boolean;
+    isEnabled: boolean;
+    accDefault: string = "0 0 -10 0 10";
+    acc: string;
+    value: string;
+    accelerometerSlider: AccelerometerSlider;
 
 
 
@@ -81,12 +99,6 @@ class FaustInterface {
     	    this.parse_items(group.items, module);
     }
     
-    //function parse_items(items, node){
-    //	var i;
-    //    for (i = 0; i < items.length; i++)
-    //    	parse_item(items[i], node);
-    //}
-
     parse_item(item: Iitem, module: ModuleClass): void {
 
         var params = module.getInterfaceParams();
@@ -102,8 +114,8 @@ class FaustInterface {
             var controler: Controler = item;
             controler.value = item.init;
             this.addFaustModuleSlider(module, controler);
-            controler.slider.addEventListener("input", function (event) {
-                module.interfaceCallback(event, controler, module)
+            controler.slider.addEventListener("input", (event)=> {
+                module.interfaceCallback(event, controler)
                 event.stopPropagation();
                 event.preventDefault();
             });
@@ -117,12 +129,12 @@ class FaustInterface {
 
         } else if (item.type === "button") {
             var controler: Controler = item;
-            this.addFaustButton(module, item.address, item.label, (event) => { module.interfaceCallback(event, controler, module) });
+            this.addFaustButton(module, item.address, item.label, (event) => { module.interfaceCallback(event, controler) });
             module.moduleControles.push(controler)
 
         } else if (item.type === "checkbox") {
             var controler: Controler = item;
-            this.addFaustCheckBox(module, item.address, (event) => { module.interfaceCallback(event, controler, module) });
+            this.addFaustCheckBox(module, item.address, (event) => { module.interfaceCallback(event, controler) });
             module.moduleControles.push(controler)
 
         }

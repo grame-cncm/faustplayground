@@ -14,6 +14,7 @@ var Controler = (function () {
 }());
 var FaustInterface = (function () {
     function FaustInterface() {
+        this.accDefault = "0 0 -10 0 10";
     }
     FaustInterface.prototype.parse_ui = function (ui, module) {
         for (var i = 0; i < ui.length; i++)
@@ -23,11 +24,6 @@ var FaustInterface = (function () {
         if (group.items)
             this.parse_items(group.items, module);
     };
-    //function parse_items(items, node){
-    //	var i;
-    //    for (i = 0; i < items.length; i++)
-    //    	parse_item(items[i], node);
-    //}
     FaustInterface.prototype.parse_item = function (item, module) {
         var params = module.getInterfaceParams();
         if (params && params[item.address]) {
@@ -41,7 +37,7 @@ var FaustInterface = (function () {
             controler.value = item.init;
             this.addFaustModuleSlider(module, controler);
             controler.slider.addEventListener("input", function (event) {
-                module.interfaceCallback(event, controler, module);
+                module.interfaceCallback(event, controler);
                 event.stopPropagation();
                 event.preventDefault();
             });
@@ -52,12 +48,12 @@ var FaustInterface = (function () {
         }
         else if (item.type === "button") {
             var controler = item;
-            this.addFaustButton(module, item.address, item.label, function (event) { module.interfaceCallback(event, controler, module); });
+            this.addFaustButton(module, item.address, item.label, function (event) { module.interfaceCallback(event, controler); });
             module.moduleControles.push(controler);
         }
         else if (item.type === "checkbox") {
             var controler = item;
-            this.addFaustCheckBox(module, item.address, function (event) { module.interfaceCallback(event, controler, module); });
+            this.addFaustCheckBox(module, item.address, function (event) { module.interfaceCallback(event, controler); });
             module.moduleControles.push(controler);
         }
     };

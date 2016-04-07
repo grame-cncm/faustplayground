@@ -70,7 +70,41 @@ class ModuleClass  {
         this.moduleView = new ModuleView();
         this.moduleView.createModuleView(id, x, y, name, htmlElementModuleContainer, this);
         this.moduleFaust = new ModuleFaust(name);
+        this.init();
 
+    }
+
+    init() {
+        this.moduleView.getModuleContainer().addEventListener("mousedown", this.eventDraggingHandler, false);
+        this.moduleView.getModuleContainer().addEventListener("touchstart", this.eventDraggingHandler, false);
+        this.moduleView.getModuleContainer().addEventListener("touchmove", this.eventDraggingHandler, false);
+        this.moduleView.getModuleContainer().addEventListener("touchend", this.eventDraggingHandler, false);
+        if (this.moduleView.textArea != undefined) {
+            this.moduleView.textArea.addEventListener("touchstart", (e) => { e.stopPropagation() });
+            this.moduleView.textArea.addEventListener("touchend", (e) => { e.stopPropagation() });
+            this.moduleView.textArea.addEventListener("touchmove", (e) => { e.stopPropagation() });
+            this.moduleView.textArea.addEventListener("mousedown", (e) => { e.stopPropagation() });
+        }
+        if (this.moduleView.closeButton != undefined) {
+            this.moduleView.closeButton.addEventListener("click", () => { this.deleteModule(); });
+            this.moduleView.closeButton.addEventListener("touchend", () => { this.deleteModule(); });
+
+        }
+        if (this.moduleView.miniButton != undefined) {
+            this.moduleView.miniButton.addEventListener("click", () => { this.minModule(); });
+            this.moduleView.miniButton.addEventListener("touchend", () => { this.minModule(); });
+
+        }
+        if (this.moduleView.maxButton != undefined) {
+            this.moduleView.maxButton.addEventListener("click", () => { this.maxModule(); });
+            this.moduleView.maxButton.addEventListener("touchend", () => { this.maxModule(); });
+
+        }
+        if (this.moduleView.fEditImg != undefined) {
+            this.moduleView.fEditImg.addEventListener("click", () => { this.eventOpenEditHandler(); });
+            this.moduleView.fEditImg.addEventListener("touchend", () => { this.eventOpenEditHandler(); });
+
+        }
     }
 
     /***************  PRIVATE METHODS  ******************************/
@@ -292,6 +326,8 @@ class ModuleClass  {
         this.moduleFaustInterface = new FaustInterface()
         this.moduleFaustInterface.parse_ui(JSON.parse(this.moduleFaust.fDSP.json()).ui, this);
     }
+
+
     private deleteFaustInterface(): void {
         this.deleteAccelerometerRef();
 
@@ -320,7 +356,7 @@ class ModuleClass  {
 
     //---- Generic callback for Faust Interface
     //---- Called every time an element of the UI changes value
-    interfaceCallback(event: Event, controler: Controler, module: ModuleClass): any {
+    interfaceCallback(event: Event, controler: Controler): any {
 
         var input: HTMLInputElement = controler.slider;
         var text: string = controler.address;
@@ -335,7 +371,7 @@ class ModuleClass  {
 
 
         // 	Search for DSP then update the value of its parameter.
-        module.moduleFaust.fDSP.setValue(text, val);
+        this.moduleFaust.fDSP.setValue(text, val);
     }
 	
     // Save graphical parameters of a Faust Node
@@ -403,29 +439,8 @@ class ModuleClass  {
 
 	
     /****************** ADD/REMOVE ACTION LISTENERS **********************/
-    //addListener(type: string, module: ModuleClass): void {
-    //    document.addEventListener(type, module.eventDraggingHandler, false);
-    //}
-    //removeListener(type: string, div?: HTMLElement, document?: Document): void {
-    //    var module: ModuleClass = this;
-    //    if (!document) {
-    //        div.removeEventListener(type, module.eventDraggingHandler, false)
-    //    } else {
-    //        document.removeEventListener(type, module.eventDraggingHandler, false)
-    //    }
-    //}
-    //addCnxListener(div: HTMLElement, type: string, module: ModuleClass): void {
-    //    if (type == "mousedown" || type == "touchstart" || type == "touchmove" || type == "touchend"  ) {
-    //        div.addEventListener(type, module.eventConnectorHandler, false);
-    //    } else {
-    //        document.addEventListener(type, module.eventConnectorHandler, false);
-    //    }
-    //}
-    removeCnxListener(div: HTMLElement, type:string, module: ModuleClass):void {
-        document.removeEventListener(type, module.eventConnectorHandler, false);
-    }
-		
-    /**********************************************************************/
+
+
 
 
 }
