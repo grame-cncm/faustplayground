@@ -172,15 +172,14 @@ class AccelerometerEdit {
         this.accelerometerEditView.rangeContainer.className = "";
         this.faustView.slider.classList.remove(this.originalSliderStyle);
         this.faustView.slider.classList.add(this.sliderStyle);
-        this.faustView.slider.parentElement.removeEventListener("click", this.faustIControler.callbackEdit, true);
-        this.faustView.slider.parentElement.removeEventListener("touchstart", this.faustIControler.callbackEdit, true);
-        this.faustIControler.callbackEdit = this.editEvent.bind(this, this.accSlid);
-        this.faustView.slider.addEventListener("click", this.faustIControler.callbackEdit, true);
-        this.faustView.slider.addEventListener("touchstart", this.faustIControler.callbackEdit, true);
+        this.faustView.group.removeEventListener("click", this.faustIControler.callbackEdit, true);
+        this.faustView.group.removeEventListener("touchstart", this.faustIControler.callbackEdit, true);
+        this.faustIControler.callbackEdit = this.editEvent.bind(this, this.faustIControler);
+        this.faustView.group.addEventListener("click", this.faustIControler.callbackEdit, true);
+        this.faustView.group.addEventListener("touchstart", this.faustIControler.callbackEdit, true);
         if (this.originalAccValue != this.accSlid.acc || this.originalEnabled != this.accSlid.isEnabled) {
-            var detail: ElementCodeFaustParser = { sliderName: this.accSlid.name, newAccValue: this.accSlid.acc, isEnabled: this.accSlid.isEnabled }
-            var event = new CustomEvent("codefaustparser", { detail: detail })
-            document.dispatchEvent(event);
+            var detail: ElementCodeFaustParser = { sliderName: this.accSlid.label, newAccValue: this.accSlid.acc, isEnabled: this.accSlid.isEnabled }
+            this.faustIControler.updateFaustCodeCallback(detail);
         }
         this.applyDisableEnableAcc();
 
@@ -325,7 +324,8 @@ class AccelerometerEdit {
             address: accSlider.address,
             min : accSlider.min,
             max: accSlider.max,
-            init : accSlider.init,
+            init: accSlider.init,
+            label: accSlider.label
         }
 
     }
@@ -338,7 +338,7 @@ class AccelerometerEdit {
         this.accParams.isEnabled = accSlider.isEnabled;
         var faustInterfaceControlerEdit = new FaustInterfaceControler(null, null)
         faustInterfaceControlerEdit.faustInterfaceView = new FaustInterfaceView("edit");
-        AccelerometerHandler.registerAcceleratedSlider(this.accParams, faustInterfaceControlerEdit);
+        AccelerometerHandler.registerAcceleratedSlider(this.accParams, faustInterfaceControlerEdit, true);
         var acc = faustInterfaceControlerEdit.accelerometerSlider;
         faustInterfaceControlerEdit.faustInterfaceView.slider = this.accelerometerEditView.rangeCurrent;
         faustInterfaceControlerEdit.faustInterfaceView.slider.parentElement.classList.add(Axis[acc.axis])

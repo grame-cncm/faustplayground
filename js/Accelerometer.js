@@ -28,6 +28,7 @@ var AccelerometerSlider = (function () {
             this.min = accParams.min;
             this.max = accParams.max;
             this.init = accParams.init;
+            this.label = accParams.label;
             //this.step = parseFloat(controler.step);
             //this.mySlider = controler.slider;
             //this.valueOutput = controler.output;

@@ -36,7 +36,6 @@ var ModuleClass = (function () {
         this.eventCloseEditHandler = function (event) { _this.recompileSource(event, _this); };
         this.eventOpenEditHandler = function () { _this.edit(); };
         this.compileFaust = compileFaust;
-        document.addEventListener("codefaustparser", function (event) { _this.updateCodeFaust(event.detail); });
         // ---- Capturing module instance	
         // ----- Delete Callback was added to make sure 
         // ----- the module is well deleted from the scene containing it
@@ -267,11 +266,11 @@ var ModuleClass = (function () {
     ModuleClass.prototype.createFaustInterface = function () {
         for (var i = 0; i < this.moduleControles.length; i++) {
             var faustInterfaceControler = this.moduleControles[i];
-            faustInterfaceControler.name = this.moduleFaust.fName;
             faustInterfaceControler.setParams();
             faustInterfaceControler.faustInterfaceView = new FaustInterfaceView(faustInterfaceControler.itemParam.type);
             this.moduleView.getInterfaceContainer().appendChild(faustInterfaceControler.createFaustInterfaceElement());
             faustInterfaceControler.interfaceCallback = this.interfaceCallback.bind(this);
+            faustInterfaceControler.updateFaustCodeCallback = this.updateCodeFaust.bind(this);
             faustInterfaceControler.setEventListener();
             faustInterfaceControler.createAccelerometer();
         }

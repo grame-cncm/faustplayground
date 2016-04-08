@@ -35,6 +35,7 @@ var FaustInterfaceControler = (function () {
         else if (item.type === "vslider" || item.type === "hslider") {
             var itemElement = item;
             var controler = new FaustInterfaceControler(function () { _this.interfaceCallback(controler); }, function (adress, value) { _this.setDSPValueCallback(adress, value); });
+            controler.name = itemElement.label;
             controler.itemParam = itemElement;
             controler.value = itemElement.init;
             this.faustControlers.push(controler);
@@ -57,9 +58,11 @@ var FaustInterfaceControler = (function () {
             this.parse_item(items[i], node);
     };
     FaustInterfaceControler.prototype.setParams = function () {
-        for (var j = 0; j < this.itemParam.meta.length; j++) {
-            if (this.itemParam.meta[j].unit) {
-                this.unit = this.itemParam.meta[j].unit;
+        if (this.itemParam.meta != undefined) {
+            for (var j = 0; j < this.itemParam.meta.length; j++) {
+                if (this.itemParam.meta[j].unit) {
+                    this.unit = this.itemParam.meta[j].unit;
+                }
             }
         }
         if (this.unit == undefined) {
@@ -73,7 +76,8 @@ var FaustInterfaceControler = (function () {
             address: this.itemParam.address,
             init: parseFloat(this.itemParam.init),
             max: parseFloat(this.itemParam.max),
-            min: parseFloat(this.itemParam.min)
+            min: parseFloat(this.itemParam.min),
+            label: this.itemParam.label
         };
     };
     FaustInterfaceControler.prototype.createFaustInterfaceElement = function () {

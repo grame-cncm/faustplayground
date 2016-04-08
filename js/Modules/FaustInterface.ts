@@ -61,7 +61,8 @@ interface AccParams {
     address: string;
     min: number;
     max: number;
-    init: number
+    init: number;
+    label: string;
 }
 class FaustInterfaceControler implements IFaustInterfaceControler {
     faustControlers: FaustInterfaceControler[];
@@ -79,6 +80,7 @@ class FaustInterfaceControler implements IFaustInterfaceControler {
     faustInterfaceView: FaustInterfaceView;
     interfaceCallback: (faustInterfaceControler: FaustInterfaceControler) => void;
     callbackEdit: () => void;
+    updateFaustCodeCallback: (details: ElementCodeFaustParser)=>void
     setDSPValueCallback: (address: string, value: string) => void;
 
 
@@ -119,6 +121,7 @@ class FaustInterfaceControler implements IFaustInterfaceControler {
                 () => { this.interfaceCallback(controler) },
                 (adress, value) => { this.setDSPValueCallback(adress,value) }
             );
+            controler.name = itemElement.label;
             controler.itemParam = itemElement
             controler.value = itemElement.init;
 
@@ -154,9 +157,11 @@ class FaustInterfaceControler implements IFaustInterfaceControler {
 
 
     setParams() {
-        for (var j = 0; j < this.itemParam.meta.length; j++){
-            if (this.itemParam.meta[j].unit) {
-                this.unit = this.itemParam.meta[j].unit;
+        if (this.itemParam.meta != undefined) {
+            for (var j = 0; j < this.itemParam.meta.length; j++) {
+                if (this.itemParam.meta[j].unit) {
+                    this.unit = this.itemParam.meta[j].unit;
+                }
             }
         }
         if (this.unit == undefined) {
@@ -171,7 +176,8 @@ class FaustInterfaceControler implements IFaustInterfaceControler {
             address: this.itemParam.address,
             init: parseFloat( this.itemParam.init),
             max: parseFloat(this.itemParam.max),
-            min: parseFloat(this.itemParam.min)
+            min: parseFloat(this.itemParam.min),
+            label: this.itemParam.label
         }
     }
 

@@ -137,15 +137,14 @@ var AccelerometerEdit = (function () {
         this.accelerometerEditView.rangeContainer.className = "";
         this.faustView.slider.classList.remove(this.originalSliderStyle);
         this.faustView.slider.classList.add(this.sliderStyle);
-        this.faustView.slider.parentElement.removeEventListener("click", this.faustIControler.callbackEdit, true);
-        this.faustView.slider.parentElement.removeEventListener("touchstart", this.faustIControler.callbackEdit, true);
-        this.faustIControler.callbackEdit = this.editEvent.bind(this, this.accSlid);
-        this.faustView.slider.addEventListener("click", this.faustIControler.callbackEdit, true);
-        this.faustView.slider.addEventListener("touchstart", this.faustIControler.callbackEdit, true);
+        this.faustView.group.removeEventListener("click", this.faustIControler.callbackEdit, true);
+        this.faustView.group.removeEventListener("touchstart", this.faustIControler.callbackEdit, true);
+        this.faustIControler.callbackEdit = this.editEvent.bind(this, this.faustIControler);
+        this.faustView.group.addEventListener("click", this.faustIControler.callbackEdit, true);
+        this.faustView.group.addEventListener("touchstart", this.faustIControler.callbackEdit, true);
         if (this.originalAccValue != this.accSlid.acc || this.originalEnabled != this.accSlid.isEnabled) {
-            var detail = { sliderName: this.accSlid.name, newAccValue: this.accSlid.acc, isEnabled: this.accSlid.isEnabled };
-            var event = new CustomEvent("codefaustparser", { detail: detail });
-            document.dispatchEvent(event);
+            var detail = { sliderName: this.accSlid.label, newAccValue: this.accSlid.acc, isEnabled: this.accSlid.isEnabled };
+            this.faustIControler.updateFaustCodeCallback(detail);
         }
         this.applyDisableEnableAcc();
     };
@@ -280,6 +279,7 @@ var AccelerometerEdit = (function () {
             min: accSlider.min,
             max: accSlider.max,
             init: accSlider.init,
+            label: accSlider.label
         };
     };
     AccelerometerEdit.prototype.applyRangeCurrentValues = function (accSlider) {
@@ -290,7 +290,7 @@ var AccelerometerEdit = (function () {
         this.accParams.isEnabled = accSlider.isEnabled;
         var faustInterfaceControlerEdit = new FaustInterfaceControler(null, null);
         faustInterfaceControlerEdit.faustInterfaceView = new FaustInterfaceView("edit");
-        AccelerometerHandler.registerAcceleratedSlider(this.accParams, faustInterfaceControlerEdit);
+        AccelerometerHandler.registerAcceleratedSlider(this.accParams, faustInterfaceControlerEdit, true);
         var acc = faustInterfaceControlerEdit.accelerometerSlider;
         faustInterfaceControlerEdit.faustInterfaceView.slider = this.accelerometerEditView.rangeCurrent;
         faustInterfaceControlerEdit.faustInterfaceView.slider.parentElement.classList.add(Axis[acc.axis]);
