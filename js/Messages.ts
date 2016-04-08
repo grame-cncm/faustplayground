@@ -1,6 +1,7 @@
 ﻿class Message {
     messageView: MessageView
     messageViewContainer: HTMLDivElement;
+    isTouch: boolean = false;
     timeoutHide: any;
     timeoutRemove: any;
     removeEventHandler: any;
@@ -25,8 +26,10 @@
         document.getElementById("dialogue").appendChild(this.messageViewContainer);
         this.timeoutHide = setTimeout(() => { this.hideMessage() }, this.duration);
         setTimeout(() => { this.displayMessage() }, 500);
-
+        document.addEventListener("messagedbltouch", () => { this.removeEventHandler() });
         this.messageViewContainer.addEventListener("click", (e) => { this.clearTimeouts(e) });
+        this.messageViewContainer.addEventListener("click", () => { this.dbleTouchMessage() });
+        this.messageViewContainer.addEventListener("dblclick", () => { this.removeEventHandler() });
     }
     displayMessage() {
         this.messageViewContainer.classList.remove("messageHide")
@@ -55,6 +58,19 @@
             this.messageViewContainer.remove()
             delete this.messageViewContainer;
         }
+    }
+    dbleTouchMessage() {
+        if (!this.isTouch) {
+            this.isTouch = true;
+            window.setTimeout(() => { this.isTouch = false }, 300)
+        } else {
+            this.dispatchEventCloseDblTouch();
+            this.isTouch = false;
+        }
+    }
+    dispatchEventCloseDblTouch() {
+        var event = new CustomEvent("messagedbltouch")
+        document.dispatchEvent(event);
     }
     clearTimeouts(e: Event) {
         e.stopPropagation();

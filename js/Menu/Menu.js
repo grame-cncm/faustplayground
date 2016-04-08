@@ -291,6 +291,7 @@ var Menu = (function () {
         this.menuView.saveView.inputDownload.value = Utilitary.currentScene.sceneName;
         this.menuView.saveView.inputLocalStorage.value = Utilitary.currentScene.sceneName;
         this.menuView.saveView.inputCloudStorage.value = Utilitary.currentScene.sceneName;
+        new Message(App.messageRessource.successRenameScene, "messageTransitionOutFast", 2000, 500);
     };
     Menu.prototype.lowerLibraryMenu = function () {
         this.library.libraryView.effetLibrary.style.height = "150px";

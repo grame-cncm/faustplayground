@@ -560,6 +560,7 @@ class Scene {
             spanRule.style.opacity = "1";
             input.style.boxShadow = "0 0 6px yellow inset";
             input.style.border = "3px solid red";
+            new Message(App.messageRessource.invalidSceneName);
             return false;
         }
     }

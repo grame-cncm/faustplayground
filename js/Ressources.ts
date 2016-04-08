@@ -75,6 +75,8 @@
     buttonRefresh: string;
     buttonExportScene: string;
     titleDownlaodExport: string;
+    invalidSceneName: string;
+    successRenameScene: string;
 
     //AccelerometerEditView
     curve1: string;
