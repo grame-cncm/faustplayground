@@ -93,7 +93,7 @@ class DriveAPI{
     listFolder() {
         var request = gapi.client.drive.files.list({
             'maxResults': 10000,
-            'q': "title contains 'jfaust'",
+            'q': "title contains 'jfaust'and trashed!=true"
 
         });
 
