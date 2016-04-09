@@ -70,7 +70,8 @@ var DriveAPI = (function () {
     DriveAPI.prototype.listFolder = function () {
         var _this = this;
         var request = gapi.client.drive.files.list({
-            'maxResults': 10
+            'maxResults': 10000,
+            'q': "title contains 'jfaust' and trashed!=true "
         });
         request.execute(function (resp) {
             var event = new CustomEvent("finishloaddrive");

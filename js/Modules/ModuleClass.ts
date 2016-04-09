@@ -55,7 +55,7 @@ class ModuleClass  {
 
 
 
-    constructor(id: number, x: number, y: number, name: string, htmlElementModuleContainer: HTMLElement, removeModuleCallBack: (m: ModuleClass) => void, compileFaust: (compileFaust:CompileFaust) => void) {
+    constructor(id: number, x: number, y: number, name: string, htmlElementModuleContainer: HTMLElement, removeModuleCallBack: (m: ModuleClass) => void, compileFaust: (compileFaust: CompileFaust) => void) {
         this.eventConnectorHandler = (event: MouseEvent) => { this.dragCnxCallback(event, this) };
         this.eventCloseEditHandler = (event: MouseEvent) => { this.recompileSource(event, this) }
         this.eventOpenEditHandler = () => { this.edit() }
@@ -335,7 +335,9 @@ class ModuleClass  {
             faustInterfaceControler.setParams();
             faustInterfaceControler.faustInterfaceView = new FaustInterfaceView(faustInterfaceControler.itemParam.type)
             this.moduleView.getInterfaceContainer().appendChild(faustInterfaceControler.createFaustInterfaceElement());
-            faustInterfaceControler.setEventListener(() => { this.interfaceCallback(faustInterfaceControler) });
+            faustInterfaceControler.interfaceCallback = this.interfaceCallback.bind(this);
+            faustInterfaceControler.updateFaustCodeCallback = this.updateCodeFaust.bind(this);
+            faustInterfaceControler.setEventListener();
             faustInterfaceControler.createAccelerometer();
         }
     }
@@ -351,8 +353,8 @@ class ModuleClass  {
     private deleteAccelerometerRef() {
         for (var i = 0; i < this.moduleControles.length; i++) {
             if (this.moduleControles[i].accelerometerSlider != null && this.moduleControles[i].accelerometerSlider != undefined) {
-                var index = AccelerometerHandler.accelerometerSliders.indexOf(this.moduleControles[i].accelerometerSlider);
-                AccelerometerHandler.accelerometerSliders.splice(index, 1);
+                var index = AccelerometerHandler.faustInterfaceControler.indexOf(this.moduleControles[i]);
+                AccelerometerHandler.faustInterfaceControler.splice(index, 1);
                 delete this.moduleControles[i].accelerometerSlider ;
                 //this.moduleControles.splice(i, 1)
             }
@@ -368,7 +370,10 @@ class ModuleClass  {
     setDSPValueCallback(address: string, value: string) {
         this.moduleFaust.fDSP.setValue(address, value)
     }
-
+    updateCodeFaust(details: ElementCodeFaustParser) {
+        var newCodeFaust: CodeFaustParser = new CodeFaustParser(this.moduleFaust.fSource, details.sliderName, details.newAccValue, details.isEnabled);
+        this.moduleFaust.fSource = newCodeFaust.replaceAccValue();
+    }
     //---- Generic callback for Faust Interface
     //---- Called every time an element of the UI changes value
     interfaceCallback(faustControler: FaustInterfaceControler): any {

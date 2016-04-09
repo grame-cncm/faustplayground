@@ -4,7 +4,11 @@
   "chrisWilson": "Chris Wilson",
   "loading": "Chargement en cours",
   "drop": "Déposer ici",
+
+
   "noFileOnCloud": "Aucun fichier trouvé sur Google Drive",
+  
+  
   "errorObjectNotFaustCompatible": "Le contenu n'est pas compatible avec Faust",
   "errorLoading": "Erreur lors du chargement de la scène",
   "errorGettingAudioInput": "Le micro ou l'entrée son n'a pas put etre activée",
@@ -20,6 +24,8 @@
   "errorConnectionRecall": "Une erreur c'est produite lors de la connection des modules, le fichier de sauvegarde est probablement corrompue",
   "errorLocalStorage": "Votre navigateur ne permet pas la sauvegarde locale",
   "errorConnectionCloud": "Connection à Google Drive impossible",
+  
+  
   "saveDownload": "Télécharger la scene : ",
   "rulesSceneName": "Seules les lettres de l'alphabet et les nombres sont acceptés. Les espaces, les apostrophes et les accents sont automatiquement remplacés. Le nom ne peut pas commencer par un nombre ; il doit comporter entre 1 et 50 caractères.",
   "precompileOption": "Précompilé (plus lourd)",
@@ -30,8 +36,12 @@
   "buttonConnectCloud": "Connection à Google Drive",
   "buttonCloudSave": "Sauvegarder en ligne",
   "buttonLogoutCloud": "Déconnection",
+
+
   "confirmSuppr": "Voulez vous vraiment supprimer ce Patch ?",
   "confirmReplace": "Le nom que vous utilisez existe déjà si vous continuez vous le remplacerez, vous pouvez renommer la scene dans l'onglet Export. Continuer?",
+ 
+  
   "buttonLibrary": "Biblio",
   "buttonLoad": "Charger",
   "buttonEdit": "Editer",
@@ -54,6 +64,8 @@
   "buttonRefresh": "Rafraîchir le serveur",
   "buttonExportScene": "Exporter",
   "titleDownlaodExport": "Téléchargement",
+  "invalidSceneName": "Le nom choisi est invalide",
+  "successRenameScene": "Le nom a bien été changé",
   "curve1": "courbe 1 : ",
   "curve2": "courbe 2 : ",
   "curve3": "courbe 3 : ",

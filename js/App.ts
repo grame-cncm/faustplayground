@@ -382,6 +382,7 @@ class App {
         if (ext == "dsp") {
             type = "dsp";
             reader.readAsText(file);
+          
         }
         else if (ext == "json"||ext=="jfaust") {
             type = "json";

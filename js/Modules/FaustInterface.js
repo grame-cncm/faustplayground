@@ -6,12 +6,6 @@
     SECOND PART --> ADD GRAPHICAL OBJECTS TO INTERFACE
 */
 "use strict";
-var Controler = (function () {
-    function Controler() {
-        this.accDefault = "0 0 -10 0 10";
-    }
-    return Controler;
-}());
 var FaustInterfaceControler = (function () {
     function FaustInterfaceControler(interfaceCallback, setDSPValueCallback) {
         this.accDefault = "0 0 -10 0 10";
@@ -40,17 +34,10 @@ var FaustInterfaceControler = (function () {
         }
         else if (item.type === "vslider" || item.type === "hslider") {
             var itemElement = item;
-            var controler = new FaustInterfaceControler(function (faustInterface) { _this.interfaceCallback(faustInterface); }, function (adress, value) { _this.setDSPValueCallback(adress, value); });
+            var controler = new FaustInterfaceControler(function () { _this.interfaceCallback(controler); }, function (adress, value) { _this.setDSPValueCallback(adress, value); });
+            controler.name = itemElement.label;
             controler.itemParam = itemElement;
             controler.value = itemElement.init;
-            //controler.slider.addEventListener("input", (event)=> {
-            //    module.interfaceCallback(event, controler)
-            //    event.stopPropagation();
-            //    event.preventDefault();
-            //});
-            //controler.slider.addEventListener("mousedown", (e) => { e.stopPropagation() })
-            //controler.slider.addEventListener("touchstart", (e) => { e.stopPropagation() })
-            //controler.slider.addEventListener("touchmove", (e) => { e.stopPropagation() })
             this.faustControlers.push(controler);
         }
         else if (item.type === "button") {
@@ -71,9 +58,11 @@ var FaustInterfaceControler = (function () {
             this.parse_item(items[i], node);
     };
     FaustInterfaceControler.prototype.setParams = function () {
-        for (var j = 0; j < this.itemParam.meta.length; j++) {
-            if (this.itemParam.meta[j].unit) {
-                this.unit = this.itemParam.meta[j].unit;
+        if (this.itemParam.meta != undefined) {
+            for (var j = 0; j < this.itemParam.meta.length; j++) {
+                if (this.itemParam.meta[j].unit) {
+                    this.unit = this.itemParam.meta[j].unit;
+                }
             }
         }
         if (this.unit == undefined) {
@@ -87,7 +76,8 @@ var FaustInterfaceControler = (function () {
             address: this.itemParam.address,
             init: parseFloat(this.itemParam.init),
             max: parseFloat(this.itemParam.max),
-            min: parseFloat(this.itemParam.min)
+            min: parseFloat(this.itemParam.min),
+            label: this.itemParam.label
         };
     };
     FaustInterfaceControler.prototype.createFaustInterfaceElement = function () {
@@ -103,12 +93,12 @@ var FaustInterfaceControler = (function () {
             }
         }
     };
-    FaustInterfaceControler.prototype.setEventListener = function (callback) {
+    FaustInterfaceControler.prototype.setEventListener = function () {
         var _this = this;
         if (this.faustInterfaceView && this.faustInterfaceView.type) {
             if (this.faustInterfaceView.type === "vslider" || this.faustInterfaceView.type === "hslider") {
                 this.faustInterfaceView.slider.addEventListener("input", function (event) {
-                    callback(_this);
+                    _this.interfaceCallback(_this);
                     event.stopPropagation();
                     event.preventDefault();
                 });
@@ -129,10 +119,13 @@ var FaustInterfaceControler = (function () {
             for (var i = 0; i < meta.length; i++) {
                 if (meta[i].acc) {
                     this.acc = meta[i].acc;
+                    this.accParams.acc = this.acc;
+                    this.accParams.isEnabled = true;
                     AccelerometerHandler.registerAcceleratedSlider(this.accParams, this);
                     this.accelerometerSlider.callbackValueChange = function (address, value) { _this.callbackValueChange(address, value); };
                     this.accelerometerSlider.isEnabled = true;
                     this.faustInterfaceView.slider.classList.add("allowed");
+                    this.faustInterfaceView.group.classList.add(Axis[this.accelerometerSlider.axis]);
                     if (App.isAccelerometerOn) {
                         this.accelerometerSlider.isActive = true;
                         this.faustInterfaceView.slider.classList.remove("allowed");
@@ -142,6 +135,8 @@ var FaustInterfaceControler = (function () {
                 }
                 else if (meta[i].noacc) {
                     this.acc = meta[i].noacc;
+                    this.accParams.acc = this.acc;
+                    this.accParams.isEnabled = false;
                     AccelerometerHandler.registerAcceleratedSlider(this.accParams, this);
                     this.accelerometerSlider.callbackValueChange = function (address, value) { _this.callbackValueChange(address, value); };
                     this.accelerometerSlider.isEnabled = false;
@@ -150,6 +145,8 @@ var FaustInterfaceControler = (function () {
             }
             if (this.accelerometerSlider == undefined) {
                 this.acc = this.accDefault;
+                this.accParams.acc = this.acc;
+                this.accParams.isEnabled = false;
                 AccelerometerHandler.registerAcceleratedSlider(this.accParams, this);
                 this.accelerometerSlider.callbackValueChange = function (address, value) { _this.callbackValueChange(address, value); };
                 this.accelerometerSlider.isEnabled = false;
@@ -158,6 +155,8 @@ var FaustInterfaceControler = (function () {
         }
         else {
             this.acc = this.accDefault;
+            this.accParams.acc = this.acc;
+            this.accParams.isEnabled = false;
             AccelerometerHandler.registerAcceleratedSlider(this.accParams, this);
             this.accelerometerSlider.callbackValueChange = function (address, value) { _this.callbackValueChange(address, value); };
             this.accelerometerSlider.isEnabled = false;
@@ -190,6 +189,7 @@ var FaustInterfaceView = (function () {
         var lab = document.createElement("span");
         lab.className = "label";
         lab.appendChild(document.createTextNode(itemParam.label));
+        this.label = lab;
         info.appendChild(lab);
         var val = document.createElement("span");
         val.className = "value";
@@ -210,40 +210,6 @@ var FaustInterfaceView = (function () {
         slider.step = "1";
         this.slider = slider;
         group.appendChild(slider);
-        //if (controler.meta != undefined) {
-        //    for (var i = 0; i < controler.meta.length; i++) {
-        //        if (controler.meta[i].acc) {
-        //            controler.acc = controler.meta[i].acc;
-        //            controler.hasAccelerometer = true;
-        //            controler.isEnabled = true;
-        //            controler.accelerometerSlider = AccelerometerHandler.registerAcceleratedSlider(controler, module)
-        //            slider.classList.add("allowed");
-        //            if (App.isAccelerometerOn) {
-        //                slider.classList.remove("allowed");
-        //                slider.classList.add("not-allowed");
-        //                slider.disabled = true;
-        //            }
-        //            break;
-        //        } else if (controler.meta[i].noacc) {
-        //            controler.hasAccelerometer = false;
-        //            controler.isEnabled = false;
-        //            controler.acc = controler.meta[i].noacc;
-        //            controler.accelerometerSlider = AccelerometerHandler.registerAcceleratedSlider(controler, module)
-        //            break;
-        //        } 
-        //    }
-        //    if (controler.accelerometerSlider == undefined) {
-        //        controler.acc = "0 0 -10 0 10";
-        //        controler.isEnabled = false;
-        //        controler.hasAccelerometer = false;
-        //        controler.accelerometerSlider = AccelerometerHandler.registerAcceleratedSlider(controler, module)
-        //    }
-        //} else {
-        //    controler.acc = "0 0 -10 0 10";
-        //    controler.isEnabled = false;
-        //    controler.hasAccelerometer = false;
-        //    controler.accelerometerSlider = AccelerometerHandler.registerAcceleratedSlider(controler, module)
-        //}
         this.group = group;
         return group;
     };

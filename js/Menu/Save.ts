@@ -26,7 +26,7 @@ class Save {
         } else {
             var jsonScene = this.sceneCurrent.saveScene(this.saveView.checkBoxPrecompile.checked)
             var blob = new Blob([jsonScene], {
-                type: "application/vnd.google-apps.script+json;charset=utf-8;",
+                type: "application/json;charset=utf-8;",
             });
             saveAs(blob, Utilitary.currentScene.sceneName + ".jfaust");
         }
@@ -128,7 +128,7 @@ class Save {
                 
             } else {
                 var jsonScene = this.sceneCurrent.saveScene(true)
-                var blob = new Blob([jsonScene], { type: "application/json" });
+                var blob = new Blob([jsonScene], { type: "application/json;charset=utf-8;" });
                 this.drive.tempBlob = blob;
                 this.drive.createFile(Utilitary.currentScene.sceneName,null);
             }
@@ -137,7 +137,7 @@ class Save {
 
     replaceCloud(name: string,confirmCallback:()=>void) {
         var jsonScene = this.sceneCurrent.saveScene(true)
-        var blob = new Blob([jsonScene], { type: "application/json" });
+        var blob = new Blob([jsonScene], { type: "application/json;charset=utf-8;" });
         this.drive.tempBlob = blob;
         var id = this.getValueByTextContent(this.saveView.cloudSelectFile, name);
         if (id != null) {

@@ -1,6 +1,7 @@
 var Message = (function () {
     function Message(message, fadeOutType, duration, delay) {
         var _this = this;
+        this.isTouch = false;
         this.fadeOutType = "messageTransitionOut";
         this.duration = 10000;
         this.delay = 4000;
@@ -21,7 +22,10 @@ var Message = (function () {
         document.getElementById("dialogue").appendChild(this.messageViewContainer);
         this.timeoutHide = setTimeout(function () { _this.hideMessage(); }, this.duration);
         setTimeout(function () { _this.displayMessage(); }, 500);
+        document.addEventListener("messagedbltouch", function () { _this.removeEventHandler(); });
         this.messageViewContainer.addEventListener("click", function (e) { _this.clearTimeouts(e); });
+        this.messageViewContainer.addEventListener("click", function () { _this.dbleTouchMessage(); });
+        this.messageViewContainer.addEventListener("dblclick", function () { _this.removeEventHandler(); });
     }
     Message.prototype.displayMessage = function () {
         this.messageViewContainer.classList.remove("messageHide");
@@ -49,6 +53,21 @@ var Message = (function () {
             this.messageViewContainer.remove();
             delete this.messageViewContainer;
         }
+    };
+    Message.prototype.dbleTouchMessage = function () {
+        var _this = this;
+        if (!this.isTouch) {
+            this.isTouch = true;
+            window.setTimeout(function () { _this.isTouch = false; }, 300);
+        }
+        else {
+            this.dispatchEventCloseDblTouch();
+            this.isTouch = false;
+        }
+    };
+    Message.prototype.dispatchEventCloseDblTouch = function () {
+        var event = new CustomEvent("messagedbltouch");
+        document.dispatchEvent(event);
     };
     Message.prototype.clearTimeouts = function (e) {
         e.stopPropagation();
