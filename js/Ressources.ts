@@ -89,4 +89,5 @@
     axis0: string;
     checkBox: string;
     noDeviceMotion: string;
+
 }

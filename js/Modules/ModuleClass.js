@@ -71,8 +71,8 @@ var ModuleClass = (function () {
             this.moduleView.maxButton.addEventListener("touchend", function () { _this.maxModule(); });
         }
         if (this.moduleView.fEditImg != undefined) {
-            this.moduleView.fEditImg.addEventListener("click", function () { _this.eventOpenEditHandler(); });
-            this.moduleView.fEditImg.addEventListener("touchend", function () { _this.eventOpenEditHandler(); });
+            this.moduleView.fEditImg.addEventListener("click", this.eventOpenEditHandler);
+            this.moduleView.fEditImg.addEventListener("touchend", this.eventOpenEditHandler);
         }
     };
     /***************  PRIVATE METHODS  ******************************/

@@ -100,8 +100,8 @@ class ModuleClass  {
 
         }
         if (this.moduleView.fEditImg != undefined) {
-            this.moduleView.fEditImg.addEventListener("click", () => { this.eventOpenEditHandler(); });
-            this.moduleView.fEditImg.addEventListener("touchend", () => { this.eventOpenEditHandler(); });
+            this.moduleView.fEditImg.addEventListener("click", this.eventOpenEditHandler);
+            this.moduleView.fEditImg.addEventListener("touchend",  this.eventOpenEditHandler);
 
         }
     }
