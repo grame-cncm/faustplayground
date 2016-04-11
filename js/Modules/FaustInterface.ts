@@ -1,3 +1,8 @@
+    /// <reference path="../Accelerometer.ts"/>
+    /// <reference path="../Utilitary.ts"/>
+
+
+
 /*				FAUSTINTERFACE.JS
 
 	HELPER FUNCTIONS TO CREATE FAUST INTERFACES

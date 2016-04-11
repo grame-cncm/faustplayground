@@ -1,3 +1,5 @@
+/// <reference path="App.ts"/>
+/// <reference path="Utilitary.ts"/>
 var Ressources = (function () {
     function Ressources() {
     }
@@ -17,5 +19,4 @@ var Ressources = (function () {
         resumeInit(app);
     };
     return Ressources;
-}());
-//# sourceMappingURL=Ressources.js.map
+})();

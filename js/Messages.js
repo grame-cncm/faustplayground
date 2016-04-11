@@ -79,7 +79,7 @@ var Message = (function () {
         this.displayMessage();
     };
     return Message;
-}());
+})();
 var MessageView = (function () {
     function MessageView() {
     }
@@ -97,7 +97,7 @@ var MessageView = (function () {
         return messageContainer;
     };
     return MessageView;
-}());
+})();
 var Confirm = (function () {
     function Confirm(message, callback) {
         var _this = this;
@@ -124,7 +124,7 @@ var Confirm = (function () {
         }
     };
     return Confirm;
-}());
+})();
 var ConfirmView = (function () {
     function ConfirmView() {
     }
@@ -151,5 +151,4 @@ var ConfirmView = (function () {
         return messageContainer;
     };
     return ConfirmView;
-}());
-//# sourceMappingURL=Messages.js.map
+})();

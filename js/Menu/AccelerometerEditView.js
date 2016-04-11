@@ -1,3 +1,4 @@
+/// <reference path="../Utilitary.ts"/>
 var AccelerometerEditView = (function () {
     function AccelerometerEditView() {
     }
@@ -187,5 +188,4 @@ var AccelerometerEditView = (function () {
         return blockLayer;
     };
     return AccelerometerEditView;
-}());
-//# sourceMappingURL=AccelerometerEditView.js.map
+})();

@@ -1,4 +1,6 @@
-﻿class SaveView {
+﻿    /// <reference path="../Utilitary.ts"/>
+
+class SaveView {
 
     dynamicName: HTMLElement
     rulesName: HTMLElement;

@@ -1,5 +1,4 @@
-/*MODULEFAUST.JS
-HAND - MADE JAVASCRIPT CLASS CONTAINING A FAUST MODULE */
+/// <reference path="../Connect.ts"/>
 var ModuleFaust = (function () {
     function ModuleFaust(name) {
         this.fOutputConnections = [];
@@ -40,5 +39,4 @@ var ModuleFaust = (function () {
         return this.fDSP;
     };
     return ModuleFaust;
-}());
-//# sourceMappingURL=ModuleFaust.js.map
+})();

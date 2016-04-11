@@ -68,5 +68,4 @@ var Load = (function () {
         document.dispatchEvent(event);
     };
     return Load;
-}());
-//# sourceMappingURL=Load.js.map
+})();

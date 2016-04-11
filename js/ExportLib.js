@@ -1,3 +1,4 @@
+/// <reference path="QRCode.d.ts"/>
 "use strict";
 /************************************************************
 ***************** Interface to FaustWeb *********************
@@ -109,5 +110,4 @@ var ExportLib = (function () {
         // 	return architectures;
     };
     return ExportLib;
-}());
-//# sourceMappingURL=ExportLib.js.map
+})();

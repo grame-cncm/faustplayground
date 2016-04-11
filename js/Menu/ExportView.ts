@@ -1,5 +1,8 @@
 ﻿//ExportView
 
+   /// <reference path="../Utilitary.ts"/>
+
+
 class ExportView {
     exportButton: HTMLElement;
     selectPlatform: HTMLElement;

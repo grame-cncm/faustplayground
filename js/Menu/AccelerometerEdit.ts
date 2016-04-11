@@ -1,5 +1,5 @@
 ﻿//AccelerometerEdit
-   /// <reference path="../CodeFaustParser.ts"/>
+   /// <reference path="../Accelerometer.ts"/>
 
 "use strict";
 

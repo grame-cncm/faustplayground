@@ -24,5 +24,4 @@ var HelpView = (function () {
         return helpContainer;
     };
     return HelpView;
-}());
-//# sourceMappingURL=HelpView.js.map
+})();

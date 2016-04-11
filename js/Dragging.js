@@ -366,5 +366,4 @@ var Drag = (function () {
         return true;
     };
     return Drag;
-}());
-//# sourceMappingURL=Dragging.js.map
+})();

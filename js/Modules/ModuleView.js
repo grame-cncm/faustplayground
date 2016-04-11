@@ -14,7 +14,7 @@ var ModuleView = (function () {
     function ModuleView() {
         this.inputOutputNodeDimension = 32;
     }
-    ModuleView.prototype.createModuleView = function (ID, x, y, name, htmlParent, module) {
+    ModuleView.prototype.createModuleView = function (ID, x, y, name, htmlParent) {
         //------- GRAPHICAL ELEMENTS OF MODULE
         var fModuleContainer = document.createElement("div");
         fModuleContainer.className = "moduleFaust";
@@ -138,5 +138,4 @@ var ModuleView = (function () {
         return false;
     };
     return ModuleView;
-}());
-//# sourceMappingURL=ModuleView.js.map
+})();

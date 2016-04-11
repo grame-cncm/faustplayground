@@ -1,5 +1,5 @@
 /// <reference path="Messages.ts"/>
-//class CodeFaustParser
+/// <reference path="Utilitary.ts"/>
 var CodeFaustParser = (function () {
     function CodeFaustParser(codeFaust, sliderName, newAccValue, isEnabled) {
         this.originalCodeFaust = codeFaust;
@@ -143,5 +143,4 @@ var CodeFaustParser = (function () {
         return this.newCodeFaust;
     };
     return CodeFaustParser;
-}());
-//# sourceMappingURL=CodeFaustParser.js.map
+})();

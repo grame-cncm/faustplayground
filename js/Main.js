@@ -77,5 +77,4 @@ var PositionModule = (function () {
     function PositionModule() {
     }
     return PositionModule;
-}());
-//# sourceMappingURL=Main.js.map
+})();

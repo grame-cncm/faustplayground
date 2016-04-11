@@ -1,5 +1,9 @@
 /// <reference path="../Lib/fileSaver.min.d.ts"/>
 /// <reference path="../Messages.ts"/>
+/// <reference path="../Utilitary.ts"/>
+/// <reference path="../DriveAPI.ts"/>
+/// <reference path="../Scenes/SceneClass.ts"/>
+/// <reference path="SaveView.ts"/>
 var Save = (function () {
     function Save() {
     }
@@ -22,7 +26,7 @@ var Save = (function () {
         else {
             var jsonScene = this.sceneCurrent.saveScene(this.saveView.checkBoxPrecompile.checked);
             var blob = new Blob([jsonScene], {
-                type: "application/json;charset=utf-8;",
+                type: "application/json;charset=utf-8;"
             });
             saveAs(blob, Utilitary.currentScene.sceneName + ".jfaust");
         }
@@ -152,5 +156,4 @@ var Save = (function () {
         confirmCallBack();
     };
     return Save;
-}());
-//# sourceMappingURL=Save.js.map
+})();

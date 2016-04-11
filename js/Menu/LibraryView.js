@@ -1,4 +1,5 @@
 //LibraryView.ts : LibraryView Class which contains all the graphical parts of the library
+/// <reference path="../Utilitary.ts"/>
 /// <reference path="../Lib/perfectScrollBar/js/perfect-ScrollBar.min.d.ts"/>
 var LibraryView = (function () {
     function LibraryView() {
@@ -58,5 +59,4 @@ var LibraryView = (function () {
         return libraryContent;
     };
     return LibraryView;
-}());
-//# sourceMappingURL=LibraryView.js.map
+})();

@@ -1,3 +1,8 @@
+/// <reference path="Modules/ModuleClass.ts"/>
+/// <reference path="Scenes/SceneClass.ts"/>
+
+
+
 class Utilitary {
     static audioContext: AudioContext;
     static moduleList: ModuleClass[];

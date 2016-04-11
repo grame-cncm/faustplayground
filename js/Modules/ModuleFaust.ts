@@ -1,4 +1,7 @@
-﻿/*MODULEFAUST.JS
+﻿    /// <reference path="../Connect.ts"/>
+
+
+/*MODULEFAUST.JS
 HAND - MADE JAVASCRIPT CLASS CONTAINING A FAUST MODULE */
 
 interface IfDSP {

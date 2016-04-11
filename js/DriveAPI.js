@@ -1,4 +1,5 @@
 /// <reference path="Messages.ts"/>
+/// <reference path="Utilitary.ts"/>
 var DriveAPI = (function () {
     function DriveAPI() {
         this.CLIENT_ID = '937268536763-j0tfilisap0274toolo0hehndnhgsrva.apps.googleusercontent.com';
@@ -158,7 +159,7 @@ var DriveAPI = (function () {
     DriveAPI.prototype.getFile = function (fileId, callback) {
         var _this = this;
         var request = gapi.client.drive.files.get({
-            'fileId': fileId,
+            'fileId': fileId
         });
         try {
             request.execute(function (resp) {
@@ -179,7 +180,7 @@ var DriveAPI = (function () {
             'method': 'POST',
             'body': {
                 "title": fileName + this.extension,
-                "mimeType": "application/json",
+                "mimeType": "application/json"
             }
         });
         request.execute(function (resp) {
@@ -247,5 +248,4 @@ var DriveAPI = (function () {
         });
     };
     return DriveAPI;
-}());
-//# sourceMappingURL=DriveAPI.js.map
+})();

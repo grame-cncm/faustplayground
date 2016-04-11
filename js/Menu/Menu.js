@@ -482,5 +482,4 @@ var Menu = (function () {
         }
     };
     return Menu;
-}());
-//# sourceMappingURL=Menu.js.map
+})();

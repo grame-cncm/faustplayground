@@ -1,3 +1,5 @@
+/// <reference path="Modules/ModuleClass.ts"/>
+/// <reference path="Scenes/SceneClass.ts"/>
 var Utilitary = (function () {
     function Utilitary() {
     }
@@ -78,5 +80,4 @@ var Utilitary = (function () {
     Utilitary.isAccelerometerOn = false;
     Utilitary.isAccelerometerEditOn = false;
     return Utilitary;
-}());
-//# sourceMappingURL=Utilitary.js.map
+})();

@@ -18,8 +18,8 @@
 		- webaudio-asm-wrapper.js
 */
 
-/// <reference path="../Scenes/SceneClass.ts"/>
 /// <reference path="../Dragging.ts"/>
+/// <reference path="../CodeFaustParser.ts"/>
 /// <reference path="../Connect.ts"/>
 /// <reference path="../Modules/FaustInterface.ts"/>
 /// <reference path="../Main.ts"/>
@@ -67,7 +67,7 @@ class ModuleClass  {
         this.eventDraggingHandler = (event)=>{ this.dragCallback(event, this) };
 
         this.moduleView = new ModuleView();
-        this.moduleView.createModuleView(id, x, y, name, htmlElementModuleContainer, this);
+        this.moduleView.createModuleView(id, x, y, name, htmlElementModuleContainer);
         this.moduleFaust = new ModuleFaust(name);
         this.init();
 

@@ -29,6 +29,7 @@ DEPENDENCIES:
 /// <reference path="Connect.ts"/>
 /// <reference path="Error.ts"/>
 /// <reference path="Dragging.ts"/>
+/// <reference path="Utilitary.ts"/>
 /// <reference path="webaudio-asm-wrapper.d.ts"/>
 /// <reference path="Modules/FaustInterface.ts"/>
 /// <reference path="Scenes/SceneView.ts"/>

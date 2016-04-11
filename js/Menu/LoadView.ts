@@ -1,4 +1,7 @@
-﻿class LoadView {
+﻿   /// <reference path="../Utilitary.ts"/>
+
+
+class LoadView {
 
     loadFileButton: HTMLButtonElement;
     loadFileInput: HTMLInputElement;

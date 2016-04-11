@@ -41,7 +41,7 @@ class ModuleView {
     y: number;
 
 
-    createModuleView(ID: number, x: number, y: number, name: string, htmlParent: HTMLElement, module: ModuleClass): void {
+    createModuleView(ID: number, x: number, y: number, name: string, htmlParent: HTMLElement): void {
 
 
         //------- GRAPHICAL ELEMENTS OF MODULE

@@ -11,17 +11,17 @@ Create Factories and Modules
 
 DEPENDENCIES:
 - Accueil.js
-   - Finish.js
-   - Playground.js
-   - Pedagogie.js
-   - SceneClass.js
+    - Finish.js
+    - Playground.js
+    - Pedagogie.js
+    - SceneClass.js
 
-   - ModuleClass.js
-   - Connect.js
-   - libfaust.js
-   - webaudio - asm - wrapper.js
+    - ModuleClass.js
+    - Connect.js
+    - libfaust.js
+    - webaudio - asm - wrapper.js
 
-   */
+    */
 /// <reference path="Scenes/SceneClass.ts"/>
 /// <reference path="Modules/ModuleClass.ts"/>
 /// <reference path="Modules/ModuleView.ts"/>
@@ -29,6 +29,7 @@ DEPENDENCIES:
 /// <reference path="Connect.ts"/>
 /// <reference path="Error.ts"/>
 /// <reference path="Dragging.ts"/>
+/// <reference path="Utilitary.ts"/>
 /// <reference path="webaudio-asm-wrapper.d.ts"/>
 /// <reference path="Modules/FaustInterface.ts"/>
 /// <reference path="Scenes/SceneView.ts"/>
@@ -382,5 +383,4 @@ var App = (function () {
     App.prototype.errorCallBack = function (message) {
     };
     return App;
-}());
-//# sourceMappingURL=App.js.map
+})();

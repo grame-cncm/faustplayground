@@ -1,3 +1,4 @@
+/// <reference path="../Utilitary.ts"/>
 var SaveView = (function () {
     function SaveView() {
     }
@@ -152,5 +153,4 @@ var SaveView = (function () {
         return saveContainer;
     };
     return SaveView;
-}());
-//# sourceMappingURL=SaveView.js.map
+})();

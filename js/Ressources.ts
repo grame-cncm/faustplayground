@@ -1,4 +1,7 @@
-﻿class Ressources {
+﻿/// <reference path="App.ts"/>
+/// <reference path="Utilitary.ts"/>
+
+class Ressources {
   //scene messages
     defaultSceneName: string;
     reference: string;

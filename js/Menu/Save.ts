@@ -1,5 +1,11 @@
 ﻿   /// <reference path="../Lib/fileSaver.min.d.ts"/>
     /// <reference path="../Messages.ts"/>
+    /// <reference path="../Utilitary.ts"/>
+    /// <reference path="../DriveAPI.ts"/>
+    /// <reference path="../Scenes/SceneClass.ts"/>
+    /// <reference path="SaveView.ts"/>
+
+
 
 
 class Save {
