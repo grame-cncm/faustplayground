@@ -54,7 +54,7 @@ class AccelerometerSlider {
             //this.step = parseFloat(controler.step);
             //this.mySlider = controler.slider;
             //this.valueOutput = controler.output;
-            this.isActive = App.isAccelerometerOn;
+            this.isActive = Utilitary.isAccelerometerOn;
             //this.precision = parseFloat(controler.precision);
             //this.name = controler.label;
             //if (!this.isEnabled) {
@@ -93,7 +93,7 @@ class AccelerometerHandler {
             window.addEventListener("devicemotion", (event: DeviceMotionEvent) => { this.propagate(event) }, false);
         } else {
             // Browser doesn't support DeviceMotionEvent
-            console.log(App.messageRessource.noDeviceMotion)
+            console.log(Utilitary.messageRessource.noDeviceMotion)
         }
     }
 

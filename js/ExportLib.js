@@ -12,7 +12,7 @@ var ExportLib = (function () {
     // json = {"platform1":["arch1", "arch2", ..., "archn"], ... , "platformn":["arch1", "arch2", ..., "archn"]}
     //static getTargets(exportUrl: string, callback: (json: string) => void, errCallback: (json: string) => void)
     //{
-    //    //App.getXHR(exportUrl, callback)
+    //    //Utilitary.getXHR(exportUrl, callback)
     //    var getrequest: XMLHttpRequest = new XMLHttpRequest();
     // getrequest.onreadystatechange = function() {
     //  if (getrequest.readyState == 4 && getrequest.status == 200)				    		

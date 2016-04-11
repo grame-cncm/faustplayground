@@ -38,7 +38,7 @@ class Menu {
     mouseOverLowerMenu: (event: MouseEvent) => void;
     isMenuLow: boolean = false;
     isFullScreen: boolean = false;
-    isAccelerometer: boolean = App.isAccelerometerOn;
+    isAccelerometer: boolean = Utilitary.isAccelerometerOn;
     drive: DriveAPI;
 
     constructor(htmlContainer: HTMLElement) {
@@ -53,7 +53,7 @@ class Menu {
         this.menuView.loadButton.addEventListener("click", () => { this.menuHandler(this.menuChoices = MenuChoices.load) });
         this.menuView.fullScreenButton.addEventListener("click", () => { this.fullScreen() });
         this.menuView.accButton.addEventListener("click", () => { this.accelerometer() });
-        this.menuView.cleanButton.addEventListener("click", () => { new Confirm(App.messageRessource.confirmEmptyScene, (callback) => { this.cleanScene(callback) }) });
+        this.menuView.cleanButton.addEventListener("click", () => { new Confirm(Utilitary.messageRessource.confirmEmptyScene, (callback) => { this.cleanScene(callback) }) });
 
         this.library = new Library();
         this.library.libraryView = this.menuView.libraryView;
@@ -338,7 +338,7 @@ class Menu {
         this.menuView.saveView.inputDownload.value = Utilitary.currentScene.sceneName;
         this.menuView.saveView.inputLocalStorage.value = Utilitary.currentScene.sceneName;
         this.menuView.saveView.inputCloudStorage.value = Utilitary.currentScene.sceneName;
-        new Message(App.messageRessource.successRenameScene, "messageTransitionOutFast", 2000, 500)
+        new Message(Utilitary.messageRessource.successRenameScene, "messageTransitionOutFast", 2000, 500)
     }
 
     lowerLibraryMenu() {
@@ -388,7 +388,7 @@ class Menu {
         var checkboxs = document.getElementsByClassName("accCheckbox")
         if (this.isAccelerometer) {
             this.isAccelerometer = false;
-            App.isAccelerometerOn = false;
+            Utilitary.isAccelerometerOn = false;
             this.menuView.accButton.style.opacity = "0.3";
             for (var i = 0; i < AccelerometerHandler.faustInterfaceControler.length; i++) {
                 var acc = AccelerometerHandler.faustInterfaceControler[i].accelerometerSlider;
@@ -397,7 +397,7 @@ class Menu {
                 //AccelerometerHandler.accelerometerSliders[i].mySlider.style.opacity = "1";
                 slider.classList.remove("not-allowed");
                 slider.classList.add("allowed");
-                if (!App.isAccelerometerEditOn) {
+                if (!Utilitary.isAccelerometerEditOn) {
                     slider.disabled = false;
                 }
                 
@@ -405,7 +405,7 @@ class Menu {
         } else if (!this.isAccelerometer) {
             this.menuView.accButton.style.opacity = "1";
             this.isAccelerometer = true;
-            App.isAccelerometerOn = true;
+            Utilitary.isAccelerometerOn = true;
             for (var i = 0; i < AccelerometerHandler.faustInterfaceControler.length; i++) {
                 var acc = AccelerometerHandler.faustInterfaceControler[i].accelerometerSlider;
                 var slider = AccelerometerHandler.faustInterfaceControler[i].faustInterfaceView.slider;
@@ -414,7 +414,7 @@ class Menu {
                     //AccelerometerHandler.accelerometerSliders[i].mySlider.style.opacity = "0.5";
                     slider.classList.add("not-allowed");
                     slider.classList.remove("allowed");
-                    if (!App.isAccelerometerEditOn) {
+                    if (!Utilitary.isAccelerometerEditOn) {
                         slider.disabled = true;
                     }
                 }
@@ -491,7 +491,7 @@ class Menu {
 
     }
     connectionProblem(event: CustomEvent) {
-        new Message(App.messageRessource.errorConnectionCloud + " : " + event.detail)
+        new Message(Utilitary.messageRessource.errorConnectionCloud + " : " + event.detail)
     }
     fillSelectCloud(optionEvent: CustomEvent) {
         this.load.loadView.cloudSelectFile.add(<HTMLOptionElement>optionEvent.detail);
@@ -524,8 +524,8 @@ class Menu {
             this.isMenuDriveLoading = true;
             this.save.saveView.driveContainer.style.display = "none";
             this.load.loadView.driveContainer.style.display = "none";
-            App.addLoadingLogo("loadCloudContainer");
-            App.addLoadingLogo("cloudSaveContainer");
+            Utilitary.addLoadingLogo("loadCloudContainer");
+            Utilitary.addLoadingLogo("cloudSaveContainer");
 
         }
     }
@@ -534,8 +534,8 @@ class Menu {
             this.isMenuDriveLoading = false;
             this.save.saveView.driveContainer.style.display = "block";
             this.load.loadView.driveContainer.style.display = "block";
-            App.removeLoadingLogo("loadCloudContainer");
-            App.removeLoadingLogo("cloudSaveContainer");
+           Utilitary.removeLoadingLogo("loadCloudContainer");
+           Utilitary.removeLoadingLogo("cloudSaveContainer");
 
         }
     }

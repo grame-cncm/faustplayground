@@ -86,7 +86,7 @@ var DriveAPI = (function () {
                 }
             }
             else {
-                _this.appendPre(App.messageRessource.noFileOnCloud, null);
+                _this.appendPre(Utilitary.messageRessource.noFileOnCloud, null);
             }
         });
     };

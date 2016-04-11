@@ -123,7 +123,7 @@ var Scene = (function () {
     Scene.prototype.integrateInput = function () {
         var _this = this;
         var positionInput = this.positionInputModule();
-        this.fAudioInput = new ModuleClass(App.idX++, positionInput.x, positionInput.y, "input", this.sceneView.inputOutputModuleContainer, function (module) { _this.removeModule(module); }, this.compileFaust);
+        this.fAudioInput = new ModuleClass(Utilitary.idX++, positionInput.x, positionInput.y, "input", this.sceneView.inputOutputModuleContainer, function (module) { _this.removeModule(module); }, this.compileFaust);
         this.fAudioInput.patchID = "input";
         var scene = this;
         this.compileFaust({ name: "input", sourceCode: "process=_,_;", x: positionInput.x, y: positionInput.y, callback: function (factory) { scene.integrateAudioInput(factory); } });
@@ -132,7 +132,7 @@ var Scene = (function () {
         var _this = this;
         var positionOutput = this.positionOutputModule();
         var scene = this;
-        this.fAudioOutput = new ModuleClass(App.idX++, positionOutput.x, positionOutput.y, "output", this.sceneView.inputOutputModuleContainer, function (module) { _this.removeModule(module); }, this.compileFaust);
+        this.fAudioOutput = new ModuleClass(Utilitary.idX++, positionOutput.x, positionOutput.y, "output", this.sceneView.inputOutputModuleContainer, function (module) { _this.removeModule(module); }, this.compileFaust);
         this.fAudioOutput.patchID = "output";
         this.addMuteOutputListner(this.fAudioOutput);
         this.compileFaust({ name: "output", sourceCode: "process=_,_;", x: positionOutput.x, y: positionOutput.y, callback: function (factory) { scene.integrateAudioOutput(factory); } });
@@ -153,7 +153,7 @@ var Scene = (function () {
             this.activateAudioInput();
         }
         this.fAudioInput.addInputOutputNodes();
-        App.hideFullPageLoading();
+        Utilitary.hideFullPageLoading();
         this.isInitLoading = false;
     };
     Scene.prototype.getAudioOutput = function () { return this.fAudioOutput; };
@@ -170,20 +170,20 @@ var Scene = (function () {
         if (navigatorLoc.getUserMedia) {
             navigatorLoc.getUserMedia({ audio: true }, function (mediaStream) { _this.getDevice(mediaStream); }, function (e) {
                 _this.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)";
-                _this.fAudioInput.moduleView.fInterfaceContainer.title = App.messageRessource.errorGettingAudioInput;
-                new Message(App.messageRessource.errorGettingAudioInput);
+                _this.fAudioInput.moduleView.fInterfaceContainer.title = Utilitary.messageRessource.errorGettingAudioInput;
+                new Message(Utilitary.messageRessource.errorGettingAudioInput);
             });
         }
         else {
             this.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)";
-            new Message(App.messageRessource.errorInputAPINotAvailable);
-            this.fAudioInput.moduleView.fInterfaceContainer.title = App.messageRessource.errorInputAPINotAvailable;
+            new Message(Utilitary.messageRessource.errorInputAPINotAvailable);
+            this.fAudioInput.moduleView.fInterfaceContainer.title = Utilitary.messageRessource.errorInputAPINotAvailable;
         }
     };
     Scene.prototype.getDevice = function (device) {
         // Create an AudioNode from the stream.
         var src = document.getElementById("input");
-        src.audioNode = App.audioContext.createMediaStreamSource(device);
+        src.audioNode = Utilitary.audioContext.createMediaStreamSource(device);
         document.body.appendChild(src);
         var drag = new Drag();
         var connect = new Connector();
@@ -192,7 +192,7 @@ var Scene = (function () {
     Scene.prototype.activateAudioOutput = function (sceneOutput) {
         var out = document.createElement("div");
         out.id = "audioOutput";
-        out.audioNode = App.audioContext.destination;
+        out.audioNode = Utilitary.audioContext.destination;
         document.body.appendChild(out);
         var connect = new Connector();
         connect.connectOutput(sceneOutput, out);
@@ -279,8 +279,8 @@ var Scene = (function () {
                 var jsonObjectCollection = JSON.parse(json);
             }
             catch (e) {
-                new Message(App.messageRessource.errorJsonCorrupted);
-                App.hideFullPageLoading();
+                new Message(Utilitary.messageRessource.errorJsonCorrupted);
+                Utilitary.hideFullPageLoading();
             }
             //this.parent.currentNumberDSP = this.fModuleList.length;
             for (var index in jsonObjectCollection) {
@@ -290,8 +290,8 @@ var Scene = (function () {
             this.lunchModuleCreation();
         }
         else {
-            App.hideFullPageLoading();
-            new Message(App.messageRessource.errorLoading);
+            Utilitary.hideFullPageLoading();
+            new Message(Utilitary.messageRessource.errorLoading);
         }
     };
     Scene.prototype.lunchModuleCreation = function () {
@@ -326,7 +326,7 @@ var Scene = (function () {
             this.arrayRecalledModule = [];
             var event = new CustomEvent("updatename");
             document.dispatchEvent(event);
-            App.hideFullPageLoading();
+            Utilitary.hideFullPageLoading();
         }
     };
     Scene.prototype.updateAppTempModuleInfo = function (jsonSaveObject) {
@@ -345,10 +345,10 @@ var Scene = (function () {
             //---- There probably is a better way to do this !!
             if (!factory) {
                 new Message(faust.getErrorMessage());
-                App.hideFullPageLoading();
+                Utilitary.hideFullPageLoading();
                 return;
             }
-            var module = new ModuleClass(App.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), function (module) { _this.removeModule(module); }, this.compileFaust);
+            var module = new ModuleClass(Utilitary.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), function (module) { _this.removeModule(module); }, this.compileFaust);
             module.moduleFaust.setSource(this.tempModuleSourceCode);
             module.createDSP(factory);
             module.patchID = this.tempPatchId;
@@ -373,7 +373,7 @@ var Scene = (function () {
             this.lunchModuleCreation();
         }
         catch (e) {
-            new Message(App.messageRessource.errorCreateModuleRecall);
+            new Message(Utilitary.messageRessource.errorCreateModuleRecall);
             this.arrayRecalScene.shift();
             this.lunchModuleCreation();
         }
@@ -442,7 +442,7 @@ var Scene = (function () {
             }
         }
         catch (e) {
-            new Message(App.messageRessource.errorConnectionRecall);
+            new Message(Utilitary.messageRessource.errorConnectionRecall);
         }
     };
     Scene.prototype.getModuleByPatchId = function (patchId) {
@@ -463,12 +463,12 @@ var Scene = (function () {
         return null;
     };
     Scene.cleanName = function (newName) {
-        newName = App.replaceAll(newName, "é", "e");
-        newName = App.replaceAll(newName, "è", "e");
-        newName = App.replaceAll(newName, "à", "a");
-        newName = App.replaceAll(newName, "ù", "u");
-        newName = App.replaceAll(newName, " ", "_");
-        newName = App.replaceAll(newName, "'", "_");
+        newName = Utilitary.replaceAll(newName, "é", "e");
+        newName = Utilitary.replaceAll(newName, "è", "e");
+        newName = Utilitary.replaceAll(newName, "à", "a");
+        newName = Utilitary.replaceAll(newName, "ù", "u");
+        newName = Utilitary.replaceAll(newName, " ", "_");
+        newName = Utilitary.replaceAll(newName, "'", "_");
         return newName;
     };
     Scene.isNameValid = function (newName) {
@@ -498,7 +498,7 @@ var Scene = (function () {
             spanRule.style.opacity = "1";
             input.style.boxShadow = "0 0 6px yellow inset";
             input.style.border = "3px solid red";
-            new Message(App.messageRessource.invalidSceneName);
+            new Message(Utilitary.messageRessource.invalidSceneName);
             return false;
         }
     };

@@ -20,7 +20,6 @@ DEPENDENCIES:
     - Connect.js
     - libfaust.js
     - webaudio - asm - wrapper.js
-    - Pedagogie / Tooltips.js
 
     */
 /// <reference path="Scenes/SceneClass.ts"/>
@@ -54,21 +53,9 @@ class App {
 
     //************* Fields
     //static appTest: number = 0;
-    static audioContext: AudioContext;
-    static idX: number=0;
     //static scene: Scene;
-    static baseImg: string = "img/";
-    static isTooltipEnabled: boolean;
-    static buttonVal: number;
-    static libraryContent: string;
-    static recursiveMap: ModuleTree[];
-    static jsonText: string;
-    static exportURL: string;
-    static isAccelerometerOn: boolean = false;
-    static isAccelerometerEditOn: boolean = false;
-    static accHandler: AccelerometerHandler;
-    static driveApi: DriveAPI;
-    static messageRessource: Ressources = new Ressources();
+    
+
     private static currentScene: number;
     private static src: IHTMLDivElementSrc;
     private static out: IHTMLDivElementOut;
@@ -176,7 +163,7 @@ class App {
     private createModule(factory: Factory): void {
 
         if (!factory) {
-            new Message(App.messageRessource.errorFactory+faust.getErrorMessage());
+            new Message(Utilitary.messageRessource.errorFactory+faust.getErrorMessage());
             this.terminateUpload();
             return null;
         }
@@ -184,7 +171,7 @@ class App {
 
         // can't it be just window.scenes[window.currentScene] ???
         //if (App.isTooltipEnabled)
-        var module: ModuleClass = new ModuleClass(App.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), (module) => { Utilitary.currentScene.removeModule(module) }, this.compileFaust);
+        var module: ModuleClass = new ModuleClass(Utilitary.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), (module) => { Utilitary.currentScene.removeModule(module) }, this.compileFaust);
         //else
         //    faustModule = new ModuleClass(this.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), this.scenes[0].removeModule);
 
@@ -210,7 +197,7 @@ class App {
         }
         Utilitary.currentScene.addModule(module);
         if (!Utilitary.currentScene.isInitLoading) {
-            App.hideFullPageLoading()
+            Utilitary.hideFullPageLoading()
         }
 
     }
@@ -276,7 +263,7 @@ class App {
 
     private terminateUpload(): void {
 
-        App.hideFullPageLoading();
+        Utilitary.hideFullPageLoading();
 
     }
 
@@ -285,7 +272,7 @@ class App {
 
     //-- Upload content dropped on the page and create a Faust DSP with it
     uploadOn(app: App, module: ModuleClass, x: number, y: number, e: DragEvent) {
-        App.showFullPageLoading();
+        Utilitary.showFullPageLoading();
         //worker.postMessage("go");
         this.preventDefaultAction(e);
 
@@ -308,12 +295,12 @@ class App {
                     this.uploadFile2(app, module, x, y, e, dsp_code)
                 } catch (error) {
                     new Message(error);
-                    App.hideFullPageLoading();
+                    Utilitary.hideFullPageLoading();
                 }
             }
         } else { // CASE 4 : ANY OTHER STRANGE THING
             app.terminateUpload();
-            new Message(App.messageRessource.errorObjectNotFaustCompatible);
+            new Message(Utilitary.messageRessource.errorObjectNotFaustCompatible);
         }
     }
     //Upload Url
@@ -388,7 +375,7 @@ class App {
             type = "json";
             reader.readAsText(file);
         } else {
-            throw new Error(App.messageRessource.errorObjectNotFaustCompatible);
+            throw new Error(Utilitary.messageRessource.errorObjectNotFaustCompatible);
 
             //this.terminateUpload();
         }
@@ -407,106 +394,33 @@ class App {
         };
     }
     loadFileEvent(e: CustomEvent) {
-        App.showFullPageLoading();
+        Utilitary.showFullPageLoading();
         var file: File = <File>e.detail;
         var position: PositionModule = Utilitary.currentScene.positionDblTapModule();
         this.loadFile(file, null, position.x, position.y, this)
 
     }
     dblTouchUpload(e: CustomEvent) {
-        App.showFullPageLoading();
+        Utilitary.showFullPageLoading();
         var position: PositionModule = Utilitary.currentScene.positionDblTapModule();
         this.uploadUrl(this, null, position.x, position.y, e.detail);
 
     }
 
     //Check in Url if the app should be for kids
-    static isAppPedagogique(): boolean {
-        if (window.location.href.indexOf("kids.html") > -1) {
-            return true
-        } else {
-            return false
-        }
-    }
-    //generic function to make XHR request
-    static getXHR(url: string, callback: (any) => any,errCallback:(any)=>any) {
-
-        var getrequest: XMLHttpRequest = new XMLHttpRequest();
-
-        getrequest.onreadystatechange = function () {
-            console.log("enter onreadystatechange");
-            if (getrequest.readyState == 4 && getrequest.status == 200) {
-                callback(getrequest.responseText);
-            } else if (getrequest.readyState == 4 && getrequest.status == 400){
-                errCallback(getrequest.responseText);
-            }
-        }
-
-        getrequest.open("GET", url, true);
-        getrequest.send(null);
-    }
+    
 
 
-    static preventdefault(e: Event) {
-        e.preventDefault();
-    }
+
 
     ////////////////////////////// LOADINGS //////////////////////////////////////
 
     //add loading logo and text on export
-    static addLoadingLogo(idTarget: string) {
-        var loadingDiv = document.createElement("div");
-        loadingDiv.className = "loadingDiv";
-        var loadingImg = document.createElement("img");
-        loadingImg.src = App.baseImg + "logoAnim.gif"
-        loadingImg.id = "loadingImg";
-        var loadingText = document.createElement("span");
-        loadingText.textContent = App.messageRessource.loading;
-        loadingText.id = "loadingText";
-        loadingDiv.appendChild(loadingImg);
-        loadingDiv.appendChild(loadingText);
-        if (document.getElementById(idTarget)!=null){
-            document.getElementById(idTarget).appendChild(loadingDiv);
-        }
-    }
-    static removeLoadingLogo(idTarget: string) {
-        var divTarget = <HTMLDivElement>document.getElementById(idTarget)
-        if (divTarget != null && divTarget.getElementsByClassName("loadingDiv").length > 0) {
-            while (divTarget.getElementsByClassName("loadingDiv").length != 0) {
-                divTarget.getElementsByClassName("loadingDiv")[0].remove();
-            }
-        }
-    }
+   
 
-    static addFullPageLoading() {
-        
 
-        var loadingText = document.getElementById("loadingTextBig");
-        loadingText.id = "loadingTextBig"
-        loadingText.textContent = App.messageRessource.loading;
-    }
 
-    static showFullPageLoading() {
 
-        document.getElementById("loadingPage").style.visibility = "visible";
-        //too demanding for mobile firefox...
-        //document.getElementById("Normal").style.filter = "blur(2px)"
-        //document.getElementById("Normal").style.webkitFilter = "blur(2px)"
-        //document.getElementById("menuContainer").style.filter = "blur(2px)"
-        //document.getElementById("menuContainer").style.webkitFilter = "blur(2px)"
-    }
-    static hideFullPageLoading() {
-        document.getElementById("loadingPage").style.visibility = "hidden";
-            //document.getElementById("Normal").style.filter = "none"
-            //document.getElementById("Normal").style.webkitFilter = "none"
-            //document.getElementById("menuContainer").style.filter = "none"
-            //document.getElementById("menuContainer").style.webkitFilter = "none"
-        
-    }
-
-    static createDropAreaGraph() {
-        
-    }
     // manage style during a drag and drop event
     styleOnDragStart() {
         this.menu.menuView.menuContainer.style.opacity = "0.5";
@@ -558,22 +472,8 @@ class App {
             document.getElementById("svgCanvas").style.height = "100%";
         } 
     }
-    static replaceAll(str: String, find: string, replace: string) {
-        return str.replace(new RegExp(find, 'g'), replace);
-    }
-    getRessources() {
-        // App.getXHR(
-        var localization = navigator.language;
-        if (localization == "fr" || localization == "fr-FR") {
-            App.getXHR("ressources/ressources_fr-FR.json", (ressource) => { this.loadMessages (ressource)}, this.errorCallBack)
-        } else {
-            App.getXHR("ressources/ressources_fr-FR.json", (ressource) => { this.loadMessages(ressource) }, this.errorCallBack)
-        }
-    }
-    loadMessages(ressourceJson: string) {
-        App.messageRessource = JSON.parse(ressourceJson);
-        resumeInit(this);
-    }
+
+
     errorCallBack(message: string) {
 
     }

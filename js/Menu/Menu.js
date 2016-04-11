@@ -28,7 +28,7 @@ var Menu = (function () {
         this.currentMenuChoices = MenuChoices.null;
         this.isMenuLow = false;
         this.isFullScreen = false;
-        this.isAccelerometer = App.isAccelerometerOn;
+        this.isAccelerometer = Utilitary.isAccelerometerOn;
         this.menuView = new MenuView();
         this.menuView.init(htmlContainer);
         this.menuView.libraryButtonMenu.onclick = function () { _this.menuHandler(_this.menuChoices = MenuChoices.library); };
@@ -40,7 +40,7 @@ var Menu = (function () {
         this.menuView.loadButton.addEventListener("click", function () { _this.menuHandler(_this.menuChoices = MenuChoices.load); });
         this.menuView.fullScreenButton.addEventListener("click", function () { _this.fullScreen(); });
         this.menuView.accButton.addEventListener("click", function () { _this.accelerometer(); });
-        this.menuView.cleanButton.addEventListener("click", function () { new Confirm(App.messageRessource.confirmEmptyScene, function (callback) { _this.cleanScene(callback); }); });
+        this.menuView.cleanButton.addEventListener("click", function () { new Confirm(Utilitary.messageRessource.confirmEmptyScene, function (callback) { _this.cleanScene(callback); }); });
         this.library = new Library();
         this.library.libraryView = this.menuView.libraryView;
         this.library.fillLibrary();
@@ -291,7 +291,7 @@ var Menu = (function () {
         this.menuView.saveView.inputDownload.value = Utilitary.currentScene.sceneName;
         this.menuView.saveView.inputLocalStorage.value = Utilitary.currentScene.sceneName;
         this.menuView.saveView.inputCloudStorage.value = Utilitary.currentScene.sceneName;
-        new Message(App.messageRessource.successRenameScene, "messageTransitionOutFast", 2000, 500);
+        new Message(Utilitary.messageRessource.successRenameScene, "messageTransitionOutFast", 2000, 500);
     };
     Menu.prototype.lowerLibraryMenu = function () {
         this.library.libraryView.effetLibrary.style.height = "150px";
@@ -343,7 +343,7 @@ var Menu = (function () {
         var checkboxs = document.getElementsByClassName("accCheckbox");
         if (this.isAccelerometer) {
             this.isAccelerometer = false;
-            App.isAccelerometerOn = false;
+            Utilitary.isAccelerometerOn = false;
             this.menuView.accButton.style.opacity = "0.3";
             for (var i = 0; i < AccelerometerHandler.faustInterfaceControler.length; i++) {
                 var acc = AccelerometerHandler.faustInterfaceControler[i].accelerometerSlider;
@@ -352,7 +352,7 @@ var Menu = (function () {
                 //AccelerometerHandler.accelerometerSliders[i].mySlider.style.opacity = "1";
                 slider.classList.remove("not-allowed");
                 slider.classList.add("allowed");
-                if (!App.isAccelerometerEditOn) {
+                if (!Utilitary.isAccelerometerEditOn) {
                     slider.disabled = false;
                 }
             }
@@ -360,7 +360,7 @@ var Menu = (function () {
         else if (!this.isAccelerometer) {
             this.menuView.accButton.style.opacity = "1";
             this.isAccelerometer = true;
-            App.isAccelerometerOn = true;
+            Utilitary.isAccelerometerOn = true;
             for (var i = 0; i < AccelerometerHandler.faustInterfaceControler.length; i++) {
                 var acc = AccelerometerHandler.faustInterfaceControler[i].accelerometerSlider;
                 var slider = AccelerometerHandler.faustInterfaceControler[i].faustInterfaceView.slider;
@@ -369,7 +369,7 @@ var Menu = (function () {
                     //AccelerometerHandler.accelerometerSliders[i].mySlider.style.opacity = "0.5";
                     slider.classList.add("not-allowed");
                     slider.classList.remove("allowed");
-                    if (!App.isAccelerometerEditOn) {
+                    if (!Utilitary.isAccelerometerEditOn) {
                         slider.disabled = true;
                     }
                 }
@@ -436,7 +436,7 @@ var Menu = (function () {
         window.open("https://accounts.google.com/logout", "newwindow", "width=500,height=700");
     };
     Menu.prototype.connectionProblem = function (event) {
-        new Message(App.messageRessource.errorConnectionCloud + " : " + event.detail);
+        new Message(Utilitary.messageRessource.errorConnectionCloud + " : " + event.detail);
     };
     Menu.prototype.fillSelectCloud = function (optionEvent) {
         this.load.loadView.cloudSelectFile.add(optionEvent.detail);
@@ -468,8 +468,8 @@ var Menu = (function () {
             this.isMenuDriveLoading = true;
             this.save.saveView.driveContainer.style.display = "none";
             this.load.loadView.driveContainer.style.display = "none";
-            App.addLoadingLogo("loadCloudContainer");
-            App.addLoadingLogo("cloudSaveContainer");
+            Utilitary.addLoadingLogo("loadCloudContainer");
+            Utilitary.addLoadingLogo("cloudSaveContainer");
         }
     };
     Menu.prototype.finishLoadingDrive = function () {
@@ -477,8 +477,8 @@ var Menu = (function () {
             this.isMenuDriveLoading = false;
             this.save.saveView.driveContainer.style.display = "block";
             this.load.loadView.driveContainer.style.display = "block";
-            App.removeLoadingLogo("loadCloudContainer");
-            App.removeLoadingLogo("cloudSaveContainer");
+            Utilitary.removeLoadingLogo("loadCloudContainer");
+            Utilitary.removeLoadingLogo("cloudSaveContainer");
         }
     };
     return Menu;

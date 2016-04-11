@@ -13,7 +13,6 @@
 /// <reference path="App.ts"/>
 /// <reference path="Main.ts"/>
 /// <reference path="Modules/ModuleClass.ts"/>
-/// <reference path="Pedagogie/Tooltips.ts"/>
 "use strict";
 /***********************************************************************************/
 /****** Node Dragging - these are used for dragging the audio modules interface*****/

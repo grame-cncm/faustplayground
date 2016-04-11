@@ -19,7 +19,7 @@ var EquivalentFaust = (function () {
     function EquivalentFaust() {
     }
     EquivalentFaust.prototype.isModuleRecursiveExisting = function (moduleTree) {
-        if (App.recursiveMap[moduleTree.patchID])
+        if (Utilitary.recursiveMap[moduleTree.patchID])
             return true;
         return false;
     };
@@ -32,7 +32,7 @@ var EquivalentFaust = (function () {
     EquivalentFaust.prototype.treatRecursiveModule = function (moduleTree) {
         // 	Save recursion in map and flag it
         var ModuleToReplace = this.getFirstOccurenceOfModuleInCourse(moduleTree);
-        App.recursiveMap[moduleTree.patchID] = ModuleToReplace;
+        Utilitary.recursiveMap[moduleTree.patchID] = ModuleToReplace;
         ModuleToReplace.recursiveFlag = true;
     };
     EquivalentFaust.prototype.getFirstOccurenceOfModuleInCourse = function (moduleTree) {
@@ -55,7 +55,7 @@ var EquivalentFaust = (function () {
         moduleTree.moduleInputs = [];
         moduleTree.recursiveFlag = false;
         if (this.isModuleRecursiveExisting(moduleTree)) {
-            var ModuleToReuse = App.recursiveMap[moduleTree.patchID];
+            var ModuleToReuse = Utilitary.recursiveMap[moduleTree.patchID];
             moduleTree.sourceCode = ModuleToReuse.sourceCode;
             moduleTree.moduleInputs = ModuleToReuse.moduleInputs;
         }
@@ -159,7 +159,7 @@ var EquivalentFaust = (function () {
 			    recursivize(p,q) = (_,_,_,_ :> stereoize(p)) ~ stereoize(q);\n\
 			    ";
             this.connectUnconnectedModules(faustModuleList, dest);
-            App.recursiveMap = [];
+            Utilitary.recursiveMap = [];
             this.giveIdToModules(scene);
             var destinationDIVVV = this.createTree(dest, null);
             if (dest.moduleFaust.getInputConnections())

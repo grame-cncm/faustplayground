@@ -27,36 +27,38 @@ function init(): void {
 
 
     var app: App = new App();
-    app.getRessources();
+    var ressource = new Ressources();
+
+    ressource.getRessources(app);
 }
 function resumeInit(app: App) {
     app.createDialogue();
 
     try {
-        App.audioContext = new AudioContext();
+        Utilitary.audioContext = new AudioContext();
     } catch (e) {
-        new Message(App.messageRessource.errorNoWebAudioAPI);
+        new Message(Utilitary.messageRessource.errorNoWebAudioAPI);
     }
-    App.addFullPageLoading();
+    Utilitary.addFullPageLoading();
     app.createAllScenes();
     app.createMenu();
 
     app.showFirstScene();
     var accHandler: AccelerometerHandler = new AccelerometerHandler();
-    App.accHandler = accHandler;
+    Utilitary.accHandler = accHandler;
     accHandler.getAccelerometerValue();
-    App.driveApi = new DriveAPI();
-    app.menu.setDriveApi(App.driveApi);
-    App.driveApi.checkAuth();
+    Utilitary.driveApi = new DriveAPI();
+    app.menu.setDriveApi(Utilitary.driveApi);
+    Utilitary.driveApi.checkAuth();
     window.addEventListener("error", (e: ErrorEvent) => {
         if (e.message == "Uncaught Error: workerError" || e.message == "Error: workerError") {
-            new Message(App.messageRessource.errorOccuredMessage + e.message)
-            App.hideFullPageLoading();
+            new Message(Utilitary.messageRessource.errorOccuredMessage + e.message)
+            Utilitary.hideFullPageLoading();
         }
         if (e.message == "Uncaught Error: Upload2Error") {
 
 
-            App.hideFullPageLoading();
+            Utilitary.hideFullPageLoading();
             e.preventDefault();
         }
         //e.preventDefault();
@@ -67,12 +69,12 @@ window.addEventListener('touchend', IosInit , false);
 window.addEventListener('touchstart', IosInit2, false);
 
 function IosInit(){
-    var buffer = App.audioContext.createBuffer(1, 1, 22050);
-    var source = App.audioContext.createBufferSource();
+    var buffer = Utilitary.audioContext.createBuffer(1, 1, 22050);
+    var source = Utilitary.audioContext.createBufferSource();
     source.buffer = buffer;
 
     // connect to output (your speakers)
-    source.connect(App.audioContext.destination);
+    source.connect(Utilitary.audioContext.destination);
 
     // play the file
     if (source.noteOn) {
@@ -82,12 +84,12 @@ function IosInit(){
 }
 
 function IosInit2() {
-    var buffer = App.audioContext.createBuffer(1, 1, 22050);
-    var source = App.audioContext.createBufferSource();
+    var buffer = Utilitary.audioContext.createBuffer(1, 1, 22050);
+    var source = Utilitary.audioContext.createBufferSource();
     source.buffer = buffer;
 
     // connect to output (your speakers)
-    source.connect(App.audioContext.destination);
+    source.connect(Utilitary.audioContext.destination);
 
     // play the file
     if (source.noteOn) {

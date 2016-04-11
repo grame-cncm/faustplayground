@@ -58,7 +58,7 @@ class Library{
 
     fillLibrary() {
         var url: string = "faust-modules/index.json"
-        App.getXHR(url, (json: string) => { this.fillLibraryCallBack(json) }, (errorMessage: string) => { ErrorFaust.errorCallBack(errorMessage)});
+        Utilitary.getXHR(url, (json: string) => { this.fillLibraryCallBack(json) }, (errorMessage: string) => { ErrorFaust.errorCallBack(errorMessage)});
     }
 
     fillLibraryCallBack(json: string) {
@@ -87,8 +87,8 @@ class Library{
             li.appendChild(a);
             a.href = options[i];
             a.draggable = true;
-            a.title = App.messageRessource.hoverLibraryElement;
-            a.onclick = App.preventdefault;
+            a.title = Utilitary.messageRessource.hoverLibraryElement;
+            a.addEventListener("click", (e) => { e.preventDefault() });
 
             var dblckickHandler = this.dispatchEventLibrary.bind(this,a.href) 
             a.ondblclick =  dblckickHandler;
@@ -109,7 +109,7 @@ class Library{
             this.previousTouchUrl = anchor.href;
             window.setTimeout(()=>{ this.isLibraryTouch = false;this.previousTouchUrl = "" },300)
         } else if (anchor.href == this.previousTouchUrl) {
-            App.showFullPageLoading();
+            Utilitary.showFullPageLoading();
             this.dispatchEventLibrary(anchor.href);
             this.isLibraryTouch = false;
         } else {

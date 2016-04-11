@@ -14,7 +14,7 @@ var LibraryView = (function () {
         var instrumentLibraryTitle = document.createElement("span");
         instrumentLibraryTitle.id = "instrumentLibraryTitle";
         instrumentLibraryTitle.className = "libraryTitles";
-        instrumentLibraryTitle.appendChild(document.createTextNode(App.messageRessource.titleInstruments));
+        instrumentLibraryTitle.appendChild(document.createTextNode(Utilitary.messageRessource.titleInstruments));
         var intrumentLibrarySelect = document.createElement("ul");
         intrumentLibrarySelect.id = "instrumentLibrarySelect";
         intrumentLibrarySelect.className = "librarySelects";
@@ -29,7 +29,7 @@ var LibraryView = (function () {
         var effetLibraryTitle = document.createElement("span");
         effetLibraryTitle.id = "effetLibraryTitle";
         effetLibraryTitle.className = "libraryTitles";
-        effetLibraryTitle.appendChild(document.createTextNode(App.messageRessource.titleEffects));
+        effetLibraryTitle.appendChild(document.createTextNode(Utilitary.messageRessource.titleEffects));
         var effetLibrarySelect = document.createElement("ul");
         effetLibrarySelect.id = "effetLibrarySelect";
         effetLibrarySelect.className = "librarySelects";
@@ -44,7 +44,7 @@ var LibraryView = (function () {
         var exempleLibraryTitle = document.createElement("span");
         exempleLibraryTitle.id = "exempleLibraryTitle";
         exempleLibraryTitle.className = "libraryTitles";
-        exempleLibraryTitle.appendChild(document.createTextNode(App.messageRessource.titleExemples));
+        exempleLibraryTitle.appendChild(document.createTextNode(Utilitary.messageRessource.titleExemples));
         var exempleLibrarySelect = document.createElement("ul");
         exempleLibrarySelect.id = "exempleLibrarySelect";
         exempleLibrarySelect.className = "librarySelects";

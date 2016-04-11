@@ -28,7 +28,7 @@ class Load {
     localLoad() {
         if (this.loadView.existingSceneSelect.selectedIndex > -1) {
 
-            App.showFullPageLoading();
+            Utilitary.showFullPageLoading();
             var option = <HTMLOptionElement>this.loadView.existingSceneSelect.options[this.loadView.existingSceneSelect.selectedIndex]
             var name = option.value
             this.sceneCurrent.recallScene(localStorage.getItem(name))
@@ -37,10 +37,10 @@ class Load {
     getEx(e: Event) {
         e.preventDefault();
         var anchorTarget = <HTMLAnchorElement>e.target;
-        App.getXHR(anchorTarget.href, (json: string) => { this.loadEx(json) }, null)
+        Utilitary.getXHR(anchorTarget.href, (json: string) => { this.loadEx(json) }, null)
     }
     loadEx(json) {
-        App.showFullPageLoading();
+        Utilitary.showFullPageLoading();
 
         this.sceneCurrent.recallScene(json);
     }
@@ -56,7 +56,7 @@ class Load {
     cloudLoad() {
 
         if (this.loadView.cloudSelectFile.selectedIndex > -1) {
-            App.showFullPageLoading();
+            Utilitary.showFullPageLoading();
             var option = <HTMLOptionElement>this.loadView.cloudSelectFile.options[this.loadView.cloudSelectFile.selectedIndex]
             var id = option.value
             var file = this.drive.getFile(id, (resp) => {this.getContent(resp) });

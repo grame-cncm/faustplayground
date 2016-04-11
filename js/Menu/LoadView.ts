@@ -87,7 +87,7 @@
         loadFileButton.type = "button";
         loadFileButton.id = "loadFileButton";
         loadFileButton.className = "button"
-        loadFileButton.textContent = App.messageRessource.buttonLoadFile;
+        loadFileButton.textContent = Utilitary.messageRessource.buttonLoadFile;
         this.loadFileButton = loadFileButton;
 
         loadFileContainer.appendChild(loadFileDiv);
@@ -115,14 +115,14 @@
         localButtonSuppr.type = "button";
         localButtonSuppr.id = "localButtonSuppr";
         localButtonSuppr.className = "button"
-        localButtonSuppr.textContent = App.messageRessource.buttonSuppress;
+        localButtonSuppr.textContent = Utilitary.messageRessource.buttonSuppress;
         this.buttonLocalSuppr = localButtonSuppr;
 
         var localButton: HTMLButtonElement = document.createElement("button");
         localButton.type = "button";
         localButton.id = "localLoadButton";
         localButton.className = "button"
-        localButton.textContent = App.messageRessource.buttonLoadLocal;
+        localButton.textContent = Utilitary.messageRessource.buttonLoadLocal;
         this.buttonLoadLocal = localButton;
 
         var localBottomButtonContainer: HTMLElement = document.createElement("div");
@@ -141,7 +141,7 @@
 
         var buttonConnectDrive = document.createElement("button");
         buttonConnectDrive.id = "buttonConnectLoadDrive";
-        buttonConnectDrive.textContent = App.messageRessource.buttonConnectCloud;
+        buttonConnectDrive.textContent = Utilitary.messageRessource.buttonConnectCloud;
         buttonConnectDrive.className = "button"
         this.buttonConnectDrive = buttonConnectDrive
 
@@ -156,7 +156,7 @@
         changeAccountButton.type = "button";
         //changeAccountButton.id = "changeAccountButton";
         changeAccountButton.className = "button changeAccountButton"
-        changeAccountButton.textContent = App.messageRessource.buttonLogoutCloud;
+        changeAccountButton.textContent = Utilitary.messageRessource.buttonLogoutCloud;
         changeAccountButton.style.display = "none";
         this.buttonChangeAccount = changeAccountButton;
 
@@ -164,7 +164,7 @@
         cloudButton.type = "button";
         cloudButton.id = "cloudLoadButton";
         cloudButton.className = "button"
-        cloudButton.textContent = App.messageRessource.buttonLoadCloud;
+        cloudButton.textContent = Utilitary.messageRessource.buttonLoadCloud;
         this.buttonLoadCloud = cloudButton;
 
         var cloudBottomButtonContainer: HTMLElement = document.createElement("div");

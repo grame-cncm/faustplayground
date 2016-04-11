@@ -164,15 +164,15 @@ var ModuleClass = (function () {
         this.moduleFaust.factory = factory;
         try {
             if (factory != null) {
-                this.moduleFaust.fDSP = faust.createDSPInstance(factory, App.audioContext, 1024);
+                this.moduleFaust.fDSP = faust.createDSPInstance(factory, Utilitary.audioContext, 1024);
             }
             else {
                 throw new Error("create DSP Error factory null");
             }
         }
         catch (e) {
-            new Message(App.messageRessource.errorCreateDSP + " : " + e);
-            App.hideFullPageLoading();
+            new Message(Utilitary.messageRessource.errorCreateDSP + " : " + e);
+            Utilitary.hideFullPageLoading();
         }
     };
     //--- Update DSP in module 
@@ -207,7 +207,7 @@ var ModuleClass = (function () {
                     connector.createConnection(saveInCnx[i].source, saveInCnx[i].source.moduleView.getOutputNode(), module, module.moduleView.getInputNode());
             }
         }
-        App.hideFullPageLoading();
+        Utilitary.hideFullPageLoading();
     };
     ModuleClass.prototype.deleteDSP = function (todelete) {
         // 	TO DO SAFELY --> FOR NOW CRASHES SOMETIMES
@@ -224,7 +224,7 @@ var ModuleClass = (function () {
         this.moduleView.textArea.value = this.moduleFaust.fSource;
         Connector.redrawInputConnections(this, this.drag);
         Connector.redrawOutputConnections(this, this.drag);
-        this.moduleView.fEditImg.style.backgroundImage = "url(" + App.baseImg + "enter.png)";
+        this.moduleView.fEditImg.style.backgroundImage = "url(" + Utilitary.baseImg + "enter.png)";
         this.moduleView.fEditImg.addEventListener("click", this.eventCloseEditHandler);
         this.moduleView.fEditImg.addEventListener("touchend", this.eventCloseEditHandler);
         this.moduleView.fEditImg.removeEventListener("click", this.eventOpenEditHandler);
@@ -241,7 +241,7 @@ var ModuleClass = (function () {
     };
     //---- React to recompilation triggered by click on icon
     ModuleClass.prototype.recompileSource = function (event, module) {
-        App.showFullPageLoading();
+        Utilitary.showFullPageLoading();
         var buttonImage = event.target;
         var dsp_code = this.moduleView.textArea.value;
         this.moduleView.textArea.style.display = "none";
@@ -249,7 +249,7 @@ var ModuleClass = (function () {
         Connector.redrawInputConnections(this, this.drag);
         module.update(this.moduleView.fTitle.textContent, dsp_code);
         module.recallInterfaceParams();
-        module.moduleView.fEditImg.style.backgroundImage = "url(" + App.baseImg + "edit.png)";
+        module.moduleView.fEditImg.style.backgroundImage = "url(" + Utilitary.baseImg + "edit.png)";
         module.moduleView.fEditImg.addEventListener("click", this.eventOpenEditHandler);
         module.moduleView.fEditImg.addEventListener("touchend", this.eventOpenEditHandler);
         module.moduleView.fEditImg.removeEventListener("click", this.eventCloseEditHandler);

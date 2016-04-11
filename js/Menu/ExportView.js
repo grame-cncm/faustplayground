@@ -18,7 +18,7 @@ var ExportView = (function () {
         /////////////////////////////////  name App
         var nameAppTitle = document.createElement("span");
         nameAppTitle.id = "nameAppTitle";
-        nameAppTitle.textContent = App.messageRessource.appNameExport;
+        nameAppTitle.textContent = Utilitary.messageRessource.appNameExport;
         nameAppTitle.className = "exportTitle";
         var dynamicName = document.createElement("span");
         dynamicName.id = "dynamicName";
@@ -27,7 +27,7 @@ var ExportView = (function () {
         this.dynamicName = dynamicName;
         var rulesName = document.createElement("span");
         rulesName.id = "rulesName";
-        rulesName.textContent = App.messageRessource.rulesSceneName;
+        rulesName.textContent = Utilitary.messageRessource.rulesSceneName;
         this.rulesName = rulesName;
         var input = document.createElement("input");
         input.id = "inputNameApp";
@@ -39,7 +39,7 @@ var ExportView = (function () {
         renameButton.type = "button";
         renameButton.id = "buttonNameApp";
         renameButton.className = "button";
-        renameButton.textContent = App.messageRessource.buttonChangeSceneName;
+        renameButton.textContent = Utilitary.messageRessource.buttonChangeSceneName;
         renameBottomButtonContainer.appendChild(renameButton);
         nameAppContainer.appendChild(nameAppTitle);
         nameAppContainer.appendChild(rulesName);
@@ -59,14 +59,14 @@ var ExportView = (function () {
         this.optionContainer = optionContainer;
         var lessOptionDiv = document.createElement("div");
         lessOptionDiv.id = "lessOptionDiv";
-        lessOptionDiv.textContent = App.messageRessource.lessOptions;
+        lessOptionDiv.textContent = Utilitary.messageRessource.lessOptions;
         lessOptionDiv.style.display = "none";
         this.lessOptionDiv = lessOptionDiv;
         var urlDiv = document.createElement("div");
         urlDiv.id = "inputExport";
         var exportOptionTitle = document.createElement("span");
         exportOptionTitle.id = "exportOptionTitle";
-        exportOptionTitle.textContent = App.messageRessource.titleExportOptions;
+        exportOptionTitle.textContent = Utilitary.messageRessource.titleExportOptions;
         exportOptionTitle.className = "exportTitle";
         var fwurl = document.createElement("input");
         fwurl.id = "faustweburl";
@@ -77,7 +77,7 @@ var ExportView = (function () {
         var exportChoiceDiv = document.createElement('div');
         exportChoiceDiv.id = "optionExportContainer";
         var refreshButton = document.createElement("button");
-        refreshButton.textContent = App.messageRessource.buttonRefresh;
+        refreshButton.textContent = Utilitary.messageRessource.buttonRefresh;
         refreshButton.id = "refreshButton";
         refreshButton.className = "button";
         this.refreshButton = refreshButton;
@@ -99,7 +99,7 @@ var ExportView = (function () {
         exportButton.id = "exportButton";
         exportButton.type = "submit";
         exportButton.className = "button";
-        exportButton.value = App.messageRessource.buttonExportScene;
+        exportButton.value = Utilitary.messageRessource.buttonExportScene;
         this.exportButton = exportButton;
         var exportBottomButtonContainer = document.createElement("div");
         exportBottomButtonContainer.className = "bottomButtonContainer";
@@ -114,7 +114,7 @@ var ExportView = (function () {
         //////////////////////////// export Result
         var exportResultTitle = document.createElement("span");
         exportResultTitle.id = "exportResultTitle";
-        exportResultTitle.textContent = App.messageRessource.titleDownlaodExport;
+        exportResultTitle.textContent = Utilitary.messageRessource.titleDownlaodExport;
         exportResultTitle.className = "exportTitle";
         exportResultContainer.appendChild(exportResultTitle);
         exportContainer.appendChild(nameAppContainer);

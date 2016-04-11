@@ -32,7 +32,7 @@ var AccelerometerSlider = (function () {
             //this.step = parseFloat(controler.step);
             //this.mySlider = controler.slider;
             //this.valueOutput = controler.output;
-            this.isActive = App.isAccelerometerOn;
+            this.isActive = Utilitary.isAccelerometerOn;
         }
     }
     AccelerometerSlider.prototype.setAttributes = function (fMetaAcc) {
@@ -65,7 +65,7 @@ var AccelerometerHandler = (function () {
         }
         else {
             // Browser doesn't support DeviceMotionEvent
-            console.log(App.messageRessource.noDeviceMotion);
+            console.log(Utilitary.messageRessource.noDeviceMotion);
         }
     };
     // propagate the new x, y, z value of the accelerometer to the regisred object

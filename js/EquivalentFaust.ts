@@ -37,7 +37,7 @@ class EquivalentFaust {
 
     isModuleRecursiveExisting(moduleTree: ModuleTree): boolean {
 
-        if (App.recursiveMap[moduleTree.patchID])
+        if (Utilitary.recursiveMap[moduleTree.patchID])
             return true;
 
         return false;
@@ -58,7 +58,7 @@ class EquivalentFaust {
         // 	Save recursion in map and flag it
         var ModuleToReplace = this.getFirstOccurenceOfModuleInCourse(moduleTree);
 
-        App.recursiveMap[moduleTree.patchID] = ModuleToReplace;
+        Utilitary.recursiveMap[moduleTree.patchID] = ModuleToReplace;
 
         ModuleToReplace.recursiveFlag = true;
     }
@@ -91,7 +91,7 @@ class EquivalentFaust {
 
         if (this.isModuleRecursiveExisting(moduleTree)) {
 
-            var ModuleToReuse = App.recursiveMap[moduleTree.patchID];
+            var ModuleToReuse = Utilitary.recursiveMap[moduleTree.patchID];
 
             moduleTree.sourceCode = ModuleToReuse.sourceCode;
             moduleTree.moduleInputs = ModuleToReuse.moduleInputs;
@@ -230,7 +230,7 @@ class EquivalentFaust {
 
             this.connectUnconnectedModules(faustModuleList, dest);
 
-            App.recursiveMap = [];
+            Utilitary.recursiveMap = [];
 
             this.giveIdToModules(scene);
 

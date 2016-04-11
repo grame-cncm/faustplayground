@@ -23,6 +23,7 @@ class Export{
     exportView: ExportView;
     static exportUrl: string = "http://faustservice.grame.fr"
     static targetsUrl: string = "http://faustservice.grame.fr/targets"
+    jsonText: string;
     eventExport: (event: Event) => void;
 
     //------ Handle Combo Boxes
@@ -67,7 +68,7 @@ class Export{
         } else {
 
 
-            var data:string[] = JSON.parse(App.jsonText);
+            var data:string[] = JSON.parse(this.jsonText);
 
             var platformsSelect: HTMLSelectElement = <HTMLSelectElement>document.getElementById('platforms');//get the combobox
             var options = <HTMLOptionElement>platformsSelect.options[platformsSelect.selectedIndex]
@@ -95,14 +96,14 @@ class Export{
         var input: HTMLInputElement = <HTMLInputElement>document.getElementById("faustweburl")
         Export.targetsUrl = input.value+"/targets";
 
-        App.getXHR(Export.targetsUrl, (json: string) => { this.uploadTargetCallback(json) }, (errorMessage: string) => { ErrorFaust.errorCallBack(errorMessage) });
+        Utilitary.getXHR(Export.targetsUrl, (json: string) => { this.uploadTargetCallback(json) }, (errorMessage: string) => { ErrorFaust.errorCallBack(errorMessage) });
         //ExportLib.getTargets(App.exportURL, (json: string) => { this.uploadTargetCallback },  (json: string)=> {alert('Impossible to get FaustWeb targets')});
     }	
 
     uploadTargetCallback(json: string) {
-        App.jsonText = json;
+        this.jsonText = json;
 
-        var data: string[] = JSON.parse(App.jsonText);
+        var data: string[] = JSON.parse(this.jsonText);
 
         for (var platform in data) {
             this.addItem('platforms', platform);
@@ -134,7 +135,7 @@ class Export{
             sceneName = "MonApplication";
         }
         this.removeQRCode();
-        App.addLoadingLogo("exportResultContainer");
+        Utilitary.addLoadingLogo("exportResultContainer");
         var equivalentFaust: EquivalentFaust = new EquivalentFaust();
         var faustCode: string = equivalentFaust.getFaustEquivalent(Utilitary.currentScene, Utilitary.currentScene.sceneName);
         ExportLib.getSHAKey((<HTMLInputElement>document.getElementById("faustweburl")).value, Utilitary.currentScene.sceneName, faustCode, expor.exportFaustCode);
@@ -185,7 +186,7 @@ class Export{
             linkDownload.value = serverUrl + "/" + shaKey + "/" + plateforme + "/" + architecture + "/" + appType;
             linkDownload.id = "linkDownload";
             linkDownload.className = "button";
-            linkDownload.textContent = App.messageRessource.buttonDownloadApp;
+            linkDownload.textContent = Utilitary.messageRessource.buttonDownloadApp;
             downloadBottomButtonContainer.appendChild(linkDownload);
             this.exportView.downloadButton = linkDownload;
             this.exportView.downloadButton.onclick = () => { window.location.href = this.exportView.downloadButton.value };
@@ -196,13 +197,13 @@ class Export{
 
             this.exportView.exportButton.addEventListener("click", this.eventExport)
             this.exportView.exportButton.style.opacity = "1";
-            App.removeLoadingLogo("exportResultContainer");
+           Utilitary.removeLoadingLogo("exportResultContainer");
         } else {
             new Message(shaKey)
         }
         this.exportView.exportButton.addEventListener("click", this.eventExport)
         this.exportView.exportButton.style.opacity = "1";
-        App.removeLoadingLogo("exportResultContainer");
+       Utilitary.removeLoadingLogo("exportResultContainer");
     }
 
 

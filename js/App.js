@@ -20,7 +20,6 @@ DEPENDENCIES:
    - Connect.js
    - libfaust.js
    - webaudio - asm - wrapper.js
-   - Pedagogie / Tooltips.js
 
    */
 /// <reference path="Scenes/SceneClass.ts"/>
@@ -121,13 +120,13 @@ var App = (function () {
     App.prototype.createModule = function (factory) {
         var _this = this;
         if (!factory) {
-            new Message(App.messageRessource.errorFactory + faust.getErrorMessage());
+            new Message(Utilitary.messageRessource.errorFactory + faust.getErrorMessage());
             this.terminateUpload();
             return null;
         }
         // can't it be just window.scenes[window.currentScene] ???
         //if (App.isTooltipEnabled)
-        var module = new ModuleClass(App.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), function (module) { Utilitary.currentScene.removeModule(module); }, this.compileFaust);
+        var module = new ModuleClass(Utilitary.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), function (module) { Utilitary.currentScene.removeModule(module); }, this.compileFaust);
         //else
         //    faustModule = new ModuleClass(this.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), this.scenes[0].removeModule);
         module.moduleFaust.setSource(this.tempModuleSourceCode);
@@ -152,7 +151,7 @@ var App = (function () {
         };
         Utilitary.currentScene.addModule(module);
         if (!Utilitary.currentScene.isInitLoading) {
-            App.hideFullPageLoading();
+            Utilitary.hideFullPageLoading();
         }
     };
     /********************************************************************
@@ -208,12 +207,12 @@ var App = (function () {
         e.preventDefault();
     };
     App.prototype.terminateUpload = function () {
-        App.hideFullPageLoading();
+        Utilitary.hideFullPageLoading();
     };
     //-- Finds out if the drop was on an existing module or creating a new one
     //-- Upload content dropped on the page and create a Faust DSP with it
     App.prototype.uploadOn = function (app, module, x, y, e) {
-        App.showFullPageLoading();
+        Utilitary.showFullPageLoading();
         //worker.postMessage("go");
         this.preventDefaultAction(e);
         // CASE 1 : THE DROPPED OBJECT IS A URL TO SOME FAUST CODE
@@ -233,13 +232,13 @@ var App = (function () {
                 }
                 catch (error) {
                     new Message(error);
-                    App.hideFullPageLoading();
+                    Utilitary.hideFullPageLoading();
                 }
             }
         }
         else {
             app.terminateUpload();
-            new Message(App.messageRessource.errorObjectNotFaustCompatible);
+            new Message(Utilitary.messageRessource.errorObjectNotFaustCompatible);
         }
     };
     //Upload Url
@@ -301,7 +300,7 @@ var App = (function () {
             reader.readAsText(file);
         }
         else {
-            throw new Error(App.messageRessource.errorObjectNotFaustCompatible);
+            throw new Error(Utilitary.messageRessource.errorObjectNotFaustCompatible);
         }
         reader.onloadend = function (e) {
             dsp_code = "process = vgroup(\"" + filename + "\",environment{" + reader.result + "}.process);";
@@ -318,90 +317,19 @@ var App = (function () {
         };
     };
     App.prototype.loadFileEvent = function (e) {
-        App.showFullPageLoading();
+        Utilitary.showFullPageLoading();
         var file = e.detail;
         var position = Utilitary.currentScene.positionDblTapModule();
         this.loadFile(file, null, position.x, position.y, this);
     };
     App.prototype.dblTouchUpload = function (e) {
-        App.showFullPageLoading();
+        Utilitary.showFullPageLoading();
         var position = Utilitary.currentScene.positionDblTapModule();
         this.uploadUrl(this, null, position.x, position.y, e.detail);
     };
     //Check in Url if the app should be for kids
-    App.isAppPedagogique = function () {
-        if (window.location.href.indexOf("kids.html") > -1) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    };
-    //generic function to make XHR request
-    App.getXHR = function (url, callback, errCallback) {
-        var getrequest = new XMLHttpRequest();
-        getrequest.onreadystatechange = function () {
-            console.log("enter onreadystatechange");
-            if (getrequest.readyState == 4 && getrequest.status == 200) {
-                callback(getrequest.responseText);
-            }
-            else if (getrequest.readyState == 4 && getrequest.status == 400) {
-                errCallback(getrequest.responseText);
-            }
-        };
-        getrequest.open("GET", url, true);
-        getrequest.send(null);
-    };
-    App.preventdefault = function (e) {
-        e.preventDefault();
-    };
     ////////////////////////////// LOADINGS //////////////////////////////////////
     //add loading logo and text on export
-    App.addLoadingLogo = function (idTarget) {
-        var loadingDiv = document.createElement("div");
-        loadingDiv.className = "loadingDiv";
-        var loadingImg = document.createElement("img");
-        loadingImg.src = App.baseImg + "logoAnim.gif";
-        loadingImg.id = "loadingImg";
-        var loadingText = document.createElement("span");
-        loadingText.textContent = App.messageRessource.loading;
-        loadingText.id = "loadingText";
-        loadingDiv.appendChild(loadingImg);
-        loadingDiv.appendChild(loadingText);
-        if (document.getElementById(idTarget) != null) {
-            document.getElementById(idTarget).appendChild(loadingDiv);
-        }
-    };
-    App.removeLoadingLogo = function (idTarget) {
-        var divTarget = document.getElementById(idTarget);
-        if (divTarget != null && divTarget.getElementsByClassName("loadingDiv").length > 0) {
-            while (divTarget.getElementsByClassName("loadingDiv").length != 0) {
-                divTarget.getElementsByClassName("loadingDiv")[0].remove();
-            }
-        }
-    };
-    App.addFullPageLoading = function () {
-        var loadingText = document.getElementById("loadingTextBig");
-        loadingText.id = "loadingTextBig";
-        loadingText.textContent = App.messageRessource.loading;
-    };
-    App.showFullPageLoading = function () {
-        document.getElementById("loadingPage").style.visibility = "visible";
-        //too demanding for mobile firefox...
-        //document.getElementById("Normal").style.filter = "blur(2px)"
-        //document.getElementById("Normal").style.webkitFilter = "blur(2px)"
-        //document.getElementById("menuContainer").style.filter = "blur(2px)"
-        //document.getElementById("menuContainer").style.webkitFilter = "blur(2px)"
-    };
-    App.hideFullPageLoading = function () {
-        document.getElementById("loadingPage").style.visibility = "hidden";
-        //document.getElementById("Normal").style.filter = "none"
-        //document.getElementById("Normal").style.webkitFilter = "none"
-        //document.getElementById("menuContainer").style.filter = "none"
-        //document.getElementById("menuContainer").style.webkitFilter = "none"
-    };
-    App.createDropAreaGraph = function () {
-    };
     // manage style during a drag and drop event
     App.prototype.styleOnDragStart = function () {
         this.menu.menuView.menuContainer.style.opacity = "0.5";
@@ -451,32 +379,8 @@ var App = (function () {
             document.getElementById("svgCanvas").style.height = "100%";
         }
     };
-    App.replaceAll = function (str, find, replace) {
-        return str.replace(new RegExp(find, 'g'), replace);
-    };
-    App.prototype.getRessources = function () {
-        var _this = this;
-        // App.getXHR(
-        var localization = navigator.language;
-        if (localization == "fr" || localization == "fr-FR") {
-            App.getXHR("ressources/ressources_fr-FR.json", function (ressource) { _this.loadMessages(ressource); }, this.errorCallBack);
-        }
-        else {
-            App.getXHR("ressources/ressources_fr-FR.json", function (ressource) { _this.loadMessages(ressource); }, this.errorCallBack);
-        }
-    };
-    App.prototype.loadMessages = function (ressourceJson) {
-        App.messageRessource = JSON.parse(ressourceJson);
-        resumeInit(this);
-    };
     App.prototype.errorCallBack = function (message) {
     };
-    App.idX = 0;
-    //static scene: Scene;
-    App.baseImg = "img/";
-    App.isAccelerometerOn = false;
-    App.isAccelerometerEditOn = false;
-    App.messageRessource = new Ressources();
     return App;
 }());
 //# sourceMappingURL=App.js.map

@@ -12,7 +12,7 @@ class ExportLib{
 
     //static getTargets(exportUrl: string, callback: (json: string) => void, errCallback: (json: string) => void)
     //{
-    //    //App.getXHR(exportUrl, callback)
+    //    //Utilitary.getXHR(exportUrl, callback)
     //    var getrequest: XMLHttpRequest = new XMLHttpRequest();
 				
 	   // getrequest.onreadystatechange = function() {

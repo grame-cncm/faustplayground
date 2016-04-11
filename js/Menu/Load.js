@@ -24,7 +24,7 @@ var Load = (function () {
     };
     Load.prototype.localLoad = function () {
         if (this.loadView.existingSceneSelect.selectedIndex > -1) {
-            App.showFullPageLoading();
+            Utilitary.showFullPageLoading();
             var option = this.loadView.existingSceneSelect.options[this.loadView.existingSceneSelect.selectedIndex];
             var name = option.value;
             this.sceneCurrent.recallScene(localStorage.getItem(name));
@@ -34,10 +34,10 @@ var Load = (function () {
         var _this = this;
         e.preventDefault();
         var anchorTarget = e.target;
-        App.getXHR(anchorTarget.href, function (json) { _this.loadEx(json); }, null);
+        Utilitary.getXHR(anchorTarget.href, function (json) { _this.loadEx(json); }, null);
     };
     Load.prototype.loadEx = function (json) {
-        App.showFullPageLoading();
+        Utilitary.showFullPageLoading();
         this.sceneCurrent.recallScene(json);
     };
     Load.prototype.supprLocal = function () {
@@ -52,7 +52,7 @@ var Load = (function () {
     Load.prototype.cloudLoad = function () {
         var _this = this;
         if (this.loadView.cloudSelectFile.selectedIndex > -1) {
-            App.showFullPageLoading();
+            Utilitary.showFullPageLoading();
             var option = this.loadView.cloudSelectFile.options[this.loadView.cloudSelectFile.selectedIndex];
             var id = option.value;
             var file = this.drive.getFile(id, function (resp) { _this.getContent(resp); });

@@ -16,7 +16,7 @@ var CodeFaustParser = (function () {
                 return this.tryReplaceAccValue();
             }
             else {
-                new Message(this.sliderName + App.messageRessource.errorAccSliderNotFound);
+                new Message(this.sliderName + Utilitary.messageRessource.errorAccSliderNotFound);
                 //throw new Error("Slider non trouvé");
                 return this.originalCodeFaust;
             }
@@ -61,9 +61,9 @@ var CodeFaustParser = (function () {
         return null;
     };
     CodeFaustParser.prototype.findSliderIndexNoSpace = function (sliderName) {
-        sliderName = App.replaceAll(sliderName, " ", "");
+        sliderName = Utilitary.replaceAll(sliderName, " ", "");
         for (var i = 0; i < this.codeFaustArray.length; i++) {
-            var tempRowWithoutSpace = App.replaceAll(this.codeFaustArray[i], " ", "");
+            var tempRowWithoutSpace = Utilitary.replaceAll(this.codeFaustArray[i], " ", "");
             if (tempRowWithoutSpace.indexOf(sliderName) != -1 && tempRowWithoutSpace.indexOf("vslider") != -1 || tempRowWithoutSpace.indexOf(sliderName) != -1 && tempRowWithoutSpace.indexOf("hslider") != -1) {
                 return i;
             }

@@ -34,7 +34,7 @@ var Library = (function () {
     Library.prototype.fillLibrary = function () {
         var _this = this;
         var url = "faust-modules/index.json";
-        App.getXHR(url, function (json) { _this.fillLibraryCallBack(json); }, function (errorMessage) { ErrorFaust.errorCallBack(errorMessage); });
+        Utilitary.getXHR(url, function (json) { _this.fillLibraryCallBack(json); }, function (errorMessage) { ErrorFaust.errorCallBack(errorMessage); });
     };
     Library.prototype.fillLibraryCallBack = function (json) {
         var jsonObject = JSON.parse(json);
@@ -58,8 +58,8 @@ var Library = (function () {
             li.appendChild(a);
             a.href = options[i];
             a.draggable = true;
-            a.title = App.messageRessource.hoverLibraryElement;
-            a.onclick = App.preventdefault;
+            a.title = Utilitary.messageRessource.hoverLibraryElement;
+            a.addEventListener("click", function (e) { e.preventDefault(); });
             var dblckickHandler = this.dispatchEventLibrary.bind(this, a.href);
             a.ondblclick = dblckickHandler;
             a.ontouchstart = function (e) { _this.dbleTouchMenu(e); };
@@ -76,7 +76,7 @@ var Library = (function () {
             window.setTimeout(function () { _this.isLibraryTouch = false; _this.previousTouchUrl = ""; }, 300);
         }
         else if (anchor.href == this.previousTouchUrl) {
-            App.showFullPageLoading();
+            Utilitary.showFullPageLoading();
             this.dispatchEventLibrary(anchor.href);
             this.isLibraryTouch = false;
         }

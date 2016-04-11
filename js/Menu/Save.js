@@ -14,7 +14,7 @@ var Save = (function () {
         this.saveView.buttonChangeAccount.addEventListener("click", function () { _this.logOut(); });
         this.saveView.buttonSaveCloud.addEventListener("click", function () { _this.saveCloud(); });
         this.saveView.buttonCloudSuppr.addEventListener("click", function () { _this.supprCloud(); });
-        document.addEventListener("successave", function () { new Message(App.messageRessource.sucessSave, "messageTransitionOutFast", 2000, 500); });
+        document.addEventListener("successave", function () { new Message(Utilitary.messageRessource.sucessSave, "messageTransitionOutFast", 2000, 500); });
     };
     Save.prototype.downloadApp = function () {
         if (this.saveView.inputDownload.value != Utilitary.currentScene.sceneName && !Scene.rename(this.saveView.inputDownload, this.saveView.rulesName, this.saveView.dynamicName)) {
@@ -36,24 +36,24 @@ var Save = (function () {
                 var name = this.saveView.inputLocalStorage.value;
                 var jsonScene = this.sceneCurrent.saveScene(true);
                 if (this.isFileExisting(name)) {
-                    new Confirm(App.messageRessource.confirmReplace, function (callback) { _this.replaceSaveLocal(name, jsonScene, callback); });
+                    new Confirm(Utilitary.messageRessource.confirmReplace, function (callback) { _this.replaceSaveLocal(name, jsonScene, callback); });
                     return;
                 }
                 else {
                     localStorage.setItem(name, jsonScene);
                 }
-                new Message(App.messageRessource.sucessSave, "messageTransitionOutFast", 2000, 500);
+                new Message(Utilitary.messageRessource.sucessSave, "messageTransitionOutFast", 2000, 500);
                 var event = new CustomEvent("updatelist");
                 document.dispatchEvent(event);
             }
             else {
-                new Message(App.messageRessource.errorLocalStorage);
+                new Message(Utilitary.messageRessource.errorLocalStorage);
             }
         }
     };
     Save.prototype.replaceSaveLocal = function (name, jsonScene, confirmCallBack) {
         localStorage.setItem(name, jsonScene);
-        new Message(App.messageRessource.sucessSave, "messageTransitionOutFast", 2000, 500);
+        new Message(Utilitary.messageRessource.sucessSave, "messageTransitionOutFast", 2000, 500);
         var event = new CustomEvent("updatelist");
         document.dispatchEvent(event);
         confirmCallBack();
@@ -93,7 +93,7 @@ var Save = (function () {
     Save.prototype.supprLocal = function () {
         var _this = this;
         if (this.saveView.existingSceneSelect.selectedIndex > -1) {
-            new Confirm(App.messageRessource.confirmSuppr, function (callbackConfirm) { _this.supprLocalCallback(callbackConfirm); });
+            new Confirm(Utilitary.messageRessource.confirmSuppr, function (callbackConfirm) { _this.supprLocalCallback(callbackConfirm); });
         }
     };
     Save.prototype.supprLocalCallback = function (callbackConfirm) {
@@ -115,7 +115,7 @@ var Save = (function () {
         else {
             var name = this.saveView.inputCloudStorage.value;
             if (this.isFileCloudExisting(name)) {
-                new Confirm(App.messageRessource.confirmReplace, function (confirmCallback) { _this.replaceCloud(name, confirmCallback); });
+                new Confirm(Utilitary.messageRessource.confirmReplace, function (confirmCallback) { _this.replaceCloud(name, confirmCallback); });
                 return;
             }
             else {
@@ -142,7 +142,7 @@ var Save = (function () {
     Save.prototype.supprCloud = function () {
         var _this = this;
         if (this.saveView.cloudSelectFile.selectedIndex > -1) {
-            new Confirm(App.messageRessource.confirmSuppr, function (confirmCallBack) { _this.supprCloudCallback(confirmCallBack); });
+            new Confirm(Utilitary.messageRessource.confirmSuppr, function (confirmCallBack) { _this.supprCloudCallback(confirmCallBack); });
         }
     };
     Save.prototype.supprCloudCallback = function (confirmCallBack) {

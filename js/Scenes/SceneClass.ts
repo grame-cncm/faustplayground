@@ -157,7 +157,7 @@ class Scene {
     /*************** ACTIONS ON AUDIO IN/OUTPUT ***************************/
     integrateInput() {
         var positionInput: PositionModule = this.positionInputModule();
-        this.fAudioInput = new ModuleClass(App.idX++, positionInput.x, positionInput.y, "input", this.sceneView.inputOutputModuleContainer, (module) => { this.removeModule(module) }, this.compileFaust);
+        this.fAudioInput = new ModuleClass(Utilitary.idX++, positionInput.x, positionInput.y, "input", this.sceneView.inputOutputModuleContainer, (module) => { this.removeModule(module) }, this.compileFaust);
         this.fAudioInput.patchID = "input";
         var scene: Scene = this;
         this.compileFaust({ name:"input", sourceCode:"process=_,_;", x:positionInput.x, y:positionInput.y, callback:(factory)=>{ scene.integrateAudioInput(factory) }});
@@ -166,7 +166,7 @@ class Scene {
     integrateOutput() {
         var positionOutput: PositionModule = this.positionOutputModule();
         var scene: Scene = this;
-        this.fAudioOutput = new ModuleClass(App.idX++, positionOutput.x, positionOutput.y, "output", this.sceneView.inputOutputModuleContainer, (module) => { this.removeModule(module) }, this.compileFaust);
+        this.fAudioOutput = new ModuleClass(Utilitary.idX++, positionOutput.x, positionOutput.y, "output", this.sceneView.inputOutputModuleContainer, (module) => { this.removeModule(module) }, this.compileFaust);
         this.fAudioOutput.patchID = "output";
         this.addMuteOutputListner(this.fAudioOutput);
         this.compileFaust({ name: "output", sourceCode: "process=_,_;", x: positionOutput.x, y: positionOutput.y, callback: (factory) => { scene.integrateAudioOutput(factory) } });
@@ -189,7 +189,7 @@ class Scene {
             this.activateAudioInput();
         }
         this.fAudioInput.addInputOutputNodes();
-        App.hideFullPageLoading();
+        Utilitary.hideFullPageLoading();
         this.isInitLoading = false;
     }
 
@@ -211,13 +211,13 @@ class Scene {
 
             navigatorLoc.getUserMedia({ audio: true }, (mediaStream) => { this.getDevice(mediaStream) },  (e)=>{
                 this.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)"
-                this.fAudioInput.moduleView.fInterfaceContainer.title = App.messageRessource.errorGettingAudioInput;
-                new Message(App.messageRessource.errorGettingAudioInput);
+                this.fAudioInput.moduleView.fInterfaceContainer.title = Utilitary.messageRessource.errorGettingAudioInput;
+                new Message(Utilitary.messageRessource.errorGettingAudioInput);
             });
         } else {
             this.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)"
-            new Message(App.messageRessource.errorInputAPINotAvailable);
-            this.fAudioInput.moduleView.fInterfaceContainer.title = App.messageRessource.errorInputAPINotAvailable;
+            new Message(Utilitary.messageRessource.errorInputAPINotAvailable);
+            this.fAudioInput.moduleView.fInterfaceContainer.title = Utilitary.messageRessource.errorInputAPINotAvailable;
         }
     }
 
@@ -225,7 +225,7 @@ class Scene {
 
         // Create an AudioNode from the stream.
         var src = <IHTMLDivElementSrc>document.getElementById("input");
-        src.audioNode = App.audioContext.createMediaStreamSource(device);
+        src.audioNode = Utilitary.audioContext.createMediaStreamSource(device);
         document.body.appendChild(src);
         var drag: Drag = new Drag();
         var connect: Connector = new Connector();
@@ -237,7 +237,7 @@ class Scene {
 
         var out = <IHTMLDivElementOut>document.createElement("div");
         out.id = "audioOutput";
-        out.audioNode = App.audioContext.destination;
+        out.audioNode = Utilitary.audioContext.destination;
         document.body.appendChild(out);
         var connect: Connector = new Connector();
         connect.connectOutput(sceneOutput, out);
@@ -344,8 +344,8 @@ class Scene {
             try {
                 var jsonObjectCollection: JsonSaveCollection = JSON.parse(json);
             } catch (e) {
-                new Message(App.messageRessource.errorJsonCorrupted)
-                App.hideFullPageLoading();
+                new Message(Utilitary.messageRessource.errorJsonCorrupted)
+                Utilitary.hideFullPageLoading();
             }
             //this.parent.currentNumberDSP = this.fModuleList.length;
             for (var index in jsonObjectCollection) {
@@ -354,8 +354,8 @@ class Scene {
             }
             this.lunchModuleCreation();
         } else {
-            App.hideFullPageLoading();
-            new Message(App.messageRessource.errorLoading)
+            Utilitary.hideFullPageLoading();
+            new Message(Utilitary.messageRessource.errorLoading)
         }
     }
 
@@ -387,7 +387,7 @@ class Scene {
             this.arrayRecalledModule = [];
             var event = new CustomEvent("updatename");
             document.dispatchEvent(event);
-            App.hideFullPageLoading();
+            Utilitary.hideFullPageLoading();
 
         }
 
@@ -407,11 +407,11 @@ class Scene {
             //---- There probably is a better way to do this !!
             if (!factory) {
                 new Message(faust.getErrorMessage());
-                App.hideFullPageLoading();
+                Utilitary.hideFullPageLoading();
                 return;
             }
 
-            var module: ModuleClass = new ModuleClass(App.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), (module) => {this.removeModule(module) }, this.compileFaust);
+            var module: ModuleClass = new ModuleClass(Utilitary.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), (module) => {this.removeModule(module) }, this.compileFaust);
             module.moduleFaust.setSource(this.tempModuleSourceCode);
             module.createDSP(factory);
             module.patchID = this.tempPatchId;
@@ -436,7 +436,7 @@ class Scene {
             this.arrayRecalScene.shift();
             this.lunchModuleCreation()
         } catch (e) {
-            new Message(App.messageRessource.errorCreateModuleRecall);
+            new Message(Utilitary.messageRessource.errorCreateModuleRecall);
             this.arrayRecalScene.shift();
             this.lunchModuleCreation()
         }
@@ -504,7 +504,7 @@ class Scene {
                 }
             }
         } catch (e) {
-            new Message(App.messageRessource.errorConnectionRecall)
+            new Message(Utilitary.messageRessource.errorConnectionRecall)
         }
     }
 
@@ -525,12 +525,12 @@ class Scene {
     }
 
     static cleanName(newName:string): string {
-        newName = App.replaceAll(newName, "é", "e");
-        newName = App.replaceAll(newName, "è", "e");
-        newName = App.replaceAll(newName, "à", "a");
-        newName = App.replaceAll(newName, "ù", "u");
-        newName = App.replaceAll(newName, " ", "_");
-        newName = App.replaceAll(newName, "'", "_");
+        newName =Utilitary.replaceAll(newName, "é", "e");
+        newName =Utilitary.replaceAll(newName, "è", "e");
+        newName =Utilitary.replaceAll(newName, "à", "a");
+        newName =Utilitary.replaceAll(newName, "ù", "u");
+        newName =Utilitary.replaceAll(newName, " ", "_");
+        newName =Utilitary.replaceAll(newName, "'", "_");
         return newName;
     }
     static isNameValid(newName: string): boolean {
@@ -560,7 +560,7 @@ class Scene {
             spanRule.style.opacity = "1";
             input.style.boxShadow = "0 0 6px yellow inset";
             input.style.border = "3px solid red";
-            new Message(App.messageRessource.invalidSceneName);
+            new Message(Utilitary.messageRessource.invalidSceneName);
             return false;
         }
     }

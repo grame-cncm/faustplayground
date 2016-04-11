@@ -22,7 +22,7 @@ var Export = (function () {
                 return;
             }
             else {
-                var data = JSON.parse(App.jsonText);
+                var data = JSON.parse(_this.jsonText);
                 var platformsSelect = document.getElementById('platforms'); //get the combobox
                 var options = platformsSelect.options[platformsSelect.selectedIndex];
                 var selPlatform = options.value;
@@ -42,7 +42,7 @@ var Export = (function () {
             _this.clearComboBox('architectures');
             var input = document.getElementById("faustweburl");
             Export.targetsUrl = input.value + "/targets";
-            App.getXHR(Export.targetsUrl, function (json) { _this.uploadTargetCallback(json); }, function (errorMessage) { ErrorFaust.errorCallBack(errorMessage); });
+            Utilitary.getXHR(Export.targetsUrl, function (json) { _this.uploadTargetCallback(json); }, function (errorMessage) { ErrorFaust.errorCallBack(errorMessage); });
             //ExportLib.getTargets(App.exportURL, (json: string) => { this.uploadTargetCallback },  (json: string)=> {alert('Impossible to get FaustWeb targets')});
         };
         /********************************************************************
@@ -77,7 +77,7 @@ var Export = (function () {
                 linkDownload.value = serverUrl + "/" + shaKey + "/" + plateforme + "/" + architecture + "/" + appType;
                 linkDownload.id = "linkDownload";
                 linkDownload.className = "button";
-                linkDownload.textContent = App.messageRessource.buttonDownloadApp;
+                linkDownload.textContent = Utilitary.messageRessource.buttonDownloadApp;
                 downloadBottomButtonContainer.appendChild(linkDownload);
                 _this.exportView.downloadButton = linkDownload;
                 _this.exportView.downloadButton.onclick = function () { window.location.href = _this.exportView.downloadButton.value; };
@@ -86,14 +86,14 @@ var Export = (function () {
                 disposableExportDiv.appendChild(downloadBottomButtonContainer);
                 _this.exportView.exportButton.addEventListener("click", _this.eventExport);
                 _this.exportView.exportButton.style.opacity = "1";
-                App.removeLoadingLogo("exportResultContainer");
+                Utilitary.removeLoadingLogo("exportResultContainer");
             }
             else {
                 new Message(shaKey);
             }
             _this.exportView.exportButton.addEventListener("click", _this.eventExport);
             _this.exportView.exportButton.style.opacity = "1";
-            App.removeLoadingLogo("exportResultContainer");
+            Utilitary.removeLoadingLogo("exportResultContainer");
         };
     }
     //------ Handle Combo Boxes
@@ -131,8 +131,8 @@ var Export = (function () {
         }
     };
     Export.prototype.uploadTargetCallback = function (json) {
-        App.jsonText = json;
-        var data = JSON.parse(App.jsonText);
+        this.jsonText = json;
+        var data = JSON.parse(this.jsonText);
         for (var platform in data) {
             this.addItem('platforms', platform);
         }
@@ -159,7 +159,7 @@ var Export = (function () {
             sceneName = "MonApplication";
         }
         this.removeQRCode();
-        App.addLoadingLogo("exportResultContainer");
+        Utilitary.addLoadingLogo("exportResultContainer");
         var equivalentFaust = new EquivalentFaust();
         var faustCode = equivalentFaust.getFaustEquivalent(Utilitary.currentScene, Utilitary.currentScene.sceneName);
         ExportLib.getSHAKey(document.getElementById("faustweburl").value, Utilitary.currentScene.sceneName, faustCode, expor.exportFaustCode);

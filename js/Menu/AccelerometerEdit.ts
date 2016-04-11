@@ -66,7 +66,7 @@ class AccelerometerEdit {
 
             }
             this.isOn = false;
-            App.isAccelerometerEditOn = false;
+            Utilitary.isAccelerometerEditOn = false;
         } else {
             for (var i = 0; i < AccelerometerHandler.faustInterfaceControler.length; i++) {
                 //AccelerometerHandler.accelerometerSliders[i].mySlider.removeEventListener("mousedown", (e) => { e.stopPropagation() })
@@ -82,7 +82,7 @@ class AccelerometerEdit {
 
             }
             this.isOn = true;
-            App.isAccelerometerEditOn = true;
+            Utilitary.isAccelerometerEditOn = true;
         }
 
     }
@@ -448,6 +448,6 @@ class AccelerometerEdit {
 
     applyValuetoFaust() {
         var rangeVal = parseFloat(this.accelerometerEditView.rangeVirtual.value);
-        App.accHandler.axisSplitter(this.accSlid, rangeVal, rangeVal, rangeVal, App.accHandler.applyNewValueToModule)
+        Utilitary.accHandler.axisSplitter(this.accSlid, rangeVal, rangeVal, rangeVal, Utilitary.accHandler.applyNewValueToModule)
     }
 }

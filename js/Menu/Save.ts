@@ -17,7 +17,7 @@ class Save {
         this.saveView.buttonChangeAccount.addEventListener("click", () => { this.logOut() });
         this.saveView.buttonSaveCloud.addEventListener("click", () => { this.saveCloud() });
         this.saveView.buttonCloudSuppr.addEventListener("click", () => { this.supprCloud() });
-        document.addEventListener("successave", () => { new Message(App.messageRessource.sucessSave,"messageTransitionOutFast",2000,500) })
+        document.addEventListener("successave", () => { new Message(Utilitary.messageRessource.sucessSave,"messageTransitionOutFast",2000,500) })
     }
 
     downloadApp() {
@@ -41,23 +41,23 @@ class Save {
                 var name = this.saveView.inputLocalStorage.value;
                 var jsonScene = this.sceneCurrent.saveScene(true)
                 if (this.isFileExisting(name)) {
-                    new Confirm(App.messageRessource.confirmReplace, (callback) => { this.replaceSaveLocal(name,jsonScene, callback) });
+                    new Confirm(Utilitary.messageRessource.confirmReplace, (callback) => { this.replaceSaveLocal(name,jsonScene, callback) });
                     return;
                 }else {
                     localStorage.setItem(name, jsonScene)
                 }
-                new Message(App.messageRessource.sucessSave,"messageTransitionOutFast",2000,500)
+                new Message(Utilitary.messageRessource.sucessSave,"messageTransitionOutFast",2000,500)
                 var event: CustomEvent = new CustomEvent("updatelist")
                 document.dispatchEvent(event);
 
             } else {
-                new Message(App.messageRessource.errorLocalStorage);
+                new Message(Utilitary.messageRessource.errorLocalStorage);
             }
         }
     }
     replaceSaveLocal(name:string,jsonScene: string, confirmCallBack: () => void) {
         localStorage.setItem(name, jsonScene);
-        new Message(App.messageRessource.sucessSave, "messageTransitionOutFast", 2000, 500)
+        new Message(Utilitary.messageRessource.sucessSave, "messageTransitionOutFast", 2000, 500)
         var event: CustomEvent = new CustomEvent("updatelist")
         document.dispatchEvent(event);
         confirmCallBack();
@@ -100,7 +100,7 @@ class Save {
 
     supprLocal() {
         if (this.saveView.existingSceneSelect.selectedIndex > -1) {
-            new Confirm(App.messageRessource.confirmSuppr, (callbackConfirm) => { this.supprLocalCallback(callbackConfirm) })
+            new Confirm(Utilitary.messageRessource.confirmSuppr, (callbackConfirm) => { this.supprLocalCallback(callbackConfirm) })
         }
     }
 
@@ -123,7 +123,7 @@ class Save {
             var name = this.saveView.inputCloudStorage.value;
             if (this.isFileCloudExisting(name)) {
 
-                new Confirm(App.messageRessource.confirmReplace, (confirmCallback) => { this.replaceCloud(name,confirmCallback) })
+                new Confirm(Utilitary.messageRessource.confirmReplace, (confirmCallback) => { this.replaceCloud(name,confirmCallback) })
                 return;
                 
             } else {
@@ -149,7 +149,7 @@ class Save {
     }
     supprCloud() {
         if (this.saveView.cloudSelectFile.selectedIndex > -1) {
-            new Confirm(App.messageRessource.confirmSuppr, (confirmCallBack) => { this.supprCloudCallback(confirmCallBack) })
+            new Confirm(Utilitary.messageRessource.confirmSuppr, (confirmCallBack) => { this.supprCloudCallback(confirmCallBack) })
         }
     }
     supprCloudCallback(confirmCallBack: () => void) {

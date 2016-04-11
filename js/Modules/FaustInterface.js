@@ -126,7 +126,7 @@ var FaustInterfaceControler = (function () {
                     this.accelerometerSlider.isEnabled = true;
                     this.faustInterfaceView.slider.classList.add("allowed");
                     this.faustInterfaceView.group.classList.add(Axis[this.accelerometerSlider.axis]);
-                    if (App.isAccelerometerOn) {
+                    if (Utilitary.isAccelerometerOn) {
                         this.accelerometerSlider.isActive = true;
                         this.faustInterfaceView.slider.classList.remove("allowed");
                         this.faustInterfaceView.slider.classList.add("not-allowed");

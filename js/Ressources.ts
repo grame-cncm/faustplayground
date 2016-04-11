@@ -90,4 +90,17 @@
     checkBox: string;
     noDeviceMotion: string;
 
+    getRessources(app:App) {
+        // Utilitary.getXHR(
+        var localization = navigator.language;
+        if (localization == "fr" || localization == "fr-FR") {
+            Utilitary.getXHR("ressources/ressources_fr-FR.json", (ressource) => { this.loadMessages(ressource,app) }, Utilitary.errorCallBack)
+        } else {
+            Utilitary.getXHR("ressources/ressources_fr-FR.json", (ressource) => { this.loadMessages(ressource,app) }, Utilitary.errorCallBack)
+        }
+    }
+    loadMessages(ressourceJson: string,app:App) {
+        Utilitary.messageRessource = JSON.parse(ressourceJson);
+        resumeInit(app);
+    }
 }

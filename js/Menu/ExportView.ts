@@ -38,7 +38,7 @@ class ExportView {
 
         var nameAppTitle: HTMLSpanElement = document.createElement("span");
         nameAppTitle.id = "nameAppTitle";
-        nameAppTitle.textContent = App.messageRessource.appNameExport;
+        nameAppTitle.textContent = Utilitary.messageRessource.appNameExport;
         nameAppTitle.className = "exportTitle";
 
         var dynamicName: HTMLSpanElement = document.createElement("span");
@@ -49,7 +49,7 @@ class ExportView {
 
         var rulesName: HTMLSpanElement = document.createElement("span");
         rulesName.id = "rulesName";
-        rulesName.textContent = App.messageRessource.rulesSceneName;
+        rulesName.textContent = Utilitary.messageRessource.rulesSceneName;
         this.rulesName = rulesName;
 
         var input: HTMLInputElement = document.createElement("input");
@@ -65,7 +65,7 @@ class ExportView {
         renameButton.type = "button";
         renameButton.id = "buttonNameApp";
         renameButton.className = "button"
-        renameButton.textContent = App.messageRessource.buttonChangeSceneName;
+        renameButton.textContent = Utilitary.messageRessource.buttonChangeSceneName;
 
         renameBottomButtonContainer.appendChild(renameButton)
 
@@ -95,7 +95,7 @@ class ExportView {
 
         var lessOptionDiv = document.createElement("div")
         lessOptionDiv.id = "lessOptionDiv";
-        lessOptionDiv.textContent = App.messageRessource.lessOptions;
+        lessOptionDiv.textContent = Utilitary.messageRessource.lessOptions;
         lessOptionDiv.style.display = "none";
         this.lessOptionDiv = lessOptionDiv;
 
@@ -106,7 +106,7 @@ class ExportView {
 
         var exportOptionTitle: HTMLSpanElement = document.createElement("span");
         exportOptionTitle.id = "exportOptionTitle";
-        exportOptionTitle.textContent = App.messageRessource.titleExportOptions;
+        exportOptionTitle.textContent = Utilitary.messageRessource.titleExportOptions;
         exportOptionTitle.className = "exportTitle";
 
         var fwurl: HTMLInputElement = document.createElement("input");
@@ -123,7 +123,7 @@ class ExportView {
 
 
         var refreshButton: HTMLButtonElement = document.createElement("button");
-        refreshButton.textContent = App.messageRessource.buttonRefresh
+        refreshButton.textContent = Utilitary.messageRessource.buttonRefresh
         refreshButton.id = "refreshButton";
         refreshButton.className = "button";
         this.refreshButton = refreshButton;
@@ -149,7 +149,7 @@ class ExportView {
         exportButton.id = "exportButton";
         exportButton.type = "submit";
         exportButton.className = "button";
-        exportButton.value = App.messageRessource.buttonExportScene;
+        exportButton.value = Utilitary.messageRessource.buttonExportScene;
         this.exportButton = exportButton;
 
 
@@ -170,7 +170,7 @@ class ExportView {
 //////////////////////////// export Result
         var exportResultTitle: HTMLSpanElement = document.createElement("span");
         exportResultTitle.id = "exportResultTitle";
-        exportResultTitle.textContent = App.messageRessource.titleDownlaodExport;
+        exportResultTitle.textContent = Utilitary.messageRessource.titleDownlaodExport;
         exportResultTitle.className = "exportTitle";
 
 

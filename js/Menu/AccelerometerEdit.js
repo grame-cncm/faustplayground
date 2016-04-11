@@ -37,7 +37,7 @@ var AccelerometerEdit = (function () {
                 this.setSliderDisableValue(currentIFControler);
             }
             this.isOn = false;
-            App.isAccelerometerEditOn = false;
+            Utilitary.isAccelerometerEditOn = false;
         }
         else {
             for (var i = 0; i < AccelerometerHandler.faustInterfaceControler.length; i++) {
@@ -53,7 +53,7 @@ var AccelerometerEdit = (function () {
                 currentIFControler.faustInterfaceView.slider.disabled = true;
             }
             this.isOn = true;
-            App.isAccelerometerEditOn = true;
+            Utilitary.isAccelerometerEditOn = true;
         }
     };
     AccelerometerEdit.prototype.setSliderDisableValue = function (faustIControler) {
@@ -394,7 +394,7 @@ var AccelerometerEdit = (function () {
     };
     AccelerometerEdit.prototype.applyValuetoFaust = function () {
         var rangeVal = parseFloat(this.accelerometerEditView.rangeVirtual.value);
-        App.accHandler.axisSplitter(this.accSlid, rangeVal, rangeVal, rangeVal, App.accHandler.applyNewValueToModule);
+        Utilitary.accHandler.axisSplitter(this.accSlid, rangeVal, rangeVal, rangeVal, Utilitary.accHandler.applyNewValueToModule);
     };
     return AccelerometerEdit;
 }());
