@@ -30,7 +30,7 @@ class ModuleFaust {
     }
 
 
-    /*************** ACTIONS ON IN/OUTPUT NODES ***************************/
+    /*************** ACTIONS ON IN/OUTPUT MODULES ***************************/
 
 
 
@@ -42,8 +42,7 @@ class ModuleFaust {
         return this.fOutputConnections;
     }
 
-    //-- The Creation of array is only done when a new connection is added 
-    //-- (to be able to return null when there are none)	
+	
     addOutputConnection(connector: Connector): void {
         this.fOutputConnections.push(connector);
     }

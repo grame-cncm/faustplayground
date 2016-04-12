@@ -3,42 +3,23 @@
 
     This is the unique scene of the Normal Playground
         
-    DEPENDENCIES :
-        - Scene.js
-        - Connect.js
-        - Main.js
-        - Export.js
 */
 /// <reference path="../Scenes/SceneClass.ts"/>
 /// <reference path="../Menu/Export.ts"/>
 "use strict";
 var SceneView = (function () {
     function SceneView() {
-        this.onEnterKey = function (e) {
-            if (!e) {
-                e = window.event;
-            }
-            if (e.keyCode == 13) {
-                e.preventDefault();
-            }
-        };
     }
     SceneView.prototype.initNormalScene = function (scene) {
         var container = document.createElement("div");
         container.id = "Normal";
-        //var sceneSensor: HTMLDivElement = document.createElement("div");
-        //sceneSensor.id = "sceneSensor";
-        //this.sceneSensor = sceneSensor;
         var svgCanvas = document.createElementNS("http://www.w3.org/2000/svg", "svg");
         svgCanvas.id = "svgCanvas";
-        //svgCanvas.version="1.1";
         container.appendChild(svgCanvas);
-        //container.appendChild(sceneSensor);
         //--------- HEADER
         var head = document.createElement("header");
         head.id = "header";
         container.appendChild(head);
-        //head.appendChild(myScene);
         var uploadDiv = document.createElement("div");
         uploadDiv.id = "upload";
         uploadDiv.className = "uploading";
@@ -85,13 +66,6 @@ var SceneView = (function () {
         container.appendChild(dropElementScene);
         this.fSceneContainer = container;
         var playgroundView = this;
-        //scene.integrateInput(function () {
-        //    scene.integrateOutput(function () {
-        //        //scene.getAudioOutput().setInputOutputNodes(node, null);
-        //        playgroundView.onloadNormalScene(scene);
-        //        //playgroundView.expor.uploadTargets();
-        //    });
-        //});
     };
     return SceneView;
 }());

@@ -35,16 +35,7 @@ interface Iitem{
 }
 interface IFaustInterfaceControler  {
     itemParam: Iitem;
-    //label: string;
-    //init: string;
-    //address: string;
-    //type: string;
-    //min: string;
-    //max: string;
-    //step: string;
-    //meta: FaustMeta[];
     unit: string;
-
     precision: string;
     hasAccelerometer: boolean;
     isEnabled: boolean;
@@ -70,6 +61,7 @@ interface AccParams {
     label: string;
 }
 class FaustInterfaceControler implements IFaustInterfaceControler {
+    //array only used at init to fill all FaustInterfaceControler of a Modules (moduleControlers)
     faustControlers: FaustInterfaceControler[];
     name: string;
     itemParam: Iitem;
@@ -81,8 +73,10 @@ class FaustInterfaceControler implements IFaustInterfaceControler {
     acc: string;
     value: string;
     accParams: AccParams;
+
     accelerometerSlider: AccelerometerSlider;
     faustInterfaceView: FaustInterfaceView;
+
     interfaceCallback: (faustInterfaceControler: FaustInterfaceControler) => void;
     callbackEdit: () => void;
     updateFaustCodeCallback: (details: ElementCodeFaustParser)=>void
@@ -93,7 +87,7 @@ class FaustInterfaceControler implements IFaustInterfaceControler {
         this.interfaceCallback = interfaceCallback;
         this.setDSPValueCallback=setDSPValueCallback;
     }
-
+    //parse interface json from faust webaudio-asm-wrapper to create corresponding FaustInterfaceControler
     parseFaustJsonUI(ui: Iitems[], module: ModuleClass): FaustInterfaceControler[] {
         this.faustControlers = [];
         for (var i = 0; i < ui.length; i++) {
@@ -186,6 +180,7 @@ class FaustInterfaceControler implements IFaustInterfaceControler {
         }
     }
 
+    // create and allocate right faustInterfaceView 
     createFaustInterfaceElement(): HTMLElement {
         if (this.faustInterfaceView && this.faustInterfaceView.type) {
             if (this.faustInterfaceView.type === "vslider" || this.faustInterfaceView.type === "hslider") {
@@ -198,6 +193,8 @@ class FaustInterfaceControler implements IFaustInterfaceControler {
             
         }
     }
+
+    // Set eventListner of the faustInterfaceView
     setEventListener() {
         if (this.faustInterfaceView && this.faustInterfaceView.type) {
             if (this.faustInterfaceView.type === "vslider" || this.faustInterfaceView.type === "hslider") {
@@ -217,6 +214,9 @@ class FaustInterfaceControler implements IFaustInterfaceControler {
         }
     }
 
+    //attach acceleromterSlider to faustInterfaceControler
+    //give the acc or noacc values
+    //if no accelerometer value, it create a default noacc one
     createAccelerometer() {
         if (this.itemParam.meta) {
             var meta = this.itemParam.meta
@@ -265,6 +265,8 @@ class FaustInterfaceControler implements IFaustInterfaceControler {
             this.faustInterfaceView.slider.parentElement.classList.add("disabledAcc")
         }
     }
+
+    //callback to update the dsp value 
     callbackValueChange(address: string, value: number) {
         this.setDSPValueCallback(address, String(value));
         this.faustInterfaceView.slider.value = String((value - parseFloat(this.itemParam.min)) / parseFloat(this.itemParam.step))
@@ -273,8 +275,8 @@ class FaustInterfaceControler implements IFaustInterfaceControler {
     }
 }
 
-  /******************************************************************** 
-    ********************* ADD GRAPHICAL ELEMENTS ************************
+   /******************************************************************** 
+    ********************* ADD GRAPHICAL ELEMENTS ***********************
     ********************************************************************/
 class FaustInterfaceView {
     type: string;
@@ -310,8 +312,6 @@ class FaustInterfaceView {
         
        
         val.appendChild(document.createTextNode("" + myValue + " " + unit));
-
-	    // cache the units type on the element for updates
         val.setAttribute("units", unit);
 	    info.appendChild(val);
 
@@ -324,7 +324,6 @@ class FaustInterfaceView {
 	    slider.min =  "0";
         slider.max = String(high);
         slider.value = String((parseFloat(itemParam.init) - parseFloat(itemParam.min)) / parseFloat(itemParam.step));
-        //slider.value = String(Number(controler.init).toFixed(precision));
         slider.step = "1";
         this.slider = slider;
         group.appendChild(slider);
@@ -339,7 +338,6 @@ class FaustInterfaceView {
         var checkbox: HTMLInputElement = document.createElement("input");
 	    checkbox.type = "checkbox";
         checkbox.checked = false;
-        //checkbox.onchange = function (event: Event) { onUpdate; event.stopPropagation() };
 
 	    checkbox.id = "mycheckbox";
 
@@ -357,13 +355,10 @@ class FaustInterfaceView {
 
         var group = document.createElement("div");
 
-        var button: HTMLElement = document.createElement("BUTTON");        // Create a <button> element
-        //button.onmouseup = function (event: Event) { onUpdate };	
-        //button.onmousedown = function (event: Event) { onUpdate };	
+        var button: HTMLElement = document.createElement("BUTTON");        
 
-        var labelText: Text = document.createTextNode(itemParam.label);       // Create a text node
+        var labelText: Text = document.createTextNode(itemParam.label);       
         button.appendChild(labelText);
-	                                    // Append the text to <button>
         group.appendChild(button);
 	
 	    return button;

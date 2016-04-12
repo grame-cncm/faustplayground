@@ -28,6 +28,7 @@ var ModuleView = (function () {
         fInterfaceContainer.className = "content";
         fModuleContainer.appendChild(fInterfaceContainer);
         this.fInterfaceContainer = fInterfaceContainer;
+        //if modules are input or output scene module, no need for interface
         if (name == "input") {
             fModuleContainer.id = "moduleInput";
         }
@@ -91,7 +92,6 @@ var ModuleView = (function () {
         this.fInputNode = document.createElement("div");
         this.fInputNode.className = "node node-input";
         this.fInputNode.draggable = false;
-        //this.fInputNode.innerHTML = "<span class='node-button'>&nbsp;</span>";
         var spanNode = document.createElement("span");
         spanNode.draggable = false;
         spanNode.className = "node-button";
@@ -102,7 +102,6 @@ var ModuleView = (function () {
         this.fOutputNode = document.createElement("div");
         this.fOutputNode.className = "node node-output";
         this.fOutputNode.draggable = false;
-        //this.fOutputNode.innerHTML = "<span class='node-button'>&nbsp;</span>";
         var spanNode = document.createElement("span");
         spanNode.draggable = false;
         spanNode.className = "node-button";

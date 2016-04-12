@@ -14,6 +14,7 @@ var FaustInterfaceControler = (function () {
         this.interfaceCallback = interfaceCallback;
         this.setDSPValueCallback = setDSPValueCallback;
     }
+    //parse interface json from faust webaudio-asm-wrapper to create corresponding FaustInterfaceControler
     FaustInterfaceControler.prototype.parseFaustJsonUI = function (ui, module) {
         this.faustControlers = [];
         for (var i = 0; i < ui.length; i++) {
@@ -82,6 +83,7 @@ var FaustInterfaceControler = (function () {
             label: this.itemParam.label
         };
     };
+    // create and allocate right faustInterfaceView 
     FaustInterfaceControler.prototype.createFaustInterfaceElement = function () {
         if (this.faustInterfaceView && this.faustInterfaceView.type) {
             if (this.faustInterfaceView.type === "vslider" || this.faustInterfaceView.type === "hslider") {
@@ -95,6 +97,7 @@ var FaustInterfaceControler = (function () {
             }
         }
     };
+    // Set eventListner of the faustInterfaceView
     FaustInterfaceControler.prototype.setEventListener = function () {
         var _this = this;
         if (this.faustInterfaceView && this.faustInterfaceView.type) {
@@ -114,6 +117,9 @@ var FaustInterfaceControler = (function () {
             }
         }
     };
+    //attach acceleromterSlider to faustInterfaceControler
+    //give the acc or noacc values
+    //if no accelerometer value, it create a default noacc one
     FaustInterfaceControler.prototype.createAccelerometer = function () {
         var _this = this;
         if (this.itemParam.meta) {
@@ -165,6 +171,7 @@ var FaustInterfaceControler = (function () {
             this.faustInterfaceView.slider.parentElement.classList.add("disabledAcc");
         }
     };
+    //callback to update the dsp value 
     FaustInterfaceControler.prototype.callbackValueChange = function (address, value) {
         this.setDSPValueCallback(address, String(value));
         this.faustInterfaceView.slider.value = String((value - parseFloat(this.itemParam.min)) / parseFloat(this.itemParam.step));
@@ -173,8 +180,8 @@ var FaustInterfaceControler = (function () {
     return FaustInterfaceControler;
 }());
 /********************************************************************
-  ********************* ADD GRAPHICAL ELEMENTS ************************
-  ********************************************************************/
+ ********************* ADD GRAPHICAL ELEMENTS ***********************
+ ********************************************************************/
 var FaustInterfaceView = (function () {
     function FaustInterfaceView(type) {
         this.type = type;
@@ -198,7 +205,6 @@ var FaustInterfaceView = (function () {
         this.output = val;
         var myValue = Number(itemParam.init).toFixed(precision);
         val.appendChild(document.createTextNode("" + myValue + " " + unit));
-        // cache the units type on the element for updates
         val.setAttribute("units", unit);
         info.appendChild(val);
         group.appendChild(info);
@@ -208,7 +214,6 @@ var FaustInterfaceView = (function () {
         slider.min = "0";
         slider.max = String(high);
         slider.value = String((parseFloat(itemParam.init) - parseFloat(itemParam.min)) / parseFloat(itemParam.step));
-        //slider.value = String(Number(controler.init).toFixed(precision));
         slider.step = "1";
         this.slider = slider;
         group.appendChild(slider);
@@ -220,7 +225,6 @@ var FaustInterfaceView = (function () {
         var checkbox = document.createElement("input");
         checkbox.type = "checkbox";
         checkbox.checked = false;
-        //checkbox.onchange = function (event: Event) { onUpdate; event.stopPropagation() };
         checkbox.id = "mycheckbox";
         var label = document.createElement('label');
         label.htmlFor = "mycheckbox";
@@ -231,12 +235,9 @@ var FaustInterfaceView = (function () {
     };
     FaustInterfaceView.prototype.addFaustButton = function (itemParam) {
         var group = document.createElement("div");
-        var button = document.createElement("BUTTON"); // Create a <button> element
-        //button.onmouseup = function (event: Event) { onUpdate };	
-        //button.onmousedown = function (event: Event) { onUpdate };	
-        var labelText = document.createTextNode(itemParam.label); // Create a text node
+        var button = document.createElement("BUTTON");
+        var labelText = document.createTextNode(itemParam.label);
         button.appendChild(labelText);
-        // Append the text to <button>
         group.appendChild(button);
         return button;
     };

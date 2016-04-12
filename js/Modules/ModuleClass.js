@@ -1,21 +1,8 @@
 /*				MODULECLASS.JS
     HAND-MADE JAVASCRIPT CLASS CONTAINING A FAUST MODULE AND ITS INTERFACE
     
-    Interface structure
-    ===================
-    DIV --> this.fModuleContainer
-    H6 --> fTitle
-    DIV --> fInterfaceContainer
-    DIV --> fCloseButton
-    DIV --> fFooter
-    IMG --> fEditImg
-    ===================
+
         
-    DEPENDENCIES :
-        - Connect.js
-        - Dragging.js
-        - Main.js
-        - webaudio-asm-wrapper.js
 */
 /// <reference path="../Dragging.ts"/>
 /// <reference path="../CodeFaustParser.ts"/>
@@ -28,6 +15,7 @@
 var ModuleClass = (function () {
     function ModuleClass(id, x, y, name, htmlElementModuleContainer, removeModuleCallBack, compileFaust) {
         var _this = this;
+        //drag object to handle dragging of module and connection
         this.drag = new Drag();
         this.dragList = [];
         this.moduleControles = [];
@@ -36,17 +24,15 @@ var ModuleClass = (function () {
         this.eventCloseEditHandler = function (event) { _this.recompileSource(event, _this); };
         this.eventOpenEditHandler = function () { _this.edit(); };
         this.compileFaust = compileFaust;
-        // ---- Capturing module instance	
-        // ----- Delete Callback was added to make sure 
-        // ----- the module is well deleted from the scene containing it
         this.deleteCallback = removeModuleCallBack;
         this.eventDraggingHandler = function (event) { _this.dragCallback(event, _this); };
         this.moduleView = new ModuleView();
         this.moduleView.createModuleView(id, x, y, name, htmlElementModuleContainer);
         this.moduleFaust = new ModuleFaust(name);
-        this.init();
+        this.addEvents();
     }
-    ModuleClass.prototype.init = function () {
+    //add all event listener to the moduleView
+    ModuleClass.prototype.addEvents = function () {
         var _this = this;
         this.moduleView.getModuleContainer().addEventListener("mousedown", this.eventDraggingHandler, false);
         this.moduleView.getModuleContainer().addEventListener("touchstart", this.eventDraggingHandler, false);
@@ -143,6 +129,7 @@ var ModuleClass = (function () {
         this.deleteDSP(this.moduleFaust.fDSP);
         this.deleteCallback(this);
     };
+    //make module smaller
     ModuleClass.prototype.minModule = function () {
         this.moduleView.fInterfaceContainer.classList.add("mini");
         this.moduleView.fTitle.classList.add("miniTitle");
@@ -151,6 +138,7 @@ var ModuleClass = (function () {
         Connector.redrawInputConnections(this, this.drag);
         Connector.redrawOutputConnections(this, this.drag);
     };
+    //restore module size
     ModuleClass.prototype.maxModule = function () {
         this.moduleView.fInterfaceContainer.classList.remove("mini");
         this.moduleView.fTitle.classList.remove("miniTitle");
@@ -263,6 +251,7 @@ var ModuleClass = (function () {
         var moduleFaustInterface = new FaustInterfaceControler(function (faustInterface) { _this.interfaceCallback(faustInterface); }, function (adress, value) { _this.moduleFaust.fDSP.setValue(adress, value); });
         this.moduleControles = moduleFaustInterface.parseFaustJsonUI(JSON.parse(this.moduleFaust.fDSP.json()).ui, this);
     };
+    //create FaustInterfaceControler, set its callback and add its AccelerometerSlider
     ModuleClass.prototype.createFaustInterface = function () {
         for (var i = 0; i < this.moduleControles.length; i++) {
             var faustInterfaceControler = this.moduleControles[i];
@@ -275,12 +264,14 @@ var ModuleClass = (function () {
             faustInterfaceControler.createAccelerometer();
         }
     };
+    //delete all FaustInterfaceControler
     ModuleClass.prototype.deleteFaustInterface = function () {
         this.deleteAccelerometerRef();
         while (this.moduleView.fInterfaceContainer.childNodes.length != 0) {
             this.moduleView.fInterfaceContainer.removeChild(this.moduleView.fInterfaceContainer.childNodes[0]);
         }
     };
+    //remove AccelerometerSlider ref from AccelerometerHandler
     ModuleClass.prototype.deleteAccelerometerRef = function () {
         for (var i = 0; i < this.moduleControles.length; i++) {
             if (this.moduleControles[i].accelerometerSlider != null && this.moduleControles[i].accelerometerSlider != undefined) {
@@ -291,14 +282,17 @@ var ModuleClass = (function () {
         }
         this.moduleControles = [];
     };
+    // set DSP value to all FaustInterfaceControlers
     ModuleClass.prototype.setDSPValue = function () {
         for (var i = 0; i < this.moduleControles.length; i++) {
             this.moduleFaust.fDSP.setValue(this.moduleControles[i].itemParam.address, this.moduleControles[i].value);
         }
     };
+    // set DSP value to specific FaustInterfaceControlers
     ModuleClass.prototype.setDSPValueCallback = function (address, value) {
         this.moduleFaust.fDSP.setValue(address, value);
     };
+    //parse Code faust to remove old acceleromter value and add new ones
     ModuleClass.prototype.updateCodeFaust = function (details) {
         var newCodeFaust = new CodeFaustParser(this.moduleFaust.fSource, details.sliderName, details.newAccValue, details.isEnabled);
         this.moduleFaust.fSource = newCodeFaust.replaceAccValue();
@@ -357,6 +351,8 @@ var ModuleClass = (function () {
             this.moduleView.fOutputNode.addEventListener("touchend", this.eventConnectorHandler);
         }
     };
+    //manage style of node when touchover will dragging
+    //make the use easier for connections
     ModuleClass.prototype.styleInputNodeTouchDragOver = function (el) {
         el.style.border = "15px double rgb(0, 211, 255)";
         el.style.left = "-32px";

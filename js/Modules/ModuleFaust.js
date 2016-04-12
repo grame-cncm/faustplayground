@@ -7,7 +7,7 @@ var ModuleFaust = (function () {
         this.recallInputsSource = [];
         this.fName = name;
     }
-    /*************** ACTIONS ON IN/OUTPUT NODES ***************************/
+    /*************** ACTIONS ON IN/OUTPUT MODULES ***************************/
     // ------ Returns Connection Array OR null if there are none
     ModuleFaust.prototype.getInputConnections = function () {
         return this.fInputConnections;
@@ -15,8 +15,6 @@ var ModuleFaust = (function () {
     ModuleFaust.prototype.getOutputConnections = function () {
         return this.fOutputConnections;
     };
-    //-- The Creation of array is only done when a new connection is added 
-    //-- (to be able to return null when there are none)	
     ModuleFaust.prototype.addOutputConnection = function (connector) {
         this.fOutputConnections.push(connector);
     };
