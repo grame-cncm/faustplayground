@@ -16,11 +16,13 @@ var Curve;
     Curve[Curve["DownUp"] = 3] = "DownUp";
 })(Curve || (Curve = {}));
 ;
+//object describing value off accelerometer metadata values. 
 var AccMeta = (function () {
     function AccMeta() {
     }
     return AccMeta;
 }());
+//Contains the info regarding the mapping of the FaustInterfaceControler and the accelerometer
 var AccelerometerSlider = (function () {
     function AccelerometerSlider(accParams) {
         if (accParams != null) {
@@ -32,9 +34,6 @@ var AccelerometerSlider = (function () {
             this.max = accParams.max;
             this.init = accParams.init;
             this.label = accParams.label;
-            //this.step = parseFloat(controler.step);
-            //this.mySlider = controler.slider;
-            //this.valueOutput = controler.output;
             this.isActive = Utilitary.isAccelerometerOn;
         }
     }
@@ -57,6 +56,7 @@ var AccelerometerSlider = (function () {
     };
     return AccelerometerSlider;
 }());
+//object responsible of storing all accelerometerSlider and propagate to them the accelerometer infos. 
 var AccelerometerHandler = (function () {
     function AccelerometerHandler() {
     }
@@ -71,7 +71,7 @@ var AccelerometerHandler = (function () {
             console.log(Utilitary.messageRessource.noDeviceMotion);
         }
     };
-    // propagate the new x, y, z value of the accelerometer to the regisred object
+    // propagate the new x, y, z value of the accelerometer to the registred object
     AccelerometerHandler.prototype.propagate = function (event) {
         var x = event.accelerationIncludingGravity.x;
         var y = event.accelerationIncludingGravity.y;
@@ -81,11 +81,12 @@ var AccelerometerHandler = (function () {
                 this.axisSplitter(AccelerometerHandler.faustInterfaceControler[i].accelerometerSlider, x, y, z, this.applyNewValueToModule);
             }
         }
+        // update the faustInterfaceControler of the AccelerometerEditView
         if (AccelerometerHandler.faustInterfaceControlerEdit != null) {
             this.axisSplitter(AccelerometerHandler.faustInterfaceControlerEdit.accelerometerSlider, x, y, z, this.applyValueToEdit);
         }
     };
-    //static registerAcceleratedSlider(fMetaAcc: string, module: ModuleClass, label: string, min: number, ivalue: number, max: number, step: number, slider: HTMLInputElement, valueOutput: HTMLElement, precision: number): AccelerometerSlider {
+    //create and register accelerometerSlide
     AccelerometerHandler.registerAcceleratedSlider = function (accParams, faustInterfaceControler, sliderEdit) {
         var accelerometerSlide = new AccelerometerSlider(accParams);
         faustInterfaceControler.accelerometerSlider = accelerometerSlide;
@@ -97,6 +98,7 @@ var AccelerometerHandler = (function () {
             AccelerometerHandler.faustInterfaceControler.push(faustInterfaceControler);
         }
     };
+    //give the good axis value to the accelerometerslider, convert it to the faust value before
     AccelerometerHandler.prototype.axisSplitter = function (accelerometerSlide, x, y, z, callBack) {
         switch (accelerometerSlide.axis) {
             case Axis.x:
@@ -113,12 +115,15 @@ var AccelerometerHandler = (function () {
                 break;
         }
     };
+    //update value of the dsp
     AccelerometerHandler.prototype.applyNewValueToModule = function (accSlid, newVal, axeValue) {
         accSlid.callbackValueChange(accSlid.address, newVal);
     };
+    //update value of the edit range in AccelerometerEditView
     AccelerometerHandler.prototype.applyValueToEdit = function (accSlid, newVal, axeValue) {
         AccelerometerHandler.faustInterfaceControlerEdit.faustInterfaceView.slider.value = axeValue.toString();
     };
+    //Apply the right converter with the right curve to an accelerometerSlider 
     AccelerometerHandler.curveSplitter = function (accelerometerSlide) {
         switch (accelerometerSlide.curve) {
             case Curve.Up:
@@ -137,10 +142,15 @@ var AccelerometerHandler = (function () {
                 accelerometerSlide.converter = new AccUpConverter(accelerometerSlide.amin, accelerometerSlide.amid, accelerometerSlide.amax, accelerometerSlide.min, accelerometerSlide.init, accelerometerSlide.max);
         }
     };
+    //array containing all the FaustInterfaceControler of the scene
     AccelerometerHandler.faustInterfaceControler = [];
+    //faustInterfaceControler of the AccelerometerEditView
     AccelerometerHandler.faustInterfaceControlerEdit = null;
     return AccelerometerHandler;
 }());
+/***************************************************************************************
+********************  Converter objects use to map acc and faust value *****************
+****************************************************************************************/
 var MinMaxClip = (function () {
     function MinMaxClip(x, y) {
         this.fLo = Math.min(x, y);

@@ -8,6 +8,11 @@ var CodeFaustParser = (function () {
         this.newAccValue = newAccValue;
         this.isEnabled = isEnabled;
     }
+    //main function to start replacing old acc value of a slider by new val in the code faust
+    //start to find slider and then acc
+    //return the new code
+    //throw error if can't find any
+    //return original code if so
     CodeFaustParser.prototype.replaceAccValue = function () {
         this.indexSlider = this.findSliderIndex(this.sliderName);
         if (this.indexSlider == null) {
@@ -17,7 +22,6 @@ var CodeFaustParser = (function () {
             }
             else {
                 new Message(this.sliderName + Utilitary.messageRessource.errorAccSliderNotFound);
-                //throw new Error("Slider non trouvé");
                 return this.originalCodeFaust;
             }
         }
@@ -25,6 +29,9 @@ var CodeFaustParser = (function () {
             return this.tryReplaceAccValue();
         }
     };
+    //try to find the acc meta in code faust if succeed remove old,
+    // add new, return new faust code
+    //otherwise try to find noacc meta
     CodeFaustParser.prototype.tryReplaceAccValue = function () {
         this.indexAccelerometer = this.findAccRank();
         if (this.indexAccelerometer != -1) {
@@ -36,6 +43,9 @@ var CodeFaustParser = (function () {
             return this.tryReplaceNoAccValue();
         }
     };
+    //try to find the noacc meta in code faust if succeed remove old,
+    // add new, return new faust code
+    //otherwise add value
     CodeFaustParser.prototype.tryReplaceNoAccValue = function () {
         this.indexAccelerometer = this.findNoAccRank();
         if (this.indexAccelerometer != -1) {
@@ -44,14 +54,16 @@ var CodeFaustParser = (function () {
             return this.recomposeCodeFaust();
         }
         else {
-            return this.tryReplaceValue();
+            return this.addValue();
         }
     };
-    CodeFaustParser.prototype.tryReplaceValue = function () {
+    //add value of the unexisting acc meta,return new faust code
+    CodeFaustParser.prototype.addValue = function () {
         this.indexAccelerometer = this.codeFaustArray[this.indexSlider].indexOf(this.sliderName) + this.sliderName.length;
         this.addNewAccValue();
         return this.recomposeCodeFaust();
     };
+    //find sliderIndex
     CodeFaustParser.prototype.findSliderIndex = function (sliderName) {
         for (var i = 0; i < this.codeFaustArray.length; i++) {
             if (this.codeFaustArray[i].indexOf(sliderName) != -1 && this.codeFaustArray[i].indexOf("vslider") != -1 || this.codeFaustArray[i].indexOf(sliderName) != -1 && this.codeFaustArray[i].indexOf("hslider") != -1) {
@@ -60,6 +72,7 @@ var CodeFaustParser = (function () {
         }
         return null;
     };
+    //find slider index with space typo
     CodeFaustParser.prototype.findSliderIndexNoSpace = function (sliderName) {
         sliderName = Utilitary.replaceAll(sliderName, " ", "");
         for (var i = 0; i < this.codeFaustArray.length; i++) {
@@ -105,22 +118,12 @@ var CodeFaustParser = (function () {
         }
     };
     CodeFaustParser.prototype.removeOldAccValue = function (acc) {
-        var counter = 0;
-        //while (this.codeFaustArray[this.indexSlider].charAt(this.indexAccelerometer)!="["&&counter<2) {
-        //    this.indexAccelerometer++;
-        //    counter++;
-        //}
-        //this.indexAccelerometer++;
-        //if (counter >= 2) {
-        //    throw new Error("couldNotRemoveOldAcc");
-        //} else {
         var stringSlider = this.codeFaustArray[this.indexSlider];
         while (stringSlider.charAt(this.indexAccelerometer) != "]") {
             stringSlider = stringSlider.slice(0, this.indexAccelerometer) + stringSlider.slice(this.indexAccelerometer + 1);
         }
         stringSlider = stringSlider.slice(0, this.indexAccelerometer) + stringSlider.slice(this.indexAccelerometer + 1);
         this.codeFaustArray[this.indexSlider] = stringSlider;
-        //}
     };
     CodeFaustParser.prototype.addNewAccValue = function () {
         var accType;
@@ -134,6 +137,7 @@ var CodeFaustParser = (function () {
         stringSlider = stringSlider.slice(0, this.indexAccelerometer) + accType + this.newAccValue + "]" + stringSlider.slice(this.indexAccelerometer);
         this.codeFaustArray[this.indexSlider] = stringSlider;
     };
+    //reform the initial faust code from the array of the line code faust return this code
     CodeFaustParser.prototype.recomposeCodeFaust = function () {
         this.newCodeFaust = "";
         for (var i = 0; i < this.codeFaustArray.length; i++) {
