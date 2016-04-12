@@ -33,7 +33,6 @@ function resumeInit(app) {
     Utilitary.addFullPageLoading();
     app.createAllScenes();
     app.createMenu();
-    app.showFirstScene();
     var accHandler = new AccelerometerHandler();
     Utilitary.accHandler = accHandler;
     accHandler.getAccelerometerValue();

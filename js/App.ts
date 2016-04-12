@@ -36,7 +36,14 @@ Create Factories and Modules
 /// <reference path="Messages.ts"/>
 /// <reference path="Lib/perfectScrollBar/js/perfect-ScrollBar.min.d.ts"/>
 
-
+//object containg info necessary to compile faust code
+interface CompileFaust {
+    name: string,
+    sourceCode: string,
+    x: number,
+    y: number,
+    callback: (factory: Factory) => void
+}
 
 class App {
     private static currentScene: number;
@@ -59,9 +66,6 @@ class App {
 
     factory: Factory;
 
-    showFirstScene(): void {
-        Utilitary.currentScene.showScene();
-    }
 
     createAllScenes(): void {
         var sceneView: SceneView = new SceneView();
@@ -398,3 +402,5 @@ class App {
 
     }
 }
+
+

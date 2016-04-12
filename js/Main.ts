@@ -42,7 +42,6 @@ function resumeInit(app: App) {
     
     app.createAllScenes();
     app.createMenu();
-    app.showFirstScene();
 
     var accHandler: AccelerometerHandler = new AccelerometerHandler();
     Utilitary.accHandler = accHandler;

@@ -1,10 +1,5 @@
 /*				SCENECLASS.JS
     HAND-MADE JAVASCRIPT CLASS CONTAINING THE API OF A GENERIC SCENE
-
-    DEPENDENCIES :
-        - ModuleClass.js
-        - Main.js
-        - Connect.js
 */
 /// <reference path="../Connect.ts"/>
 /// <reference path="../Modules/ModuleClass.ts"/>
@@ -17,12 +12,14 @@
 var Scene = (function () {
     function Scene(identifiant, parent, compileFaust, sceneView) {
         var _this = this;
+        //temporary arrays used to recall a scene from a jfaust file
         this.arrayRecalScene = [];
         this.arrayRecalledModule = [];
         this.isMute = false;
         //-- Modules contained in the scene
         this.fModuleList = [];
         this.sceneName = "Patch";
+        //used to keep loading page when loading the two input and output default modules
         this.isInitLoading = true;
         this.isOutputTouch = false;
         this.compileFaust = compileFaust;
@@ -32,20 +29,7 @@ var Scene = (function () {
         this.integrateOutput();
         document.addEventListener("unstylenode", function () { _this.unstyleNode(); });
     }
-    /******************CALLBACKS FOR LOADING/UNLOADING SCENE **************/
-    Scene.prototype.onload = function (s) { };
-    Scene.prototype.onunload = function (s) { };
     Scene.prototype.getSceneContainer = function () { return this.sceneView.fSceneContainer; };
-    /************************* SHOW/HIDE SCENE ***************************/
-    Scene.prototype.showScene = function () { this.sceneView.fSceneContainer.style.visibility = "visible"; };
-    Scene.prototype.hideScene = function () { this.sceneView.fSceneContainer.style.visibility = "hidden"; };
-    /*********************** LOAD/UNLOAD SCENE ***************************/
-    Scene.prototype.loadScene = function () {
-        this.onload(this);
-    };
-    Scene.prototype.unloadScene = function () {
-        this.onunload(this);
-    };
     /*********************** MUTE/UNMUTE SCENE ***************************/
     Scene.prototype.muteScene = function () {
         var out = document.getElementById("audioOutput");
@@ -79,6 +63,7 @@ var Scene = (function () {
         moduleOutput.moduleView.fModuleContainer.ontouchstart = function () { _this.dbleTouchOutput(); };
         moduleOutput.moduleView.fModuleContainer.ondblclick = function () { _this.dispatchEventMuteUnmute(); };
     };
+    //custom doubl touch event to mute
     Scene.prototype.dbleTouchOutput = function () {
         var _this = this;
         if (!this.isOutputTouch) {
@@ -111,11 +96,6 @@ var Scene = (function () {
         }
     };
     /*******************************  PUBLIC METHODS  **********************************/
-    Scene.prototype.deleteScene = function () {
-        this.cleanModules();
-        this.hideScene();
-        this.muteScene();
-    };
     Scene.prototype.integrateSceneInBody = function () {
         document.body.appendChild(this.sceneView.fSceneContainer);
     };
@@ -198,6 +178,8 @@ var Scene = (function () {
         connect.connectOutput(sceneOutput, out);
     };
     /*********************** SAVE/RECALL SCENE ***************************/
+    // use a collection of JsonSaveModule describing the scene and the modules to save it in a json string
+    // isPrecompiled is used to save or not the asm.js code
     Scene.prototype.saveScene = function (isPrecompiled) {
         for (var i = 0; i < this.fModuleList.length; i++) {
             if (this.fModuleList[i].patchID != "output" && this.fModuleList[i].patchID != "input") {
@@ -208,7 +190,7 @@ var Scene = (function () {
         var jsonObjectCollection = {};
         for (var i = 0; i < this.fModuleList.length; i++) {
             if (this.fModuleList[i].patchID != "output" && this.fModuleList[i].patchID != "input") {
-                jsonObjectCollection[this.fModuleList[i].patchID.toString()] = new JsonSaveObject();
+                jsonObjectCollection[this.fModuleList[i].patchID.toString()] = new JsonSaveModule();
                 var jsonObject = jsonObjectCollection[this.fModuleList[i].patchID.toString()];
                 jsonObject.sceneName = this.sceneName;
                 jsonObject.patchId = this.fModuleList[i].patchID.toString();
@@ -273,6 +255,7 @@ var Scene = (function () {
         json = JSON.stringify(jsonObjectCollection);
         return json;
     };
+    //recall scene from json/jfaust fill arrayRecalScene with each JsonSaveModule
     Scene.prototype.recallScene = function (json) {
         if (json != null) {
             try {
@@ -294,6 +277,11 @@ var Scene = (function () {
             new Message(Utilitary.messageRessource.errorLoading);
         }
     };
+    // recall module at rank 0 of arrayRecalScene
+    // direct use of the asm.js code if exist
+    // or compile the faust code
+    // 
+    // When arrayRecalScene empty, connect the modules in the scene
     Scene.prototype.lunchModuleCreation = function () {
         var _this = this;
         if (this.arrayRecalScene.length != 0) {
@@ -329,6 +317,7 @@ var Scene = (function () {
             Utilitary.hideFullPageLoading();
         }
     };
+    //update temporary info for the module being created
     Scene.prototype.updateAppTempModuleInfo = function (jsonSaveObject) {
         this.tempModuleX = parseFloat(jsonSaveObject.x);
         this.tempModuleY = parseFloat(jsonSaveObject.y);
@@ -337,12 +326,11 @@ var Scene = (function () {
         this.tempPatchId = jsonSaveObject.patchId;
         this.tempParams = jsonSaveObject.params;
     };
+    //create Module then remove corresponding JsonSaveModule from arrayRecalScene at rank 0
+    //re-lunch module of following Module/JsonSaveModule
     Scene.prototype.createModule = function (factory) {
         var _this = this;
         try {
-            //---- This is very similar to "createFaustModule" from App.js
-            //---- But as we need to set Params before calling "createFaustInterface", it is copied
-            //---- There probably is a better way to do this !!
             if (!factory) {
                 new Message(faust.getErrorMessage());
                 Utilitary.hideFullPageLoading();
@@ -354,8 +342,6 @@ var Scene = (function () {
             module.patchID = this.tempPatchId;
             if (this.tempParams) {
                 for (var i = 0; i < this.tempParams.sliders.length; i++) {
-                    //console.log("WINDOW.PARAMS");
-                    //console.log(this.parent.params.length);
                     var slider = this.tempParams.sliders[i];
                     module.addInterfaceParam(slider.path, parseFloat(slider.value));
                 }
@@ -378,6 +364,7 @@ var Scene = (function () {
             this.lunchModuleCreation();
         }
     };
+    //recall of the accelerometer mapping parameters for each FaustInterfaceControler of the Module
     Scene.prototype.recallAccValues = function (jsonAccs, module) {
         if (jsonAccs != undefined) {
             for (var i in jsonAccs.controles) {
@@ -424,6 +411,7 @@ var Scene = (function () {
             }
         }
     };
+    //connect Modules recalled
     Scene.prototype.connectModule = function (module) {
         try {
             for (var i = 0; i < module.moduleFaust.recallInputsSource.length; i++) {
@@ -445,6 +433,7 @@ var Scene = (function () {
             new Message(Utilitary.messageRessource.errorConnectionRecall);
         }
     };
+    //use to identify the module to be connected to when recalling connections between modules
     Scene.prototype.getModuleByPatchId = function (patchId) {
         if (patchId == "output") {
             return this.fAudioOutput;
@@ -462,6 +451,7 @@ var Scene = (function () {
         }
         return null;
     };
+    //use to replace all éèàù ' from string and replace it with eeau__
     Scene.cleanName = function (newName) {
         newName = Utilitary.replaceAll(newName, "é", "e");
         newName = Utilitary.replaceAll(newName, "è", "e");
@@ -471,6 +461,8 @@ var Scene = (function () {
         newName = Utilitary.replaceAll(newName, "'", "_");
         return newName;
     };
+    //check if string start only with letter (no accent) 
+    //and contains only letter (no accent) underscore and number for a lenght between 1 and 50 char
     Scene.isNameValid = function (newName) {
         var pattern = new RegExp("^[a-zA-Z_][a-zA-Z_0-9]{1,50}$");
         if (pattern.test(newName)) {
@@ -480,6 +472,7 @@ var Scene = (function () {
             return false;
         }
     };
+    //rename scene if format is correct and return true otherwise return false
     Scene.rename = function (input, spanRule, spanDynamic) {
         var newName = input.value;
         newName = Scene.cleanName(newName);
@@ -521,6 +514,7 @@ var Scene = (function () {
         position.y = window.innerHeight / 2;
         return position;
     };
+    /***************** Unstyle node connection of all modules on touchscreen  ***************/
     Scene.prototype.unstyleNode = function () {
         var modules = this.getModules();
         modules.push(this.fAudioInput);
@@ -546,10 +540,10 @@ var JsonSaveCollection = (function () {
     }
     return JsonSaveCollection;
 }());
-var JsonSaveObject = (function () {
-    function JsonSaveObject() {
+var JsonSaveModule = (function () {
+    function JsonSaveModule() {
     }
-    return JsonSaveObject;
+    return JsonSaveModule;
 }());
 var JsonOutputsSave = (function () {
     function JsonOutputsSave() {

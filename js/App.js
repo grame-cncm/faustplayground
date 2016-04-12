@@ -38,9 +38,6 @@ Create Factories and Modules
 var App = (function () {
     function App() {
     }
-    App.prototype.showFirstScene = function () {
-        Utilitary.currentScene.showScene();
-    };
     App.prototype.createAllScenes = function () {
         var sceneView = new SceneView();
         Utilitary.currentScene = new Scene("Normal", this, this.compileFaust, sceneView);
