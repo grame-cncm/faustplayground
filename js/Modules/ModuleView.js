@@ -138,4 +138,5 @@ var ModuleView = (function () {
         return false;
     };
     return ModuleView;
-})();
+}());
+//# sourceMappingURL=ModuleView.js.map

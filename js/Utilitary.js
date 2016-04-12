@@ -80,4 +80,5 @@ var Utilitary = (function () {
     Utilitary.isAccelerometerOn = false;
     Utilitary.isAccelerometerEditOn = false;
     return Utilitary;
-})();
+}());
+//# sourceMappingURL=Utilitary.js.map

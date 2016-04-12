@@ -97,4 +97,5 @@ var Library = (function () {
         return elementComplete.replace(stringStructureRemoved, "").replace(".dsp", "");
     };
     return Library;
-})();
+}());
+//# sourceMappingURL=Library.js.map

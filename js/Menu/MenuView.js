@@ -135,4 +135,5 @@ var MenuView = (function () {
         this.contentsMenu = contentsMenu;
     };
     return MenuView;
-})();
+}());
+//# sourceMappingURL=MenuView.js.map

@@ -4,22 +4,10 @@
 Class App
 
 Create the scenes
-Navigate between scenes
 Activate Physical input/ output
 Handle Drag and Drop
 Create Factories and Modules
 
-DEPENDENCIES:
-- Accueil.js
-    - Finish.js
-    - Playground.js
-    - Pedagogie.js
-    - SceneClass.js
-
-    - ModuleClass.js
-    - Connect.js
-    - libfaust.js
-    - webaudio - asm - wrapper.js
 
     */
 /// <reference path="Scenes/SceneClass.ts"/>
@@ -56,15 +44,15 @@ var App = (function () {
     App.prototype.createAllScenes = function () {
         var sceneView = new SceneView();
         Utilitary.currentScene = new Scene("Normal", this, this.compileFaust, sceneView);
-        //App.scene.sceneView = sceneView;
         this.setGeneralAppListener(this);
-        //sceneView.initNormalScene(App.scene);
         App.currentScene = 0;
     };
     App.prototype.createMenu = function () {
         var _this = this;
         this.menu = new Menu(document.getElementsByTagName('body')[0]);
+        //pass the scene to the menu to allow it to access the scene
         this.menu.setMenuScene(Utilitary.currentScene);
+        //add eventlistener on the scene to hide menu when clicked or touched
         Utilitary.currentScene.getSceneContainer().addEventListener("mousedown", function () {
             if (!_this.menu.accEdit.isOn) {
                 _this.menu.menuChoices = MenuChoices.null;
@@ -78,6 +66,7 @@ var App = (function () {
             }
         }, true);
     };
+    //create div to append messages and confirms
     App.prototype.createDialogue = function () {
         var dialogue = document.createElement("div");
         dialogue.id = "dialogue";
@@ -93,48 +82,40 @@ var App = (function () {
         this.tempModuleX = compileFaust.x;
         this.tempModuleY = compileFaust.y;
         var currentScene = Utilitary.currentScene;
-        // To Avoid click during compilation
         if (currentScene) {
             currentScene.muteScene();
         }
         ;
-        //var args = ["-I", "http://faust.grame.fr/faustcode/"];
-        //var args = ["-I", "http://ifaust.grame.fr/faustcode/"];
-        //var args = ["-I", "http://10.0.1.2/faustcode/"];
-        var args = ["-I", "http://" + location.hostname + "/faustcode/"];
-        //var messageJson = JSON.stringify({
-        //    sourcecode, args
-        //})
-        //worker.postMessage(messageJson)
+        //locate libraries used in libfaust compiler
+        var args = ["-I", location.origin + "/faustcode/"];
+        //try to create the asm.js code/factory with the faust code given. Then callback to function passing the factory.
         try {
             this.factory = faust.createDSPFactory(compileFaust.sourceCode, args, function (factory) { compileFaust.callback(factory); });
         }
         catch (error) {
             new Message(error);
         }
-        //callback(this.factory)
         if (currentScene) {
             currentScene.unmuteScene();
         }
         ;
     };
+    //create Module, set the source faust code to its moduleFaust, set the faust interface , add the input output connection nodes
+    //
     App.prototype.createModule = function (factory) {
         var _this = this;
         if (!factory) {
             new Message(Utilitary.messageRessource.errorFactory + faust.getErrorMessage());
-            this.terminateUpload();
+            Utilitary.hideFullPageLoading();
             return null;
         }
-        // can't it be just window.scenes[window.currentScene] ???
-        //if (App.isTooltipEnabled)
         var module = new ModuleClass(Utilitary.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), function (module) { Utilitary.currentScene.removeModule(module); }, this.compileFaust);
-        //else
-        //    faustModule = new ModuleClass(this.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), this.scenes[0].removeModule);
         module.moduleFaust.setSource(this.tempModuleSourceCode);
         module.createDSP(factory);
         module.setFaustInterfaceControles();
         module.createFaustInterface();
         module.addInputOutputNodes();
+        //set listener to recompile when dropping faust code on the module
         if (this.tempModuleName != "input" && this.tempModuleName != "output") {
             module.moduleView.fModuleContainer.ondrop = function (e) {
                 e.stopPropagation();
@@ -150,6 +131,7 @@ var App = (function () {
             module.moduleView.fModuleContainer.style.opacity = "0.5";
             module.moduleView.fModuleContainer.style.boxShadow = "0 5px 10px rgba(0, 0, 0, 0.4)";
         };
+        // the current scene add the module and hide the loading page 
         Utilitary.currentScene.addModule(module);
         if (!Utilitary.currentScene.isInitLoading) {
             Utilitary.hideFullPageLoading();
@@ -158,10 +140,14 @@ var App = (function () {
     /********************************************************************
     ***********************  HANDLE DRAG AND DROP ***********************
     ********************************************************************/
-    //-- Init drag and drop reactions
+    //-- custom event to load file from the load menu with the file explorer
+    //Init drag and drop reactions, scroll event and body resize event to resize svg element size, 
+    // add custom double touch event to load dsp from the library menu
     App.prototype.setGeneralAppListener = function (app) {
         var _this = this;
+        //custom event to load file from the load menu with the file explorer
         document.addEventListener("fileload", function (e) { _this.loadFileEvent(e); });
+        //All drog and drop events
         window.ondragover = function () { this.className = 'hover'; return false; };
         window.ondragend = function () { this.className = ''; return false; };
         document.ondragstart = function () { _this.styleOnDragStart(); };
@@ -182,9 +168,11 @@ var App = (function () {
                 e.preventDefault();
             }
         };
+        //scroll event to check the size of the document
         document.onscroll = function () {
             _this.checkRealWindowSize();
         };
+        //resize event
         var body = document.getElementsByTagName("body")[0];
         body.onresize = function () { _this.checkRealWindowSize(); };
         window.ondrop = function (e) {
@@ -195,41 +183,27 @@ var App = (function () {
             _this.uploadOn(_this, null, x, y, e);
             _this.menu.isMenuLow = true;
         };
+        //custom double touch from library menu to load an effect or an intrument.
         document.addEventListener("dbltouchlib", function (e) { _this.dblTouchUpload(e); });
     };
-    //-- Init drag and drop reactions
-    App.prototype.resetGeneralDragAndDrop = function (div) {
-        window.ondragover = function () { return false; };
-        window.ondragend = function () { return false; };
-        window.ondrop = function (e) { return false; };
-    };
-    //-- Prevent Default Action of the browser from happening
-    App.prototype.preventDefaultAction = function (e) {
-        e.preventDefault();
-    };
-    App.prototype.terminateUpload = function () {
-        Utilitary.hideFullPageLoading();
-    };
-    //-- Finds out if the drop was on an existing module or creating a new one
-    //-- Upload content dropped on the page and create a Faust DSP with it
+    //-- Upload content dropped on the page and allocate the content to the right function
     App.prototype.uploadOn = function (app, module, x, y, e) {
         Utilitary.showFullPageLoading();
-        //worker.postMessage("go");
-        this.preventDefaultAction(e);
-        // CASE 1 : THE DROPPED OBJECT IS A URL TO SOME FAUST CODE
+        e.preventDefault();
+        // CASE 1 : the dropped object is a url to some faust code
         if (e.dataTransfer.getData('URL') && e.dataTransfer.getData('URL').split(':').shift() != "file") {
             var url = e.dataTransfer.getData('URL');
             this.uploadUrl(app, module, x, y, url);
         }
         else if (e.dataTransfer.getData('URL').split(':').shift() != "file") {
             var dsp_code = e.dataTransfer.getData('text');
-            // CASE 2 : THE DROPPED OBJECT IS SOME FAUST CODE
+            // CASE 2 : the dropped object is some faust code
             if (dsp_code) {
                 this.uploadCodeFaust(app, module, x, y, e, dsp_code);
             }
             else {
                 try {
-                    this.uploadFile2(app, module, x, y, e, dsp_code);
+                    this.uploadFileFaust(app, module, x, y, e, dsp_code);
                 }
                 catch (error) {
                     new Message(error);
@@ -238,33 +212,25 @@ var App = (function () {
             }
         }
         else {
-            app.terminateUpload();
             new Message(Utilitary.messageRessource.errorObjectNotFaustCompatible);
+            Utilitary.hideFullPageLoading();
         }
     };
-    //Upload Url
+    //used for Url pointing at a dsp file
     App.prototype.uploadUrl = function (app, module, x, y, url) {
         var filename = url.toString().split('/').pop();
         filename = filename.toString().split('.').shift();
-        var xmlhttp = new XMLHttpRequest;
-        xmlhttp.overrideMimeType('text/plain; charset=utf-8');
-        xmlhttp.onreadystatechange = function () {
-            if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-                var dsp_code = "process = vgroup(\"" + filename + "\",environment{" + xmlhttp.responseText + "}.process);";
-                if (module == null) {
-                    app.compileFaust({ name: filename, sourceCode: dsp_code, x: x, y: y, callback: function (factory) { app.createModule(factory); } });
-                }
-                else {
-                    module.update(filename, dsp_code);
-                }
+        Utilitary.getXHR(url, function (codeFaust) {
+            var dsp_code = "process = vgroup(\"" + filename + "\",environment{" + codeFaust + "}.process);";
+            if (module == null) {
+                app.compileFaust({ name: filename, sourceCode: dsp_code, x: x, y: y, callback: function (factory) { app.createModule(factory); } });
             }
-            //app.terminateUpload();
-        };
-        xmlhttp.open("GET", url);
-        // 	Avoid error "mal formé" on firefox
-        xmlhttp.overrideMimeType('text/html');
-        xmlhttp.send();
+            else {
+                module.update(filename, dsp_code);
+            }
+        }, Utilitary.errorCallBack);
     };
+    // used for dsp code faust
     App.prototype.uploadCodeFaust = function (app, module, x, y, e, dsp_code) {
         dsp_code = "process = vgroup(\"" + "TEXT" + "\",environment{" + dsp_code + "}.process);";
         if (!module) {
@@ -273,20 +239,16 @@ var App = (function () {
         else {
             module.update("TEXT", dsp_code);
         }
-        //app.terminateUpload();
     };
-    App.prototype.uploadFile2 = function (app, module, x, y, e, dsp_code) {
+    //used for File containing code faust or jfaust/json scene descriptor get the file then pass it to loadFile()
+    App.prototype.uploadFileFaust = function (app, module, x, y, e, dsp_code) {
         var files = e.dataTransfer.files;
         var file = files[0];
-        if (location.host.indexOf("sitepointstatic") >= 0) {
-            return;
-        }
-        var request = new XMLHttpRequest();
-        if (request.upload) {
-            this.loadFile(file, module, x, y, app);
-        }
+        this.loadFile(file, module, x, y);
     };
-    App.prototype.loadFile = function (file, module, x, y, app) {
+    //Load file dsp or jfaust
+    App.prototype.loadFile = function (file, module, x, y) {
+        var _this = this;
         var dsp_code;
         var reader = new FileReader();
         var ext = file.name.toString().split('.').pop();
@@ -306,7 +268,7 @@ var App = (function () {
         reader.onloadend = function (e) {
             dsp_code = "process = vgroup(\"" + filename + "\",environment{" + reader.result + "}.process);";
             if (!module && type == "dsp") {
-                app.compileFaust({ name: filename, sourceCode: dsp_code, x: x, y: y, callback: function (factory) { app.createModule(factory); } });
+                _this.compileFaust({ name: filename, sourceCode: dsp_code, x: x, y: y, callback: function (factory) { _this.createModule(factory); } });
             }
             else if (type == "dsp") {
                 module.update(filename, dsp_code);
@@ -314,23 +276,22 @@ var App = (function () {
             else if (type == "json") {
                 Utilitary.currentScene.recallScene(reader.result);
             }
-            //app.terminateUpload();
         };
     };
+    //used when a custom event from loading file with the browser dialogue
     App.prototype.loadFileEvent = function (e) {
         Utilitary.showFullPageLoading();
         var file = e.detail;
         var position = Utilitary.currentScene.positionDblTapModule();
-        this.loadFile(file, null, position.x, position.y, this);
+        this.loadFile(file, null, position.x, position.y);
     };
+    //used with the library double touch custom event
     App.prototype.dblTouchUpload = function (e) {
         Utilitary.showFullPageLoading();
         var position = Utilitary.currentScene.positionDblTapModule();
         this.uploadUrl(this, null, position.x, position.y, e.detail);
     };
-    //Check in Url if the app should be for kids
-    ////////////////////////////// LOADINGS //////////////////////////////////////
-    //add loading logo and text on export
+    ////////////////////////////// design on drag or drop //////////////////////////////////////
     // manage style during a drag and drop event
     App.prototype.styleOnDragStart = function () {
         this.menu.menuView.menuContainer.style.opacity = "0.5";
@@ -343,10 +304,6 @@ var App = (function () {
         }
     };
     App.prototype.styleOnDragEnd = function () {
-        //var body: HTMLBodyElement = <HTMLBodyElement>document.getElementById("body")[0];
-        //body.removeEventListener("ondragleave");
-        //document.getElementById("body")[0].style.zIndex = "100";
-        //this.menu.lowerLibraryMenu();
         this.menu.menuView.menuContainer.classList.remove("no_pointer");
         this.menu.menuView.menuContainer.style.opacity = "1";
         Utilitary.currentScene.sceneView.dropElementScene.style.display = "none";
@@ -383,4 +340,5 @@ var App = (function () {
     App.prototype.errorCallBack = function (message) {
     };
     return App;
-})();
+}());
+//# sourceMappingURL=App.js.map

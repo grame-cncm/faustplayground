@@ -19,4 +19,5 @@ var Ressources = (function () {
         resumeInit(app);
     };
     return Ressources;
-})();
+}());
+//# sourceMappingURL=Ressources.js.map

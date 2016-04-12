@@ -9,21 +9,26 @@
 /// <reference path="App.ts"/>
 /// <reference path="Messages.ts"/>
 "use strict";
+//listner on load of all element to init the app
 window.addEventListener('load', init, false);
-//var worker = new Worker("js/worker.js");
-//worker.addEventListener("message", function (event) { console.log(event.data) }, false)
+//initialization af the app, create app and ressource to get text with correct localization
+//then resumeInit on callback when text is loaded
 function init() {
     var app = new App();
-    var ressource = new Ressources();
+    var ressource = new Ressources;
     ressource.getRessources(app);
 }
+//callback when text is loaded. resume the initialization
 function resumeInit(app) {
+    //create div which will contain all Messages and Confirm
     app.createDialogue();
+    //create audiocontext if available, otherwise app can't work
     try {
         Utilitary.audioContext = new AudioContext();
     }
     catch (e) {
         new Message(Utilitary.messageRessource.errorNoWebAudioAPI);
+        Utilitary.hideFullPageLoading();
     }
     Utilitary.addFullPageLoading();
     app.createAllScenes();
@@ -35,6 +40,7 @@ function resumeInit(app) {
     Utilitary.driveApi = new DriveAPI();
     app.menu.setDriveApi(Utilitary.driveApi);
     Utilitary.driveApi.checkAuth();
+    //error catcher
     window.addEventListener("error", function (e) {
         if (e.message == "Uncaught Error: workerError" || e.message == "Error: workerError") {
             new Message(Utilitary.messageRessource.errorOccuredMessage + e.message);
@@ -44,9 +50,10 @@ function resumeInit(app) {
             Utilitary.hideFullPageLoading();
             e.preventDefault();
         }
-        //e.preventDefault();
     });
 }
+//event listener to activate web audio on IOS devices, touchstart for iOS 8
+//touchend for iOS 9
 window.addEventListener('touchend', IosInit, false);
 window.addEventListener('touchstart', IosInit2, false);
 function IosInit() {
@@ -77,4 +84,5 @@ var PositionModule = (function () {
     function PositionModule() {
     }
     return PositionModule;
-})();
+}());
+//# sourceMappingURL=Main.js.map

@@ -94,4 +94,5 @@ var SceneView = (function () {
         //});
     };
     return SceneView;
-})();
+}());
+//# sourceMappingURL=SceneView.js.map

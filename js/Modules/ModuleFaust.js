@@ -39,4 +39,5 @@ var ModuleFaust = (function () {
         return this.fDSP;
     };
     return ModuleFaust;
-})();
+}());
+//# sourceMappingURL=ModuleFaust.js.map

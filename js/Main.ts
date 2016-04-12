@@ -12,59 +12,63 @@
 
 "use strict";
 
-
+//listner on load of all element to init the app
 window.addEventListener('load', init, false);
-//var worker = new Worker("js/worker.js");
-//worker.addEventListener("message", function (event) { console.log(event.data) }, false)
 
 
 
 
 
 
+//initialization af the app, create app and ressource to get text with correct localization
+//then resumeInit on callback when text is loaded
 function init(): void {
-
-
-
     var app: App = new App();
-    var ressource = new Ressources();
-
+    var ressource = new Ressources
     ressource.getRessources(app);
 }
+//callback when text is loaded. resume the initialization
 function resumeInit(app: App) {
+    //create div which will contain all Messages and Confirm
     app.createDialogue();
-
+    //create audiocontext if available, otherwise app can't work
     try {
         Utilitary.audioContext = new AudioContext();
     } catch (e) {
         new Message(Utilitary.messageRessource.errorNoWebAudioAPI);
+        Utilitary.hideFullPageLoading();
     }
     Utilitary.addFullPageLoading();
+    
     app.createAllScenes();
     app.createMenu();
-
     app.showFirstScene();
+
     var accHandler: AccelerometerHandler = new AccelerometerHandler();
     Utilitary.accHandler = accHandler;
     accHandler.getAccelerometerValue();
+
     Utilitary.driveApi = new DriveAPI();
     app.menu.setDriveApi(Utilitary.driveApi);
     Utilitary.driveApi.checkAuth();
+
+
+    //error catcher
     window.addEventListener("error", (e: ErrorEvent) => {
         if (e.message == "Uncaught Error: workerError" || e.message == "Error: workerError") {
             new Message(Utilitary.messageRessource.errorOccuredMessage + e.message)
             Utilitary.hideFullPageLoading();
         }
         if (e.message == "Uncaught Error: Upload2Error") {
-
-
             Utilitary.hideFullPageLoading();
             e.preventDefault();
         }
-        //e.preventDefault();
-
     });
 }
+
+//event listener to activate web audio on IOS devices, touchstart for iOS 8
+//touchend for iOS 9
+
 window.addEventListener('touchend', IosInit , false);
 window.addEventListener('touchstart', IosInit2, false);
 
@@ -99,7 +103,7 @@ function IosInit2() {
 }
 
     /********************************************************************
-    **************************  interfaces  *********************************
+    **************************  interfaces  *****************************
     ********************************************************************/
 
 interface AudioBufferSourceNode {
@@ -135,10 +139,6 @@ class PositionModule implements IPositionModule {
     y: number;
 }
 
-interface FaustEvent extends Event {
-
-
-}
 
 interface MediaStream {
     id: string;
@@ -154,7 +154,6 @@ interface MediaStreamAudioDestinationNode extends AudioNode {
 }
 
 interface AudioContext {
-//    state: string;
     close: () => void;
     createMediaStreamSource: (m: MediaStream) => MediaStreamAudioSourceNode;
     createMediaStreamDestination: () => any;
