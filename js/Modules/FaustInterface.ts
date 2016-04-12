@@ -167,8 +167,10 @@ class FaustInterfaceControler implements IFaustInterfaceControler {
             this.unit = "";
         }
 
-        var precision = this.itemParam.step.toString().split('.').pop().length;
-        this.precision = String(precision);
+        if (this.itemParam.step != undefined) {
+            var precision = this.itemParam.step.toString().split('.').pop().length;
+            this.precision = String(precision);
+        }
         this.accParams = {
             isEnabled: this.isEnabled,
             acc: this.acc,
@@ -207,7 +209,23 @@ class FaustInterfaceControler implements IFaustInterfaceControler {
                 this.faustInterfaceView.slider.addEventListener("touchstart", (e) => { e.stopPropagation() })
                 this.faustInterfaceView.slider.addEventListener("touchmove", (e) => { e.stopPropagation() })
             } else if (this.faustInterfaceView.type === "button") {
+                this.faustInterfaceView.button.addEventListener("mousedown", (e: Event) => {
+                    e.stopPropagation();
+                    this.interfaceCallback(this)
 
+                })
+                this.faustInterfaceView.button.addEventListener("mouseup", (e: Event) => {
+                    e.stopPropagation();
+                    this.interfaceCallback(this)
+                })
+                this.faustInterfaceView.button.addEventListener("touchstart", (e: Event) => {
+                    e.stopPropagation();
+                    this.interfaceCallback(this)
+                })
+                this.faustInterfaceView.button.addEventListener("touchend", (e: Event) => {
+                    e.stopPropagation();
+                    this.interfaceCallback(this)
+                })
             } else if (this.faustInterfaceView.type === "checkbox") {
 
             }
@@ -253,7 +271,9 @@ class FaustInterfaceControler implements IFaustInterfaceControler {
                 AccelerometerHandler.registerAcceleratedSlider(this.accParams, this)
                 this.accelerometerSlider.callbackValueChange = (address, value) => { this.callbackValueChange(address, value) }
                 this.accelerometerSlider.isEnabled = false;
-                this.faustInterfaceView.slider.parentElement.classList.add("disabledAcc")
+                if (this.faustInterfaceView.slider != undefined) {
+                    this.faustInterfaceView.slider.parentElement.classList.add("disabledAcc")
+                }
             }
         } else {
             this.acc = this.accDefault;
@@ -262,7 +282,9 @@ class FaustInterfaceControler implements IFaustInterfaceControler {
             AccelerometerHandler.registerAcceleratedSlider(this.accParams, this)
             this.accelerometerSlider.callbackValueChange = (address, value) => { this.callbackValueChange(address, value) }
             this.accelerometerSlider.isEnabled = false;
-            this.faustInterfaceView.slider.parentElement.classList.add("disabledAcc")
+            if (this.faustInterfaceView.slider != undefined) {
+                this.faustInterfaceView.slider.parentElement.classList.add("disabledAcc")
+            }
         }
     }
 
@@ -281,6 +303,7 @@ class FaustInterfaceControler implements IFaustInterfaceControler {
 class FaustInterfaceView {
     type: string;
     slider: HTMLInputElement;
+    button: HTMLInputElement;
     output: HTMLElement;
     group: HTMLElement;
     label: HTMLElement;
@@ -355,10 +378,11 @@ class FaustInterfaceView {
 
         var group = document.createElement("div");
 
-        var button: HTMLElement = document.createElement("BUTTON");        
+        var button = document.createElement("input");
+        button.type = "button";
+        this.button = button;
+        this.button.value = itemParam.label;
 
-        var labelText: Text = document.createTextNode(itemParam.label);       
-        button.appendChild(labelText);
         group.appendChild(button);
 	
 	    return button;

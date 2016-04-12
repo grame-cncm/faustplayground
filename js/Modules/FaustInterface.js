@@ -71,8 +71,10 @@ var FaustInterfaceControler = (function () {
         if (this.unit == undefined) {
             this.unit = "";
         }
-        var precision = this.itemParam.step.toString().split('.').pop().length;
-        this.precision = String(precision);
+        if (this.itemParam.step != undefined) {
+            var precision = this.itemParam.step.toString().split('.').pop().length;
+            this.precision = String(precision);
+        }
         this.accParams = {
             isEnabled: this.isEnabled,
             acc: this.acc,
@@ -112,6 +114,22 @@ var FaustInterfaceControler = (function () {
                 this.faustInterfaceView.slider.addEventListener("touchmove", function (e) { e.stopPropagation(); });
             }
             else if (this.faustInterfaceView.type === "button") {
+                this.faustInterfaceView.button.addEventListener("mousedown", function (e) {
+                    e.stopPropagation();
+                    _this.interfaceCallback(_this);
+                });
+                this.faustInterfaceView.button.addEventListener("mouseup", function (e) {
+                    e.stopPropagation();
+                    _this.interfaceCallback(_this);
+                });
+                this.faustInterfaceView.button.addEventListener("touchstart", function (e) {
+                    e.stopPropagation();
+                    _this.interfaceCallback(_this);
+                });
+                this.faustInterfaceView.button.addEventListener("touchend", function (e) {
+                    e.stopPropagation();
+                    _this.interfaceCallback(_this);
+                });
             }
             else if (this.faustInterfaceView.type === "checkbox") {
             }
@@ -158,7 +176,9 @@ var FaustInterfaceControler = (function () {
                 AccelerometerHandler.registerAcceleratedSlider(this.accParams, this);
                 this.accelerometerSlider.callbackValueChange = function (address, value) { _this.callbackValueChange(address, value); };
                 this.accelerometerSlider.isEnabled = false;
-                this.faustInterfaceView.slider.parentElement.classList.add("disabledAcc");
+                if (this.faustInterfaceView.slider != undefined) {
+                    this.faustInterfaceView.slider.parentElement.classList.add("disabledAcc");
+                }
             }
         }
         else {
@@ -168,7 +188,9 @@ var FaustInterfaceControler = (function () {
             AccelerometerHandler.registerAcceleratedSlider(this.accParams, this);
             this.accelerometerSlider.callbackValueChange = function (address, value) { _this.callbackValueChange(address, value); };
             this.accelerometerSlider.isEnabled = false;
-            this.faustInterfaceView.slider.parentElement.classList.add("disabledAcc");
+            if (this.faustInterfaceView.slider != undefined) {
+                this.faustInterfaceView.slider.parentElement.classList.add("disabledAcc");
+            }
         }
     };
     //callback to update the dsp value 
@@ -235,9 +257,10 @@ var FaustInterfaceView = (function () {
     };
     FaustInterfaceView.prototype.addFaustButton = function (itemParam) {
         var group = document.createElement("div");
-        var button = document.createElement("BUTTON");
-        var labelText = document.createTextNode(itemParam.label);
-        button.appendChild(labelText);
+        var button = document.createElement("input");
+        button.type = "button";
+        this.button = button;
+        this.button.value = itemParam.label;
         group.appendChild(button);
         return button;
     };

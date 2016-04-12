@@ -8,29 +8,7 @@
 ***************** Interface to FaustWeb *********************
 ************************************************************/
 class ExportLib{
-    //--- Send asynchronous GET request to FaustWeb to get the list of available targets
-    // @exportUrl : url of FaustWeb service to target
-    // @callback : function called once request succeeded 
-    // 				- @param : the available targets as a JSON application
-    // json = {"platform1":["arch1", "arch2", ..., "archn"], ... , "platformn":["arch1", "arch2", ..., "archn"]}
-
-    //static getTargets(exportUrl: string, callback: (json: string) => void, errCallback: (json: string) => void)
-    //{
-    //    //Utilitary.getXHR(exportUrl, callback)
-    //    var getrequest: XMLHttpRequest = new XMLHttpRequest();
-				
-	   // getrequest.onreadystatechange = function() {
-		  //  if (getrequest.readyState == 4 && getrequest.status == 200)				    		
-			 //   callback(getrequest.responseText);
-		  //  else if (getrequest.readyState == 4 && getrequest.status == 400)				    		
-			 //   errCallback(getrequest.responseText);
-	   // }
-				
-	   // var targetsUrl:string = exportUrl + "/targets";
-	   // getrequest.open("GET", targetsUrl, true);
-	   // getrequest.send(null);
-    //}	
-
+   
     //--- Send asynchronous POST request to FaustWeb to compile a faust DSP
     // @exportUrl : url of FaustWeb service to target
     // @name : name of DSP to compile
@@ -105,7 +83,7 @@ class ExportLib{
 	    whiteContainer.appendChild(qqDiv);
 	    return whiteContainer;
     }
-    //unused for now, probably useless...
+
     // Return the array of available platforms from the json description
     getPlatforms(json:string):string[]
     {
@@ -127,12 +105,6 @@ class ExportLib{
 	    var architectures:string[] = [];
 	    var data = JSON.parse(json);
 		
-	    return data[platform];						
-    //     var archs = data[platform];
-			
-    // 	for (var i =0; i<archs.length; i++)
-    // 		architectures[i] = archs[i];
-    // 	
-    // 	return architectures;
+	    return data[platform];		
     }
 }

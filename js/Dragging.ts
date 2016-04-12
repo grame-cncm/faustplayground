@@ -4,9 +4,7 @@
 	
 	--> Things could probably be easier...
 	
-	DEPENDENCIES :
-		- Connect.js
-		- ModuleClass.js
+
 		
 */
 
@@ -41,7 +39,7 @@ class Drag {
     elemNode: HTMLElement;
     isDragConnector: boolean = false;
 
-
+    //used to dispatch the element, the location and the event to the callback function with click event
     getDraggingMouseEvent(mouseEvent: MouseEvent, module: ModuleClass, draggingFunction: (el: HTMLElement, x: number, y: number, module: ModuleClass, event: Event) => void) {
         var event = <Event>mouseEvent;
         var el = <HTMLElement>mouseEvent.target;
@@ -50,6 +48,8 @@ class Drag {
         draggingFunction(el, x, y, module,event);
     }
 
+
+    //used to dispatch the element, the location and the event to the callback function with touch event
     getDraggingTouchEvent(touchEvent: TouchEvent, module: ModuleClass, draggingFunction: (el: HTMLElement, x: number, y: number, module: ModuleClass, event: Event) => void) {
         var event = <Event>touchEvent;
         if (touchEvent.targetTouches.length > 0) {
@@ -61,7 +61,7 @@ class Drag {
             draggingFunction(el, x, y, module,event);
 
 
-        } else if (this.isDragConnector) {
+        } else if (this.isDragConnector) {//id drag is a connection one with touch event
             for (var i = 0; i < touchEvent.changedTouches.length; i++) {
                 var touch: Touch = touchEvent.changedTouches[i];
                 var x = touch.clientX + window.scrollX;
@@ -72,18 +72,11 @@ class Drag {
         } else {
             draggingFunction(null, null, null, module,event);
         }
-        //touchEvent.preventDefault();
-        //touchEvent.stopPropagation();
     }
 
     startDraggingModule(el: HTMLElement, x: number, y: number, module: ModuleClass, event: Event): void {
 
-
-        var moduleContainer: HTMLElement = module.moduleView.getModuleContainer();
-
-
-	    // Get cursor position with respect to the page.
-       
+        var moduleContainer: HTMLElement = module.moduleView.getModuleContainer();       
 
   	    // Save starting positions of cursor and element.
         this.cursorStartX = x;
@@ -94,10 +87,8 @@ class Drag {
         if (isNaN(this.elementStartLeft)) { this.elementStartLeft = 0 };
         if (isNaN(this.elementStartTop)) { this.elementStartTop = 0 };
 
-  	    // Update element's z-index.
 
         // Capture mousemove and mouseup events on the page.
-
         document.addEventListener("mouseup", module.eventDraggingHandler, false);
         document.addEventListener("mousemove", module.eventDraggingHandler, false);
 
@@ -109,26 +100,18 @@ class Drag {
 
         var moduleContainer = module.moduleView.getModuleContainer();
 
-        //App.appTest++
-
-	    // Get cursor position with respect to the page.
-       
-
         // Move drag element by the same amount the cursor has moved.
         moduleContainer.style.left = (this.elementStartLeft + x - this.cursorStartX) + "px";
         moduleContainer.style.top = (this.elementStartTop + y - this.cursorStartY) + "px";
 
         if (module.moduleFaust.getInputConnections() != null) {	// update any lines that point in here.
             Connector.redrawInputConnections(module, this) 
-
 	    }
 
         if (module.moduleFaust.getOutputConnections() != null) {	// update any lines that point out of here.
-		    
             Connector.redrawOutputConnections(module, this) 
 	    }
 
-        //event.preventDefault();
         event.stopPropagation();
     }
 
@@ -417,7 +400,7 @@ class Drag {
 			    break;
 		    }
 	    }	
-
+       //check arriving node and find module it is attached to
         if (arrivingHTMLParentNode!=undefined&&arrivingHTMLParentNode.classList.contains("node")) {
             var outputModule = Utilitary.currentScene.getAudioOutput();
             var inputModule = Utilitary.currentScene.getAudioInput();

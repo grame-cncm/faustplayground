@@ -317,7 +317,7 @@ class ModuleClass  {
 
         this.moduleView.fTitle.textContent = this.moduleFaust.fName;
         var moduleFaustInterface = new FaustInterfaceControler(
-            (faustInterface) => { this.interfaceCallback(faustInterface) },
+            (faustInterface) => { this.interfaceSliderCallback(faustInterface) },
             (adress, value) => { this.moduleFaust.fDSP.setValue(adress, value) }
             );
         this.moduleControles = moduleFaustInterface.parseFaustJsonUI(JSON.parse(this.moduleFaust.fDSP.json()).ui, this);
@@ -330,7 +330,7 @@ class ModuleClass  {
             faustInterfaceControler.setParams();
             faustInterfaceControler.faustInterfaceView = new FaustInterfaceView(faustInterfaceControler.itemParam.type)
             this.moduleView.getInterfaceContainer().appendChild(faustInterfaceControler.createFaustInterfaceElement());
-            faustInterfaceControler.interfaceCallback = this.interfaceCallback.bind(this);
+            faustInterfaceControler.interfaceCallback = this.interfaceSliderCallback.bind(this);
             faustInterfaceControler.updateFaustCodeCallback = this.updateCodeFaust.bind(this);
             faustInterfaceControler.setEventListener();
             faustInterfaceControler.createAccelerometer();
@@ -377,11 +377,20 @@ class ModuleClass  {
     }
     //---- Generic callback for Faust Interface
     //---- Called every time an element of the UI changes value
-    interfaceCallback(faustControler: FaustInterfaceControler): any {
-
-        var input: HTMLInputElement = faustControler.faustInterfaceView.slider;
+    interfaceSliderCallback(faustControler: FaustInterfaceControler): any {
+        var val: string
+        if (faustControler.faustInterfaceView.slider) {
+            var input: HTMLInputElement = faustControler.faustInterfaceView.slider;
+            val = Number((parseFloat(input.value) * parseFloat(faustControler.itemParam.step)) + parseFloat(faustControler.itemParam.min)).toFixed(parseFloat(faustControler.precision));
+        } else if (faustControler.faustInterfaceView.button) {
+            var input: HTMLInputElement = faustControler.faustInterfaceView.button;
+            if (faustControler.value == undefined || faustControler.value == "0") {
+                faustControler.value = val = "1"
+            } else {
+                faustControler.value = val = "0"
+            }
+        }
         var text: string = faustControler.itemParam.address;
-        var val = Number((parseFloat(input.value) * parseFloat(faustControler.itemParam.step)) + parseFloat(faustControler.itemParam.min)).toFixed(parseFloat(faustControler.precision));
         faustControler.value = val;
 
         var output: HTMLElement = faustControler.faustInterfaceView.output;
@@ -393,6 +402,22 @@ class ModuleClass  {
 
         // 	Search for DSP then update the value of its parameter.
         this.moduleFaust.fDSP.setValue(text, val);
+    }
+    interfaceButtonCallback(faustControler: FaustInterfaceControler, val?: number): any {
+
+        var input: HTMLInputElement = faustControler.faustInterfaceView.button;
+        var text: string = faustControler.itemParam.address;
+        faustControler.value = val.toString();
+
+        var output: HTMLElement = faustControler.faustInterfaceView.output;
+
+        //---- update the value text
+        if (output)
+            output.textContent = "" + val + " " + faustControler.unit;
+
+
+        // 	Search for DSP then update the value of its parameter.
+        this.moduleFaust.fDSP.setValue(text, val.toString());
     }
 	
     // Save graphical parameters of a Faust Node

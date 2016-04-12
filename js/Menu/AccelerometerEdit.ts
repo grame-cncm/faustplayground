@@ -57,10 +57,12 @@ class AccelerometerEdit {
                 //AccelerometerHandler.accelerometerSliders[i].mySlider.addEventListener("touchstart", (e) => { e.stopPropagation() })
                 //AccelerometerHandler.accelerometerSliders[i].mySlider.addEventListener("touchmove", (e) => { e.stopPropagation() })
                 var currentIFControler = AccelerometerHandler.faustInterfaceControler[i]
-                currentIFControler.faustInterfaceView.group.removeEventListener("click", currentIFControler.callbackEdit, true);
-                currentIFControler.faustInterfaceView.group.removeEventListener("touchstart", currentIFControler.callbackEdit, true);
-                currentIFControler.faustInterfaceView.group.classList.remove('editControl');
-                currentIFControler.faustInterfaceView.slider.classList.remove('edit');
+                if (currentIFControler.faustInterfaceView.group) {
+                    currentIFControler.faustInterfaceView.group.removeEventListener("click", currentIFControler.callbackEdit, true);
+                    currentIFControler.faustInterfaceView.group.removeEventListener("touchstart", currentIFControler.callbackEdit, true);
+                    currentIFControler.faustInterfaceView.group.classList.remove('editControl');
+                    currentIFControler.faustInterfaceView.slider.classList.remove('edit');
+                }
                 this.setSliderDisableValue(currentIFControler);
 
 
@@ -73,12 +75,15 @@ class AccelerometerEdit {
                 //AccelerometerHandler.accelerometerSliders[i].mySlider.removeEventListener("touchstart", (e) => { e.stopPropagation() })
                 //AccelerometerHandler.accelerometerSliders[i].mySlider.removeEventListener("touchmove", (e) => { e.stopPropagation() })
                 var currentIFControler = AccelerometerHandler.faustInterfaceControler[i]
-                currentIFControler.callbackEdit = this.editEvent.bind(this, currentIFControler);
-                currentIFControler.faustInterfaceView.group.addEventListener("click", currentIFControler.callbackEdit, true);
-                currentIFControler.faustInterfaceView.group.addEventListener("touchstart", currentIFControler.callbackEdit, true);
-                currentIFControler.faustInterfaceView.group.classList.add('editControl');
-                currentIFControler.faustInterfaceView.slider.classList.add('edit');
-                currentIFControler.faustInterfaceView.slider.disabled = true;
+                
+                if (currentIFControler.faustInterfaceView.group) {
+                    currentIFControler.callbackEdit = this.editEvent.bind(this, currentIFControler);
+                    currentIFControler.faustInterfaceView.group.addEventListener("click", currentIFControler.callbackEdit, true);
+                    currentIFControler.faustInterfaceView.group.addEventListener("touchstart", currentIFControler.callbackEdit, true);
+                    currentIFControler.faustInterfaceView.group.classList.add('editControl');
+                    currentIFControler.faustInterfaceView.slider.classList.add('edit');
+                    currentIFControler.faustInterfaceView.slider.disabled = true;
+                }
 
             }
             this.isOn = true;
@@ -87,14 +92,17 @@ class AccelerometerEdit {
 
     }
     setSliderDisableValue(faustIControler: FaustInterfaceControler) {
+
         var acc = faustIControler.accelerometerSlider;
         var slider = faustIControler.faustInterfaceView.slider;
-        if (acc.isActive && acc.isEnabled) {
-            slider.disabled = true;
-        } else if (!acc.isActive && acc.isEnabled) {
-            slider.disabled = false;
-        } else {
-            slider.disabled = false;
+        if (slider) {
+            if (acc.isActive && acc.isEnabled) {
+                slider.disabled = true;
+            } else if (!acc.isActive && acc.isEnabled) {
+                slider.disabled = false;
+            } else {
+                slider.disabled = false;
+            }
         }
     }
 

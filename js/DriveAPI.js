@@ -1,3 +1,5 @@
+// class to handel Drive Api request//
+// using the v2 version
 /// <reference path="Messages.ts"/>
 /// <reference path="Utilitary.ts"/>
 var DriveAPI = (function () {
@@ -10,6 +12,7 @@ var DriveAPI = (function () {
     }
     /**
      * Check if current user has authorized this application.
+    * disable to deactivate pop up window when not connected
      */
     DriveAPI.prototype.checkAuth = function () {
     };
@@ -98,20 +101,6 @@ var DriveAPI = (function () {
         });
         request.execute(function (file) {
             _this.appendPre(file.title, file.id);
-        });
-    };
-    DriveAPI.prototype.createFaustFolder = function () {
-        var _this = this;
-        var body = {
-            'title': this.faustFolder,
-            'mimeType': "application/vnd.google-apps.folder"
-        };
-        var request = gapi.client.drive.files.insert({
-            'resource': body
-        });
-        request.execute(function (resp) {
-            console.log('Folder ID: ' + resp.id);
-            _this.faustFolderId = resp.id;
         });
     };
     /**

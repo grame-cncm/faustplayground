@@ -1,6 +1,10 @@
 ﻿/// <reference path="App.ts"/>
 /// <reference path="Utilitary.ts"/>
 
+
+//contains all the key of resources json files in folders ressources
+
+
 class Ressources {
   //scene messages
     defaultSceneName: string;
@@ -93,8 +97,9 @@ class Ressources {
     checkBox: string;
     noDeviceMotion: string;
 
+
+    //get ressource depending on the location, default is french
     getRessources(app:App) {
-        // Utilitary.getXHR(
         var localization = navigator.language;
         if (localization == "fr" || localization == "fr-FR") {
             Utilitary.getXHR("ressources/ressources_fr-FR.json", (ressource) => { this.loadMessages(ressource,app) }, Utilitary.errorCallBack)
@@ -102,6 +107,7 @@ class Ressources {
             Utilitary.getXHR("ressources/ressources_fr-FR.json", (ressource) => { this.loadMessages(ressource,app) }, Utilitary.errorCallBack)
         }
     }
+    // load the json object
     loadMessages(ressourceJson: string,app:App) {
         Utilitary.messageRessource = JSON.parse(ressourceJson);
         resumeInit(app);

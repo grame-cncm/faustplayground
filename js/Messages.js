@@ -1,4 +1,8 @@
+//Contain Message, MessageView, Confirm, Confirm view class
 var Message = (function () {
+    //Message show up and set a time out, if nothing happen, it remove it self
+    //if one click, it stays, if double click it's removed (also the close button works)
+    //fadeOutType can be eather null or "messageTransitionOutFast", to have new animation create new rules css
     function Message(message, fadeOutType, duration, delay) {
         var _this = this;
         this.isTouch = false;
@@ -40,7 +44,6 @@ var Message = (function () {
             this.messageViewContainer.classList.add(this.fadeOutType);
             this.messageViewContainer.classList.add("messageHide");
             this.messageViewContainer.classList.remove("messageShow");
-            //this.messageViewContainer.removeEventListener("click", this.removeEventHandler);
             this.timeoutRemove = setTimeout(function () { _this.removeMessage(); }, this.delay);
         }
     };
@@ -98,6 +101,8 @@ var MessageView = (function () {
     };
     return MessageView;
 }());
+// take message text and callback as parmater
+//if validate, the callback is used, other with the confirm is removed
 var Confirm = (function () {
     function Confirm(message, callback) {
         var _this = this;

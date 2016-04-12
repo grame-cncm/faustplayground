@@ -1,4 +1,6 @@
-﻿class Message {
+﻿//Contain Message, MessageView, Confirm, Confirm view class
+
+class Message {
     messageView: MessageView
     messageViewContainer: HTMLDivElement;
     isTouch: boolean = false;
@@ -8,6 +10,12 @@
     fadeOutType: string = "messageTransitionOut";
     duration: number = 10000;
     delay: number = 4000;
+
+
+    //Message show up and set a time out, if nothing happen, it remove it self
+    //if one click, it stays, if double click it's removed (also the close button works)
+    //fadeOutType can be eather null or "messageTransitionOutFast", to have new animation create new rules css
+
     constructor(message: string, fadeOutType?: string, duration?:number, delay?: number) {
         this.messageView = new MessageView();
         this.messageViewContainer = this.messageView.init();
@@ -31,24 +39,24 @@
         this.messageViewContainer.addEventListener("click", () => { this.dbleTouchMessage() });
         this.messageViewContainer.addEventListener("dblclick", () => { this.removeEventHandler() });
     }
+
     displayMessage() {
         this.messageViewContainer.classList.remove("messageHide")
         this.messageViewContainer.classList.add("messageShow")
         this.messageViewContainer.classList.add("messageTransitionIn")
         this.messageViewContainer.classList.remove(this.fadeOutType)
-
-
     }
+
     hideMessage() {
         if (this.messageViewContainer != undefined) {
             this.messageViewContainer.classList.remove("messageTransitionIn")
             this.messageViewContainer.classList.add(this.fadeOutType)
             this.messageViewContainer.classList.add("messageHide")
             this.messageViewContainer.classList.remove("messageShow")
-            //this.messageViewContainer.removeEventListener("click", this.removeEventHandler);
             this.timeoutRemove = setTimeout(() => { this.removeMessage() }, this.delay);
         }
     }
+
     removeMessage(e?: Event) {
         if (e != undefined) {
             e.stopPropagation();
@@ -59,6 +67,7 @@
             delete this.messageViewContainer;
         }
     }
+
     dbleTouchMessage() {
         if (!this.isTouch) {
             this.isTouch = true;
@@ -68,10 +77,12 @@
             this.isTouch = false;
         }
     }
+
     dispatchEventCloseDblTouch() {
         var event = new CustomEvent("messagedbltouch")
         document.dispatchEvent(event);
     }
+
     clearTimeouts(e: Event) {
         e.stopPropagation();
         e.preventDefault();
@@ -114,6 +125,9 @@ class MessageView {
     }
 }
 
+
+// take message text and callback as parmater
+//if validate, the callback is used, other with the confirm is removed
 class Confirm{
     confirmView: ConfirmView
     confirmViewContainer: HTMLElement;

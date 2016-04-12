@@ -4,9 +4,7 @@
     
     --> Things could probably be easier...
     
-    DEPENDENCIES :
-        - Connect.js
-        - ModuleClass.js
+
         
 */
 /// <reference path="Connect.ts"/>
@@ -23,6 +21,7 @@ var Drag = (function () {
         this.connector = new Connector();
         this.isDragConnector = false;
     }
+    //used to dispatch the element, the location and the event to the callback function with click event
     Drag.prototype.getDraggingMouseEvent = function (mouseEvent, module, draggingFunction) {
         var event = mouseEvent;
         var el = mouseEvent.target;
@@ -30,6 +29,7 @@ var Drag = (function () {
         var y = mouseEvent.clientY + window.scrollY;
         draggingFunction(el, x, y, module, event);
     };
+    //used to dispatch the element, the location and the event to the callback function with touch event
     Drag.prototype.getDraggingTouchEvent = function (touchEvent, module, draggingFunction) {
         var event = touchEvent;
         if (touchEvent.targetTouches.length > 0) {
@@ -51,12 +51,9 @@ var Drag = (function () {
         else {
             draggingFunction(null, null, null, module, event);
         }
-        //touchEvent.preventDefault();
-        //touchEvent.stopPropagation();
     };
     Drag.prototype.startDraggingModule = function (el, x, y, module, event) {
         var moduleContainer = module.moduleView.getModuleContainer();
-        // Get cursor position with respect to the page.
         // Save starting positions of cursor and element.
         this.cursorStartX = x;
         this.cursorStartY = y;
@@ -70,7 +67,6 @@ var Drag = (function () {
             this.elementStartTop = 0;
         }
         ;
-        // Update element's z-index.
         // Capture mousemove and mouseup events on the page.
         document.addEventListener("mouseup", module.eventDraggingHandler, false);
         document.addEventListener("mousemove", module.eventDraggingHandler, false);
@@ -79,8 +75,6 @@ var Drag = (function () {
     };
     Drag.prototype.whileDraggingModule = function (el, x, y, module, event) {
         var moduleContainer = module.moduleView.getModuleContainer();
-        //App.appTest++
-        // Get cursor position with respect to the page.
         // Move drag element by the same amount the cursor has moved.
         moduleContainer.style.left = (this.elementStartLeft + x - this.cursorStartX) + "px";
         moduleContainer.style.top = (this.elementStartTop + y - this.cursorStartY) + "px";
@@ -90,7 +84,6 @@ var Drag = (function () {
         if (module.moduleFaust.getOutputConnections() != null) {
             Connector.redrawOutputConnections(module, this);
         }
-        //event.preventDefault();
         event.stopPropagation();
     };
     Drag.prototype.stopDraggingModule = function (el, x, y, module, event) {
@@ -315,6 +308,7 @@ var Drag = (function () {
                 break;
             }
         }
+        //check arriving node and find module it is attached to
         if (arrivingHTMLParentNode != undefined && arrivingHTMLParentNode.classList.contains("node")) {
             var outputModule = Utilitary.currentScene.getAudioOutput();
             var inputModule = Utilitary.currentScene.getAudioInput();

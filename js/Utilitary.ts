@@ -10,7 +10,7 @@ class Utilitary {
     static messageRessource: Ressources = new Ressources();
     static idX: number = 0;
     static baseImg: string = "img/";
-    static recursiveMap: ModuleTree[];
+    static recursiveMap: ModuleTree[];//used for EquivalentFaust
     static isAccelerometerOn: boolean = false;
     static isAccelerometerEditOn: boolean = false;
     static accHandler: AccelerometerHandler;

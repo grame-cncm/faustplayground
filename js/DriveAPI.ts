@@ -1,7 +1,11 @@
-﻿/// <reference path="Messages.ts"/>
+﻿// class to handel Drive Api request//
+// using the v2 version
+
+
+/// <reference path="Messages.ts"/>
 /// <reference path="Utilitary.ts"/>
 
-
+//object of the js drive api didn't found tpescript def, but should exist
 declare var gapi
 
 interface DriveFile {
@@ -27,6 +31,7 @@ class DriveAPI{
 
     /**
      * Check if current user has authorized this application.
+    * disable to deactivate pop up window when not connected
      */
     checkAuth() {
 
@@ -126,21 +131,8 @@ class DriveAPI{
             this.appendPre(file.title, file.id);
         })
     }
-    createFaustFolder() {
-        var body = {
-            'title': this.faustFolder,
-            'mimeType': "application/vnd.google-apps.folder"
-        };
 
-        var request = gapi.client.drive.files.insert({
-            'resource': body
-        });
 
-        request.execute((resp)=>{
-            console.log('Folder ID: ' + resp.id);
-            this.faustFolderId = resp.id;
-        });
-    }
     
 
     /**

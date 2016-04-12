@@ -1,11 +1,6 @@
 /*				CONNECT.JS
     Handles Audio/Graphical Connection/Deconnection of modules
     This is a historical file from Chris Wilson, modified for Faust ModuleClass needs.
-
-    DEPENDENCIES :
-        - ModuleClass.js
-        - webaudio-asm-wrapper.js
-        - Dragging.js
         
 */
 /// <reference path="Modules/ModuleClass.ts"/>
@@ -16,9 +11,11 @@
 var Connector = (function () {
     function Connector() {
     }
+    // connect input node to device input
     Connector.prototype.connectInput = function (inputModule, divSrc) {
         divSrc.audioNode.connect(inputModule.moduleFaust.getDSP().getProcessor());
     };
+    //connect output to device output
     Connector.prototype.connectOutput = function (outputModule, divOut) {
         outputModule.moduleFaust.getDSP().getProcessor().connect(divOut.audioNode);
     };
@@ -37,9 +34,6 @@ var Connector = (function () {
         }
         source.setDSPValue();
         destination.setDSPValue();
-    };
-    Connector.prototype.disconnectOutput = function (destination, source) {
-        destination.audioNode.context.suspend();
     };
     // Disconnect Nodes in Web Audio Graph
     Connector.prototype.disconnectModules = function (source, destination) {
