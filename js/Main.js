@@ -79,9 +79,3 @@ function IosInit2() {
     }
     window.removeEventListener('touchstart', IosInit2, false);
 }
-var PositionModule = (function () {
-    function PositionModule() {
-    }
-    return PositionModule;
-}());
-//# sourceMappingURL=Main.js.map

@@ -19,16 +19,15 @@
 				etc
 	===================
 
-	The library Div gets opened when passed over with the mouse
-
 	DEPENDENCIES :
 		- faust.grame.fr/www/pedagogie/index.json
 */
 
 //--- Init graphical elements of library
 
-/// <reference path="../App.ts"/>
-/// <reference path="../Main.ts"/>
+/// <reference path="../Utilitary.ts"/>
+/// <reference path="LibraryView.ts"/>
+
 
 
 interface IImageNode extends HTMLImageElement {
@@ -56,11 +55,13 @@ class Library{
     isSmaller: boolean = false;
     isDblTouch: boolean = false;
 
+    //get json with library infos
     fillLibrary() {
         var url: string = "faust-modules/index.json"
-        Utilitary.getXHR(url, (json: string) => { this.fillLibraryCallBack(json) }, (errorMessage: string) => { ErrorFaust.errorCallBack(errorMessage)});
+        Utilitary.getXHR(url, (json: string) => { this.fillLibraryCallBack(json) }, (errorMessage: string) => { Utilitary.errorCallBack(errorMessage) });
     }
 
+    //dispatch library info to each submenu
     fillLibraryCallBack(json: string) {
         var jsonObject: jsonObjectLibrary = JSON.parse(json);
         jsonObject.effet = "effetLibrarySelect";
@@ -72,13 +73,11 @@ class Library{
         this.fillSubMenu(jsonObject.instruments, jsonObject.instrument, jsonObject.instrumentSupprStructure);
         this.fillSubMenu(jsonObject.effets, jsonObject.effet, jsonObject.effetSupprStructure);
         this.fillSubMenu(jsonObject.exemples, jsonObject.exemple, jsonObject.exempleSupprStructure);
-
-
     }
 
+    //fill submenu and attach events
     fillSubMenu(options: string[], subMenuId: string, stringStructureRemoved: string) {
         var subMenu: HTMLUListElement = <HTMLUListElement>document.getElementById(subMenuId);
-        //subMenu.ondrag = App.preventdefault;
         
         for (var i = 0; i < options.length; i++) {
 
@@ -101,7 +100,7 @@ class Library{
     }
 
 
-
+    //custom doube touch event handler
     dbleTouchMenu(touchEvent: TouchEvent) {
         var anchor: HTMLAnchorElement = <HTMLAnchorElement>touchEvent.target;
         if (!this.isLibraryTouch) {
@@ -116,17 +115,19 @@ class Library{
             this.isLibraryTouch = false;
         }
     }
+    //dispatch custom double touch
     dispatchEventLibrary(url: string) {
         var event: CustomEvent = new CustomEvent("dbltouchlib", { 'detail': url })
         document.dispatchEvent(event);
     }
-
+    // init scroll to show scroll from perfectScroll.js 
     initScroll() {
         this.libraryView.effetLibrarySelect.scrollTop += 1;
         this.libraryView.exempleLibrarySelect.scrollTop += 1;
         this.libraryView.intrumentLibrarySelect.scrollTop += 1;
     }
 
+    //remove .dsp extention and uri from element to get title
     cleanNameElement(elementComplete: string, stringStructureRemoved: string): string {
         return elementComplete.replace(stringStructureRemoved, "").replace(".dsp", "");
     }

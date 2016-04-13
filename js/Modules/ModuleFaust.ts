@@ -4,15 +4,7 @@
 /*MODULEFAUST.JS
 HAND - MADE JAVASCRIPT CLASS CONTAINING A FAUST MODULE */
 
-interface IfDSP {
-    json: () => string;
-    getValue: (text: string) => string;
-    setValue: (text: string, val: string) => void;
-    getNumInputs: () => number;
-    getNumOutputs: () => number;
-    controls: () => any;
-    getProcessor: () => ScriptProcessorNode;
-}
+
 
 class ModuleFaust {
     fDSP: IfDSP;

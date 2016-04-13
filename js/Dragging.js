@@ -8,9 +8,8 @@
         
 */
 /// <reference path="Connect.ts"/>
-/// <reference path="App.ts"/>
-/// <reference path="Main.ts"/>
 /// <reference path="Modules/ModuleClass.ts"/>
+/// <reference path="Utilitary.ts"/>
 "use strict";
 /***********************************************************************************/
 /****** Node Dragging - these are used for dragging the audio modules interface*****/
@@ -360,5 +359,4 @@ var Drag = (function () {
         return true;
     };
     return Drag;
-}());
-//# sourceMappingURL=Dragging.js.map
+})();

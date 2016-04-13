@@ -1,5 +1,8 @@
 /// <reference path="Modules/ModuleClass.ts"/>
 /// <reference path="Scenes/SceneClass.ts"/>
+/// <reference path="Ressources.ts"/>
+/// <reference path="DriveAPI.ts"/>
+/// <reference path="Main.ts"/>
 
 
 
@@ -95,4 +98,94 @@ class Utilitary {
     static replaceAll(str: String, find: string, replace: string) {
         return str.replace(new RegExp(find, 'g'), replace);
     }
+}
+/********************************************************************
+**************************  interfaces  *****************************
+********************************************************************/
+
+interface AudioBufferSourceNode {
+    noteOn: (any: any) => any;
+}
+
+interface Navigator {
+    //default way to get the devices of browsers
+    getUserMedia(
+        options: { video?: boolean; audio?: boolean; },
+        success: (stream: any) => void,
+        error?: (error: string) => void
+    ): void;
+    webkitGetUserMedia(
+        options: { video?: boolean; audio?: boolean; },
+        successCallback: (stream: any) => void,
+        errorCallback?: (error: string) => void
+    ): void;
+    mozGetUserMedia(
+        options: { video?: boolean; audio?: boolean; },
+        successCallback: (stream: any) => void,
+        errorCallback?: (error: string) => void
+    ): void;
+}
+
+interface IPositionModule {
+    x: number;
+    y: number;
+}
+
+class PositionModule implements IPositionModule {
+    x: number;
+    y: number;
+}
+
+
+interface MediaStream {
+    id: string;
+    active: boolean;
+}
+
+interface MediaStreamAudioSourceNode extends AudioNode {
+
+}
+
+interface MediaStreamAudioDestinationNode extends AudioNode {
+    stream: MediaStream;
+}
+
+interface AudioContext {
+    close: () => void;
+    createMediaStreamSource: (m: MediaStream) => MediaStreamAudioSourceNode;
+    createMediaStreamDestination: () => any;
+    resume: () => void;
+    suspend: () => void;
+}
+interface IHTMLDivElementSrc extends HTMLDivElement {
+    audioNode: MediaStreamAudioSourceNode;
+}
+interface IHTMLDivElementOut extends HTMLDivElement {
+    audioNode: AudioDestinationNode;
+}
+interface Factory {
+    name: string;
+    sha_key: string;
+    code: string;
+}
+interface HTMLInterfaceContainer extends HTMLDivElement {
+    unlitClassname: string;
+    lastLit: any;
+}
+interface IfDSP {
+    json: () => string;
+    getValue: (text: string) => string;
+    setValue: (text: string, val: string) => void;
+    getNumInputs: () => number;
+    getNumOutputs: () => number;
+    controls: () => any;
+    getProcessor: () => ScriptProcessorNode;
+}
+
+interface CompileFaust {
+    name: string,
+    sourceCode: string,
+    x: number,
+    y: number,
+    callback: (factory: Factory) => void
 }

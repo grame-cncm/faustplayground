@@ -4,9 +4,8 @@
         
 */
 /// <reference path="Modules/ModuleClass.ts"/>
+/// <reference path="Utilitary.ts"/>
 /// <reference path="Dragging.ts"/>
-/// <reference path="Main.ts"/>
-/// <reference path="App.ts"/>
 "use strict";
 var Connector = (function () {
     function Connector() {
@@ -146,5 +145,4 @@ var Connector = (function () {
     };
     Connector.connectorId = 0;
     return Connector;
-}());
-//# sourceMappingURL=Connect.js.map
+})();

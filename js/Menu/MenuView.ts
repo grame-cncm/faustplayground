@@ -15,7 +15,6 @@ class MenuView {
     accButton: HTMLElement;
     loadButton: HTMLElement;
     saveButton: HTMLElement;
-    //accEditButton: HTMLElement;
     libraryContent: HTMLElement;
     loadContent: HTMLElement;
     exportContent: HTMLElement;
@@ -41,7 +40,8 @@ class MenuView {
         menuContainer.id = "menuContainer";
         this.menuContainer = menuContainer;
 
-        //create menu's buttons and there containers
+        /////////////////////////create menu's buttons and there containers
+
         var buttonsMenu: HTMLElement = document.createElement("div");
         buttonsMenu.id = "buttonsMenu";
 
@@ -96,10 +96,6 @@ class MenuView {
         cleanButton.className = "buttonsLittleMenu";
         this.cleanButton = cleanButton;
 
-        //var accEditButton: HTMLElement = document.createElement("div");
-        //accEditButton.id = "accEditButton";
-        //accEditButton.className = "buttonsLittleMenu";
-        //this.accEditButton = accEditButton;
 
         if (!Utilitary.isAccelerometerOn) {
             accButton.style.opacity = "0.2";
@@ -125,7 +121,7 @@ class MenuView {
         buttonsMenu.appendChild(myScene);
         this.patchNameScene = myScene;
 
-        //create menu's Contents and there containers
+        //////////////////create menu's Contents and there containers
 
         var contentsMenu: HTMLElement = document.createElement("div");
         contentsMenu.id = "contentsMenu";

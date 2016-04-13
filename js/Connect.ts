@@ -5,9 +5,9 @@
 */
 
 /// <reference path="Modules/ModuleClass.ts"/>
+/// <reference path="Utilitary.ts"/>
 /// <reference path="Dragging.ts"/>
-/// <reference path="Main.ts"/>
-/// <reference path="App.ts"/>
+
 
 "use strict";
 

@@ -3,14 +3,13 @@
 */
 /// <reference path="../Connect.ts"/>
 /// <reference path="../Modules/ModuleClass.ts"/>
-/// <reference path="../Connect.ts"/>
 /// <reference path="../webaudio-asm-wrapper.d.ts"/>
-/// <reference path="../Main.ts"/>
-/// <reference path="../App.ts"/>
+/// <reference path="../Utilitary.ts"/>
 /// <reference path="../Messages.ts"/>
+/// <reference path="SceneView.ts"/>
 "use strict";
 var Scene = (function () {
-    function Scene(identifiant, parent, compileFaust, sceneView) {
+    function Scene(identifiant, compileFaust, sceneView) {
         var _this = this;
         //temporary arrays used to recall a scene from a jfaust file
         this.arrayRecalScene = [];
@@ -534,50 +533,49 @@ var Scene = (function () {
         ModuleClass.isNodesModuleUnstyle = true;
     };
     return Scene;
-}());
+})();
 var JsonSaveCollection = (function () {
     function JsonSaveCollection() {
     }
     return JsonSaveCollection;
-}());
+})();
 var JsonSaveModule = (function () {
     function JsonSaveModule() {
     }
     return JsonSaveModule;
-}());
+})();
 var JsonOutputsSave = (function () {
     function JsonOutputsSave() {
     }
     return JsonOutputsSave;
-}());
+})();
 var JsonInputsSave = (function () {
     function JsonInputsSave() {
     }
     return JsonInputsSave;
-}());
+})();
 var JsonParamsSave = (function () {
     function JsonParamsSave() {
     }
     return JsonParamsSave;
-}());
+})();
 var JsonAccSaves = (function () {
     function JsonAccSaves() {
     }
     return JsonAccSaves;
-}());
+})();
 var JsonAccSave = (function () {
     function JsonAccSave() {
     }
     return JsonAccSave;
-}());
+})();
 var JsonSliderSave = (function () {
     function JsonSliderSave() {
     }
     return JsonSliderSave;
-}());
+})();
 var JsonFactorySave = (function () {
     function JsonFactorySave() {
     }
     return JsonFactorySave;
-}());
-//# sourceMappingURL=SceneClass.js.map
+})();

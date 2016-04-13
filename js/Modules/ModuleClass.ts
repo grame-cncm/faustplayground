@@ -9,9 +9,9 @@
 /// <reference path="../CodeFaustParser.ts"/>
 /// <reference path="../Connect.ts"/>
 /// <reference path="../Modules/FaustInterface.ts"/>
-/// <reference path="../Main.ts"/>
-/// <reference path="../App.ts"/>
 /// <reference path="../Messages.ts"/>
+/// <reference path="ModuleFaust.ts"/>
+/// <reference path="ModuleView.ts"/>
 
 
 

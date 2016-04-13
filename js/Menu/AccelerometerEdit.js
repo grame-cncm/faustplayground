@@ -1,5 +1,6 @@
 //AccelerometerEdit
 /// <reference path="../Accelerometer.ts"/>
+/// <reference path="AccelerometerEditView.ts"/>
 "use strict";
 var AccelerometerEdit = (function () {
     function AccelerometerEdit(accelerometerEditView) {
@@ -439,5 +440,4 @@ var AccelerometerEdit = (function () {
         Utilitary.accHandler.axisSplitter(this.accSlid, rangeVal, rangeVal, rangeVal, Utilitary.accHandler.applyNewValueToModule);
     };
     return AccelerometerEdit;
-}());
-//# sourceMappingURL=AccelerometerEdit.js.map
+})();

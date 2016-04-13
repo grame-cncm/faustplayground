@@ -3,11 +3,10 @@
 */
 /// <reference path="../Connect.ts"/>
 /// <reference path="../Modules/ModuleClass.ts"/>
-/// <reference path="../Connect.ts"/>
 /// <reference path="../webaudio-asm-wrapper.d.ts"/>
-/// <reference path="../Main.ts"/>
-/// <reference path="../App.ts"/>
+/// <reference path="../Utilitary.ts"/>
 /// <reference path="../Messages.ts"/>
+/// <reference path="SceneView.ts"/>
 
 
 "use strict";
@@ -44,7 +43,7 @@ class Scene {
     
 
 
-    constructor(identifiant: string, parent: App, compileFaust: (compileFaust: CompileFaust) => void, sceneView?: SceneView) {
+    constructor(identifiant: string, compileFaust: (compileFaust: CompileFaust) => void, sceneView?: SceneView) {
         this.compileFaust = compileFaust;
         this.sceneView = new SceneView();
         this.sceneView.initNormalScene(this)

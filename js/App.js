@@ -35,12 +35,13 @@ Create Factories and Modules
 /// <reference path="Ressources.ts"/>
 /// <reference path="Messages.ts"/>
 /// <reference path="Lib/perfectScrollBar/js/perfect-ScrollBar.min.d.ts"/>
+//object containg info necessary to compile faust code
 var App = (function () {
     function App() {
     }
     App.prototype.createAllScenes = function () {
         var sceneView = new SceneView();
-        Utilitary.currentScene = new Scene("Normal", this, this.compileFaust, sceneView);
+        Utilitary.currentScene = new Scene("Normal", this.compileFaust, sceneView);
         this.setGeneralAppListener(this);
         App.currentScene = 0;
     };
@@ -52,14 +53,14 @@ var App = (function () {
         //add eventlistener on the scene to hide menu when clicked or touched
         Utilitary.currentScene.getSceneContainer().addEventListener("mousedown", function () {
             if (!_this.menu.accEdit.isOn) {
-                _this.menu.menuChoices = MenuChoices.null;
-                _this.menu.menuHandler(_this.menu.menuChoices);
+                _this.menu.newMenuChoices = MenuChoices.null;
+                _this.menu.menuHandler(_this.menu.newMenuChoices);
             }
         }, true);
         Utilitary.currentScene.getSceneContainer().addEventListener("touchstart", function () {
             if (!_this.menu.accEdit.isOn) {
-                _this.menu.menuChoices = MenuChoices.null;
-                _this.menu.menuHandler(_this.menu.menuChoices);
+                _this.menu.newMenuChoices = MenuChoices.null;
+                _this.menu.menuHandler(_this.menu.newMenuChoices);
             }
         }, true);
     };
@@ -178,7 +179,6 @@ var App = (function () {
             var x = e.clientX;
             var y = e.clientY;
             _this.uploadOn(_this, null, x, y, e);
-            _this.menu.isMenuLow = true;
         };
         //custom double touch from library menu to load an effect or an intrument.
         document.addEventListener("dbltouchlib", function (e) { _this.dblTouchUpload(e); });
@@ -310,7 +310,6 @@ var App = (function () {
             modules[i].moduleView.fModuleContainer.style.opacity = "1";
             modules[i].moduleView.fModuleContainer.style.boxShadow = "0 5px 10px rgba(0, 0, 0, 0.4)";
         }
-        this.menu.menuView.menuContainer.addEventListener("mouseover", this.menu.mouseOverLowerMenu);
     };
     //manage the window size
     App.prototype.checkRealWindowSize = function () {
@@ -337,5 +336,4 @@ var App = (function () {
     App.prototype.errorCallBack = function (message) {
     };
     return App;
-}());
-//# sourceMappingURL=App.js.map
+})();

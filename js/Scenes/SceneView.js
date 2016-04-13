@@ -68,5 +68,4 @@ var SceneView = (function () {
         var playgroundView = this;
     };
     return SceneView;
-}());
-//# sourceMappingURL=SceneView.js.map
+})();

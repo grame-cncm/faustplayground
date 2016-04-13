@@ -14,7 +14,7 @@ var MenuView = (function () {
         var menuContainer = document.createElement('div');
         menuContainer.id = "menuContainer";
         this.menuContainer = menuContainer;
-        //create menu's buttons and there containers
+        /////////////////////////create menu's buttons and there containers
         var buttonsMenu = document.createElement("div");
         buttonsMenu.id = "buttonsMenu";
         var libraryButtonMenu = document.createElement("div");
@@ -59,10 +59,6 @@ var MenuView = (function () {
         cleanButton.id = "cleanButton";
         cleanButton.className = "buttonsLittleMenu";
         this.cleanButton = cleanButton;
-        //var accEditButton: HTMLElement = document.createElement("div");
-        //accEditButton.id = "accEditButton";
-        //accEditButton.className = "buttonsLittleMenu";
-        //this.accEditButton = accEditButton;
         if (!Utilitary.isAccelerometerOn) {
             accButton.style.opacity = "0.2";
         }
@@ -82,7 +78,7 @@ var MenuView = (function () {
         myScene.textContent = Utilitary.currentScene.sceneName;
         buttonsMenu.appendChild(myScene);
         this.patchNameScene = myScene;
-        //create menu's Contents and there containers
+        //////////////////create menu's Contents and there containers
         var contentsMenu = document.createElement("div");
         contentsMenu.id = "contentsMenu";
         contentsMenu.style.display = "none";
@@ -135,5 +131,4 @@ var MenuView = (function () {
         this.contentsMenu = contentsMenu;
     };
     return MenuView;
-}());
-//# sourceMappingURL=MenuView.js.map
+})();

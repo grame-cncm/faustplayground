@@ -8,9 +8,9 @@
 /// <reference path="../CodeFaustParser.ts"/>
 /// <reference path="../Connect.ts"/>
 /// <reference path="../Modules/FaustInterface.ts"/>
-/// <reference path="../Main.ts"/>
-/// <reference path="../App.ts"/>
 /// <reference path="../Messages.ts"/>
+/// <reference path="ModuleFaust.ts"/>
+/// <reference path="ModuleView.ts"/>
 "use strict";
 var ModuleClass = (function () {
     function ModuleClass(id, x, y, name, htmlElementModuleContainer, removeModuleCallBack, compileFaust) {
@@ -390,5 +390,4 @@ var ModuleClass = (function () {
     };
     ModuleClass.isNodesModuleUnstyle = true;
     return ModuleClass;
-}());
-//# sourceMappingURL=ModuleClass.js.map
+})();

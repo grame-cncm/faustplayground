@@ -7,7 +7,6 @@ class LoadView {
     loadFileInput: HTMLInputElement;
     existingSceneSelect: HTMLSelectElement;
     buttonLoadLocal: HTMLButtonElement;
-    buttonLocalSuppr: HTMLElement;
     buttonConnectDrive: HTMLElement;
     buttonLoadCloud: HTMLElement;
     buttonChangeAccount: HTMLButtonElement;
@@ -114,13 +113,6 @@ class LoadView {
 
         this.existingSceneSelect = existingSceneSelect;
 
-        var localButtonSuppr: HTMLButtonElement = document.createElement("button");
-        localButtonSuppr.type = "button";
-        localButtonSuppr.id = "localButtonSuppr";
-        localButtonSuppr.className = "button"
-        localButtonSuppr.textContent = Utilitary.messageRessource.buttonSuppress;
-        this.buttonLocalSuppr = localButtonSuppr;
-
         var localButton: HTMLButtonElement = document.createElement("button");
         localButton.type = "button";
         localButton.id = "localLoadButton";
@@ -134,7 +126,6 @@ class LoadView {
         localBottomButtonContainer.appendChild(localButton);
 
         loadLocalContainer.appendChild(existingSceneSelect);
-        //loadLocalContainer.appendChild(localButtonSuppr);
         loadLocalContainer.appendChild(localBottomButtonContainer);
         //////////////////////////////////////load Cloud
 

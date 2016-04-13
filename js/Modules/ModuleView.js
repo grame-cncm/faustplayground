@@ -10,6 +10,7 @@
     DIV --> fFooter
     IMG --> fEditImg
     ===================*/
+/// <reference path="../Utilitary.ts"/>
 var ModuleView = (function () {
     function ModuleView() {
         this.inputOutputNodeDimension = 32;
@@ -137,5 +138,4 @@ var ModuleView = (function () {
         return false;
     };
     return ModuleView;
-}());
-//# sourceMappingURL=ModuleView.js.map
+})();

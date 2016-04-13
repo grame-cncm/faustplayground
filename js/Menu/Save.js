@@ -2,7 +2,6 @@
 /// <reference path="../Messages.ts"/>
 /// <reference path="../Utilitary.ts"/>
 /// <reference path="../DriveAPI.ts"/>
-/// <reference path="../Scenes/SceneClass.ts"/>
 /// <reference path="SaveView.ts"/>
 var Save = (function () {
     function Save() {
@@ -20,17 +19,19 @@ var Save = (function () {
         this.saveView.buttonCloudSuppr.addEventListener("click", function () { _this.supprCloud(); });
         document.addEventListener("successave", function () { new Message(Utilitary.messageRessource.sucessSave, "messageTransitionOutFast", 2000, 500); });
     };
+    //create a file jfaust and save it to the device
     Save.prototype.downloadApp = function () {
         if (this.saveView.inputDownload.value != Utilitary.currentScene.sceneName && !Scene.rename(this.saveView.inputDownload, this.saveView.rulesName, this.saveView.dynamicName)) {
         }
         else {
             var jsonScene = this.sceneCurrent.saveScene(this.saveView.checkBoxPrecompile.checked);
             var blob = new Blob([jsonScene], {
-                type: "application/json;charset=utf-8;",
+                type: "application/json;charset=utf-8;"
             });
             saveAs(blob, Utilitary.currentScene.sceneName + ".jfaust");
         }
     };
+    //save scene in local storage
     Save.prototype.saveLocal = function () {
         var _this = this;
         if (this.saveView.inputLocalStorage.value != Utilitary.currentScene.sceneName && !Scene.rename(this.saveView.inputLocalStorage, this.saveView.rulesName, this.saveView.dynamicName)) {
@@ -55,6 +56,7 @@ var Save = (function () {
             }
         }
     };
+    //replace an existing scene in local Storage
     Save.prototype.replaceSaveLocal = function (name, jsonScene, confirmCallBack) {
         localStorage.setItem(name, jsonScene);
         new Message(Utilitary.messageRessource.sucessSave, "messageTransitionOutFast", 2000, 500);
@@ -62,6 +64,7 @@ var Save = (function () {
         document.dispatchEvent(event);
         confirmCallBack();
     };
+    //check if a scene name already exist in local storage
     Save.prototype.isFileExisting = function (name) {
         for (var i = 0; i < localStorage.length; i++) {
             if (localStorage.key(i) == name) {
@@ -70,6 +73,7 @@ var Save = (function () {
         }
         return false;
     };
+    //check if a scene name already exist in Cloud
     Save.prototype.isFileCloudExisting = function (name) {
         for (var i = 0; i < this.saveView.cloudSelectFile.options.length; i++) {
             if (this.saveView.cloudSelectFile.options[i].textContent == name) {
@@ -78,13 +82,16 @@ var Save = (function () {
         }
         return false;
     };
+    // get scene name selected in select local storage and set it to the input text localStorage
     Save.prototype.getNameSelected = function () {
         var option = this.saveView.existingSceneSelect.options[this.saveView.existingSceneSelect.selectedIndex];
         this.saveView.inputLocalStorage.value = option.value;
     };
+    // get scene name selected in select cloud and set it to the input text clou
     Save.prototype.getNameSelectedCloud = function () {
         this.saveView.inputCloudStorage.value = this.saveView.cloudSelectFile.options[this.saveView.cloudSelectFile.selectedIndex].textContent;
     };
+    //get value of select option by its text content, used here to get id of drive file
     Save.prototype.getValueByTextContent = function (select, name) {
         for (var i = 0; i < select.options.length; i++) {
             if (select.options[i].textContent == name) {
@@ -94,12 +101,14 @@ var Save = (function () {
         }
         return null;
     };
+    //suppr scene from local storage confirm
     Save.prototype.supprLocal = function () {
         var _this = this;
         if (this.saveView.existingSceneSelect.selectedIndex > -1) {
             new Confirm(Utilitary.messageRessource.confirmSuppr, function (callbackConfirm) { _this.supprLocalCallback(callbackConfirm); });
         }
     };
+    //suppr scene from local storage callback
     Save.prototype.supprLocalCallback = function (callbackConfirm) {
         var option = this.saveView.existingSceneSelect.options[this.saveView.existingSceneSelect.selectedIndex];
         var name = option.value;
@@ -108,10 +117,12 @@ var Save = (function () {
         document.dispatchEvent(event);
         callbackConfirm();
     };
+    //logOut from google account
     Save.prototype.logOut = function () {
         var event = new CustomEvent("authoff");
         document.dispatchEvent(event);
     };
+    // save scene in the cloud, create a jfaust file
     Save.prototype.saveCloud = function () {
         var _this = this;
         if (this.saveView.inputCloudStorage.value != Utilitary.currentScene.sceneName && !Scene.rename(this.saveView.inputCloudStorage, this.saveView.rulesName, this.saveView.dynamicName)) {
@@ -130,6 +141,7 @@ var Save = (function () {
             }
         }
     };
+    //update/replace a scene on the cloud
     Save.prototype.replaceCloud = function (name, confirmCallback) {
         var _this = this;
         var jsonScene = this.sceneCurrent.saveScene(true);
@@ -143,12 +155,15 @@ var Save = (function () {
         }
         confirmCallback();
     };
+    //trash a file in the cloud confirm
+    //could be retreive from the cloud's trash can 
     Save.prototype.supprCloud = function () {
         var _this = this;
         if (this.saveView.cloudSelectFile.selectedIndex > -1) {
             new Confirm(Utilitary.messageRessource.confirmSuppr, function (confirmCallBack) { _this.supprCloudCallback(confirmCallBack); });
         }
     };
+    //trash a file in the cloud callback
     Save.prototype.supprCloudCallback = function (confirmCallBack) {
         var option = this.saveView.cloudSelectFile.options[this.saveView.cloudSelectFile.selectedIndex];
         var id = option.value;
@@ -156,5 +171,4 @@ var Save = (function () {
         confirmCallBack();
     };
     return Save;
-}());
-//# sourceMappingURL=Save.js.map
+})();

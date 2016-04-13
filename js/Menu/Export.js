@@ -4,8 +4,9 @@
 */
 /// <reference path="../ExportLib.ts"/>
 /// <reference path="../EquivalentFaust.ts"/>
-/// <reference path="../Main.ts"/>
 /// <reference path="../Messages.ts"/>
+/// <reference path="ExportView.ts"/>
+/// <reference path="../Utilitary.ts"/>
 "use strict";
 /********************************************************************
 *********************  HANDLE FAUST WEB TARGETS *********************
@@ -40,7 +41,7 @@ var Export = (function () {
             _this.clearSelectBox('architectures');
             var input = document.getElementById("faustweburl");
             Export.targetsUrl = input.value + "/targets";
-            Utilitary.getXHR(Export.targetsUrl, function (json) { _this.uploadTargetCallback(json); }, function (errorMessage) { ErrorFaust.errorCallBack(errorMessage); });
+            Utilitary.getXHR(Export.targetsUrl, function (json) { _this.uploadTargetCallback(json); }, function (errorMessage) { Utilitary.errorCallBack(errorMessage); });
         };
         /********************************************************************
         **************  CALLBACK ONCE SHA KEY WAS CALCULATED  ***************
@@ -178,5 +179,4 @@ var Export = (function () {
     Export.exportUrl = "http://faustservice.grame.fr";
     Export.targetsUrl = "http://faustservice.grame.fr/targets";
     return Export;
-}());
-//# sourceMappingURL=Export.js.map
+})();

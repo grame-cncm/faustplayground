@@ -12,16 +12,16 @@
     IMG --> fEditImg
 	===================*/
 
+/// <reference path="../Utilitary.ts"/>
+
+
 interface HTMLfEdit extends HTMLDivElement {
     area: HTMLTextAreaElement;
 }
 interface HTMLinterfaceElement extends HTMLElement {
     label: string;
 }
-interface HTMLInterfaceContainer extends HTMLDivElement {
-    unlitClassname: string;
-    lastLit: any;
-}
+
 
 class ModuleView {
     inputOutputNodeDimension: number = 32;

@@ -1,5 +1,8 @@
 /// <reference path="Modules/ModuleClass.ts"/>
 /// <reference path="Scenes/SceneClass.ts"/>
+/// <reference path="Ressources.ts"/>
+/// <reference path="DriveAPI.ts"/>
+/// <reference path="Main.ts"/>
 var Utilitary = (function () {
     function Utilitary() {
     }
@@ -80,5 +83,9 @@ var Utilitary = (function () {
     Utilitary.isAccelerometerOn = false;
     Utilitary.isAccelerometerEditOn = false;
     return Utilitary;
-}());
-//# sourceMappingURL=Utilitary.js.map
+})();
+var PositionModule = (function () {
+    function PositionModule() {
+    }
+    return PositionModule;
+})();

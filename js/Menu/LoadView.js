@@ -73,12 +73,6 @@ var LoadView = (function () {
         existingSceneSelect.size = 7;
         Ps.initialize(existingSceneSelect, { suppressScrollX: true, theme: 'my-theme-name' });
         this.existingSceneSelect = existingSceneSelect;
-        var localButtonSuppr = document.createElement("button");
-        localButtonSuppr.type = "button";
-        localButtonSuppr.id = "localButtonSuppr";
-        localButtonSuppr.className = "button";
-        localButtonSuppr.textContent = Utilitary.messageRessource.buttonSuppress;
-        this.buttonLocalSuppr = localButtonSuppr;
         var localButton = document.createElement("button");
         localButton.type = "button";
         localButton.id = "localLoadButton";
@@ -89,7 +83,6 @@ var LoadView = (function () {
         localBottomButtonContainer.className = "bottomButtonContainer";
         localBottomButtonContainer.appendChild(localButton);
         loadLocalContainer.appendChild(existingSceneSelect);
-        //loadLocalContainer.appendChild(localButtonSuppr);
         loadLocalContainer.appendChild(localBottomButtonContainer);
         //////////////////////////////////////load Cloud
         var driveContainer = document.createElement("div");
@@ -133,5 +126,4 @@ var LoadView = (function () {
         return loadContainer;
     };
     return LoadView;
-}());
-//# sourceMappingURL=LoadView.js.map
+})();

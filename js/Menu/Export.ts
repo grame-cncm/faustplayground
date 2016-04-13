@@ -4,8 +4,9 @@
 */
 /// <reference path="../ExportLib.ts"/>
 /// <reference path="../EquivalentFaust.ts"/>
-/// <reference path="../Main.ts"/>
 /// <reference path="../Messages.ts"/>
+/// <reference path="ExportView.ts"/>
+/// <reference path="../Utilitary.ts"/>
 
 
 "use strict";
@@ -94,7 +95,7 @@ class Export{
         var input: HTMLInputElement = <HTMLInputElement>document.getElementById("faustweburl")
         Export.targetsUrl = input.value+"/targets";
 
-        Utilitary.getXHR(Export.targetsUrl, (json: string) => { this.uploadTargetCallback(json) }, (errorMessage: string) => { ErrorFaust.errorCallBack(errorMessage) });
+        Utilitary.getXHR(Export.targetsUrl, (json: string) => { this.uploadTargetCallback(json) }, (errorMessage: string) => { Utilitary.errorCallBack(errorMessage) });
     }	
 
     //callback to refresh Target

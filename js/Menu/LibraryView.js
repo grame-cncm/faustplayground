@@ -8,6 +8,7 @@ var LibraryView = (function () {
         var libraryContent = document.createElement("div");
         libraryContent.id = "libraryContent";
         libraryContent.className = "menuContent";
+        /////////////////Instruments
         var instrumentLibraryContent = document.createElement("div");
         instrumentLibraryContent.id = "instrumentLibraryContent";
         instrumentLibraryContent.className = "submenuLibraryContent";
@@ -23,6 +24,7 @@ var LibraryView = (function () {
         this.intrumentLibrarySelect = intrumentLibrarySelect;
         instrumentLibraryContent.appendChild(instrumentLibraryTitle);
         instrumentLibraryContent.appendChild(intrumentLibrarySelect);
+        ///////////////Effects
         var effetLibraryContent = document.createElement("div");
         effetLibraryContent.id = "effetLibraryContent";
         effetLibraryContent.className = "submenuLibraryContent";
@@ -38,6 +40,7 @@ var LibraryView = (function () {
         this.effetLibrarySelect = effetLibrarySelect;
         effetLibraryContent.appendChild(effetLibraryTitle);
         effetLibraryContent.appendChild(effetLibrarySelect);
+        /////////////Exemple
         var exempleLibraryContent = document.createElement("div");
         exempleLibraryContent.id = "exempleLibraryContent";
         exempleLibraryContent.className = "submenuLibraryContent";
@@ -59,5 +62,4 @@ var LibraryView = (function () {
         return libraryContent;
     };
     return LibraryView;
-}());
-//# sourceMappingURL=LibraryView.js.map
+})();

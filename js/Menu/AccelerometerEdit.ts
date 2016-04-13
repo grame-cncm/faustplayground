@@ -1,5 +1,6 @@
 ﻿//AccelerometerEdit
    /// <reference path="../Accelerometer.ts"/>
+   /// <reference path="AccelerometerEditView.ts"/>
 
 "use strict";
 

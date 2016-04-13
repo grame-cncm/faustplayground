@@ -200,7 +200,7 @@ var FaustInterfaceControler = (function () {
         this.faustInterfaceView.output.textContent = String(value.toFixed(parseFloat(this.precision)));
     };
     return FaustInterfaceControler;
-}());
+})();
 /********************************************************************
  ********************* ADD GRAPHICAL ELEMENTS ***********************
  ********************************************************************/
@@ -265,5 +265,4 @@ var FaustInterfaceView = (function () {
         return button;
     };
     return FaustInterfaceView;
-}());
-//# sourceMappingURL=FaustInterface.js.map
+})();

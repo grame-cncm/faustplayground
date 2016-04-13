@@ -19,6 +19,8 @@ class LibraryView  {
         libraryContent.id = "libraryContent";
         libraryContent.className = "menuContent";
 
+/////////////////Instruments
+
         var instrumentLibraryContent: HTMLElement = document.createElement("div");
         instrumentLibraryContent.id = "instrumentLibraryContent";
         instrumentLibraryContent.className = "submenuLibraryContent";
@@ -39,6 +41,8 @@ class LibraryView  {
         instrumentLibraryContent.appendChild(instrumentLibraryTitle);
         instrumentLibraryContent.appendChild(intrumentLibrarySelect);
 
+///////////////Effects
+
         var effetLibraryContent: HTMLElement = document.createElement("div");
         effetLibraryContent.id = "effetLibraryContent";
         effetLibraryContent.className = "submenuLibraryContent";
@@ -57,6 +61,8 @@ class LibraryView  {
 
         effetLibraryContent.appendChild(effetLibraryTitle);
         effetLibraryContent.appendChild(effetLibrarySelect);
+
+/////////////Exemple
 
         var exempleLibraryContent: HTMLElement = document.createElement("div");
         exempleLibraryContent.id = "exempleLibraryContent";

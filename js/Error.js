@@ -7,5 +7,4 @@ var ErrorFaust = (function () {
         new Message(errorMessage);
     };
     return ErrorFaust;
-}());
-//# sourceMappingURL=Error.js.map
+})();

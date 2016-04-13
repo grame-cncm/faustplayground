@@ -37,13 +37,7 @@ Create Factories and Modules
 /// <reference path="Lib/perfectScrollBar/js/perfect-ScrollBar.min.d.ts"/>
 
 //object containg info necessary to compile faust code
-interface CompileFaust {
-    name: string,
-    sourceCode: string,
-    x: number,
-    y: number,
-    callback: (factory: Factory) => void
-}
+
 
 class App {
     private static currentScene: number;
@@ -69,7 +63,7 @@ class App {
 
     createAllScenes(): void {
         var sceneView: SceneView = new SceneView();
-        Utilitary.currentScene = new Scene("Normal", this, this.compileFaust, sceneView);
+        Utilitary.currentScene = new Scene("Normal", this.compileFaust, sceneView);
         this.setGeneralAppListener(this);
         App.currentScene = 0;
     }
@@ -82,14 +76,14 @@ class App {
         //add eventlistener on the scene to hide menu when clicked or touched
         Utilitary.currentScene.getSceneContainer().addEventListener("mousedown", () => {
             if (!this.menu.accEdit.isOn) {
-                this.menu.menuChoices = MenuChoices.null
-                this.menu.menuHandler(this.menu.menuChoices)
+                this.menu.newMenuChoices = MenuChoices.null
+                this.menu.menuHandler(this.menu.newMenuChoices)
             }
         }, true);
         Utilitary.currentScene.getSceneContainer().addEventListener("touchstart", () => {
             if (!this.menu.accEdit.isOn) {
-                this.menu.menuChoices = MenuChoices.null
-                this.menu.menuHandler(this.menu.menuChoices)
+                this.menu.newMenuChoices = MenuChoices.null
+                this.menu.menuHandler(this.menu.newMenuChoices)
             }
         }, true);
     }
@@ -222,7 +216,6 @@ class App {
             var x = e.clientX;
             var y = e.clientY;
             this.uploadOn(this, null, x, y, e);
-            this.menu.isMenuLow = true;            
         };
 
         //custom double touch from library menu to load an effect or an intrument.
@@ -371,7 +364,6 @@ class App {
             modules[i].moduleView.fModuleContainer.style.opacity = "1";
             modules[i].moduleView.fModuleContainer.style.boxShadow ="0 5px 10px rgba(0, 0, 0, 0.4)"
         }
-        this.menu.menuView.menuContainer.addEventListener("mouseover", this.menu.mouseOverLowerMenu);
     }
 
     //manage the window size

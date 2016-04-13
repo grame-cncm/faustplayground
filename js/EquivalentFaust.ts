@@ -8,7 +8,6 @@
 /// <reference path="Scenes/SceneClass.ts"/>
 /// <reference path="Modules/ModuleClass.ts"/>
 /// <reference path="Connect.ts"/>
-/// <reference path="Main.ts"/>
 
 
 "use strict";
