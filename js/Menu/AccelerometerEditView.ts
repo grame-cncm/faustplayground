@@ -45,6 +45,9 @@ class AccelerometerEditView {
         labelTitle.id = "labelTitle";
         this.labelTitle = labelTitle;
 
+
+        //radio curves
+
         var radioCurveContainer = document.createElement("form")
         radioCurveContainer.id = "radioCurveContainer"
         this.radioCurveContainer = radioCurveContainer;
@@ -108,6 +111,9 @@ class AccelerometerEditView {
         radioCurveContainer.appendChild(label3)
         radioCurveContainer.appendChild(label4)
 
+
+        // radio Axis
+
         var radioAxisContainer = document.createElement("form")
         radioAxisContainer.id = "radioAxisContainer"
         this.radioAxisContainer = radioAxisContainer;
@@ -134,7 +140,6 @@ class AccelerometerEditView {
 
         var radio0 = document.createElement("input");
         radio0.id = "radio0";
-        //radio0.type = "radio";
         radio0.type = "checkbox";
         radio0.className = "radio";
         radio0.name = "axis";
@@ -171,6 +176,9 @@ class AccelerometerEditView {
         radioAxisContainer.appendChild(labelY)
         radioAxisContainer.appendChild(labelZ)
 
+
+        // checkbox On/Off accelerometer
+
         var checkOnOffContainer = document.createElement("form");
         checkOnOffContainer.id = "checkOnOffContainer";
         this.checkeOnOffContainer = checkOnOffContainer;
@@ -186,10 +194,13 @@ class AccelerometerEditView {
         this.checkeOnOff = checkOnOff;
         checkOnOffLabel.appendChild(checkOnOff); checkOnOffLabel
 
+        // Clone
         var cloneContainer = document.createElement("div");
         cloneContainer.id = "cloneContainer";
         this.cloneContainer = cloneContainer;
 
+
+        //Mapping ranges
         var accRangeMax = document.createElement("input");
         accRangeMax.id = "accRangeMax";
         accRangeMax.className = "accRange";
@@ -225,12 +236,14 @@ class AccelerometerEditView {
         rangeContainer.id = "rangeContainer";
         this.rangeContainer = rangeContainer;
 
-        //rangeContainer.appendChild(labelTitle);
         rangeContainer.appendChild(accRangeMin);
         rangeContainer.appendChild(accRangeMid);
         rangeContainer.appendChild(accRangeMax);
         rangeContainer.appendChild(accRangeCurrent);
         rangeContainer.appendChild(accRangeVirtual);
+
+
+        //Validation cancelation buttons
 
         var validContainer = document.createElement("div")
         validContainer.id = "validContainer";

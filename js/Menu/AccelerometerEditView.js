@@ -12,6 +12,7 @@ var AccelerometerEditView = (function () {
         var labelTitle = document.createElement("label");
         labelTitle.id = "labelTitle";
         this.labelTitle = labelTitle;
+        //radio curves
         var radioCurveContainer = document.createElement("form");
         radioCurveContainer.id = "radioCurveContainer";
         this.radioCurveContainer = radioCurveContainer;
@@ -63,6 +64,7 @@ var AccelerometerEditView = (function () {
         radioCurveContainer.appendChild(label2);
         radioCurveContainer.appendChild(label3);
         radioCurveContainer.appendChild(label4);
+        // radio Axis
         var radioAxisContainer = document.createElement("form");
         radioAxisContainer.id = "radioAxisContainer";
         this.radioAxisContainer = radioAxisContainer;
@@ -84,7 +86,6 @@ var AccelerometerEditView = (function () {
         labelZ.textContent = Utilitary.messageRessource.axisZ;
         var radio0 = document.createElement("input");
         radio0.id = "radio0";
-        //radio0.type = "radio";
         radio0.type = "checkbox";
         radio0.className = "radio";
         radio0.name = "axis";
@@ -115,6 +116,7 @@ var AccelerometerEditView = (function () {
         radioAxisContainer.appendChild(labelX);
         radioAxisContainer.appendChild(labelY);
         radioAxisContainer.appendChild(labelZ);
+        // checkbox On/Off accelerometer
         var checkOnOffContainer = document.createElement("form");
         checkOnOffContainer.id = "checkOnOffContainer";
         this.checkeOnOffContainer = checkOnOffContainer;
@@ -128,9 +130,11 @@ var AccelerometerEditView = (function () {
         this.checkeOnOff = checkOnOff;
         checkOnOffLabel.appendChild(checkOnOff);
         checkOnOffLabel;
+        // Clone
         var cloneContainer = document.createElement("div");
         cloneContainer.id = "cloneContainer";
         this.cloneContainer = cloneContainer;
+        //Mapping ranges
         var accRangeMax = document.createElement("input");
         accRangeMax.id = "accRangeMax";
         accRangeMax.className = "accRange";
@@ -160,12 +164,12 @@ var AccelerometerEditView = (function () {
         var rangeContainer = document.createElement("div");
         rangeContainer.id = "rangeContainer";
         this.rangeContainer = rangeContainer;
-        //rangeContainer.appendChild(labelTitle);
         rangeContainer.appendChild(accRangeMin);
         rangeContainer.appendChild(accRangeMid);
         rangeContainer.appendChild(accRangeMax);
         rangeContainer.appendChild(accRangeCurrent);
         rangeContainer.appendChild(accRangeVirtual);
+        //Validation cancelation buttons
         var validContainer = document.createElement("div");
         validContainer.id = "validContainer";
         var validButton = document.createElement("button");

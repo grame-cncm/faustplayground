@@ -17,7 +17,7 @@ var HelpView = (function () {
         //this.videoIframe = videoIFrame;
         var videoContainer = document.createElement("div");
         videoContainer.id = "videoContainer";
-        videoContainer.appendChild(videoIFrame);
+        //videoContainer.appendChild(videoIFrame);
         this.videoContainer = videoContainer;
         helpContainer.appendChild(videoContainer);
         //<iframe width="854" height= "480" src= "https://www.youtube.com/embed/6pnfzL_kBD0" frameborder= "0" allowfullscreen> </iframe>

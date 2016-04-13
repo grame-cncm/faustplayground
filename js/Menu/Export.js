@@ -1,9 +1,6 @@
 /*				EXPORT.JS
-   Handles Graphical elements for the Export Feature of the normal Playground
-       
-   DEPENDENCIES :
-       - ExportLib.js
-       - qrcode.js
+    Handles Graphical elements for the Export Feature of the normal Playground
+        
 */
 /// <reference path="../ExportLib.ts"/>
 /// <reference path="../EquivalentFaust.ts"/>
@@ -18,7 +15,7 @@ var Export = (function () {
         var _this = this;
         //------ Update Architectures with Plateform change
         this.updateArchitectures = function () {
-            if (!_this.clearComboBox('architectures')) {
+            if (!_this.clearSelectBox('architectures')) {
                 return;
             }
             else {
@@ -37,13 +34,13 @@ var Export = (function () {
                 }
             }
         };
+        //callback to get Target on server
         this.uploadTargets = function () {
-            _this.clearComboBox('platforms');
-            _this.clearComboBox('architectures');
+            _this.clearSelectBox('platforms');
+            _this.clearSelectBox('architectures');
             var input = document.getElementById("faustweburl");
             Export.targetsUrl = input.value + "/targets";
             Utilitary.getXHR(Export.targetsUrl, function (json) { _this.uploadTargetCallback(json); }, function (errorMessage) { ErrorFaust.errorCallBack(errorMessage); });
-            //ExportLib.getTargets(App.exportURL, (json: string) => { this.uploadTargetCallback },  (json: string)=> {alert('Impossible to get FaustWeb targets')});
         };
         /********************************************************************
         **************  CALLBACK ONCE SHA KEY WAS CALCULATED  ***************
@@ -63,6 +60,7 @@ var Export = (function () {
             exportLib.sendPrecompileRequest("http://faustservice.grame.fr", shaKey, platforme, architecture, appType, function (serverUrl, shaKey, plateforme, architecture, appType) { _this.setDownloadOptions(serverUrl, shaKey, plateforme, architecture, appType); });
             // 	Delete existing content if existing
         };
+        //set download QR Code and Button
         this.setDownloadOptions = function (serverUrl, shaKey, plateforme, architecture, appType) {
             if (shaKey.indexOf("ERROR") == -1) {
                 var disposableExportDiv = document.createElement("div");
@@ -96,7 +94,7 @@ var Export = (function () {
             Utilitary.removeLoadingLogo("exportResultContainer");
         };
     }
-    //------ Handle Combo Boxes
+    // Set EventListener
     Export.prototype.setEventListeners = function () {
         var _this = this;
         this.exportView.refreshButton.onclick = function () { _this.uploadTargets(); };
@@ -113,13 +111,15 @@ var Export = (function () {
         this.exportView.moreOptionDiv.addEventListener("click", function () { _this.exportView.moreOptionDiv.style.display = "none"; _this.exportView.lessOptionDiv.style.display = _this.exportView.optionContainer.style.display = "block"; }, false);
         this.exportView.lessOptionDiv.addEventListener("click", function () { _this.exportView.moreOptionDiv.style.display = "block"; _this.exportView.lessOptionDiv.style.display = _this.exportView.optionContainer.style.display = "none"; }, false);
     };
+    // add options into select boxes
     Export.prototype.addItem = function (id, itemText) {
         var platformsSelect = document.getElementById(id);
         var option = document.createElement('option');
         option.text = itemText;
         platformsSelect.add(option);
     };
-    Export.prototype.clearComboBox = function (id) {
+    //clear select boxes
+    Export.prototype.clearSelectBox = function (id) {
         if (document.getElementById(id) != undefined) {
             while (document.getElementById(id).childNodes.length > 0) {
                 document.getElementById(id).removeChild(document.getElementById(id).childNodes[0]);
@@ -130,6 +130,7 @@ var Export = (function () {
             return false;
         }
     };
+    //callback to refresh Target
     Export.prototype.uploadTargetCallback = function (json) {
         this.jsonText = json;
         var data = JSON.parse(this.jsonText);
@@ -139,6 +140,7 @@ var Export = (function () {
         this.setDefaultSelect();
         this.updateArchitectures();
     };
+    //set selection to default, currently android
     Export.prototype.setDefaultSelect = function () {
         var platefromSelect = document.getElementById("platforms");
         var options = platefromSelect.options;

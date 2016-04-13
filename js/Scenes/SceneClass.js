@@ -1,5 +1,5 @@
 /*				SCENECLASS.JS
-   HAND-MADE JAVASCRIPT CLASS CONTAINING THE API OF A GENERIC SCENE
+    HAND-MADE JAVASCRIPT CLASS CONTAINING THE API OF A GENERIC SCENE
 */
 /// <reference path="../Connect.ts"/>
 /// <reference path="../Modules/ModuleClass.ts"/>
