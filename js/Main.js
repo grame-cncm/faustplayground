@@ -79,3 +79,4 @@ function IosInit2() {
     }
     window.removeEventListener('touchstart', IosInit2, false);
 }
+//# sourceMappingURL=Main.js.map

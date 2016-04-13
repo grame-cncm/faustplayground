@@ -1,6 +1,6 @@
 /*				EXPORT.JS
-    Handles Graphical elements for the Export Feature of the normal Playground
-        
+   Handles Graphical elements for the Export Feature of the normal Playground
+       
 */
 /// <reference path="../ExportLib.ts"/>
 /// <reference path="../EquivalentFaust.ts"/>
@@ -51,7 +51,7 @@ var Export = (function () {
             var optionPlateform = platformsSelect.options[platformsSelect.selectedIndex];
             var platforme = optionPlateform.value;
             var architecturesSelect = document.getElementById("architectures"); //get the combobox
-            var optionArchi = platformsSelect.options[platformsSelect.selectedIndex];
+            var optionArchi = architecturesSelect.options[architecturesSelect.selectedIndex];
             var architecture = optionArchi.value;
             var serverUrl = document.getElementById("faustweburl").value;
             var appType = "binary.zip";
@@ -179,4 +179,5 @@ var Export = (function () {
     Export.exportUrl = "http://faustservice.grame.fr";
     Export.targetsUrl = "http://faustservice.grame.fr/targets";
     return Export;
-})();
+}());
+//# sourceMappingURL=Export.js.map

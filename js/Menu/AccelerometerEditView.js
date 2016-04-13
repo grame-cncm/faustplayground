@@ -192,4 +192,5 @@ var AccelerometerEditView = (function () {
         return blockLayer;
     };
     return AccelerometerEditView;
-})();
+}());
+//# sourceMappingURL=AccelerometerEditView.js.map

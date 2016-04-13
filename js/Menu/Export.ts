@@ -154,7 +154,7 @@ class Export{
         var platforme: string = optionPlateform.value;
 
         var architecturesSelect: HTMLSelectElement = <HTMLSelectElement>document.getElementById("architectures");//get the combobox
-        var optionArchi = <HTMLOptionElement>platformsSelect.options[platformsSelect.selectedIndex];
+        var optionArchi = <HTMLOptionElement>architecturesSelect.options[architecturesSelect.selectedIndex];
         var architecture: string = optionArchi.value;
 
         var serverUrl: string = (<HTMLInputElement>document.getElementById("faustweburl")).value;

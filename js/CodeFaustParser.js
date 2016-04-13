@@ -147,4 +147,5 @@ var CodeFaustParser = (function () {
         return this.newCodeFaust;
     };
     return CodeFaustParser;
-})();
+}());
+//# sourceMappingURL=CodeFaustParser.js.map

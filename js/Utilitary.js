@@ -83,9 +83,10 @@ var Utilitary = (function () {
     Utilitary.isAccelerometerOn = false;
     Utilitary.isAccelerometerEditOn = false;
     return Utilitary;
-})();
+}());
 var PositionModule = (function () {
     function PositionModule() {
     }
     return PositionModule;
-})();
+}());
+//# sourceMappingURL=Utilitary.js.map

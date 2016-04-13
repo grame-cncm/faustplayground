@@ -440,4 +440,5 @@ var AccelerometerEdit = (function () {
         Utilitary.accHandler.axisSplitter(this.accSlid, rangeVal, rangeVal, rangeVal, Utilitary.accHandler.applyNewValueToModule);
     };
     return AccelerometerEdit;
-})();
+}());
+//# sourceMappingURL=AccelerometerEdit.js.map

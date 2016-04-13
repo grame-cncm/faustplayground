@@ -9,7 +9,7 @@ Handle Drag and Drop
 Create Factories and Modules
 
 
-    */
+   */
 /// <reference path="Scenes/SceneClass.ts"/>
 /// <reference path="Modules/ModuleClass.ts"/>
 /// <reference path="Modules/ModuleView.ts"/>
@@ -336,4 +336,5 @@ var App = (function () {
     App.prototype.errorCallBack = function (message) {
     };
     return App;
-})();
+}());
+//# sourceMappingURL=App.js.map

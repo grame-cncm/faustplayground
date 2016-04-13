@@ -1,5 +1,5 @@
 /*				SCENECLASS.JS
-    HAND-MADE JAVASCRIPT CLASS CONTAINING THE API OF A GENERIC SCENE
+   HAND-MADE JAVASCRIPT CLASS CONTAINING THE API OF A GENERIC SCENE
 */
 /// <reference path="../Connect.ts"/>
 /// <reference path="../Modules/ModuleClass.ts"/>
@@ -533,49 +533,50 @@ var Scene = (function () {
         ModuleClass.isNodesModuleUnstyle = true;
     };
     return Scene;
-})();
+}());
 var JsonSaveCollection = (function () {
     function JsonSaveCollection() {
     }
     return JsonSaveCollection;
-})();
+}());
 var JsonSaveModule = (function () {
     function JsonSaveModule() {
     }
     return JsonSaveModule;
-})();
+}());
 var JsonOutputsSave = (function () {
     function JsonOutputsSave() {
     }
     return JsonOutputsSave;
-})();
+}());
 var JsonInputsSave = (function () {
     function JsonInputsSave() {
     }
     return JsonInputsSave;
-})();
+}());
 var JsonParamsSave = (function () {
     function JsonParamsSave() {
     }
     return JsonParamsSave;
-})();
+}());
 var JsonAccSaves = (function () {
     function JsonAccSaves() {
     }
     return JsonAccSaves;
-})();
+}());
 var JsonAccSave = (function () {
     function JsonAccSave() {
     }
     return JsonAccSave;
-})();
+}());
 var JsonSliderSave = (function () {
     function JsonSliderSave() {
     }
     return JsonSliderSave;
-})();
+}());
 var JsonFactorySave = (function () {
     function JsonFactorySave() {
     }
     return JsonFactorySave;
-})();
+}());
+//# sourceMappingURL=SceneClass.js.map

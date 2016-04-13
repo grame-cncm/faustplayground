@@ -126,4 +126,5 @@ var LoadView = (function () {
         return loadContainer;
     };
     return LoadView;
-})();
+}());
+//# sourceMappingURL=LoadView.js.map

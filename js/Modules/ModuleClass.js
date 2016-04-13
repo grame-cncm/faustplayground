@@ -390,4 +390,5 @@ var ModuleClass = (function () {
     };
     ModuleClass.isNodesModuleUnstyle = true;
     return ModuleClass;
-})();
+}());
+//# sourceMappingURL=ModuleClass.js.map

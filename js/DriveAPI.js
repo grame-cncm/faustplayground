@@ -148,7 +148,7 @@ var DriveAPI = (function () {
     DriveAPI.prototype.getFile = function (fileId, callback) {
         var _this = this;
         var request = gapi.client.drive.files.get({
-            'fileId': fileId
+            'fileId': fileId,
         });
         try {
             request.execute(function (resp) {
@@ -169,7 +169,7 @@ var DriveAPI = (function () {
             'method': 'POST',
             'body': {
                 "title": fileName + this.extension,
-                "mimeType": "application/json"
+                "mimeType": "application/json",
             }
         });
         request.execute(function (resp) {
@@ -237,4 +237,5 @@ var DriveAPI = (function () {
         });
     };
     return DriveAPI;
-})();
+}());
+//# sourceMappingURL=DriveAPI.js.map

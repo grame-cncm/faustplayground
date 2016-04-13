@@ -62,4 +62,5 @@ var LibraryView = (function () {
         return libraryContent;
     };
     return LibraryView;
-})();
+}());
+//# sourceMappingURL=LibraryView.js.map
