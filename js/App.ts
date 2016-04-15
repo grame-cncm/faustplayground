@@ -18,7 +18,7 @@ Create Factories and Modules
 /// <reference path="Error.ts"/>
 /// <reference path="Dragging.ts"/>
 /// <reference path="Utilitary.ts"/>
-/// <reference path="webaudio-asm-wrapper.d.ts"/>
+/// <reference path="Lib/webaudio-asm-worker-wrapper.d.ts"/>
 /// <reference path="Modules/FaustInterface.ts"/>
 /// <reference path="Scenes/SceneView.ts"/>
 /// <reference path="Menu/Export.ts"/>
@@ -31,7 +31,7 @@ Create Factories and Modules
 /// <reference path="Menu/HelpView.ts"/>
 /// <reference path="ExportLib.ts"/>
 /// <reference path="EquivalentFaust.ts"/>
-/// <reference path="qrcode.d.ts"/>
+/// <reference path="Lib/qrcode.d.ts"/>
 /// <reference path="Ressources.ts"/>
 /// <reference path="Messages.ts"/>
 /// <reference path="Lib/perfectScrollBar/js/perfect-ScrollBar.min.d.ts"/>

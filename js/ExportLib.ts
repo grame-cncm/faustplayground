@@ -1,5 +1,5 @@
 
-/// <reference path="QRCode.d.ts"/>
+/// <reference path="Lib/qrcode.d.ts"/>
 
 
 "use strict"

@@ -3,7 +3,7 @@
 */
 /// <reference path="../Connect.ts"/>
 /// <reference path="../Modules/ModuleClass.ts"/>
-/// <reference path="../webaudio-asm-wrapper.d.ts"/>
+/// <reference path="../Lib/webaudio-asm-worker-wrapper.d.ts"/>
 /// <reference path="../Utilitary.ts"/>
 /// <reference path="../Messages.ts"/>
 /// <reference path="SceneView.ts"/>
