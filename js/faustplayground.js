@@ -5667,7 +5667,7 @@ var App = (function () {
         }
         ;
         //locate libraries used in libfaust compiler
-        var args = ["-I", location.origin + "/faustcode/"];
+        var args = ["-I", location.origin + "/faustplayground/faustcode/"];
         //try to create the asm.js code/factory with the faust code given. Then callback to function passing the factory.
         try {
             this.factory = faust.createDSPFactory(compileFaust.sourceCode, args, function (factory) { compileFaust.callback(factory); });

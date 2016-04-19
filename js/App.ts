@@ -114,7 +114,7 @@ class App {
         if (currentScene) { currentScene.muteScene() };
 
         //locate libraries used in libfaust compiler
-        var args: string[] = ["-I", location.origin + "/faustcode/"];
+        var args: string[] = ["-I", location.origin + "/faustplayground/faustcode/"];
 
         //try to create the asm.js code/factory with the faust code given. Then callback to function passing the factory.
         try {
