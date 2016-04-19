@@ -13,7 +13,7 @@
   "errorLoading": "Error while loading the scene",
   "errorGettingAudioInput": "Could not enable microphone or audio input",
   "errorInputAPINotAvailable": "The microphone or audio input cannot be used in your browser",
-  "errorAccSliderNotFound": ": "Could not find slider, modifications on the slider will not be exported in the final version of the application",
+  "errorAccSliderNotFound": "Could not find slider, modifications on the slider will not be exported in the final version of the application",
   "errorAccelerometerNotFound": "Could not find accelerometer, modifications on the slider will not be exported in the final version of the application",
   "errorNoWebAudioAPI": "It appears that your browser does not support the Web Audio API. Try with a more recent version of the browser",
   "errorOccuredMessage": "An error has occured:",
