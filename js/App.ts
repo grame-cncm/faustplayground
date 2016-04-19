@@ -113,7 +113,6 @@ class App {
 
         if (currentScene) { currentScene.muteScene() };
 
-
         //locate libraries used in libfaust compiler
         var args: string[] = ["-I", location.origin + "/faustplayground/faustcode/"];
 
