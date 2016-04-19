@@ -1,4 +1,11 @@
 ﻿//Accelerometer Class
+
+/// <reference path="Utilitary.ts"/>
+/// <reference path="Modules/FaustInterface.ts"/>
+
+
+
+
 interface Window {
     DeviceMotionEvent: DeviceMotionEvent
 }
@@ -6,6 +13,7 @@ interface Window {
 enum Axis { x, y, z };
 enum Curve { Up, Down, UpDown, DownUp };
 
+//object describing value off accelerometer metadata values. 
 class AccMeta {
     axis: Axis;
     curve: Curve;
@@ -13,32 +21,33 @@ class AccMeta {
     amid: number;
     amax: number
 }
-
+//Contains the info regarding the mapping of the FaustInterfaceControler and the accelerometer
 class AccelerometerSlider {
 
     name: string;
     axis: Axis;
     curve: Curve;
+    //accelerometer Values
     amin: number;
     amid: number;
     amax: number;
+    //faust values
     min: number;
     init: number;
     max: number;
+    //name of the faustInterfaceControler
     label: string
-    //step: number;
+    //address to the value in the dsp
     address: string;
-    //precision: number;
+    //object converter depending on the curve
     converter: UpdatableValueConverter;
+    //accelerometer active/inactive only in the app
     isActive: boolean;
+    //accelerometer active/inactive in app and faustcode
     isEnabled: boolean;
-    //existed: boolean=false;
-    //mySlider: HTMLInputElement
-    //valueOutput: HTMLElement
     acc: string;
     noacc: string;
     noAccObj: AccMeta;
-    //callbackEdit: any;
     callbackValueChange: (address: string, value: number) => void
 
     constructor(accParams: AccParams) {
@@ -51,15 +60,7 @@ class AccelerometerSlider {
             this.max = accParams.max;
             this.init = accParams.init;
             this.label = accParams.label
-            //this.step = parseFloat(controler.step);
-            //this.mySlider = controler.slider;
-            //this.valueOutput = controler.output;
-            this.isActive = App.isAccelerometerOn;
-            //this.precision = parseFloat(controler.precision);
-            //this.name = controler.label;
-            //if (!this.isEnabled) {
-            //    this.mySlider.parentElement.classList.add("disabledAcc")
-            //}
+            this.isActive = Utilitary.isAccelerometerOn;
         }
     }
 
@@ -82,22 +83,25 @@ class AccelerometerSlider {
     }
 }
 
+
+//object responsible of storing all accelerometerSlider and propagate to them the accelerometer infos. 
 class AccelerometerHandler {
+    //array containing all the FaustInterfaceControler of the scene
     static faustInterfaceControler: FaustInterfaceControler[] = [];
+    //faustInterfaceControler of the AccelerometerEditView
     static faustInterfaceControlerEdit: FaustInterfaceControler = null;
 
     // get Accelerometer value
-
     getAccelerometerValue() {
         if (window.DeviceMotionEvent) {
             window.addEventListener("devicemotion", (event: DeviceMotionEvent) => { this.propagate(event) }, false);
         } else {
             // Browser doesn't support DeviceMotionEvent
-            console.log(App.messageRessource.noDeviceMotion)
+            console.log(Utilitary.messageRessource.noDeviceMotion)
         }
     }
 
-    // propagate the new x, y, z value of the accelerometer to the regisred object
+    // propagate the new x, y, z value of the accelerometer to the registred object
     propagate(event: DeviceMotionEvent) {
         var x = event.accelerationIncludingGravity.x;
         var y = event.accelerationIncludingGravity.y;
@@ -107,13 +111,14 @@ class AccelerometerHandler {
                 this.axisSplitter(AccelerometerHandler.faustInterfaceControler[i].accelerometerSlider, x, y, z, this.applyNewValueToModule)
             }
         }
+        // update the faustInterfaceControler of the AccelerometerEditView
         if (AccelerometerHandler.faustInterfaceControlerEdit != null) {
             this.axisSplitter(AccelerometerHandler.faustInterfaceControlerEdit.accelerometerSlider, x, y, z, this.applyValueToEdit)
         }
     }
-    //static registerAcceleratedSlider(fMetaAcc: string, module: ModuleClass, label: string, min: number, ivalue: number, max: number, step: number, slider: HTMLInputElement, valueOutput: HTMLElement, precision: number): AccelerometerSlider {
-    static registerAcceleratedSlider(accParams: AccParams, faustInterfaceControler: FaustInterfaceControler, sliderEdit?: boolean) {
-        
+
+    //create and register accelerometerSlide
+    static registerAcceleratedSlider(accParams: AccParams, faustInterfaceControler: FaustInterfaceControler, sliderEdit?: boolean) {     
         var accelerometerSlide: AccelerometerSlider = new AccelerometerSlider(accParams);
         faustInterfaceControler.accelerometerSlider = accelerometerSlide;
             AccelerometerHandler.curveSplitter(accelerometerSlide)
@@ -124,7 +129,7 @@ class AccelerometerHandler {
             }
     }
 
-
+    //give the good axis value to the accelerometerslider, convert it to the faust value before
     axisSplitter(accelerometerSlide: AccelerometerSlider, x: number, y: number, z: number, callBack: (acc: AccelerometerSlider, val: number, axeValue: number) => void) {
         
         switch (accelerometerSlide.axis) {
@@ -142,14 +147,16 @@ class AccelerometerHandler {
                 break;
         }
     }
-
+    //update value of the dsp
     applyNewValueToModule(accSlid: AccelerometerSlider, newVal: number, axeValue: number) {
         accSlid.callbackValueChange(accSlid.address, newVal);
     }
+    //update value of the edit range in AccelerometerEditView
     applyValueToEdit(accSlid: AccelerometerSlider, newVal: number, axeValue: number) {
         AccelerometerHandler.faustInterfaceControlerEdit.faustInterfaceView.slider.value = axeValue.toString();
     }
 
+    //Apply the right converter with the right curve to an accelerometerSlider 
     static curveSplitter(accelerometerSlide: AccelerometerSlider) {
         switch (accelerometerSlide.curve) {
             case Curve.Up:
@@ -171,6 +178,9 @@ class AccelerometerHandler {
 }
 
 
+/***************************************************************************************
+********************  Converter objects use to map acc and faust value *****************
+****************************************************************************************/
 
 class MinMaxClip {
     fLo: number;

@@ -1,30 +1,17 @@
 /*				MODULECLASS.JS
 	HAND-MADE JAVASCRIPT CLASS CONTAINING A FAUST MODULE AND ITS INTERFACE
 	
-	Interface structure
-	===================
-	DIV --> this.fModuleContainer
-    H6 --> fTitle
-    DIV --> fInterfaceContainer
-    DIV --> fCloseButton
-    DIV --> fFooter
-    IMG --> fEditImg
-	===================
+
 		
-	DEPENDENCIES :
-		- Connect.js
-		- Dragging.js
-		- Main.js
-		- webaudio-asm-wrapper.js
 */
 
-/// <reference path="../Scenes/SceneClass.ts"/>
 /// <reference path="../Dragging.ts"/>
+/// <reference path="../CodeFaustParser.ts"/>
 /// <reference path="../Connect.ts"/>
 /// <reference path="../Modules/FaustInterface.ts"/>
-/// <reference path="../Main.ts"/>
-/// <reference path="../App.ts"/>
 /// <reference path="../Messages.ts"/>
+/// <reference path="ModuleFaust.ts"/>
+/// <reference path="ModuleView.ts"/>
 
 
 
@@ -37,14 +24,19 @@
 
 class ModuleClass  {
     static isNodesModuleUnstyle: boolean = true;
+    //drag object to handle dragging of module and connection
     drag: Drag = new Drag()
     dragList: Drag[] = [];
+    //used only for save or recall
     patchID: string;
+
     moduleView: ModuleView;
     moduleFaust: ModuleFaust;
     moduleControles: FaustInterfaceControler[] = [];
+
     private deleteCallback: (module: ModuleClass) => void;
     private fModuleInterfaceParams: { [label: string]: string } = {};
+
     eventDraggingHandler: (event: MouseEvent) => void;
     eventConnectorHandler: (event: Event) => void;
     eventOpenEditHandler: () => void;
@@ -60,20 +52,19 @@ class ModuleClass  {
         this.eventCloseEditHandler = (event: MouseEvent) => { this.recompileSource(event, this) }
         this.eventOpenEditHandler = () => { this.edit() }
         this.compileFaust = compileFaust;
-        // ---- Capturing module instance	
-        // ----- Delete Callback was added to make sure 
-        // ----- the module is well deleted from the scene containing it
+
         this.deleteCallback = removeModuleCallBack;
         this.eventDraggingHandler = (event)=>{ this.dragCallback(event, this) };
 
         this.moduleView = new ModuleView();
-        this.moduleView.createModuleView(id, x, y, name, htmlElementModuleContainer, this);
+        this.moduleView.createModuleView(id, x, y, name, htmlElementModuleContainer);
         this.moduleFaust = new ModuleFaust(name);
-        this.init();
+        this.addEvents();
 
     }
 
-    init() {
+    //add all event listener to the moduleView
+    addEvents() {
         this.moduleView.getModuleContainer().addEventListener("mousedown", this.eventDraggingHandler, false);
         this.moduleView.getModuleContainer().addEventListener("touchstart", this.eventDraggingHandler, false);
         this.moduleView.getModuleContainer().addEventListener("touchmove", this.eventDraggingHandler, false);
@@ -100,8 +91,8 @@ class ModuleClass  {
 
         }
         if (this.moduleView.fEditImg != undefined) {
-            this.moduleView.fEditImg.addEventListener("click", () => { this.eventOpenEditHandler(); });
-            this.moduleView.fEditImg.addEventListener("touchend", () => { this.eventOpenEditHandler(); });
+            this.moduleView.fEditImg.addEventListener("click", this.eventOpenEditHandler);
+            this.moduleView.fEditImg.addEventListener("touchend",  this.eventOpenEditHandler);
 
         }
     }
@@ -168,8 +159,10 @@ class ModuleClass  {
 
 
     deleteModule(): void {
+
         var connector: Connector = new Connector()
         connector.disconnectModule(this);
+
         this.deleteFaustInterface();	
     
         // Then delete the visual element
@@ -180,7 +173,7 @@ class ModuleClass  {
         this.deleteCallback(this);
 
     }
-	
+	//make module smaller
     minModule() {
         this.moduleView.fInterfaceContainer.classList.add("mini");
         this.moduleView.fTitle.classList.add("miniTitle");
@@ -190,7 +183,7 @@ class ModuleClass  {
         Connector.redrawOutputConnections(this, this.drag);
 
     }
-	
+	//restore module size
     maxModule() {
         this.moduleView.fInterfaceContainer.classList.remove("mini");
         this.moduleView.fTitle.classList.remove("miniTitle");
@@ -206,13 +199,13 @@ class ModuleClass  {
         this.moduleFaust.factory = factory;
         try {
             if (factory != null) {
-                this.moduleFaust.fDSP = faust.createDSPInstance(factory, App.audioContext, 1024);
+                this.moduleFaust.fDSP = faust.createDSPInstance(factory, Utilitary.audioContext, 1024);
             } else {
                 throw new Error("create DSP Error factory null")
             }
         } catch (e) {
-            new Message(App.messageRessource.errorCreateDSP + " : " + e)
-            App.hideFullPageLoading();
+            new Message(Utilitary.messageRessource.errorCreateDSP + " : " + e)
+            Utilitary.hideFullPageLoading();
         }
     }
 
@@ -257,7 +250,7 @@ class ModuleClass  {
                     connector.createConnection(saveInCnx[i].source, saveInCnx[i].source.moduleView.getOutputNode(), module, module.moduleView.getInputNode());
             }
         }
-        App.hideFullPageLoading()
+        Utilitary.hideFullPageLoading()
 
     }
 
@@ -280,7 +273,7 @@ class ModuleClass  {
         this.moduleView.textArea.value = this.moduleFaust.fSource;
         Connector.redrawInputConnections(this, this.drag);
         Connector.redrawOutputConnections(this, this.drag);
-        this.moduleView.fEditImg.style.backgroundImage = "url(" + App.baseImg + "enter.png)";
+        this.moduleView.fEditImg.style.backgroundImage = "url(" + Utilitary.baseImg + "enter.png)";
         this.moduleView.fEditImg.addEventListener("click", this.eventCloseEditHandler);
         this.moduleView.fEditImg.addEventListener("touchend", this.eventCloseEditHandler);
         this.moduleView.fEditImg.removeEventListener("click", this.eventOpenEditHandler);
@@ -301,7 +294,7 @@ class ModuleClass  {
 	
     //---- React to recompilation triggered by click on icon
     private recompileSource(event: MouseEvent, module: ModuleClass): void {
-        App.showFullPageLoading();
+        Utilitary.showFullPageLoading();
         var buttonImage: HTMLfEdit = <HTMLfEdit>event.target;
         var dsp_code: string = this.moduleView.textArea.value;
         this.moduleView.textArea.style.display = "none";
@@ -310,7 +303,7 @@ class ModuleClass  {
         module.update(this.moduleView.fTitle.textContent, dsp_code);
         module.recallInterfaceParams();
 
-        module.moduleView.fEditImg.style.backgroundImage = "url(" + App.baseImg + "edit.png)";
+        module.moduleView.fEditImg.style.backgroundImage = "url(" + Utilitary.baseImg + "edit.png)";
         module.moduleView.fEditImg.addEventListener("click", this.eventOpenEditHandler);
         module.moduleView.fEditImg.addEventListener("touchend", this.eventOpenEditHandler);
         module.moduleView.fEditImg.removeEventListener("click", this.eventCloseEditHandler);
@@ -324,24 +317,27 @@ class ModuleClass  {
 
         this.moduleView.fTitle.textContent = this.moduleFaust.fName;
         var moduleFaustInterface = new FaustInterfaceControler(
-            (faustInterface) => { this.interfaceCallback(faustInterface) },
+            (faustInterface) => { this.interfaceSliderCallback(faustInterface) },
             (adress, value) => { this.moduleFaust.fDSP.setValue(adress, value) }
             );
         this.moduleControles = moduleFaustInterface.parseFaustJsonUI(JSON.parse(this.moduleFaust.fDSP.json()).ui, this);
     }
+
+    //create FaustInterfaceControler, set its callback and add its AccelerometerSlider
     createFaustInterface() {
         for (var i = 0; i < this.moduleControles.length; i++) {
             var faustInterfaceControler = this.moduleControles[i];
             faustInterfaceControler.setParams();
             faustInterfaceControler.faustInterfaceView = new FaustInterfaceView(faustInterfaceControler.itemParam.type)
             this.moduleView.getInterfaceContainer().appendChild(faustInterfaceControler.createFaustInterfaceElement());
-            faustInterfaceControler.interfaceCallback = this.interfaceCallback.bind(this);
+            faustInterfaceControler.interfaceCallback = this.interfaceSliderCallback.bind(this);
             faustInterfaceControler.updateFaustCodeCallback = this.updateCodeFaust.bind(this);
             faustInterfaceControler.setEventListener();
             faustInterfaceControler.createAccelerometer();
         }
     }
 
+    //delete all FaustInterfaceControler
     private deleteFaustInterface(): void {
         this.deleteAccelerometerRef();
 
@@ -350,37 +346,51 @@ class ModuleClass  {
         }
     }
 
+    //remove AccelerometerSlider ref from AccelerometerHandler
     private deleteAccelerometerRef() {
         for (var i = 0; i < this.moduleControles.length; i++) {
             if (this.moduleControles[i].accelerometerSlider != null && this.moduleControles[i].accelerometerSlider != undefined) {
                 var index = AccelerometerHandler.faustInterfaceControler.indexOf(this.moduleControles[i]);
                 AccelerometerHandler.faustInterfaceControler.splice(index, 1);
                 delete this.moduleControles[i].accelerometerSlider ;
-                //this.moduleControles.splice(i, 1)
             }
         }
         this.moduleControles = [];
     }
 
+    // set DSP value to all FaustInterfaceControlers
     setDSPValue() {
         for (var i = 0; i < this.moduleControles.length; i++){
             this.moduleFaust.fDSP.setValue(this.moduleControles[i].itemParam.address, this.moduleControles[i].value)
         }
     }
+
+    // set DSP value to specific FaustInterfaceControlers
     setDSPValueCallback(address: string, value: string) {
         this.moduleFaust.fDSP.setValue(address, value)
     }
+
+    //parse Code faust to remove old acceleromter value and add new ones
     updateCodeFaust(details: ElementCodeFaustParser) {
         var newCodeFaust: CodeFaustParser = new CodeFaustParser(this.moduleFaust.fSource, details.sliderName, details.newAccValue, details.isEnabled);
         this.moduleFaust.fSource = newCodeFaust.replaceAccValue();
     }
     //---- Generic callback for Faust Interface
     //---- Called every time an element of the UI changes value
-    interfaceCallback(faustControler: FaustInterfaceControler): any {
-
-        var input: HTMLInputElement = faustControler.faustInterfaceView.slider;
+    interfaceSliderCallback(faustControler: FaustInterfaceControler): any {
+        var val: string
+        if (faustControler.faustInterfaceView.slider) {
+            var input: HTMLInputElement = faustControler.faustInterfaceView.slider;
+            val = Number((parseFloat(input.value) * parseFloat(faustControler.itemParam.step)) + parseFloat(faustControler.itemParam.min)).toFixed(parseFloat(faustControler.precision));
+        } else if (faustControler.faustInterfaceView.button) {
+            var input: HTMLInputElement = faustControler.faustInterfaceView.button;
+            if (faustControler.value == undefined || faustControler.value == "0") {
+                faustControler.value = val = "1"
+            } else {
+                faustControler.value = val = "0"
+            }
+        }
         var text: string = faustControler.itemParam.address;
-        var val = Number((parseFloat(input.value) * parseFloat(faustControler.itemParam.step)) + parseFloat(faustControler.itemParam.min)).toFixed(parseFloat(faustControler.precision));
         faustControler.value = val;
 
         var output: HTMLElement = faustControler.faustInterfaceView.output;
@@ -392,6 +402,22 @@ class ModuleClass  {
 
         // 	Search for DSP then update the value of its parameter.
         this.moduleFaust.fDSP.setValue(text, val);
+    }
+    interfaceButtonCallback(faustControler: FaustInterfaceControler, val?: number): any {
+
+        var input: HTMLInputElement = faustControler.faustInterfaceView.button;
+        var text: string = faustControler.itemParam.address;
+        faustControler.value = val.toString();
+
+        var output: HTMLElement = faustControler.faustInterfaceView.output;
+
+        //---- update the value text
+        if (output)
+            output.textContent = "" + val + " " + faustControler.unit;
+
+
+        // 	Search for DSP then update the value of its parameter.
+        this.moduleFaust.fDSP.setValue(text, val.toString());
     }
 	
     // Save graphical parameters of a Faust Node
@@ -442,7 +468,8 @@ class ModuleClass  {
             this.moduleView.fOutputNode.addEventListener("touchend", this.eventConnectorHandler);
         }
     }
-
+    //manage style of node when touchover will dragging
+    //make the use easier for connections
     styleInputNodeTouchDragOver(el: HTMLElement) {
         el.style.border = "15px double rgb(0, 211, 255)"
         el.style.left = "-32px"
@@ -454,14 +481,6 @@ class ModuleClass  {
         el.style.right = "-32px"
         el.style.marginTop = "-32px"
         ModuleClass.isNodesModuleUnstyle = false;
-
     }
-
-	
-    /****************** ADD/REMOVE ACTION LISTENERS **********************/
-
-
-
-
 }
 

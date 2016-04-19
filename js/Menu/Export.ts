@@ -1,14 +1,12 @@
 ﻿/*				EXPORT.JS
 	Handles Graphical elements for the Export Feature of the normal Playground
 		
-	DEPENDENCIES :
-		- ExportLib.js
-		- qrcode.js
 */
 /// <reference path="../ExportLib.ts"/>
 /// <reference path="../EquivalentFaust.ts"/>
-/// <reference path="../Main.ts"/>
 /// <reference path="../Messages.ts"/>
+/// <reference path="ExportView.ts"/>
+/// <reference path="../Utilitary.ts"/>
 
 
 "use strict";
@@ -23,9 +21,10 @@ class Export{
     exportView: ExportView;
     static exportUrl: string = "http://faustservice.grame.fr"
     static targetsUrl: string = "http://faustservice.grame.fr/targets"
+    jsonText: string;
     eventExport: (event: Event) => void;
 
-    //------ Handle Combo Boxes
+    // Set EventListener
     setEventListeners() {
         this.exportView.refreshButton.onclick = () => { this.uploadTargets() };
         this.exportView.selectPlatform.onchange = () => { this.updateArchitectures() };
@@ -39,6 +38,7 @@ class Export{
 
 
     }
+    // add options into select boxes
     addItem(id: string, itemText:string):void
     {
         var platformsSelect: HTMLSelectElement = <HTMLSelectElement>document.getElementById(id);
@@ -46,8 +46,8 @@ class Export{
 	    option.text = itemText;
         platformsSelect.add(option);
     }
-
-    clearComboBox(id: string): boolean
+    //clear select boxes
+    clearSelectBox(id: string): boolean
     {
         if (document.getElementById(id) != undefined) {
             while (document.getElementById(id).childNodes.length > 0) {
@@ -62,12 +62,12 @@ class Export{
     //------ Update Architectures with Plateform change
     updateArchitectures = () =>
     {
-        if (!this.clearComboBox('architectures')) {
+        if (!this.clearSelectBox('architectures')) {
             return
         } else {
 
 
-            var data:string[] = JSON.parse(App.jsonText);
+            var data:string[] = JSON.parse(this.jsonText);
 
             var platformsSelect: HTMLSelectElement = <HTMLSelectElement>document.getElementById('platforms');//get the combobox
             var options = <HTMLOptionElement>platformsSelect.options[platformsSelect.selectedIndex]
@@ -87,22 +87,22 @@ class Export{
             }
         }
     }
-
+    //callback to get Target on server
     public uploadTargets=()=>
     {
-	    this.clearComboBox('platforms');
-	    this.clearComboBox('architectures');
+        this.clearSelectBox('platforms');
+        this.clearSelectBox('architectures');
         var input: HTMLInputElement = <HTMLInputElement>document.getElementById("faustweburl")
         Export.targetsUrl = input.value+"/targets";
 
-        App.getXHR(Export.targetsUrl, (json: string) => { this.uploadTargetCallback(json) }, (errorMessage: string) => { ErrorFaust.errorCallBack(errorMessage) });
-        //ExportLib.getTargets(App.exportURL, (json: string) => { this.uploadTargetCallback },  (json: string)=> {alert('Impossible to get FaustWeb targets')});
+        Utilitary.getXHR(Export.targetsUrl, (json: string) => { this.uploadTargetCallback(json) }, (errorMessage: string) => { Utilitary.errorCallBack(errorMessage) });
     }	
 
+    //callback to refresh Target
     uploadTargetCallback(json: string) {
-        App.jsonText = json;
+        this.jsonText = json;
 
-        var data: string[] = JSON.parse(App.jsonText);
+        var data: string[] = JSON.parse(this.jsonText);
 
         for (var platform in data) {
             this.addItem('platforms', platform);
@@ -110,6 +110,8 @@ class Export{
         this.setDefaultSelect();
         this.updateArchitectures();
     }	
+
+    //set selection to default, currently android
     setDefaultSelect() {
         var platefromSelect: HTMLSelectElement = <HTMLSelectElement>document.getElementById("platforms");
         var options = platefromSelect.options
@@ -134,7 +136,7 @@ class Export{
             sceneName = "MonApplication";
         }
         this.removeQRCode();
-        App.addLoadingLogo("exportResultContainer");
+        Utilitary.addLoadingLogo("exportResultContainer");
         var equivalentFaust: EquivalentFaust = new EquivalentFaust();
         var faustCode: string = equivalentFaust.getFaustEquivalent(Utilitary.currentScene, Utilitary.currentScene.sceneName);
         ExportLib.getSHAKey((<HTMLInputElement>document.getElementById("faustweburl")).value, Utilitary.currentScene.sceneName, faustCode, expor.exportFaustCode);
@@ -152,7 +154,7 @@ class Export{
         var platforme: string = optionPlateform.value;
 
         var architecturesSelect: HTMLSelectElement = <HTMLSelectElement>document.getElementById("architectures");//get the combobox
-        var optionArchi = <HTMLOptionElement>platformsSelect.options[platformsSelect.selectedIndex];
+        var optionArchi = <HTMLOptionElement>architecturesSelect.options[architecturesSelect.selectedIndex];
         var architecture: string = optionArchi.value;
 
         var serverUrl: string = (<HTMLInputElement>document.getElementById("faustweburl")).value;
@@ -169,6 +171,8 @@ class Export{
         
     }
 
+
+    //set download QR Code and Button
     setDownloadOptions = (serverUrl: string, shaKey: string, plateforme: string, architecture: string, appType: string) => {
         if (shaKey.indexOf("ERROR") == -1) {
             var disposableExportDiv: HTMLDivElement = document.createElement("div");
@@ -185,7 +189,7 @@ class Export{
             linkDownload.value = serverUrl + "/" + shaKey + "/" + plateforme + "/" + architecture + "/" + appType;
             linkDownload.id = "linkDownload";
             linkDownload.className = "button";
-            linkDownload.textContent = App.messageRessource.buttonDownloadApp;
+            linkDownload.textContent = Utilitary.messageRessource.buttonDownloadApp;
             downloadBottomButtonContainer.appendChild(linkDownload);
             this.exportView.downloadButton = linkDownload;
             this.exportView.downloadButton.onclick = () => { window.location.href = this.exportView.downloadButton.value };
@@ -196,16 +200,16 @@ class Export{
 
             this.exportView.exportButton.addEventListener("click", this.eventExport)
             this.exportView.exportButton.style.opacity = "1";
-            App.removeLoadingLogo("exportResultContainer");
+           Utilitary.removeLoadingLogo("exportResultContainer");
         } else {
             new Message(shaKey)
         }
         this.exportView.exportButton.addEventListener("click", this.eventExport)
         this.exportView.exportButton.style.opacity = "1";
-        App.removeLoadingLogo("exportResultContainer");
+       Utilitary.removeLoadingLogo("exportResultContainer");
     }
 
-
+    
     removeQRCode() {
         var disposableExportDiv: HTMLElement = document.getElementById('disposableExportDiv');
         if (disposableExportDiv) {

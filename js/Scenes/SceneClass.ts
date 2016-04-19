@@ -1,32 +1,21 @@
 ﻿/*				SCENECLASS.JS
 	HAND-MADE JAVASCRIPT CLASS CONTAINING THE API OF A GENERIC SCENE
-
-	DEPENDENCIES :
-		- ModuleClass.js
-		- Main.js
-		- Connect.js
 */
 /// <reference path="../Connect.ts"/>
 /// <reference path="../Modules/ModuleClass.ts"/>
-/// <reference path="../Connect.ts"/>
-/// <reference path="../webaudio-asm-wrapper.d.ts"/>
-/// <reference path="../Main.ts"/>
-/// <reference path="../App.ts"/>
+/// <reference path="../Lib/webaudio-asm-worker-wrapper.d.ts"/>
+/// <reference path="../Utilitary.ts"/>
 /// <reference path="../Messages.ts"/>
+/// <reference path="SceneView.ts"/>
 
 
 "use strict";
-interface CompileFaust {
-    name: string,
-    sourceCode: string,
-    x: number,
-    y: number,
-    callback: (factory: Factory) => void
-}
 
 class Scene {
-    arrayRecalScene: JsonSaveObject[] = [];
+    //temporary arrays used to recall a scene from a jfaust file
+    arrayRecalScene: JsonSaveModule[] = [];
     arrayRecalledModule: ModuleClass[] = [];
+
     isMute: boolean = false;
     //-- Audio Input/Output
     fAudioOutput: ModuleClass;
@@ -36,21 +25,25 @@ class Scene {
     //-- Graphical Scene container
     sceneView: SceneView;
     sceneName: string = "Patch";
+    //used to keep loading page when loading the two input and output default modules
     isInitLoading: boolean = true;
     isOutputTouch: boolean = false;
-    eventEditAcc: (event: Event) => void;
+
+    //used to store value of module being created
     tempModuleName: string;
     tempPatchId: string;
     tempModuleSourceCode: string;
     tempModuleX: number;
     tempModuleY: number;
     tempParams: IJsonParamsSave;
+
+    //callback function to compile faust code from App
     compileFaust: (compile: CompileFaust) => void
     
     
 
 
-    constructor(identifiant: string, parent: App, compileFaust: (compileFaust: CompileFaust) => void, sceneView?: SceneView) {
+    constructor(identifiant: string, compileFaust: (compileFaust: CompileFaust) => void, sceneView?: SceneView) {
         this.compileFaust = compileFaust;
         this.sceneView = new SceneView();
         this.sceneView.initNormalScene(this)
@@ -59,24 +52,13 @@ class Scene {
         document.addEventListener("unstylenode", () => { this.unstyleNode() });
 
     }
-   /******************CALLBACKS FOR LOADING/UNLOADING SCENE **************/
 
-    private onload(s: Scene) { }
-    private onunload(s: Scene) { }
+
 
 
     getSceneContainer(): HTMLDivElement { return this.sceneView.fSceneContainer; }
 
-    /************************* SHOW/HIDE SCENE ***************************/
-    showScene(): void { this.sceneView.fSceneContainer.style.visibility = "visible"; }
-    hideScene(): void { this.sceneView.fSceneContainer.style.visibility = "hidden"; }
-    /*********************** LOAD/UNLOAD SCENE ***************************/
-    loadScene(): void {
-        this.onload(this);
-    }
-    unloadScene():void {
-        this.onunload(this)
-    }
+
     /*********************** MUTE/UNMUTE SCENE ***************************/
     muteScene(): void {
         var out: IHTMLDivElementOut = <IHTMLDivElementOut>document.getElementById("audioOutput");
@@ -107,12 +89,14 @@ class Scene {
             }
         }
     }
+
     //add listner on the output module to give the user the possibility to mute/onmute the scene
     addMuteOutputListner(moduleOutput: ModuleClass) {
         moduleOutput.moduleView.fModuleContainer.ontouchstart = () => { this.dbleTouchOutput() }
         moduleOutput.moduleView.fModuleContainer.ondblclick = () => { this.dispatchEventMuteUnmute()}
     }
 
+    //custom doubl touch event to mute
     dbleTouchOutput() {
         if (!this.isOutputTouch) {
             this.isOutputTouch = true;
@@ -129,6 +113,8 @@ class Scene {
             this.unmuteScene()
         }
     }
+
+
     /******************** HANDLE MODULES IN SCENE ************************/
     getModules(): ModuleClass[] { return this.fModuleList; }
     addModule(module: ModuleClass): void { this.fModuleList.push(module); }
@@ -144,11 +130,6 @@ class Scene {
         }
     }
     /*******************************  PUBLIC METHODS  **********************************/
-    private deleteScene():void {
-        this.cleanModules();
-        this.hideScene();
-        this.muteScene();
-    }
     
     integrateSceneInBody(): void {
         document.body.appendChild(this.sceneView.fSceneContainer);
@@ -157,7 +138,7 @@ class Scene {
     /*************** ACTIONS ON AUDIO IN/OUTPUT ***************************/
     integrateInput() {
         var positionInput: PositionModule = this.positionInputModule();
-        this.fAudioInput = new ModuleClass(App.idX++, positionInput.x, positionInput.y, "input", this.sceneView.inputOutputModuleContainer, (module) => { this.removeModule(module) }, this.compileFaust);
+        this.fAudioInput = new ModuleClass(Utilitary.idX++, positionInput.x, positionInput.y, "input", this.sceneView.inputOutputModuleContainer, (module) => { this.removeModule(module) }, this.compileFaust);
         this.fAudioInput.patchID = "input";
         var scene: Scene = this;
         this.compileFaust({ name:"input", sourceCode:"process=_,_;", x:positionInput.x, y:positionInput.y, callback:(factory)=>{ scene.integrateAudioInput(factory) }});
@@ -166,7 +147,7 @@ class Scene {
     integrateOutput() {
         var positionOutput: PositionModule = this.positionOutputModule();
         var scene: Scene = this;
-        this.fAudioOutput = new ModuleClass(App.idX++, positionOutput.x, positionOutput.y, "output", this.sceneView.inputOutputModuleContainer, (module) => { this.removeModule(module) }, this.compileFaust);
+        this.fAudioOutput = new ModuleClass(Utilitary.idX++, positionOutput.x, positionOutput.y, "output", this.sceneView.inputOutputModuleContainer, (module) => { this.removeModule(module) }, this.compileFaust);
         this.fAudioOutput.patchID = "output";
         this.addMuteOutputListner(this.fAudioOutput);
         this.compileFaust({ name: "output", sourceCode: "process=_,_;", x: positionOutput.x, y: positionOutput.y, callback: (factory) => { scene.integrateAudioOutput(factory) } });
@@ -189,7 +170,7 @@ class Scene {
             this.activateAudioInput();
         }
         this.fAudioInput.addInputOutputNodes();
-        App.hideFullPageLoading();
+        Utilitary.hideFullPageLoading();
         this.isInitLoading = false;
     }
 
@@ -211,13 +192,13 @@ class Scene {
 
             navigatorLoc.getUserMedia({ audio: true }, (mediaStream) => { this.getDevice(mediaStream) },  (e)=>{
                 this.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)"
-                this.fAudioInput.moduleView.fInterfaceContainer.title = App.messageRessource.errorGettingAudioInput;
-                new Message(App.messageRessource.errorGettingAudioInput);
+                this.fAudioInput.moduleView.fInterfaceContainer.title = Utilitary.messageRessource.errorGettingAudioInput;
+                new Message(Utilitary.messageRessource.errorGettingAudioInput);
             });
         } else {
             this.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)"
-            new Message(App.messageRessource.errorInputAPINotAvailable);
-            this.fAudioInput.moduleView.fInterfaceContainer.title = App.messageRessource.errorInputAPINotAvailable;
+            new Message(Utilitary.messageRessource.errorInputAPINotAvailable);
+            this.fAudioInput.moduleView.fInterfaceContainer.title = Utilitary.messageRessource.errorInputAPINotAvailable;
         }
     }
 
@@ -225,7 +206,7 @@ class Scene {
 
         // Create an AudioNode from the stream.
         var src = <IHTMLDivElementSrc>document.getElementById("input");
-        src.audioNode = App.audioContext.createMediaStreamSource(device);
+        src.audioNode = Utilitary.audioContext.createMediaStreamSource(device);
         document.body.appendChild(src);
         var drag: Drag = new Drag();
         var connect: Connector = new Connector();
@@ -237,7 +218,7 @@ class Scene {
 
         var out = <IHTMLDivElementOut>document.createElement("div");
         out.id = "audioOutput";
-        out.audioNode = App.audioContext.destination;
+        out.audioNode = Utilitary.audioContext.destination;
         document.body.appendChild(out);
         var connect: Connector = new Connector();
         connect.connectOutput(sceneOutput, out);
@@ -246,7 +227,8 @@ class Scene {
 
     /*********************** SAVE/RECALL SCENE ***************************/
 
-
+    // use a collection of JsonSaveModule describing the scene and the modules to save it in a json string
+    // isPrecompiled is used to save or not the asm.js code
     saveScene(isPrecompiled: boolean): string {
 
         for (var i = 0; i < this.fModuleList.length; i++) {
@@ -261,7 +243,7 @@ class Scene {
 
         for (var i = 0; i < this.fModuleList.length; i++) {
             if (this.fModuleList[i].patchID != "output" && this.fModuleList[i].patchID != "input") {
-                jsonObjectCollection[this.fModuleList[i].patchID.toString()] = new JsonSaveObject();
+                jsonObjectCollection[this.fModuleList[i].patchID.toString()] = new JsonSaveModule();
                 var jsonObject = jsonObjectCollection[this.fModuleList[i].patchID.toString()];
                 jsonObject.sceneName = this.sceneName;
                 jsonObject.patchId = this.fModuleList[i].patchID.toString();
@@ -306,6 +288,7 @@ class Scene {
                 }
                 var faustIControler = this.fModuleList[i].moduleControles;
                 var jsonAccs = new JsonAccSaves();
+
                 jsonAccs.controles = [];
                 for (var j = 0; j < faustIControler.length; j++) {
                     var jsonAcc: JsonAccSave = new JsonAccSave();
@@ -318,7 +301,6 @@ class Scene {
                     jsonAcc.adress = acc.address;
                     jsonAcc.isEnabled = acc.isEnabled;
                     jsonAccs.controles.push(jsonAcc);
-                    //jsonParams.sliders.push(jsonSlider);
                 }
                 jsonObject.inputs = jsonInputs;
                 jsonObject.outputs = jsonOutputs;
@@ -339,13 +321,14 @@ class Scene {
         return json;
     }
 
+    //recall scene from json/jfaust fill arrayRecalScene with each JsonSaveModule
     recallScene(json: string):void {
         if (json != null) {
             try {
                 var jsonObjectCollection: JsonSaveCollection = JSON.parse(json);
             } catch (e) {
-                new Message(App.messageRessource.errorJsonCorrupted)
-                App.hideFullPageLoading();
+                new Message(Utilitary.messageRessource.errorJsonCorrupted)
+                Utilitary.hideFullPageLoading();
             }
             //this.parent.currentNumberDSP = this.fModuleList.length;
             for (var index in jsonObjectCollection) {
@@ -354,10 +337,16 @@ class Scene {
             }
             this.lunchModuleCreation();
         } else {
-            App.hideFullPageLoading();
-            new Message(App.messageRessource.errorLoading)
+            Utilitary.hideFullPageLoading();
+            new Message(Utilitary.messageRessource.errorLoading)
         }
     }
+
+    // recall module at rank 0 of arrayRecalScene
+    // direct use of the asm.js code if exist
+    // or compile the faust code
+    // 
+    // When arrayRecalScene empty, connect the modules in the scene
 
     lunchModuleCreation() {
         if (this.arrayRecalScene.length != 0) {
@@ -387,12 +376,12 @@ class Scene {
             this.arrayRecalledModule = [];
             var event = new CustomEvent("updatename");
             document.dispatchEvent(event);
-            App.hideFullPageLoading();
-
+            Utilitary.hideFullPageLoading();
         }
-
     }
-    updateAppTempModuleInfo(jsonSaveObject: JsonSaveObject) {
+
+    //update temporary info for the module being created
+    updateAppTempModuleInfo(jsonSaveObject: JsonSaveModule) {
         this.tempModuleX = parseFloat(jsonSaveObject.x);
         this.tempModuleY = parseFloat(jsonSaveObject.y);
         this.tempModuleName = jsonSaveObject.name;
@@ -400,25 +389,23 @@ class Scene {
         this.tempPatchId = jsonSaveObject.patchId;
         this.tempParams = jsonSaveObject.params;
     }
+
+    //create Module then remove corresponding JsonSaveModule from arrayRecalScene at rank 0
+    //re-lunch module of following Module/JsonSaveModule
     private createModule(factory:Factory):void {
         try {
-            //---- This is very similar to "createFaustModule" from App.js
-            //---- But as we need to set Params before calling "createFaustInterface", it is copied
-            //---- There probably is a better way to do this !!
             if (!factory) {
                 new Message(faust.getErrorMessage());
-                App.hideFullPageLoading();
+                Utilitary.hideFullPageLoading();
                 return;
             }
 
-            var module: ModuleClass = new ModuleClass(App.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), (module) => {this.removeModule(module) }, this.compileFaust);
+            var module: ModuleClass = new ModuleClass(Utilitary.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), (module) => {this.removeModule(module) }, this.compileFaust);
             module.moduleFaust.setSource(this.tempModuleSourceCode);
             module.createDSP(factory);
             module.patchID = this.tempPatchId;
             if (this.tempParams) {
                 for (var i = 0; i < this.tempParams.sliders.length; i++) {
-                    //console.log("WINDOW.PARAMS");
-                    //console.log(this.parent.params.length);
                     var slider = this.tempParams.sliders[i];
                     module.addInterfaceParam(slider.path, parseFloat(slider.value));
 
@@ -436,11 +423,13 @@ class Scene {
             this.arrayRecalScene.shift();
             this.lunchModuleCreation()
         } catch (e) {
-            new Message(App.messageRessource.errorCreateModuleRecall);
+            new Message(Utilitary.messageRessource.errorCreateModuleRecall);
             this.arrayRecalScene.shift();
             this.lunchModuleCreation()
         }
     }
+
+    //recall of the accelerometer mapping parameters for each FaustInterfaceControler of the Module
     recallAccValues(jsonAccs: IJsonAccSaves, module: ModuleClass) {
         if (jsonAccs != undefined) {
             for (var i in jsonAccs.controles) {
@@ -486,6 +475,8 @@ class Scene {
             }
         }
     }
+
+    //connect Modules recalled
     connectModule(module: ModuleClass) {
         try {
             for (var i = 0; i < module.moduleFaust.recallInputsSource.length; i++) {
@@ -504,10 +495,11 @@ class Scene {
                 }
             }
         } catch (e) {
-            new Message(App.messageRessource.errorConnectionRecall)
+            new Message(Utilitary.messageRessource.errorConnectionRecall)
         }
     }
 
+    //use to identify the module to be connected to when recalling connections between modules
     getModuleByPatchId(patchId: string): ModuleClass {
         if (patchId == "output") {
             return this.fAudioOutput;
@@ -524,18 +516,20 @@ class Scene {
         return null;
     }
 
+
+    //use to replace all éèàù ' from string and replace it with eeau__
     static cleanName(newName:string): string {
-        newName = App.replaceAll(newName, "é", "e");
-        newName = App.replaceAll(newName, "è", "e");
-        newName = App.replaceAll(newName, "à", "a");
-        newName = App.replaceAll(newName, "ù", "u");
-        newName = App.replaceAll(newName, " ", "_");
-        newName = App.replaceAll(newName, "'", "_");
+        newName =Utilitary.replaceAll(newName, "é", "e");
+        newName =Utilitary.replaceAll(newName, "è", "e");
+        newName =Utilitary.replaceAll(newName, "à", "a");
+        newName =Utilitary.replaceAll(newName, "ù", "u");
+        newName =Utilitary.replaceAll(newName, " ", "_");
+        newName =Utilitary.replaceAll(newName, "'", "_");
         return newName;
     }
+    //check if string start only with letter (no accent) 
+    //and contains only letter (no accent) underscore and number for a lenght between 1 and 50 char
     static isNameValid(newName: string): boolean {
-
-    
         var pattern: RegExp = new RegExp("^[a-zA-Z_][a-zA-Z_0-9]{1,50}$");
         if (pattern.test(newName)) {
             return true
@@ -543,6 +537,8 @@ class Scene {
             return false
         }
     }
+
+    //rename scene if format is correct and return true otherwise return false
     static rename(input: HTMLInputElement, spanRule: HTMLSpanElement, spanDynamic: HTMLSpanElement):boolean {
         var newName = input.value;
         newName = Scene.cleanName(newName);
@@ -560,7 +556,7 @@ class Scene {
             spanRule.style.opacity = "1";
             input.style.boxShadow = "0 0 6px yellow inset";
             input.style.border = "3px solid red";
-            new Message(App.messageRessource.invalidSceneName);
+            new Message(Utilitary.messageRessource.invalidSceneName);
             return false;
         }
     }
@@ -584,6 +580,7 @@ class Scene {
         position.y = window.innerHeight / 2;
         return position
     }
+    /***************** Unstyle node connection of all modules on touchscreen  ***************/
     unstyleNode() {
         var modules = this.getModules();
         modules.push(this.fAudioInput);
@@ -607,18 +604,23 @@ class Scene {
 
 }
 
+
+/*******************************************************************
+********************  save/recall interface object *****************
+********************************************************************/
+
 interface IJsonSaveCollection {
-    [patchId: string]: IJsonSaveObject;
+    [patchId: string]: IJsonSaveModule;
 }
 
 
 
 class JsonSaveCollection implements IJsonSaveCollection {
-    [patchId: string]: IJsonSaveObject;
+    [patchId: string]: IJsonSaveModule;
 }
 
 
-interface IJsonSaveObject {
+interface IJsonSaveModule {
     sceneName: string;
     patchId: string;
     name: string;
@@ -631,7 +633,7 @@ interface IJsonSaveObject {
     acc: IJsonAccSaves;
     factory: IJsonFactorySave;
 }
-class JsonSaveObject implements IJsonSaveObject {
+class JsonSaveModule implements IJsonSaveModule {
     patchId: string;
     sceneName: string;
     name: string;

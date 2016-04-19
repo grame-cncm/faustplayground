@@ -26,7 +26,7 @@ enum MenuChoices { library, export, help, kids, edit, save, load, null }
 class Menu {
     isMenuDriveLoading: boolean = false;
     sceneCurrent: Scene;
-    menuChoices: MenuChoices;
+    newMenuChoices: MenuChoices;
     currentMenuChoices: MenuChoices = MenuChoices.null;
     menuView: MenuView;
     library: Library;
@@ -35,26 +35,40 @@ class Menu {
     expor: Export;
     accEdit: AccelerometerEdit;
     help: Help;
-    mouseOverLowerMenu: (event: MouseEvent) => void;
-    isMenuLow: boolean = false;
     isFullScreen: boolean = false;
-    isAccelerometer: boolean = App.isAccelerometerOn;
+    isAccelerometer: boolean = Utilitary.isAccelerometerOn;
     drive: DriveAPI;
 
     constructor(htmlContainer: HTMLElement) {
+        //create and init menu view wich gone create and init all sub menus views
         this.menuView = new MenuView();
         this.menuView.init(htmlContainer);
-        this.menuView.libraryButtonMenu.onclick = () => { this.menuHandler(this.menuChoices = MenuChoices.library) };
-        this.menuView.exportButtonMenu.onclick = () => { this.menuHandler(this.menuChoices = MenuChoices.export) };
-        this.menuView.helpButtonMenu.onclick = () => { this.menuHandler(this.menuChoices = MenuChoices.help) };
-        this.menuView.editButtonMenu.addEventListener("click", () => { this.menuHandler(this.menuChoices = MenuChoices.edit) });
-        this.menuView.closeButton.onclick = () => { this.menuHandler(this.menuChoices = MenuChoices.null) };
-        this.menuView.saveButton.addEventListener("click", () => { this.menuHandler(this.menuChoices = MenuChoices.save) });
-        this.menuView.loadButton.addEventListener("click", () => { this.menuHandler(this.menuChoices = MenuChoices.load) });
+
+        //add Event Listeners
+        this.menuView.libraryButtonMenu.onclick = () => { this.menuHandler(this.newMenuChoices = MenuChoices.library) };
+        this.menuView.exportButtonMenu.onclick = () => { this.menuHandler(this.newMenuChoices = MenuChoices.export) };
+        this.menuView.helpButtonMenu.onclick = () => { this.menuHandler(this.newMenuChoices = MenuChoices.help) };
+        this.menuView.editButtonMenu.addEventListener("click", () => { this.menuHandler(this.newMenuChoices = MenuChoices.edit) });
+        this.menuView.closeButton.onclick = () => { this.menuHandler(this.newMenuChoices = MenuChoices.null) };
+        this.menuView.saveButton.addEventListener("click", () => { this.menuHandler(this.newMenuChoices = MenuChoices.save) });
+        this.menuView.loadButton.addEventListener("click", () => { this.menuHandler(this.newMenuChoices = MenuChoices.load) });
         this.menuView.fullScreenButton.addEventListener("click", () => { this.fullScreen() });
         this.menuView.accButton.addEventListener("click", () => { this.accelerometer() });
-        this.menuView.cleanButton.addEventListener("click", () => { new Confirm(App.messageRessource.confirmEmptyScene, (callback) => { this.cleanScene(callback) }) });
+        this.menuView.cleanButton.addEventListener("click", () => { new Confirm(Utilitary.messageRessource.confirmEmptyScene, (callback) => { this.cleanScene(callback) }) });
 
+        //add eventListern customs
+        document.addEventListener("updatename", (e) => { this.updatePatchNameToInput(e) })
+        document.addEventListener("codeeditevent", () => { this.customeCodeEditEvent() });
+        document.addEventListener("updatelist", () => { this.updateSelectLocalEvent() });
+        document.addEventListener("authon", () => { this.authOn() });
+        document.addEventListener("authoff", () => { this.authOff() });
+        document.addEventListener("fillselect", (optionEvent: CustomEvent) => { this.fillSelectCloud(optionEvent) })
+        document.addEventListener("updatecloudselect", () => { this.updateSelectCloudEvent() });
+        document.addEventListener("startloaddrive", () => { this.startLoadingDrive() })
+        document.addEventListener("finishloaddrive", () => { this.finishLoadingDrive() })
+        document.addEventListener("clouderror", (e: CustomEvent) => { this.connectionProblem(e) })
+
+        //create and init all menus objects
         this.library = new Library();
         this.library.libraryView = this.menuView.libraryView;
         this.library.fillLibrary();
@@ -63,8 +77,6 @@ class Menu {
         this.drive = new DriveAPI();
         this.load.drive = this.drive;
         this.load.setEventListeners();
-
-
         this.fillSelectLocal(this.load.loadView.existingSceneSelect);
         this.save = new Save();
         this.save.saveView = this.menuView.saveView;
@@ -76,31 +88,15 @@ class Menu {
         this.expor.setEventListeners();
         this.help = new Help();
         this.help.helpView = this.menuView.helpView;
-        //this.menuView.exportView.inputNameApp.onchange = (e) => { this.updatePatchNameToInput(e) }
-        document.addEventListener("updatename", (e) => { this.updatePatchNameToInput(e) })
-        this.mouseOverLowerMenu = (event: MouseEvent) => { this.raiseLibraryMenuEvent(event) }
         this.accEdit = new AccelerometerEdit(this.menuView.accEditView);
-        document.addEventListener("codeeditevent", () => { this.customeCodeEditEvent() });
-        document.addEventListener("updatelist", () => { this.updateSelectLocalEvent() });
-        document.addEventListener("authon", () => {this.authOn() });
-        document.addEventListener("authoff", () => { this.authOff() });
-        document.addEventListener("fillselect", (optionEvent: CustomEvent) => { this.fillSelectCloud(optionEvent) })
-        document.addEventListener("updatecloudselect", () => { this.updateSelectCloudEvent() });
-        document.addEventListener("startloaddrive", () => { this.startLoadingDrive()})
-        document.addEventListener("finishloaddrive", () => { this.finishLoadingDrive() })
-        document.addEventListener("clouderror", (e:CustomEvent) => { this.connectionProblem(e)})
-        //this.accEdit.accelerometerEditView = this.menuView.accEditView
+    }
 
-    }
-    setMenuScene(scene: Scene) {
-        this.sceneCurrent = scene;
-        this.save.sceneCurrent = scene;
-        this.load.sceneCurrent = scene;
-    }
-    menuHandler(menuChoices: MenuChoices): any {
+
+    // dispatch the action of the menu buttons to the right submenu handler
+    menuHandler(newMenuChoices: MenuChoices): any {
         this.help.stopVideo();
 
-        switch (menuChoices) {
+        switch (newMenuChoices) {
             case MenuChoices.library:
                 this.libraryMenu();
                 break;
@@ -126,6 +122,7 @@ class Menu {
         }
     }
 
+    //manage the library display
     libraryMenu() {
         switch (this.currentMenuChoices) {
             case MenuChoices.null:// case MenuChoices.edit:
@@ -142,8 +139,6 @@ class Menu {
                 this.currentMenuChoices = MenuChoices.null;
                 this.menuView.libraryButtonMenu.style.backgroundColor = this.menuView.menuColorDefault;
                 this.menuView.libraryButtonMenu.style.zIndex = "0";
-                this.raiseLibraryMenu();
-
                 break;
             default:
                 this.cleanMenu();
@@ -155,6 +150,8 @@ class Menu {
         }
 
     }
+
+    //manage the load display
     loadMenu() {
         switch (this.currentMenuChoices) {
             case MenuChoices.null:// case MenuChoices.edit:
@@ -184,6 +181,8 @@ class Menu {
                 break;
         }
     }
+
+    //manage the export display
     exportMenu() {
         switch (this.currentMenuChoices) {
             case MenuChoices.null:// case MenuChoices.edit:
@@ -213,6 +212,8 @@ class Menu {
                 break;
         }
     }
+
+    //manage the save display
     saveMenu() {
         switch (this.currentMenuChoices) {
             case MenuChoices.null:// case MenuChoices.edit:
@@ -242,6 +243,8 @@ class Menu {
                 break;
         }
     }
+
+    //manage the help display
     helpMenu() {
         switch (this.currentMenuChoices) {
             case MenuChoices.null: //case MenuChoices.edit:
@@ -271,6 +274,8 @@ class Menu {
                 break;
         }
     }
+
+    //manage the accelerometerEdit mode and display
     editMenu() {
         switch (this.currentMenuChoices) {
             case MenuChoices.null:
@@ -303,14 +308,17 @@ class Menu {
                 break;
         }
     }
+
+    //Close the menu
     closeMenu() {
         for (var i = 0; i < this.menuView.HTMLElementsMenu.length; i++) {
             this.menuView.HTMLElementsMenu[i].style.display = "none";
         }
-        this.raiseLibraryMenu();
         this.menuView.contentsMenu.style.display = "none";
         this.currentMenuChoices = MenuChoices.null;
     }
+
+    //hide all elements currently displayed in the menu
     cleanMenu() {
         if (this.accEdit.isOn) {
             this.accEdit.editAction()
@@ -327,9 +335,10 @@ class Menu {
         for (var i = 0; i < this.menuView.HTMLButtonsMenu.length; i++) {
             this.menuView.HTMLButtonsMenu[i].style.backgroundColor = this.menuView.menuColorDefault;
             this.menuView.HTMLButtonsMenu[i].style.zIndex = "0";
-            this.raiseLibraryMenu();
         }
     }
+
+    //update all element that display the scene name 
     updatePatchNameToInput(e: Event) {
         this.menuView.patchNameScene.textContent = Utilitary.currentScene.sceneName;
         this.menuView.exportView.dynamicName.textContent = Utilitary.currentScene.sceneName;
@@ -338,29 +347,10 @@ class Menu {
         this.menuView.saveView.inputDownload.value = Utilitary.currentScene.sceneName;
         this.menuView.saveView.inputLocalStorage.value = Utilitary.currentScene.sceneName;
         this.menuView.saveView.inputCloudStorage.value = Utilitary.currentScene.sceneName;
-        new Message(App.messageRessource.successRenameScene, "messageTransitionOutFast", 2000, 500)
+        new Message(Utilitary.messageRessource.successRenameScene, "messageTransitionOutFast", 2000, 500)
     }
 
-    lowerLibraryMenu() {
-        this.library.libraryView.effetLibrary.style.height = "150px";
-        this.library.libraryView.exempleLibrary.style.height = "150px";
-        this.library.libraryView.intrumentLibrary.style.height = "150px";
-    }
-
-    raiseLibraryMenuEvent(event: MouseEvent) {
-        //event.preventDefault();
-        this.raiseLibraryMenu();
-    }
-    raiseLibraryMenu() {
-        console.log("mouse over menu")
-        if (this.isMenuLow) {
-            this.library.libraryView.effetLibrary.style.height = "300px";
-            this.library.libraryView.exempleLibrary.style.height = "300px";
-            this.library.libraryView.intrumentLibrary.style.height = "300px";
-            this.menuView.menuContainer.removeEventListener("mouseover", this.mouseOverLowerMenu)
-            this.isMenuLow = false;
-        }
-    }
+    //handle fullscreen mode
     fullScreen() {
         var body = <HTMLBodyElement>document.getElementsByTagName("body")[0];
         if (this.isFullScreen) {
@@ -384,20 +374,21 @@ class Menu {
             this.isFullScreen = true;
         }
     }
+
+    //handle the enabing/disabling of all slider having a accelerometer
     accelerometer() {
         var checkboxs = document.getElementsByClassName("accCheckbox")
         if (this.isAccelerometer) {
             this.isAccelerometer = false;
-            App.isAccelerometerOn = false;
+            Utilitary.isAccelerometerOn = false;
             this.menuView.accButton.style.opacity = "0.3";
             for (var i = 0; i < AccelerometerHandler.faustInterfaceControler.length; i++) {
                 var acc = AccelerometerHandler.faustInterfaceControler[i].accelerometerSlider;
                 var slider = AccelerometerHandler.faustInterfaceControler[i].faustInterfaceView.slider;
                 acc.isActive = false;
-                //AccelerometerHandler.accelerometerSliders[i].mySlider.style.opacity = "1";
                 slider.classList.remove("not-allowed");
                 slider.classList.add("allowed");
-                if (!App.isAccelerometerEditOn) {
+                if (!Utilitary.isAccelerometerEditOn) {
                     slider.disabled = false;
                 }
                 
@@ -405,66 +396,88 @@ class Menu {
         } else if (!this.isAccelerometer) {
             this.menuView.accButton.style.opacity = "1";
             this.isAccelerometer = true;
-            App.isAccelerometerOn = true;
+            Utilitary.isAccelerometerOn = true;
             for (var i = 0; i < AccelerometerHandler.faustInterfaceControler.length; i++) {
                 var acc = AccelerometerHandler.faustInterfaceControler[i].accelerometerSlider;
                 var slider = AccelerometerHandler.faustInterfaceControler[i].faustInterfaceView.slider;
                 if (acc.isEnabled) {
                     acc.isActive = true;
-                    //AccelerometerHandler.accelerometerSliders[i].mySlider.style.opacity = "0.5";
                     slider.classList.add("not-allowed");
                     slider.classList.remove("allowed");
-                    if (!App.isAccelerometerEditOn) {
+                    if (!Utilitary.isAccelerometerEditOn) {
                         slider.disabled = true;
                     }
                 }
             }
         }
     }
-    customeCodeEditEvent() {
 
+    //removing all modules from the scene
+    cleanScene(callBack: () => void) {
+
+        var modules = this.sceneCurrent.getModules()
+
+        while (modules.length != 0) {
+            if (modules[0].patchID != "output" && modules[0].patchID != "input") {
+                modules[0].deleteModule();
+            } else if (modules[0].patchID == "output") {
+                modules.shift();
+            } else if (modules[0].patchID == "input") {
+                modules.shift();
+            }
+        }
+        callBack();
+    }
+
+    //close menu when editing a module's Faust code
+    //the idea here is to disable the accelerometerEdit mode if enabled
+    customeCodeEditEvent() {
         this.menuHandler(MenuChoices.null);
     }
 
+    //refresh the select boxes of localstorage when adding or removing a saved scene
     updateSelectLocalEvent() {
         this.updateSelectLocal(this.menuView.loadView.existingSceneSelect);
         this.updateSelectLocal(this.menuView.saveView.existingSceneSelect)
     }
 
-
+    //empty a selectBox
     clearSelect(select: HTMLSelectElement) {
         select.innerHTML = "";
 
     }
+
+    //refresh a select box
     updateSelectLocal(select: HTMLSelectElement) {
         this.clearSelect(select);
         this.fillSelectLocal(select);
     }
+
+    //fill select box
     fillSelectLocal(select: HTMLSelectElement) {
         if (typeof sessionStorage != 'undefined') {
             for (var i = 0; i < localStorage.length; i++) {
                 var option = document.createElement("option");
                 option.value = localStorage.key(i);
                 option.textContent = localStorage.key(i);
-
-                var close = document.createElement("div");
-                close.className = "supprOption";
-                close.addEventListener("click", (e) => { this.supprOption(e)})
-
-                //option.appendChild(close);
                 select.add(option);
             }
 
         }
     }
-    supprOption(e) {
-
+    //dispatch the current scene to the menus objects
+    setMenuScene(scene: Scene) {
+        this.sceneCurrent = scene;
+        this.save.sceneCurrent = scene;
+        this.load.sceneCurrent = scene;
     }
+     //dispatch the drive API to the menus objects
     setDriveApi(drive: DriveAPI) {
         this.drive = drive;
         this.save.drive = drive;
         this.load.drive = drive;
     }
+    //show element from cloud Drive when logged on
     authOn() {
         this.load.loadView.cloudSelectFile.style.display = "block";
         this.save.saveView.cloudSelectFile.style.display = "block";
@@ -475,6 +488,8 @@ class Menu {
         this.save.saveView.buttonCloudSuppr.style.display = "block";
         this.save.saveView.inputCloudStorage.style.display = "block";
     }
+
+    //show element from cloud Drive when logged out
     authOff() {
         this.load.loadView.cloudSelectFile.style.display = "none";
         this.save.saveView.cloudSelectFile.style.display = "none";
@@ -490,9 +505,12 @@ class Menu {
         window.open("https://accounts.google.com/logout", "newwindow", "width=500,height=700")
 
     }
+    //display Drive Connection error
     connectionProblem(event: CustomEvent) {
-        new Message(App.messageRessource.errorConnectionCloud + " : " + event.detail)
+        new Message(Utilitary.messageRessource.errorConnectionCloud + " : " + event.detail)
     }
+
+
     fillSelectCloud(optionEvent: CustomEvent) {
         this.load.loadView.cloudSelectFile.add(<HTMLOptionElement>optionEvent.detail);
         var optionSave = <HTMLOptionElement>optionEvent.detail.cloneNode(true);
@@ -503,29 +521,14 @@ class Menu {
         this.clearSelect(this.save.saveView.cloudSelectFile);
         this.drive.updateConnection();
     }
-    cleanScene(callBack:()=>void) {
- 
-        var modules = this.sceneCurrent.getModules()
-
-        while (modules.length != 0) {
-            if (modules[0].patchID != "output" && modules[0].patchID != "input") {
-                modules[0].deleteModule();
-            }else if (modules[0].patchID == "output") {
-                modules.shift();
-            }else if (modules[0].patchID == "input") {
-                modules.shift();
-            }
-        }
-        callBack();
-    }
     
     startLoadingDrive() {
         if (!this.isMenuDriveLoading) {
             this.isMenuDriveLoading = true;
             this.save.saveView.driveContainer.style.display = "none";
             this.load.loadView.driveContainer.style.display = "none";
-            App.addLoadingLogo("loadCloudContainer");
-            App.addLoadingLogo("cloudSaveContainer");
+            Utilitary.addLoadingLogo("loadCloudContainer");
+            Utilitary.addLoadingLogo("cloudSaveContainer");
 
         }
     }
@@ -534,8 +537,8 @@ class Menu {
             this.isMenuDriveLoading = false;
             this.save.saveView.driveContainer.style.display = "block";
             this.load.loadView.driveContainer.style.display = "block";
-            App.removeLoadingLogo("loadCloudContainer");
-            App.removeLoadingLogo("cloudSaveContainer");
+           Utilitary.removeLoadingLogo("loadCloudContainer");
+           Utilitary.removeLoadingLogo("cloudSaveContainer");
 
         }
     }

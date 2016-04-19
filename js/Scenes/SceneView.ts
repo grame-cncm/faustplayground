@@ -3,11 +3,6 @@
 
 	This is the unique scene of the Normal Playground
 		
-	DEPENDENCIES :
-		- Scene.js
-		- Connect.js
-		- Main.js
-		- Export.js
 */
 /// <reference path="../Scenes/SceneClass.ts"/>
 /// <reference path="../Menu/Export.ts"/>
@@ -31,23 +26,16 @@ class SceneView{
         container.id = "Normal";
         
 
-        //var sceneSensor: HTMLDivElement = document.createElement("div");
-        //sceneSensor.id = "sceneSensor";
-        //this.sceneSensor = sceneSensor;
 
         var svgCanvas = <SVGElement>document.createElementNS("http://www.w3.org/2000/svg", "svg");
         svgCanvas.id = "svgCanvas";
-        //svgCanvas.version="1.1";
         container.appendChild(svgCanvas);
-        //container.appendChild(sceneSensor);
 
         //--------- HEADER
         var head: HTMLElement = document.createElement("header");
         head.id = "header";
         container.appendChild(head);
 
-
-        //head.appendChild(myScene);
 
         var uploadDiv: HTMLDivElement = document.createElement("div");
         uploadDiv.id = "upload";
@@ -74,12 +62,12 @@ class SceneView{
         var linkWilson: HTMLDivElement = document.createElement("div");
         linkWilson.id = "ChrisLine"
         linkWilson.className = "link";
-        linkWilson.textContent = App.messageRessource.reference;
+        linkWilson.textContent = Utilitary.messageRessource.reference;
         container.appendChild(linkWilson);
 
         var alink: HTMLAnchorElement = document.createElement("a");
         alink.href = "https://github.com/cwilso/WebAudio";
-        alink.textContent = App.messageRessource.chrisWilson;
+        alink.textContent = Utilitary.messageRessource.chrisWilson;
         linkWilson.appendChild(alink);
 
         var srcDiv: HTMLDivElement = document.createElement("div");
@@ -105,7 +93,7 @@ class SceneView{
         this.dropElementScene = dropElementScene;
 
         var dropElementText = document.createElement("div");
-        dropElementText.textContent = App.messageRessource.drop;
+        dropElementText.textContent = Utilitary.messageRessource.drop;
         dropElementText.className = "dropElementText";
         dropElementScene.appendChild(dropElementText);
         
@@ -113,37 +101,6 @@ class SceneView{
         container.appendChild(dropElementScene);
         this.fSceneContainer = container;
         var playgroundView: SceneView = this;
-        //scene.integrateInput(function () {
-        //    scene.integrateOutput(function () {
-        //        //scene.getAudioOutput().setInputOutputNodes(node, null);
-
-        //        playgroundView.onloadNormalScene(scene);
-        //        //playgroundView.expor.uploadTargets();
-        //    });
-        //});
-
-
-
     }
-
-
-
-    onEnterKey = (e: KeyboardEvent) =>{    
-        if (!e) { e = <KeyboardEvent>window.event; } 
-	
-	    if (e.keyCode == 13){ 
-            e.preventDefault();
-            //this.expor.uploadTargets();
-	    }
-    }
-
-// On Load And UnLoad Playground Scene
-    //onloadNormalScene(scene: Scene): void {
-    //    scene.parent.setGeneralAppListener(scene.parent);
-	   // scene.unmuteScene();
-    //}
-
-
-
 }
 

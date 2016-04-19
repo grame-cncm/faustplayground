@@ -1,15 +1,10 @@
-﻿/*MODULEFAUST.JS
+﻿    /// <reference path="../Connect.ts"/>
+
+
+/*MODULEFAUST.JS
 HAND - MADE JAVASCRIPT CLASS CONTAINING A FAUST MODULE */
 
-interface IfDSP {
-    json: () => string;
-    getValue: (text: string) => string;
-    setValue: (text: string, val: string) => void;
-    getNumInputs: () => number;
-    getNumOutputs: () => number;
-    controls: () => any;
-    getProcessor: () => ScriptProcessorNode;
-}
+
 
 class ModuleFaust {
     fDSP: IfDSP;
@@ -27,7 +22,7 @@ class ModuleFaust {
     }
 
 
-    /*************** ACTIONS ON IN/OUTPUT NODES ***************************/
+    /*************** ACTIONS ON IN/OUTPUT MODULES ***************************/
 
 
 
@@ -39,8 +34,7 @@ class ModuleFaust {
         return this.fOutputConnections;
     }
 
-    //-- The Creation of array is only done when a new connection is added 
-    //-- (to be able to return null when there are none)	
+	
     addOutputConnection(connector: Connector): void {
         this.fOutputConnections.push(connector);
     }

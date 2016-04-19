@@ -15,7 +15,6 @@ class MenuView {
     accButton: HTMLElement;
     loadButton: HTMLElement;
     saveButton: HTMLElement;
-    //accEditButton: HTMLElement;
     libraryContent: HTMLElement;
     loadContent: HTMLElement;
     exportContent: HTMLElement;
@@ -41,44 +40,45 @@ class MenuView {
         menuContainer.id = "menuContainer";
         this.menuContainer = menuContainer;
 
-        //create menu's buttons and there containers
+        /////////////////////////create menu's buttons and there containers
+
         var buttonsMenu: HTMLElement = document.createElement("div");
         buttonsMenu.id = "buttonsMenu";
 
         var libraryButtonMenu: HTMLElement = document.createElement("div");
         libraryButtonMenu.id = "libraryButtonMenu";
         libraryButtonMenu.className = "buttonsMenu";
-        libraryButtonMenu.appendChild(document.createTextNode(App.messageRessource.buttonLibrary));
+        libraryButtonMenu.appendChild(document.createTextNode(Utilitary.messageRessource.buttonLibrary));
         this.libraryButtonMenu = libraryButtonMenu;
 
         var exportButtonMenu: HTMLElement = document.createElement("div");
         exportButtonMenu.id = "exportButtonMenu";
         exportButtonMenu.className = "buttonsMenu";
-        exportButtonMenu.appendChild(document.createTextNode(App.messageRessource.buttonExport));
+        exportButtonMenu.appendChild(document.createTextNode(Utilitary.messageRessource.buttonExport));
         this.exportButtonMenu = exportButtonMenu;
 
         var helpButtonMenu: HTMLElement = document.createElement("div");
         helpButtonMenu.id = "helpButtonMenu";
         helpButtonMenu.className = "buttonsMenu";
-        helpButtonMenu.appendChild(document.createTextNode(App.messageRessource.buttonHelp));
+        helpButtonMenu.appendChild(document.createTextNode(Utilitary.messageRessource.buttonHelp));
         this.helpButtonMenu = helpButtonMenu;
 
         var editButtonMenu: HTMLElement = document.createElement("div");
         editButtonMenu.id = "EditButtonMenu";
         editButtonMenu.className = "buttonsMenu";
-        editButtonMenu.appendChild(document.createTextNode(App.messageRessource.buttonEdit));
+        editButtonMenu.appendChild(document.createTextNode(Utilitary.messageRessource.buttonEdit));
         this.editButtonMenu = editButtonMenu;
 
         var loadButtonMenu: HTMLElement = document.createElement("div");
         loadButtonMenu.id = "loadButtonMenu";
         loadButtonMenu.className = "buttonsMenu";
-        loadButtonMenu.appendChild(document.createTextNode(App.messageRessource.buttonLoad));
+        loadButtonMenu.appendChild(document.createTextNode(Utilitary.messageRessource.buttonLoad));
         this.loadButton = loadButtonMenu;
 
         var saveButtonMenu: HTMLElement = document.createElement("div");
         saveButtonMenu.id = "saveButtonMenu";
         saveButtonMenu.className = "buttonsMenu";
-        saveButtonMenu.appendChild(document.createTextNode(App.messageRessource.buttonSave));
+        saveButtonMenu.appendChild(document.createTextNode(Utilitary.messageRessource.buttonSave));
         this.saveButton = saveButtonMenu;
 
         var fullScreenButton: HTMLElement = document.createElement("div");
@@ -96,12 +96,8 @@ class MenuView {
         cleanButton.className = "buttonsLittleMenu";
         this.cleanButton = cleanButton;
 
-        //var accEditButton: HTMLElement = document.createElement("div");
-        //accEditButton.id = "accEditButton";
-        //accEditButton.className = "buttonsLittleMenu";
-        //this.accEditButton = accEditButton;
 
-        if (!App.isAccelerometerOn) {
+        if (!Utilitary.isAccelerometerOn) {
             accButton.style.opacity = "0.2";
 
         }
@@ -125,7 +121,7 @@ class MenuView {
         buttonsMenu.appendChild(myScene);
         this.patchNameScene = myScene;
 
-        //create menu's Contents and there containers
+        //////////////////create menu's Contents and there containers
 
         var contentsMenu: HTMLElement = document.createElement("div");
         contentsMenu.id = "contentsMenu";

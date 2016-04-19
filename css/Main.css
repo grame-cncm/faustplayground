@@ -77,7 +77,7 @@ body {
 /* Links */
 a,
 a:visited {
-	color: #ffffff;
+	color: #ffffff!important;
 	font-size: .6875em; /* 11 / 16 */
 	text-decoration: none;
 }

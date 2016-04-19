@@ -26,7 +26,7 @@ class HelpView {
 
         var videoContainer: HTMLElement = document.createElement("div");
         videoContainer.id = "videoContainer";
-        videoContainer.appendChild(videoIFrame);
+        //videoContainer.appendChild(videoIFrame);
 
         this.videoContainer = videoContainer;
         helpContainer.appendChild(videoContainer);
