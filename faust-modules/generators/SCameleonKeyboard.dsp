@@ -6,7 +6,7 @@ import("music.lib");
 import("filter.lib");
 
 
-//d'après les enveloppes de John Chowning utilisées dans Turenas
+//From John Chowning Turenas envelops
 
 /* =============== DESCRIPTION ================= :
 
@@ -28,23 +28,23 @@ process = hand <: par(i, 10, marimkey(i)) :> *(3);
 //---------------------------------- UI ----------------------------------------
 
 hand = hslider("[1]Instrument Hand[acc:1 1 -10 0 10]", 5, 0, 10, 1);
-hight = hslider("[2]Hight[acc:0 0 -10 0 30]", 5, 1, 10, 0.3) : smooth(0.99):min(12):max(1);				
+hight = hslider("[2]Hight[acc:0 0 -10 0 30]", 5, 1, 10, 0.3) : smooth(0.99):min(12):max(1);
 envsize = hslider("[3]Note Duration (BPF Envelope)[unit:s][acc:2 0 -10 0 10]", 0.2, 0.1, 0.5, 0.01) * (SR) : smooth(0.999): min(44100) : max(4410) : int;
 //---------------------------------- FREQUENCY TABLE ---------------------------
 
 freq(0) = 164.81;
 freq(1) = 174.61;
-freq(d)	 = freq(d-2);	
-	
+freq(d)	 = freq(d-2);
+
 octave(d) = freq(d)* hight;
-							
+
 //------------------------------------ TRIGGER ---------------------------------
 
 upfront(x) 	= x>x';
 counter(g)= (+(1):*(1-g))~_;
 position(a,x) = abs(x - a) < 0.5;
 
-trigger(p) = position(p) : upfront : counter; 	
+trigger(p) = position(p) : upfront : counter;
 
 
 //----------------------------------- ENVELOPPES ------------------------------
@@ -61,11 +61,11 @@ envelope =  _<:sum(i, 4, tabchowning.env(i) * (abs(typeEnv - (i)) < 0.5));
 tabchowning = environment
 
 {
-//les enveloppes percussives ont été "adoucies" pour éviter les clics au départ.
+// percussives envelops have been smmothed to avoid clicks.
 
 corres(x) = int(x*envsize/1024);
 
-// f9 0 1024 7 1 248 0.25 259 0.1 259 0.05 258 0 
+// f9 0 1024 7 1 248 0.25 259 0.1 259 0.05 258 0
 env(0) = f9;
 f9 = bpf.start(0, 0):
 bpf.point(corres(2), 0.25):
@@ -103,7 +103,7 @@ bpf.point(corres(973), 0.05):
 bpf.end(corres(1024), 0);
 
 /*
-//f12 0 1024 7 0 93 0.02 52 0.1 103 0.5 52 0.95 31 1 693 0.95 
+//f12 0 1024 7 0 93 0.02 52 0.1 103 0.5 52 0.95 31 1 693 0.95
 env(3) = f12;
 f12 = bpf.start(0, 0):
 bpf.point(corres(93), 0.02):
