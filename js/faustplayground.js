@@ -12,7 +12,7 @@ var Ressources = (function () {
             Utilitary.getXHR("ressources/ressources_fr-FR.json", function (ressource) { _this.loadMessages(ressource, app); }, Utilitary.errorCallBack);
         }
         else {
-            Utilitary.getXHR("ressources/ressources_fr-FR.json", function (ressource) { _this.loadMessages(ressource, app); }, Utilitary.errorCallBack);
+            Utilitary.getXHR("ressources/ressources_en-EN.json", function (ressource) { _this.loadMessages(ressource, app); }, Utilitary.errorCallBack);
         }
     };
     // load the json object

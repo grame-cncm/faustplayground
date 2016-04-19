@@ -104,7 +104,7 @@ class Ressources {
         if (localization == "fr" || localization == "fr-FR") {
             Utilitary.getXHR("ressources/ressources_fr-FR.json", (ressource) => { this.loadMessages(ressource,app) }, Utilitary.errorCallBack)
         } else {
-            Utilitary.getXHR("ressources/ressources_fr-FR.json", (ressource) => { this.loadMessages(ressource,app) }, Utilitary.errorCallBack)
+            Utilitary.getXHR("ressources/ressources_en-EN.json", (ressource) => { this.loadMessages(ressource,app) }, Utilitary.errorCallBack)
         }
     }
     // load the json object
