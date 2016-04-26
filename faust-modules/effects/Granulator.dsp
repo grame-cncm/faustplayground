@@ -39,13 +39,13 @@ Pmax = 4096; // maximum P (for delay-line allocation)
 gate = phasor_bin(1) :-(0.001):pulsar;
 gain = 1;
 freq = hslider("[1]Grain Size[style:knob][acc:2 0 -10 0 10]", 200,5,2205,1);
-// la fréquence donne la largeur de bande extraite du bruit blanc
+// la frequence donne la largeur de bande extraite du bruit blanc
 
 // PHASOR_BIN //////////////////////////////
 phasor_bin (init) =  (+(float(speed)/float(SR)) : fmod(_,1.0)) ~ *(init);
 						
 // PULSAR //////////////////////////////
-//Le pulsar permet de créer une 'pulsation' plus ou moins aléatoire (proba).
+//Le pulsar permet de creer une 'pulsation' plus ou moins aleatoire (proba).
 
 pulsar = _<:((_<(ratio_env)):@(100))*(proba>(_,abs(noise):latch)); 
 speed = hslider ("[2]Speed[unit:Hz][style:knob][acc:0 0 -10 0 10]", 10,1,20,0.0001):lowpass(1,1); 

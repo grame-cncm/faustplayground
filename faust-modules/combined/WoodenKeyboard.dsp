@@ -6,7 +6,7 @@ import("music.lib");
 import("filter.lib");
 
 
-//d'après les enveloppes de John Chowning utilisées dans Turenas
+//d'apres les enveloppes de John Chowning utilisees dans Turenas
 
 /* =============== DESCRIPTION ================= :
 
