@@ -92,8 +92,9 @@ class Export{
     {
         this.clearSelectBox('platforms');
         this.clearSelectBox('architectures');
-        var input: HTMLInputElement = <HTMLInputElement>document.getElementById("faustweburl")
-        Export.targetsUrl = input.value+"/targets";
+        var input: HTMLInputElement = <HTMLInputElement>document.getElementById("faustweburl");
+        Export.exportUrl = input.value;
+        Export.targetsUrl = Export.exportUrl+"/targets";
 
         Utilitary.getXHR(Export.targetsUrl, (json: string) => { this.uploadTargetCallback(json) }, (errorMessage: string) => { Utilitary.errorCallBack(errorMessage) });
     }	
@@ -165,7 +166,7 @@ class Export{
             appType = "binary.apk";
 
         var exportLib: ExportLib = new ExportLib();
-        exportLib.sendPrecompileRequest("http://faustservice.grame.fr", shaKey, platforme, architecture, appType, (serverUrl: string, shaKey: string, plateforme: string, architecture: string, appType: string) => { this.setDownloadOptions(serverUrl, shaKey, plateforme, architecture, appType) });
+        exportLib.sendPrecompileRequest(serverUrl, shaKey, platforme, architecture, appType, (serverUrl: string, shaKey: string, plateforme: string, architecture: string, appType: string) => { this.setDownloadOptions(serverUrl, shaKey, plateforme, architecture, appType) });
 
         // 	Delete existing content if existing
         

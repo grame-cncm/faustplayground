@@ -2793,7 +2793,8 @@ var Export = (function () {
             _this.clearSelectBox('platforms');
             _this.clearSelectBox('architectures');
             var input = document.getElementById("faustweburl");
-            Export.targetsUrl = input.value + "/targets";
+            Export.exportUrl = input.value;
+            Export.targetsUrl = Export.exportUrl + "/targets";
             Utilitary.getXHR(Export.targetsUrl, function (json) { _this.uploadTargetCallback(json); }, function (errorMessage) { Utilitary.errorCallBack(errorMessage); });
         };
         /********************************************************************
@@ -2811,7 +2812,7 @@ var Export = (function () {
             if (architecture == "android")
                 appType = "binary.apk";
             var exportLib = new ExportLib();
-            exportLib.sendPrecompileRequest("http://faustservice.grame.fr", shaKey, platforme, architecture, appType, function (serverUrl, shaKey, plateforme, architecture, appType) { _this.setDownloadOptions(serverUrl, shaKey, plateforme, architecture, appType); });
+            exportLib.sendPrecompileRequest(serverUrl, shaKey, platforme, architecture, appType, function (serverUrl, shaKey, plateforme, architecture, appType) { _this.setDownloadOptions(serverUrl, shaKey, plateforme, architecture, appType); });
             // 	Delete existing content if existing
         };
         //set download QR Code and Button
