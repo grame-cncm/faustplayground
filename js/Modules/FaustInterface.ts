@@ -33,18 +33,7 @@ interface Iitem{
     step: string;
     meta: FaustMeta[];
 }
-interface IFaustInterfaceControler  {
-    itemParam: Iitem;
-    unit: string;
-    precision: string;
-    hasAccelerometer: boolean;
-    isEnabled: boolean;
-    accDefault: string;
-    acc: string;
-    value: string
-    faustInterfaceView: FaustInterfaceView;
-    accelerometerSlider: AccelerometerSlider;
-}
+
 interface FaustMeta {
     acc: string;
     noacc: string;
@@ -60,7 +49,7 @@ interface AccParams {
     init: number;
     label: string;
 }
-class FaustInterfaceControler implements IFaustInterfaceControler {
+class FaustInterfaceControler {
     //array only used at init to fill all FaustInterfaceControler of a Modules (moduleControlers)
     faustControlers: FaustInterfaceControler[];
     name: string;
