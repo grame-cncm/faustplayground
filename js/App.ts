@@ -227,29 +227,41 @@ class App {
     uploadOn(app: App, module: ModuleClass, x: number, y: number, e: DragEvent) {
         Utilitary.showFullPageLoading();
         e.preventDefault();
-
-        // CASE 1 : the dropped object is a url to some faust code
-        if (e.dataTransfer.getData('URL') && e.dataTransfer.getData('URL').split(':').shift() != "file") {
+        
+        if (e.dataTransfer.files.length > 0) {
+			// we are dropping a file
+			for (var i = 0; i < e.dataTransfer.files.length; i = i + 1) {
+				var f = e.dataTransfer.files[i];
+				console.log("FILES DROP : "+ i + " : " + f.name);
+                this.loadFile(f, module, x+10*i, y+10*i); 
+			}
+            
+		} else if (e.dataTransfer.getData('URL') && e.dataTransfer.getData('URL').split(':').shift() != "file") {
+            // CASE 1 : the dropped object is a url to some faust code
             var url = e.dataTransfer.getData('URL');
+            console.log("URL DROP : "+ url);
             this.uploadUrl(app, module, x, y, url);
-        }else if (e.dataTransfer.getData('URL').split(':').shift() != "file") {
-
+            
+        } else if (e.dataTransfer.getData('URL').split(':').shift() != "file") {
             var dsp_code: string = e.dataTransfer.getData('text');
-
+            console.log("Text DROP : " + dsp_code);            
             // CASE 2 : the dropped object is some faust code
             if (dsp_code) {
+                 console.log("DROP: CASE 2 ");   
                 this.uploadCodeFaust(app, module, x, y, e, dsp_code);
-            }
-            // CASE 3 : the dropped object is a file containing some faust code or jfaust/json
-            else {
+            } else {
+                // CASE 3 : the dropped object is a file containing some faust code or jfaust/json
+                console.log("DROP: CASE 3 ");   
                 try {
-                    this.uploadFileFaust(app, module, x, y, e, dsp_code)
+                    this.uploadFileFaust(app, module, x, y, e, dsp_code);
                 } catch (error) {
                     new Message(error);
                     Utilitary.hideFullPageLoading();
                 }
             }
+            
         } else { // CASE 4 : any other strange thing
+            console.log("DROP: CASE 4 STRANGE ");   
             new Message(Utilitary.messageRessource.errorObjectNotFaustCompatible);
             Utilitary.hideFullPageLoading();
         }

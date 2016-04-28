@@ -2793,7 +2793,8 @@ var Export = (function () {
             _this.clearSelectBox('platforms');
             _this.clearSelectBox('architectures');
             var input = document.getElementById("faustweburl");
-            Export.targetsUrl = input.value + "/targets";
+            Export.exportUrl = input.value;
+            Export.targetsUrl = Export.exportUrl + "/targets";
             Utilitary.getXHR(Export.targetsUrl, function (json) { _this.uploadTargetCallback(json); }, function (errorMessage) { Utilitary.errorCallBack(errorMessage); });
         };
         /********************************************************************
@@ -2811,7 +2812,7 @@ var Export = (function () {
             if (architecture == "android")
                 appType = "binary.apk";
             var exportLib = new ExportLib();
-            exportLib.sendPrecompileRequest("http://faustservice.grame.fr", shaKey, platforme, architecture, appType, function (serverUrl, shaKey, plateforme, architecture, appType) { _this.setDownloadOptions(serverUrl, shaKey, plateforme, architecture, appType); });
+            exportLib.sendPrecompileRequest(serverUrl, shaKey, platforme, architecture, appType, function (serverUrl, shaKey, plateforme, architecture, appType) { _this.setDownloadOptions(serverUrl, shaKey, plateforme, architecture, appType); });
             // 	Delete existing content if existing
         };
         //set download QR Code and Button
@@ -5769,18 +5770,31 @@ var App = (function () {
     App.prototype.uploadOn = function (app, module, x, y, e) {
         Utilitary.showFullPageLoading();
         e.preventDefault();
-        // CASE 1 : the dropped object is a url to some faust code
-        if (e.dataTransfer.getData('URL') && e.dataTransfer.getData('URL').split(':').shift() != "file") {
+        if (e.dataTransfer.files.length > 0) {
+            // we are dropping a file
+            for (var i = 0; i < e.dataTransfer.files.length; i = i + 1) {
+                var f = e.dataTransfer.files[i];
+                console.log("FILES DROP : " + i + " : " + f.name);
+                this.loadFile(f, module, x + 10 * i, y + 10 * i);
+            }
+        }
+        else if (e.dataTransfer.getData('URL') && e.dataTransfer.getData('URL').split(':').shift() != "file") {
+            // CASE 1 : the dropped object is a url to some faust code
             var url = e.dataTransfer.getData('URL');
+            console.log("URL DROP : " + url);
             this.uploadUrl(app, module, x, y, url);
         }
         else if (e.dataTransfer.getData('URL').split(':').shift() != "file") {
             var dsp_code = e.dataTransfer.getData('text');
+            console.log("Text DROP : " + dsp_code);
             // CASE 2 : the dropped object is some faust code
             if (dsp_code) {
+                console.log("DROP: CASE 2 ");
                 this.uploadCodeFaust(app, module, x, y, e, dsp_code);
             }
             else {
+                // CASE 3 : the dropped object is a file containing some faust code or jfaust/json
+                console.log("DROP: CASE 3 ");
                 try {
                     this.uploadFileFaust(app, module, x, y, e, dsp_code);
                 }
@@ -5791,6 +5805,7 @@ var App = (function () {
             }
         }
         else {
+            console.log("DROP: CASE 4 STRANGE ");
             new Message(Utilitary.messageRessource.errorObjectNotFaustCompatible);
             Utilitary.hideFullPageLoading();
         }
