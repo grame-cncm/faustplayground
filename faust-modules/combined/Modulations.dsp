@@ -34,16 +34,16 @@ oscil = osci(freq);
 
 //======================== GUI SPECIFICATIONS =====================
 
-freq = hslider("h:Instrument/ Frequency [unit:Hz][acc:1 0 -10 0 15]", 330, 100, 1200, 0.1):smooth(0.999);
-freqMod = hslider("h:Instrument/Modulating Frequency[style:knob][unit:Hz][acc:0 1 -10 0 10]", 1200, 900, 1700, 0.1):smooth(0.999);
+freq = hslider("h:Instrument/ Frequency [unit:Hz][acc:1 1 -10 0 15]", 330, 100, 1200, 0.1):smooth(0.999);
+freqMod = hslider("h:Instrument/Modulating Frequency[style:knob][unit:Hz][acc:0 0 -10 0 10]", 1200, 900, 1700, 0.1):smooth(0.999);
 
-vol = (hslider("h:Instrument/ Oscillator Volume[style:knob][acc:1 1 -10 0 10]", 0.5, 0, 1, 0.01)^2):smooth(0.999);
-vool = hslider("h:Instrument/ General Volume[style:knob][acc:1 0 -10 0 10]", 1, 0.75, 4, 0.01):smooth(0.999):min(4):max(0.75);
+vol = (hslider("h:Instrument/ Oscillator Volume[style:knob][acc:1 0 -10 0 10]", 0.5, 0, 1, 0.01)^2):smooth(0.999);
+vool = hslider("h:Instrument/ General Volume[style:knob][acc:1 1 -10 0 10]", 1, 0.75, 4, 0.01):smooth(0.999):min(4):max(0.75);
 
-gate(0) = hslider("v:Modulations/Play Modulation 0 (ASR Envelope)[tooltip:noteOn = 1, noteOff = 0][acc:0 1 -30 0 10]", 0,0,1,1);
-gate(1) = hslider("v:Modulations/Play Modulation 1 (ASR Envelope)[tooltip:noteOn = 1, noteOff = 0][acc:0 1 -30 0 5]", 0,0,1,1);
-gate(2) = hslider("v:Modulations/Play Modulation 2 (ASR Envelope)[tooltip:noteOn = 1, noteOff = 0][acc:2 0 -30 0 10]", 0,0,1,1);
-gate(3) = hslider("v:Modulations/Play Modulation 3 (ASR Envelope)[tooltip:noteOn = 1, noteOff = 0][acc:1 1 -10 0 10]", 0,0,1,1);
+gate(0) = hslider("v:Modulations/Play Modulation 0 (ASR Envelope)[tooltip:noteOn = 1, noteOff = 0][acc:0 0 -30 0 10]", 0,0,1,1);
+gate(1) = hslider("v:Modulations/Play Modulation 1 (ASR Envelope)[tooltip:noteOn = 1, noteOff = 0][acc:0 0 -30 0 5]", 0,0,1,1);
+gate(2) = hslider("v:Modulations/Play Modulation 2 (ASR Envelope)[tooltip:noteOn = 1, noteOff = 0][acc:2 1 -30 0 10]", 0,0,1,1);
+gate(3) = hslider("v:Modulations/Play Modulation 3 (ASR Envelope)[tooltip:noteOn = 1, noteOff = 0][acc:1 0 -10 0 10]", 0,0,1,1);
 
 //------------------------ NLFM PARAMETERS ------------------------
 nlfOrder = 6;
@@ -62,8 +62,8 @@ t(n) = gate(n);
 instrReverbMod = _,_ <: *(reverbGain),*(reverbGain),*(1 - reverbGain),*(1 - reverbGain) :
 zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
        with{
-       reverbGain = hslider("v:Reverb/Reverberation Volume(InstrReverb)[acc:1 0 -10 0 10]",0.25,0.05,1,0.01) : smooth(0.999):min(1):max(0.05);
-       roomSize = hslider("v:Reverb/Reverberation Room Size(InstrReverb)[acc:1 0 -10 0 10]", 0.5,0.05,2,0.01):min(2):max(0.05);
+       reverbGain = hslider("v:Reverb/Reverberation Volume(InstrReverb)[acc:1 1 -10 0 10]",0.25,0.05,1,0.01) : smooth(0.999):min(1):max(0.05);
+       roomSize = hslider("v:Reverb/Reverberation Room Size(InstrReverb)[acc:1 1 -10 0 10]", 0.5,0.05,2,0.01):min(2):max(0.05);
        rdel = 20;
        f1 = 200;
        f2 = 6000;

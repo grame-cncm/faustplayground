@@ -29,9 +29,9 @@ N = 10;
 
 gain = 1;
 gate(n) = position(n) : upfront;
-hand = hslider("[1]Instrument Hand[acc:1 1 -10 0 10]", 5, 0, N, 1):smooth(0.999):min(N):max(0):int:automat(B, 15, 0.0);
-B = hslider("[3]Speed[style:knob][acc:0 0 -10 0 10]", 480, 180, 720, 60): smooth(0.99) : min(720) : max(180) : int;
-hight = hslider("[2]Hight[acc:0 0 -10 0 10]", 4, 0.5, 8, 0.1);//:smooth(0.999);
+hand = hslider("[1]Instrument Hand[acc:1 0 -10 0 10]", 5, 0, N, 1):smooth(0.999):min(N):max(0):int:automat(B, 15, 0.0);
+B = hslider("[3]Speed[style:knob][acc:0 1 -10 0 10]", 480, 180, 720, 60): smooth(0.99) : min(720) : max(180) : int;
+hight = hslider("[2]Hight[acc:0 1 -10 0 10]", 4, 0.5, 8, 0.1);//:smooth(0.999);
 octave(d) = freq(d)*(hight);
 position(n) = abs(hand - n) < 0.5;
 upfront(x) = abs(x-x') > 0;

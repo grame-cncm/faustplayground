@@ -35,12 +35,12 @@ tunedBar(h,n,e) =
 
 gain = 0.8;
 gate(h,n) = position(h,n) : upfront;
-hand(0) = vslider("Instrument Hand[acc:1 1 -10 0 18]", 0, 0, 5, 1):int:automat(120, 15, 0.0);
-hand(1) = vslider("Instrument Hand[acc:1 1 -10 0 18]", 0, 0, 5, 1):int:automat(120, 15, 0.0);
-hand(2) = vslider("Instrument Hand[acc:1 1 -10 0 14]", 2, 0, 5, 1):int:automat(240, 15, 0.0);
-hand(3) = vslider("Instrument Hand[acc:1 1 -10 0 14]", 2, 0, 5, 1):int:automat(240, 15, 0.0);
-hand(4) = vslider("Instrument Hand[acc:1 1 -10 0 10]", 4, 0, 5, 1):int:automat(480, 15, 0.0);
-hand(5) = vslider("Instrument Hand[acc:1 1 -10 0 10]", 4, 0, 5, 1):int:automat(480, 15, 0.0);
+hand(0) = vslider("Instrument Hand[acc:1 0 -10 0 18]", 0, 0, 5, 1):int:automat(120, 15, 0.0);
+hand(1) = vslider("Instrument Hand[acc:1 0 -10 0 18]", 0, 0, 5, 1):int:automat(120, 15, 0.0);
+hand(2) = vslider("Instrument Hand[acc:1 0 -10 0 14]", 2, 0, 5, 1):int:automat(240, 15, 0.0);
+hand(3) = vslider("Instrument Hand[acc:1 0 -10 0 14]", 2, 0, 5, 1):int:automat(240, 15, 0.0);
+hand(4) = vslider("Instrument Hand[acc:1 0 -10 0 10]", 4, 0, 5, 1):int:automat(480, 15, 0.0);
+hand(5) = vslider("Instrument Hand[acc:1 0 -10 0 10]", 4, 0, 5, 1):int:automat(480, 15, 0.0);
 
 position(h,n) = abs(hand(h) - n) < 0.5;
 upfront(x) = x>x';

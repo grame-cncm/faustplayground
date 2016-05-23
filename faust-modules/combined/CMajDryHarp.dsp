@@ -44,9 +44,9 @@ process = vgroup("Harp", h : harpe(C,N,K) : instrReverbHarp : *(l),*(l))
 	with {
 		N = 48; // number of strings
 		K = 36; // Midi key of first string
-		h = hslider("[1]Instrument Hand[1] [acc:0 0 -10 0 10]", 24, 0, N, 1) : int: automat(bps, 15, 0.0)
+		h = hslider("[1]Instrument Hand[1] [acc:0 1 -10 0 10]", 24, 0, N, 1) : int: automat(bps, 15, 0.0)
 			with{
-			bps = hslider("h:[2]Parameters/[1]Speed[style:knob][acc:0 0 -12 0 10]", 480, 180, 720, 1):smooth(0.999) : min(720) : max(180) : int;
+			bps = hslider("h:[2]Parameters/[1]Speed[style:knob][acc:0 1 -12 0 10]", 480, 180, 720, 1):smooth(0.999) : min(720) : max(180) : int;
 			};
 		//l = vslider("h:parameters/volume [style:knob][unit: dB]", -20, -60, 0, 0.01) : db2linear;
 		l = -10 : db2linear;
@@ -70,7 +70,7 @@ harpe(C,N,b) = 	_ <: par(i, N, position(i+1)
 							: pan((i+0.5)/N) )
 				 	:> _,_
 	with {
-		att  = hslider("h:[2]Parameters/[2]Resonance[style:knob][acc:2 0 -12 0 10]", 5, 0.1, 10, 0.01):min(10):max(0.1); 
+		att  = hslider("h:[2]Parameters/[2]Resonance[style:knob][acc:2 1 -12 0 10]", 5, 0.1, 10, 0.01):min(10):max(0.1); 
 		lvl  = 1;
 		pan(p) = _ <: *(sqrt(1-p)), *(sqrt(p));
 		position(a,x) = abs(x - a) < 0.5;
@@ -140,8 +140,8 @@ string(coef, freq, t60, level, trig) = noise*level
 instrReverbHarp = _,_ <: *(reverbGain),*(reverbGain),*(1 - reverbGain),*(1 - reverbGain) : 
 zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
        with{
-       reverbGain = hslider("h:[3]Reverb/ Reverberation Volume (InstrReverb)[style:knob][acc:1 0 -10 0 10]", 0.2,0.05,1,0.01):smooth(0.999):min(1):max(0.05);
-       roomSize = hslider("h:[3]Reverb/Reverberation Room Size  (InstrReverb)[style:knob][acc:1 0 -10 0 10]", 0.2,0.05,1.3,0.01):min(1.3):max(0.05);
+       reverbGain = hslider("h:[3]Reverb/ Reverberation Volume (InstrReverb)[style:knob][acc:1 1 -10 0 10]", 0.2,0.05,1,0.01):smooth(0.999):min(1):max(0.05);
+       roomSize = hslider("h:[3]Reverb/Reverberation Room Size  (InstrReverb)[style:knob][acc:1 1 -10 0 10]", 0.2,0.05,1.3,0.01):min(1.3):max(0.05);
        rdel = 20;
        f1 = 200;
        f2 = 6000;

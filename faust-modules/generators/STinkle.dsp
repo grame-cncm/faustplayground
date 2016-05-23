@@ -24,10 +24,10 @@ process = hgroup("Tinkle",(((select-1)*-1) <:
 
 //==================== GUI SPECIFICATION ================
 
-freq = hslider("[1]Frequency[unit:Hz][acc:0 0 -10 0 10]", 440,180,780,1);
+freq = hslider("[1]Frequency[unit:Hz][acc:0 1 -10 0 10]", 440,180,780,1);
 gain = 0.7; 
 gate = 0;
-select = hslider("[2]Play[style:knob][tooltip:0=Bow; 1=Strike][acc:1 1 -10 0 10]", 1,0,1,1);
+select = hslider("[2]Play[style:knob][tooltip:0=Bow; 1=Strike][acc:1 0 -10 0 10]", 1,0,1,1);
 integrationConstant = 0.01;
 baseGain = 0.5;
 

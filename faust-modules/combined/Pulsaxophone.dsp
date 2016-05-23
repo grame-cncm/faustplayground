@@ -27,7 +27,7 @@ process = vgroup("Pulsaxo",
 
 //==================== GUI SPECIFICATION ================
 
-freq = hslider("[1]Frequency[unit:Hz][acc:1 0 -12 0 10]", 110,80,880,1):smooth(0.9999):min(880):max(80);
+freq = hslider("[1]Frequency[unit:Hz][acc:1 1 -12 0 10]", 110,80,880,1):smooth(0.9999):min(880):max(80);
 gain = 0.8;
 gate = pulsaxo.gate;
 	
@@ -40,7 +40,7 @@ nonLinearity = 0.36;
 frequencyMod = 20;
 nonLinAttack = 0.12;
 
-vibratoFreq = hslider("[3]Vibrato Frequency[style:knob][unit:Hz][acc:0 0 -10 0 10]", 6,1,15,0.1):smooth(0.999);
+vibratoFreq = hslider("[3]Vibrato Frequency[style:knob][unit:Hz][acc:0 1 -10 0 10]", 6,1,15,0.1):smooth(0.999);
 vibratoGain = 0.2;
 vibratoBegin = 0.05;
 vibratoAttack = 0.03;
@@ -58,8 +58,8 @@ pulsaxo = environment{
 gate = phasor_bin(1) :-(0.001):pulsar;
 ratio_env = (0.5);
 fade = (0.5); // min > 0 pour eviter division par 0
-speed = hslider ("h:[2]Pulse/[1]Speed (Granulator)[unit:Hz][style:knob][acc:0 0 -10 0 10]", 4,0.001,7,0.0001):lowpass(1,1);
-proba = hslider ("h:[2]Pulse/[2]Probability (Granulator)[unit:%][style:knob][acc:1 1 -10 0 10]", 88,75,100,1)*(0.01):lowpass(1,1);
+speed = hslider ("h:[2]Pulse/[1]Speed (Granulator)[unit:Hz][style:knob][acc:0 1 -10 0 10]", 4,0.001,7,0.0001):lowpass(1,1);
+proba = hslider ("h:[2]Pulse/[2]Probability (Granulator)[unit:%][style:knob][acc:1 0 -10 0 10]", 88,75,100,1)*(0.01):lowpass(1,1);
 
 phasor_bin (init) =  (+(float(speed)/float(SR)) : fmod(_,1.0)) ~ *(init);
 pulsar = _<:(((_)<(ratio_env)):@(100))*((proba)>((_),(noise:abs):latch)); 
@@ -118,7 +118,7 @@ instrumentBody(delay1FeedBack,breathP) = delay1FeedBack <: -(delay2) <:
 
 instrReverbAccel = zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
        with{
-       roomSize = hslider("h:[4]Reverb/Reverberation Room Size (InstrReverb)[style:knob][acc:1 0 -15 0 12]", 0.72,0.1,1.7,0.01):min(1.7):max(0.1);
+       roomSize = hslider("h:[4]Reverb/Reverberation Room Size (InstrReverb)[style:knob][acc:1 1 -15 0 12]", 0.72,0.1,1.7,0.01):min(1.7):max(0.1);
        rdel = 20;
        f1 = 200;
        f2 = 6000;

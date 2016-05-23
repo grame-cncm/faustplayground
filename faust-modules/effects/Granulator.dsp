@@ -48,8 +48,8 @@ phasor_bin (init) =  (+(float(speed)/float(SR)) : fmod(_,1.0)) ~ *(init);
 //Le pulsar permet de creer une 'pulsation' plus ou moins aleatoire (proba).
 
 pulsar = _<:((_<(ratio_env)):@(100))*(proba>(_,abs(noise):latch)); 
-speed = hslider ("[2]Speed[unit:Hz][style:knob][acc:0 0 -10 0 10]", 10,1,20,0.0001):lowpass(1,1); 
+speed = hslider ("[2]Speed[unit:Hz][style:knob][acc:0 1 -10 0 10]", 10,1,20,0.0001):lowpass(1,1); 
 ratio_env = 0.5;
 fade = (0.5); // min > 0 pour eviter division par 0
-proba = hslider ("[3]Probability[unit:%][style:knob][acc:1 1 -10 0 10]", 70,50,100,1) * (0.01):lowpass(1,1);
+proba = hslider ("[3]Probability[unit:%][style:knob][acc:1 0 -10 0 10]", 70,50,100,1) * (0.01):lowpass(1,1);
 duree_env = 1/(speed: / (ratio_env*(0.25)*fade));

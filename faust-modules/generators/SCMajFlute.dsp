@@ -99,12 +99,12 @@ trigger(n) = position(n): trig
 	upfront(x) 	= (x-x') > 0;
 	decay(n,x)	= x - (x>0.0)/n;
 	release(n)	= + ~ decay(n);
-	noteDuration = hslider("h:[1]/[3]Note Duration[unit:s][style:knob][acc:2 0 -10 0 10]", 0.166, 0.1, 0.25, 0.01)*44100 : min(11025) : max(4410):int;
+	noteDuration = hslider("h:[1]/[3]Note Duration[unit:s][style:knob][acc:2 1 -10 0 10]", 0.166, 0.1, 0.25, 0.01)*44100 : min(11025) : max(4410):int;
 	trig = upfront : release(noteDuration) : >(0.0);
 	};
 
 position(n) = abs(hand - n) < 0.5;
-hand = hslider("h:[1]/[1]Instrument Hand[acc:0 0 -12 0 10]", 9, 0, N, 1): automat(bps, 15, 0.0)// => gate
+hand = hslider("h:[1]/[1]Instrument Hand[acc:0 1 -12 0 10]", 9, 0, N, 1): automat(bps, 15, 0.0)// => gate
 		with{
-		bps = hslider("h:[1]/[2]Speed[style:knob][acc:0 0 -10 0 10]", 480, 180, 720, 1):smooth(0.999) : min(720) : max(180) : int;
+		bps = hslider("h:[1]/[2]Speed[style:knob][acc:0 1 -10 0 10]", 480, 180, 720, 1):smooth(0.999) : min(720) : max(180) : int;
 		};

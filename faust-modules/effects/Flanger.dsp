@@ -31,7 +31,7 @@ FlangerDemo = flanger_stereo_demo with {
    dmax = 2048;
    dflange = 0.001 * SR * 10;
    odflange = 0.001 * SR * 1;
-   freq   = ctl_group(hslider("[1] Speed [acc:0 0 -10 0 10][unit:Hz] [style:knob]", 3, 0, 10, 0.01));
+   freq   = ctl_group(hslider("[1] Speed [acc:0 1 -10 0 10][unit:Hz] [style:knob]", 3, 0, 10, 0.01));
    depth  = 1;
    fb     = 0.99;
    curdel1 = odflange+dflange*(1 + lfol(freq))/2;
@@ -40,5 +40,5 @@ FlangerDemo = flanger_stereo_demo with {
 
 drywet(x,y) 	= (1-c)*x + c*y
 				with {
-					c = hslider("[3] Flanger Intensity [unit:%][acc:1 1 -10 0 10]", 10,0,100,0.01)*(0.01):smooth(0.999);
+					c = hslider("[3] Flanger Intensity [unit:%][acc:1 0 -10 0 10]", 10,0,100,0.01)*(0.01):smooth(0.999);
 					};

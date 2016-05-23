@@ -27,8 +27,8 @@ process = hand <: par(i, 10, marimkey(i)) :> *(3);
 
 //---------------------------------- UI ----------------------------------------
 
-hand = hslider("[1]Instrument Hand[acc:1 1 -10 0 10]", 5, 0, 10, 1);
-hight = hslider("[2]Hight[acc:0 0 -10 0 30]", 5, 1, 10, 0.3) : smooth(0.99):min(12):max(1);
+hand = hslider("[1]Instrument Hand[acc:1 0 -10 0 10]", 5, 0, 10, 1);
+hight = hslider("[2]Hight[acc:0 1 -10 0 30]", 5, 1, 10, 0.3) : smooth(0.99):min(12):max(1);
 envsize = hslider("[3]Note Duration (BPF Envelope)[unit:s][acc:2 0 -10 0 10]", 0.2, 0.1, 0.5, 0.01) * (SR) : smooth(0.999): min(44100) : max(4410) : int;
 //---------------------------------- FREQUENCY TABLE ---------------------------
 

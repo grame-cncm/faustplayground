@@ -28,8 +28,8 @@ process = hgroup("Birds", mainOsc(noteTrig : rdm(72,94) : mtof , noteTrig) * env
 
 autoTrig = beat(t) * (abs(noise) <= p) : trigger(48) //tempo(2.5*t))
 	with {
-		t = hslider("[1]Speed (Granulator)[style:knob][acc:0 0 -10 0 10]", 240, 120, 480, 0.1) : smooth(0.999);
-		p = hslider("[2]Probability (Granulator)[unit:%][style:knob][acc:1 1 -10 0 10]", 50, 25, 100, 1)*(0.01) : smooth(0.999);
+		t = hslider("[1]Speed (Granulator)[style:knob][acc:0 1 -10 0 10]", 240, 120, 480, 0.1) : smooth(0.999);
+		p = hslider("[2]Probability (Granulator)[unit:%][style:knob][acc:1 0 -10 0 10]", 50, 25, 100, 1)*(0.01) : smooth(0.999);
 		trigger(n) 	= upfront : release(n) : >(0.0) with {
 			upfront(x) 	= (x-x') > 0.0;
 			decay(n,x)	= x - (x>0.0)/n;
@@ -207,7 +207,7 @@ with {
     dry = 1.0-wet;
   };
 
-  presence = hslider("[3]Proximity (InstrReverb)[style:knob][acc:1 1 -15 0 10]", 0.5, 0, 1, 0.01) : smooth(0.999);
+  presence = hslider("[3]Proximity (InstrReverb)[style:knob][acc:1 0 -15 0 10]", 0.5, 0, 1, 0.01) : smooth(0.999);
 
   drywet = 1 - 2*presence;
 

@@ -35,10 +35,10 @@ ASR =(asr(a,s,r,t))
 		t = gate;
 		};
 
-nonlinearity = hslider("[4]Modulation Intensity[acc:1 1 -10 0 10][style:knob]", 0.1, 0, 1, 0.001);
+nonlinearity = hslider("[4]Modulation Intensity[acc:1 0 -10 0 10][style:knob]", 0.1, 0, 1, 0.001);
 env = ASR;
 freq = 220;
 typeMod = hslider("[2]Modulation Type[style:radio{'0':0;'1':1;'2':2;'3':3;'4':4}]", 0, 0, 4, 1);
-freqMod = hslider("[3]Modulating Frequency[acc:1 0 -10 0 10][style:knob][unit:Hz]", 204.8, 50, 1700, 0.1):smooth(0.999);
+freqMod = hslider("[3]Modulating Frequency[acc:1 1 -10 0 10][style:knob][unit:Hz]", 204.8, 50, 1700, 0.1):smooth(0.999);
 order = nlfOrder;
 nlfOrder = 6;

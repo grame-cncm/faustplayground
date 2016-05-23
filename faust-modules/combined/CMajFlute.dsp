@@ -101,14 +101,14 @@ trigger(n) = position(n): trig
 	upfront(x) 	= (x-x') > 0;
 	decay(n,x)	= x - (x>0.0)/n;
 	release(n)	= + ~ decay(n);
-	noteDuration = hslider("h:[1]/[3]Note Duration[unit:s][style:knob][acc:2 0 -10 0 10]", 0.166, 0.1, 0.25, 0.01)*44100 : min(11025) : max(4410):int;
+	noteDuration = hslider("h:[1]/[3]Note Duration[unit:s][style:knob][acc:2 1 -10 0 10]", 0.166, 0.1, 0.25, 0.01)*44100 : min(11025) : max(4410):int;
 	trig = upfront : release(noteDuration) : >(0.0);
 	};
 
 position(n) = abs(hand - n) < 0.5;
-hand = hslider("h:[1]/[1]Instrument Hand[acc:0 0 -12 0 10]", 9, 0, N, 1): automat(bps, 15, 0.0)// => gate
+hand = hslider("h:[1]/[1]Instrument Hand[acc:0 1 -12 0 10]", 9, 0, N, 1): automat(bps, 15, 0.0)// => gate
 		with{
-		bps = hslider("h:[1]/[2]Speed[style:knob][acc:0 0 -10 0 10]", 480, 180, 720, 1):smooth(0.999) : min(720) : max(180) : int;
+		bps = hslider("h:[1]/[2]Speed[style:knob][acc:0 1 -10 0 10]", 480, 180, 720, 1):smooth(0.999) : min(720) : max(180) : int;
 		};
 //----------------------- INSTRREVERB ----------------------------
 // GUI for zita_rev1_stereo from effect.lib
@@ -119,8 +119,8 @@ hand = hslider("h:[1]/[1]Instrument Hand[acc:0 0 -12 0 10]", 9, 0, N, 1): automa
 instrReverbFlute = _,_ <: *(reverbGain),*(reverbGain),*(1 - reverbGain),*(1 - reverbGain) : 
 zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
        with{
-       reverbGain = hslider("h:[2]Reverb/[1]Reverberation Volume (InstrReverb)[style:knob][acc:1 0 -10 0 10]", 0.2,0.05,1,0.01):smooth(0.999):min(1):max(0.05);
-       roomSize = hslider("h:[2]Reverb/[2]Reverberation Room Size (InstrReverb)[style:knob][acc:1 0 -10 0 10]", 0.5,0.05,2,0.01):min(2):max(0.05);
+       reverbGain = hslider("h:[2]Reverb/[1]Reverberation Volume (InstrReverb)[style:knob][acc:1 1 -10 0 10]", 0.2,0.05,1,0.01):smooth(0.999):min(1):max(0.05);
+       roomSize = hslider("h:[2]Reverb/[2]Reverberation Room Size (InstrReverb)[style:knob][acc:1 1 -10 0 10]", 0.5,0.05,2,0.01):min(2):max(0.05);
        rdel = 20;
        f1 = 200;
        f2 = 6000;

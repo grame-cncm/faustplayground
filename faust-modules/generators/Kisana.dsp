@@ -37,7 +37,7 @@ kisana = vgroup("Kisana", harpe(C,11,48), harpe(C,11,60), (harpe(C,11,72) : *(1.
 	:>*(l))
 	with {
 		l = -20 : db2linear;//hslider("[1]Volume",-20, -60, 0, 0.01) : db2linear;
-		C = hslider("[2]Brightness[acc:0 0 -10 0 10]", 0.2, 0, 1, 0.01) : automat(BPS, CCY, 0.0);
+		C = hslider("[2]Brightness[acc:0 1 -10 0 10]", 0.2, 0, 1, 0.01) : automat(BPS, CCY, 0.0);
 	};
  
 
@@ -55,10 +55,10 @@ harpe(C,N,b) = 	hand(b) <: par(i, N, position(i+1)
 							: pan((i+0.5)/N) )
 				 	:> _,_
 	with {
-		att  = hslider("[3]Resonance[acc:2 0 -10 0 12]", 4, 0.1, 10, 0.01); 
-		hand(48) = vslider("h:[1]Instrument Hands/1 (Note %b)[unit:pk][acc:1 1 -10 0 14]", 0, 0, N, 1) : int : automat(120, CCY, 0.0);
-		hand(60) = vslider("h:[1]Instrument Hands/2 (Note %b)[unit:pk][acc:1 1 -10 0 14]", 2, 0, N, 1) : int : automat(240, CCY, 0.0);
-		hand(72) = vslider("h:[1]Instrument Hands/3 (Note %b)[unit:pk][acc:1 1 -10 0 10]", 4, 0, N, 1) : int : automat(480, CCY, 0.0);
+		att  = hslider("[3]Resonance[acc:2 1 -10 0 12]", 4, 0.1, 10, 0.01); 
+		hand(48) = vslider("h:[1]Instrument Hands/1 (Note %b)[unit:pk][acc:1 0 -10 0 14]", 0, 0, N, 1) : int : automat(120, CCY, 0.0);
+		hand(60) = vslider("h:[1]Instrument Hands/2 (Note %b)[unit:pk][acc:1 0 -10 0 14]", 2, 0, N, 1) : int : automat(240, CCY, 0.0);
+		hand(72) = vslider("h:[1]Instrument Hands/3 (Note %b)[unit:pk][acc:1 0 -10 0 10]", 4, 0, N, 1) : int : automat(480, CCY, 0.0);
 		//lvl  = vslider("h:loop/level", 0, 0, 6, 1) : int : automat(BPS, CCY, 0.0) : -(6) : db2linear; 
 		lvl = 1;
 		pan(p) = _ <: *(sqrt(1-p)), *(sqrt(p));

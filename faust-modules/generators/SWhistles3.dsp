@@ -35,7 +35,7 @@ nOise = environment{
 
 
 
-freq = hslider("[2]Frequency[unit:Hz][acc:1 0 -10 0 10]", 820, 660, 1100, 0.01):smooth(0.999);
+freq = hslider("[2]Frequency[unit:Hz][acc:1 1 -10 0 10]", 820, 660, 1100, 0.01):smooth(0.999);
 gain(n) = hslider("[3]Volume %n[style:knob][acc:%n 0 -10 15 0 0.5]", 0.5, 0, 2, 0.001):smooth(0.999);
 
 hight(n) = freq * (n+1);
@@ -56,6 +56,6 @@ Env = (envVibrato(b,a,s,r,t))
 		a = 0.1;
 		s = 100;
 		r = 0.8;
-		t = hslider("[1]ON/OFF (Vibrato Envelope)[acc:1 1 -12 0 2]", 1, 0, 1, 1);
+		t = hslider("[1]ON/OFF (Vibrato Envelope)[acc:1 0 -12 0 2]", 1, 0, 1, 1);
 		};
 		

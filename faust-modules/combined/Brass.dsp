@@ -33,7 +33,7 @@ Brass = (borePressure <: deltaPressure,_ :
 
 //==================== GUI SPECIFICATION ================
 
-freq = hslider("h:[1]Instrument/Frequency[1][unit:Hz] [tooltip:Tone frequency][acc:1 0 -10 0 10]", 300,170,700,1):smooth(0.999);
+freq = hslider("h:[1]Instrument/Frequency[1][unit:Hz] [tooltip:Tone frequency][acc:1 1 -10 0 10]", 300,170,700,1):smooth(0.999);
 gain = 0.8;
 gate = checkbox("h:[1]Instrument/ ON/OFF (ASR Envelope)");
 
@@ -41,7 +41,7 @@ lipTension = 0.780;
 pressure = 1;
 slideLength = 0.041;
 
-vibratoFreq = hslider("v:[3]Parameters/h:/Vibrato Frequency (Vibrato Envelope)[unit:Hz][style:knob][unit:Hz][acc:0 0 -10 0 10]", 5,1,10,0.01);
+vibratoFreq = hslider("v:[3]Parameters/h:/Vibrato Frequency (Vibrato Envelope)[unit:Hz][style:knob][unit:Hz][acc:0 1 -10 0 10]", 5,1,10,0.01);
 vibratoGain = 0.05;
 vibratoBegin = 0.05;
 vibratoAttack = 0.5;
@@ -82,7 +82,7 @@ deltaPressure = mouthPressure - _;
 
 InstrReverBrass = zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
        with{
-       roomSize = hslider("v:[4]Reverb/Reverberation Room Size (InstrReverb)[acc:1 0 -15 0 12]", 0.2,0.05,1.7,0.01) : min(1.7) : max(0.05);
+       roomSize = hslider("v:[4]Reverb/Reverberation Room Size (InstrReverb)[acc:1 1 -15 0 12]", 0.2,0.05,1.7,0.01) : min(1.7) : max(0.05);
        rdel = 20;
        f1 = 200;
        f2 = 6000;

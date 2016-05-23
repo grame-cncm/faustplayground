@@ -28,15 +28,15 @@ NFLeks(n) = filtered_excitation(n,P(freq(n)),freq(n)) : stringloop(freq(n));
 
 
 N = 20;
-hand = hslider("[1]Instrument Hand[acc:0 0 -10 0 10]", 10, 0, N, 1) : automat(bps, 15, 0.0)// => gate
+hand = hslider("[1]Instrument Hand[acc:0 1 -10 0 10]", 10, 0, N, 1) : automat(bps, 15, 0.0)// => gate
 with{
-bps = hslider("[2]Speed[style:knob][acc:0 0 -10 0 10]", 480, 180, 720, 1):smooth(0.999) : min(720) : max(180) : int;
+bps = hslider("[2]Speed[style:knob][acc:0 1 -10 0 10]", 480, 180, 720, 1):smooth(0.999) : min(720) : max(180) : int;
 };
 gain = 1;
 pickangle  = 0.81;
 
 beta = 0.5;
-t60 = hslider("[3]Resonance[unit:s][acc:2 0 -10 0 10]", 5, 0.5, 10, 0.01);  // -60db decay time (sec)
+t60 = hslider("[3]Resonance[unit:s][acc:2 1 -10 0 10]", 5, 0.5, 10, 0.01);  // -60db decay time (sec)
 
 B = 0;
  L = -10 : db2linear;

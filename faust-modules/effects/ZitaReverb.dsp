@@ -23,8 +23,8 @@ process =_<:zita_rev3:>_;
 zita_rev3(x,y) = zita_rev1_stereo4(rdel,f1,f2,t60dc,t60m,fsmax,x,y) : out_eq
 with {
 	//Reverb parameters:
-	t60dc = hslider("[2] Low Frequencies Decay Time[acc:1 0 -10 0 10][unit:s][style:knob][tooltip: T60 = time (in seconds) to decay 60dB in low-frequency band]", 1.5, 0.5, 6, 0.01):smooth(0.999):min(6):max(0.5);
-	t60m = hslider("[3] Mid Frequencies Decay Time[acc:1 0 -10 0 10][unit:s][style:knob][tooltip: T60 = time (in seconds) to decay 60dB in middle band]", 1.5, 0.5, 6, 0.01):smooth(0.999):min(6):max(0.5);
+	t60dc = hslider("[2] Low Frequencies Decay Time[acc:1 1 -10 0 10][unit:s][style:knob][tooltip: T60 = time (in seconds) to decay 60dB in low-frequency band]", 1.5, 0.5, 6, 0.01):smooth(0.999):min(6):max(0.5);
+	t60m = hslider("[3] Mid Frequencies Decay Time[acc:1 1 -10 0 10][unit:s][style:knob][tooltip: T60 = time (in seconds) to decay 60dB in middle band]", 1.5, 0.5, 6, 0.01):smooth(0.999):min(6):max(0.5);
   	fsmax = 48000.0;  // highest sampling rate that will be used
 	rdel =50;
 	f1 =500;

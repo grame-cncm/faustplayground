@@ -23,8 +23,8 @@ process = hgroup("Bird", mainOsc(noteTrig : rdm(72,94) : mtof , noteTrig) * envW
 
 autoTrig = beat(t) * (abs(noise) <= p) : trigger(48) 
 	with {
-		t = hslider("[1]Speed (Granulator)[style:knob][acc:0 0 -10 0 10]", 240, 120, 480, 0.1) : smooth(0.999);
-		p = hslider("[2]Probability (Granulator)[unit:%][style:knob][acc:0 0 -10 0 10]", 50, 25, 100, 1)*(0.01) : smooth(0.999);
+		t = hslider("[1]Speed (Granulator)[style:knob][acc:0 1 -10 0 10]", 240, 120, 480, 0.1) : smooth(0.999);
+		p = hslider("[2]Probability (Granulator)[unit:%][style:knob][acc:0 1 -10 0 10]", 50, 25, 100, 1)*(0.01) : smooth(0.999);
 		trigger(n) 	= upfront : release(n) : >(0.0) 
 		with {
 			upfront(x) 	= (x-x') > 0.0;

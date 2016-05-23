@@ -31,7 +31,7 @@ process = (borePressure <: deltaPressure,_ :
 
 //==================== GUI SPECIFICATION ================
 
-freq = hslider("h:[1]Instrument/Frequency[1][unit:Hz] [tooltip:Tone frequency][acc:1 0 -10 0 10]", 300,170,700,1):smooth(0.999);
+freq = hslider("h:[1]Instrument/Frequency[1][unit:Hz] [tooltip:Tone frequency][acc:1 1 -10 0 10]", 300,170,700,1):smooth(0.999);
 gain = 0.8;
 gate = hslider("h:[1]Instrument/ ON/OFF",0,0,1,1);
 
@@ -39,7 +39,7 @@ lipTension = 0.780;
 pressure = 1;
 slideLength = 0.041;
 
-vibratoFreq = hslider("v:[3]Parameters/h:/Vibrato Frequency (Vibrato Envelope)[unit:Hz][style:knob][unit:Hz][acc:0 0 -10 0 10]", 5,1,10,0.01);
+vibratoFreq = hslider("v:[3]Parameters/h:/Vibrato Frequency (Vibrato Envelope)[unit:Hz][style:knob][unit:Hz][acc:0 1 -10 0 10]", 5,1,10,0.01);
 vibratoGain = 0.05;
 vibratoBegin = 0.05;
 vibratoAttack = 0.5;
