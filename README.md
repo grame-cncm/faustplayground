@@ -2,12 +2,12 @@ FAUST Audio Playground
 ======================
 
 This repository contains the source code for the Faust Audio Playground.
-The goal of this project is to provide a web plateform in which you can easily test/patch 
+The goal of this project is to provide a web platform in which you can easily test/patch 
 and export your Faust DSPs or the ones you find surfing on the web.
 
 The pedagogical version includes a library of modules directly available in the page.
 
-Additional ressources
+Additional resources
 =====================
 
 The following files needs to be added in the deployed version of 'webaudio' folder :
