@@ -10,7 +10,7 @@ The pedagogical version includes a library of modules directly available in the 
 Additional resources
 =====================
 
-The following files needs to be added in the deployed version of 'webaudio' folder :
+The following files need to be added in the deployed version of 'webaudio' folder :
 
 - libfaust.js located in '/usr/local/lib' folder after installation
 - jsscripts.js located in '/usr/local/lib/faust/js' folder after installation
@@ -18,11 +18,13 @@ The following files needs to be added in the deployed version of 'webaudio' fold
 Launch locally
 ==============
 
-To easily test locally, you can start a python server
-
-cd faustplaygroundrepository
-python -m SimpleHTTPServer
-
+To easily test locally, you can start a python server:
+```
+$ cd faustplaygroundrepository
+$ python -m SimpleHTTPServer
+```
 Then access the page : 
 http://127.0.0.1:8000/faustplayground/
+
+Or for the pedagogical version:
 http://127.0.0.1:8000/faustplayground/pedagogie
