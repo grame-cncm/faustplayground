@@ -1,6 +1,6 @@
 # FAUST Playground
 
-Faust playground is a Web plateform designed to enable children to learn basic audio programming in a simple and graphic way. In particular it allows them to develop musical instruments for Android smartphones.
+Faust playground is a Web platform designed to enable children to learn basic audio programming in a simple and graphic way. In particular, it allows them to develop musical instruments for Android smartphones.
 
 
 ## To test it...
