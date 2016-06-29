@@ -1,28 +1,16 @@
-FAUST Audio Playground
-======================
+# FAUST Playground
 
-This repository contains the source code for the Faust Audio Playground.
-The goal of this project is to provide a web plateform in which you can easily test/patch 
-and export your Faust DSPs or the ones you find surfing on the web.
+Faust playground is a Web plateform designed to enable children to learn basic audio programming in a simple and graphic way. In particular it allows them to develop musical instruments for Android smartphones.
 
-The pedagogical version includes a library of modules directly available in the page.
 
-Additional ressources
-=====================
+## To test it...
 
-The following files needs to be added in the deployed version of 'webaudio' folder :
+To test the Faust playground, start a python server :
 
-- libfaust.js located in '/usr/local/lib' folder after installation
-- jsscripts.js located in '/usr/local/lib/faust/js' folder after installation
+	cd faustplayground
+	cd ..
+	python -m SimpleHTTPServer
 
-Launch locally
-==============
+Then open :
 
-To easily test locally, you can start a python server
-
-cd faustplaygroundrepository
-python -m SimpleHTTPServer
-
-Then access the page : 
-http://127.0.0.1:8000/faustplayground/
-http://127.0.0.1:8000/faustplayground/pedagogie
+	http://127.0.0.1:8000/faustplayground/
