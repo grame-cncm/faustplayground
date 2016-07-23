@@ -876,6 +876,87 @@ var Drag = (function () {
 })();
 /// <reference path="Messages.ts"/>
 /// <reference path="Utilitary.ts"/>
+// YO : ajout d'une fonction pour updater les metadata d'accelerometre d'un slider
+// Iterate into faust code to find path strings
+var PathIterator = (function () {
+    function PathIterator(faustCode) {
+        this.fFaustCode = faustCode;
+        this.fStart = 0;
+        this.fEnd = 0;
+    }
+    // search and select next path : ( "...."  
+    // (not completely safe, but should be OK)
+    PathIterator.prototype.findNextPath = function () {
+        var p0 = this.fFaustCode.indexOf("(", this.fEnd);
+        var p1 = this.fFaustCode.indexOf('"', this.fEnd);
+        var p2 = this.fFaustCode.indexOf('"', p0);
+        if ((this.fEnd < p0) && (p0 < p1) && (p1 < p2)) {
+            this.fStart = p1;
+            this.fEnd = p2 + 1;
+            return this.fFaustCode.slice(this.fStart, this.fEnd);
+        }
+        else {
+            return "";
+        }
+    };
+    // Replace the current selected path with a new string and return the update faust code
+    PathIterator.prototype.updateCurrentPath = function (newstring) {
+        if ((0 < this.fStart) && (this.fStart < this.fEnd)) {
+            // we have a valide path to replace
+            return this.fFaustCode.slice(0, this.fStart) + newstring + this.fFaustCode.slice(this.fEnd);
+        }
+        else {
+            console.log("ERROR, trying to update an invalide path");
+            return this.fFaustCode;
+        }
+    };
+    return PathIterator;
+})();
+function removeMetadata(label) {
+    var r = ""; // resulting string
+    var i = 0;
+    while (true) {
+        var j = label.indexOf("[");
+        if (j == -1) {
+            r = r + label.slice(i);
+            return r;
+        }
+        else {
+            r = r + label.slice(i, j);
+            var k = label.indexOf("]");
+            if (k > 0) {
+                i = k + 1;
+            }
+            else {
+                console.log("removeMetada on incorrect label: " + label);
+                return label;
+            }
+        }
+    }
+}
+// return true if uiname matches uipath. For examples "toto" matches "[1]toto[acc:...]"
+function match(uiname, uipath) {
+    return uiname == removeMetadata(uipath);
+}
+// replaceAccInPath("[1]toto[acc:xxxx]", "[acc:yyyy]",) -> "[1]toto[acc:yyyy]"
+function replaceAccInPath(path, newacc) {
+    return path;
+}
+//  Replace the acc value associated to name in a faust code. Returns the updated faust code
+function updateAccInFaustCode(faustcode, name, newaccvalue) {
+    // Allows to iterate faustcode from uipath to uipath
+    var cc = new PathIterator(faustcode);
+    // Search an uipath that matches
+    for (var p = cc.findNextPath(); p != ""; p = cc.findNextPath()) {
+        if (match(name, p)) {
+            var u = replaceAccInPath(p, newaccvalue);
+            return cc.updateCurrentPath(u);
+        }
+    }
+    // ERROR: no suitable uipath was found !
+    new Message(name + Utilitary.messageRessource.errorAccSliderNotFound);
+    return faustcode;
+}
 var CodeFaustParser = (function () {
     function CodeFaustParser(codeFaust, sliderName, newAccValue, isEnabled) {
         this.originalCodeFaust = codeFaust;
