@@ -13,7 +13,7 @@ interface ElementCodeFaustParser {
 // YO : ajout d'une fonction pour updater les metadata d'accelerometre d'un slider
 
 
-// Iterate into faust code to find path strings
+// Iterate into faust code to find next path-string.
 class PathIterator
 {
     fFaustCode  : string;       // Faust code to search
@@ -28,7 +28,7 @@ class PathIterator
 
     // search and select next path : ( "...."  
     // (not completely safe, but should be OK)
-    findNextPath() : string 
+    findNextPathString() : string 
     { 
         var p0 = this.fFaustCode.indexOf("(", this.fEnd);
         var p1 = this.fFaustCode.indexOf('"', this.fEnd);
@@ -45,7 +45,7 @@ class PathIterator
     }
 
     // Replace the current selected path with a new string and return the update faust code
-    updateCurrentPath(newstring: string) : string 
+    updateCurrentPathString(newstring: string) : string 
     { 
         if ((0 < this.fStart) && (this.fStart < this.fEnd)) {
             // we have a valide path to replace
@@ -85,23 +85,37 @@ function match(uiname:string, uipath:string):boolean
     return uiname == removeMetadata(uipath);
 }
 
-// replaceAccInPath("[1]toto[acc:xxxx]", "[acc:yyyy]",) -> "[1]toto[acc:yyyy]"
+// replaceAccInPath("[1]toto[noacc:xxxx]...", "[acc:yyyy]",) -> "[1]toto[acc:yyyy]..."
+// replaceAccInPath("[1]toto...", "[acc:yyyy]",) -> "[1]toto...[acc:yyyy]"
 function replaceAccInPath(path:string, newacc:string): string
 {
-    return path;
+    // search either noacc or acc
+    var i = path.indexOf("noacc");
+    if (i<0) i = path.indexOf("acc");
+    if (i<0) {
+        // no acc metada found, add at the end
+        return path.slice(0,-1) + "[" + newacc +"]" + '"';
+    } else {
+        var j = path.indexOf("]",i);
+        if (j>0) {
+            return path.slice(0,i) + newacc + path.slice(j);
+        }
+    }
+    console.log(`ERROR in replaceAccInPath() : malformed path ${path}`);
 }
+    
 
 //  Replace the acc value associated to name in a faust code. Returns the updated faust code
 function updateAccInFaustCode(faustcode : string, name: string, newaccvalue: string) : string
 {
-    // Allows to iterate faustcode from uipath to uipath
+    // Creates a path iterator to iterate the faust code from ui path to ui path
     var cc = new PathIterator(faustcode); 
 
-    // Search an uipath that matches
-    for (var p = cc.findNextPath(); p != ""; p = cc.findNextPath()) {
-        if (match(name, p)) {
-            var u = replaceAccInPath(p,newaccvalue);
-            return cc.updateCurrentPath(u);
+    // Search an ui path that matches
+    for (var path = cc.findNextPathString(); path != ""; path = cc.findNextPathString()) {
+        if (name == removeMetadata(path)) {
+            var u = replaceAccInPath(path,newaccvalue);
+            return cc.updateCurrentPathString(u);
         }
     }
 
@@ -131,6 +145,9 @@ class CodeFaustParser {
         this.sliderName = sliderName;
         this.newAccValue = newAccValue;
         this.isEnabled = isEnabled
+
+        console.log(`ACC UPDATE : slider name = ${sliderName}, new acc value = ${newAccValue}, is enabled = ${isEnabled}`);
+        
     }
     
     //main function to start replacing old acc value of a slider by new val in the code faust
