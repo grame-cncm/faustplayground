@@ -21,6 +21,11 @@ class PathIterator
     fEnd        : number;       // end position of the current path
 
     constructor(faustCode:string) {
+        console.log("Path Iterator construction with the following Faust code ")
+        console.log("-----------");
+        console.log(faustCode);
+        console.log("-----------");
+        
         this.fFaustCode = faustCode;
         this.fStart = 0;
         this.fEnd   = 0;
@@ -30,16 +35,21 @@ class PathIterator
     // (not completely safe, but should be OK)
     findNextPathString() : string 
     { 
-        var p0 = this.fFaustCode.indexOf("(", this.fEnd);
-        var p1 = this.fFaustCode.indexOf('"', this.fEnd);
-        var p2 = this.fFaustCode.indexOf('"', p0);
+        //var p0 = this.fFaustCode.indexOf("(", this.fEnd);
+        var p1 = this.fFaustCode.indexOf('"', this.fEnd+1);
+        var p2 = this.fFaustCode.indexOf('"', p1+1);
+        console.log(`Current positions : ${this.fEnd}, ${p1}, ${p2}`);
 
-        if ( (this.fEnd < p0) && (p0 < p1) && (p1 < p2) ) 
+        //if ( (this.fEnd < p0) && (p0 < p1) && (p1 < p2) ) 
+        if ( (this.fEnd < p1) && (p1 < p2) ) 
         {
             this.fStart = p1;
             this.fEnd   = p2+1;
-            return this.fFaustCode.slice(this.fStart,this.fEnd);
+            var path = this.fFaustCode.slice(this.fStart,this.fEnd);
+            console.log(`findNextPathString -> ${path}`);
+            return path;
         } else {
+            console.log(`no more path found: ${this.fEnd}, ${p1}, ${p2}`);
             return ""; 
         }
     }
@@ -57,32 +67,38 @@ class PathIterator
     }
 }
 
-function removeMetadata(label:string) : string
+// Forge accelerometer metadata -> "acc: bla bla bla"" or "noacc: bla bla bla""
+function forgeAccMetadata(newAccValue:string, isEnabled:boolean) : string
+{
+    if (isEnabled) {
+        return `acc:${newAccValue}`;
+    } else{
+        return  `noacc:${newAccValue}`;
+    } 
+}
+
+// Remove all metadatas of a uipath : "foo[...][...]" -> "foo"
+// Used when searching the source code for a uiname. 
+function removeMetadata(uipath:string) : string
 {
     var r = "";     // resulting string
     var i = 0;
     while (true) {
-        var j = label.indexOf("[");
+        var j = uipath.indexOf("[",i);
         if (j == -1) {
-            r = r + label.slice(i);
+            r = r + uipath.slice(i);
             return r;
         } else {
-            r = r + label.slice(i,j);
-            var k = label.indexOf("]");
+            r = r + uipath.slice(i,j);
+            var k = uipath.indexOf("]",j);
             if (k > 0) {
                 i=k+1;
             } else {
-                console.log("removeMetada on incorrect label: " + label);
-                return label;
+                console.log("removeMetada() called on incorrect label: " + uipath);
+                return uipath;
             }
         }
     }
-}
-
-// return true if uiname matches uipath. For examples "toto" matches "[1]toto[acc:...]"
-function match(uiname:string, uipath:string):boolean
-{
-    return uiname == removeMetadata(uipath);
 }
 
 // replaceAccInPath("[1]toto[noacc:xxxx]...", "[acc:yyyy]",) -> "[1]toto[acc:yyyy]..."
@@ -105,6 +121,15 @@ function replaceAccInPath(path:string, newacc:string): string
 }
     
 
+// Checks if a ui name matches a ui path. For examples "toto" matches "[1]toto[acc:...]"
+// that is if they are identical after removing the metadata from the ui path
+function match(uiname:string, uipath:string):boolean
+{
+    console.log(`call match(${uiname},${uipath})`);
+    //return uiname == removeMetadata(uipath.slice(1,-1));
+    return uipath.indexOf(uiname) >= 0;
+}
+
 //  Replace the acc value associated to name in a faust code. Returns the updated faust code
 function updateAccInFaustCode(faustcode : string, name: string, newaccvalue: string) : string
 {
@@ -113,7 +138,8 @@ function updateAccInFaustCode(faustcode : string, name: string, newaccvalue: str
 
     // Search an ui path that matches
     for (var path = cc.findNextPathString(); path != ""; path = cc.findNextPathString()) {
-        if (name == removeMetadata(path)) {
+        console.log(`COMPARE ${name} and ${path}`);
+        if (match(name, path)) {
             var u = replaceAccInPath(path,newaccvalue);
             return cc.updateCurrentPathString(u);
         }
