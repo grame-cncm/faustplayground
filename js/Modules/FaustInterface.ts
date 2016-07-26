@@ -49,6 +49,14 @@ interface AccParams {
     init: number;
     label: string;
 }
+
+// interface describing values needed to use CodeFaustParser
+interface ElementCodeFaustParser {
+    sliderName: string,
+    newAccValue: string,
+    isEnabled: boolean
+}
+
 class FaustInterfaceControler {
     //array only used at init to fill all FaustInterfaceControler of a Modules (moduleControlers)
     faustControlers: FaustInterfaceControler[];

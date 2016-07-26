@@ -874,24 +874,17 @@ var Drag = (function () {
     };
     return Drag;
 })();
-/// <reference path="Messages.ts"/>
-/// <reference path="Utilitary.ts"/>
 // YO : ajout d'une fonction pour updater les metadata d'accelerometre d'un slider
 // Iterate into faust code to find next path-string.
 var PathIterator = (function () {
     function PathIterator(faustCode) {
-        console.log("Path Iterator construction with the following Faust code ");
-        console.log("-----------");
-        console.log(faustCode);
-        console.log("-----------");
         this.fFaustCode = faustCode;
         this.fStart = 0;
         this.fEnd = 0;
     }
-    // search and select next path : ( "...."  
+    // search and select next string :  "...."  
     // (not completely safe, but should be OK)
     PathIterator.prototype.findNextPathString = function () {
-        //var p0 = this.fFaustCode.indexOf("(", this.fEnd);
         var p1 = this.fFaustCode.indexOf('"', this.fEnd + 1);
         var p2 = this.fFaustCode.indexOf('"', p1 + 1);
         console.log("Current positions : " + this.fEnd + ", " + p1 + ", " + p2);
@@ -956,29 +949,35 @@ function removeMetadata(uipath) {
 }
 // replaceAccInPath("[1]toto[noacc:xxxx]...", "[acc:yyyy]",) -> "[1]toto[acc:yyyy]..."
 // replaceAccInPath("[1]toto...", "[acc:yyyy]",) -> "[1]toto...[acc:yyyy]"
-function replaceAccInPath(path, newacc) {
+function replaceAccInPath(oldpath, newacc) {
     // search either noacc or acc
-    var i = path.indexOf("noacc");
+    var i = oldpath.indexOf("noacc");
     if (i < 0)
-        i = path.indexOf("acc");
+        i = oldpath.indexOf("acc");
     if (i < 0) {
         // no acc metada found, add at the end
-        return path.slice(0, -1) + "[" + newacc + "]" + '"';
+        var newpath = oldpath.slice(0, -1) + "[" + newacc + "]" + '"';
+        console.log("> replaceAccInPath(" + oldpath + ", " + newacc + ") -> " + newpath);
+        return newpath;
     }
     else {
-        var j = path.indexOf("]", i);
+        var j = oldpath.indexOf("]", i);
         if (j > 0) {
-            return path.slice(0, i) + newacc + path.slice(j);
+            var newpath = oldpath.slice(0, i) + newacc + oldpath.slice(j);
+            console.log(">replaceAccInPath(\"" + oldpath + "\", " + newacc + ") -> " + newpath);
+            return newpath;
         }
     }
-    console.log("ERROR in replaceAccInPath() : malformed path " + path);
+    console.log("ERROR in replaceAccInPath() : malformed path " + oldpath);
+    return oldpath;
 }
 // Checks if a ui name matches a ui path. For examples "toto" matches "[1]toto[acc:...]"
 // that is if they are identical after removing the metadata from the ui path
 function match(uiname, uipath) {
-    console.log("call match(" + uiname + "," + uipath + ")");
-    //return uiname == removeMetadata(uipath.slice(1,-1));
-    return uipath.indexOf(uiname) >= 0;
+    var path = removeMetadata(uipath.slice(1, -1));
+    var found = path.indexOf(uiname) >= 0;
+    console.log("> match(" + uiname + "," + path + " [" + uipath + "]) -> " + found);
+    return found;
 }
 //  Replace the acc value associated to name in a faust code. Returns the updated faust code
 function updateAccInFaustCode(faustcode, name, newaccvalue) {
@@ -986,165 +985,15 @@ function updateAccInFaustCode(faustcode, name, newaccvalue) {
     var cc = new PathIterator(faustcode);
     // Search an ui path that matches
     for (var path = cc.findNextPathString(); path != ""; path = cc.findNextPathString()) {
-        console.log("COMPARE " + name + " and " + path);
         if (match(name, path)) {
             var u = replaceAccInPath(path, newaccvalue);
             return cc.updateCurrentPathString(u);
         }
     }
-    // ERROR: no suitable uipath was found !
+    // WARNING: no suitable uipath was found !
     new Message(name + Utilitary.messageRessource.errorAccSliderNotFound);
     return faustcode;
 }
-var CodeFaustParser = (function () {
-    function CodeFaustParser(codeFaust, sliderName, newAccValue, isEnabled) {
-        this.originalCodeFaust = codeFaust;
-        this.codeFaustArray = codeFaust.split("\n");
-        this.sliderName = sliderName;
-        this.newAccValue = newAccValue;
-        this.isEnabled = isEnabled;
-        console.log("ACC UPDATE : slider name = " + sliderName + ", new acc value = " + newAccValue + ", is enabled = " + isEnabled);
-    }
-    //main function to start replacing old acc value of a slider by new val in the code faust
-    //start to find slider and then acc
-    //return the new code
-    //throw error if can't find any
-    //return original code if so
-    CodeFaustParser.prototype.replaceAccValue = function () {
-        this.indexSlider = this.findSliderIndex(this.sliderName);
-        if (this.indexSlider == null) {
-            this.indexSlider = this.findSliderIndexNoSpace(this.sliderName);
-            if (this.indexSlider != null) {
-                return this.tryReplaceAccValue();
-            }
-            else {
-                new Message(this.sliderName + Utilitary.messageRessource.errorAccSliderNotFound);
-                return this.originalCodeFaust;
-            }
-        }
-        else if (this.indexSlider != null) {
-            return this.tryReplaceAccValue();
-        }
-    };
-    //try to find the acc meta in code faust if succeed remove old,
-    // add new, return new faust code
-    //otherwise try to find noacc meta
-    CodeFaustParser.prototype.tryReplaceAccValue = function () {
-        this.indexAccelerometer = this.findAccRank();
-        if (this.indexAccelerometer != -1) {
-            this.removeOldAccValue("acc");
-            this.addNewAccValue();
-            return this.recomposeCodeFaust();
-        }
-        else {
-            return this.tryReplaceNoAccValue();
-        }
-    };
-    //try to find the noacc meta in code faust if succeed remove old,
-    // add new, return new faust code
-    //otherwise add value
-    CodeFaustParser.prototype.tryReplaceNoAccValue = function () {
-        this.indexAccelerometer = this.findNoAccRank();
-        if (this.indexAccelerometer != -1) {
-            this.removeOldAccValue("noacc");
-            this.addNewAccValue();
-            return this.recomposeCodeFaust();
-        }
-        else {
-            return this.addValue();
-        }
-    };
-    //add value of the unexisting acc meta,return new faust code
-    CodeFaustParser.prototype.addValue = function () {
-        this.indexAccelerometer = this.codeFaustArray[this.indexSlider].indexOf(this.sliderName) + this.sliderName.length;
-        this.addNewAccValue();
-        return this.recomposeCodeFaust();
-    };
-    //find sliderIndex
-    CodeFaustParser.prototype.findSliderIndex = function (sliderName) {
-        for (var i = 0; i < this.codeFaustArray.length; i++) {
-            if (this.codeFaustArray[i].indexOf(sliderName) != -1 && this.codeFaustArray[i].indexOf("vslider") != -1 || this.codeFaustArray[i].indexOf(sliderName) != -1 && this.codeFaustArray[i].indexOf("hslider") != -1) {
-                return i;
-            }
-        }
-        return null;
-    };
-    //find slider index with space typo
-    CodeFaustParser.prototype.findSliderIndexNoSpace = function (sliderName) {
-        sliderName = Utilitary.replaceAll(sliderName, " ", "");
-        for (var i = 0; i < this.codeFaustArray.length; i++) {
-            var tempRowWithoutSpace = Utilitary.replaceAll(this.codeFaustArray[i], " ", "");
-            if (tempRowWithoutSpace.indexOf(sliderName) != -1 && tempRowWithoutSpace.indexOf("vslider") != -1 || tempRowWithoutSpace.indexOf(sliderName) != -1 && tempRowWithoutSpace.indexOf("hslider") != -1) {
-                return i;
-            }
-        }
-        return null;
-    };
-    CodeFaustParser.prototype.findAccRank = function () {
-        if (this.codeFaustArray[this.indexSlider].indexOf("[acc:") != -1) {
-            return this.codeFaustArray[this.indexSlider].indexOf("[acc:");
-        }
-        else if (this.codeFaustArray[this.indexSlider].indexOf("[ acc:") != -1) {
-            return this.codeFaustArray[this.indexSlider].indexOf("[ acc:");
-        }
-        else if (this.codeFaustArray[this.indexSlider].indexOf("[acc :") != -1) {
-            return this.codeFaustArray[this.indexSlider].indexOf("[acc :");
-        }
-        else if (this.codeFaustArray[this.indexSlider].indexOf("[ acc :") != -1) {
-            return this.codeFaustArray[this.indexSlider].indexOf("[ acc :");
-        }
-        else {
-            return -1;
-        }
-    };
-    CodeFaustParser.prototype.findNoAccRank = function () {
-        if (this.codeFaustArray[this.indexSlider].indexOf("[noacc:") != -1) {
-            return this.codeFaustArray[this.indexSlider].indexOf("[noacc:");
-        }
-        else if (this.codeFaustArray[this.indexSlider].indexOf("[ noacc:") != -1) {
-            return this.codeFaustArray[this.indexSlider].indexOf("[ noacc:");
-        }
-        else if (this.codeFaustArray[this.indexSlider].indexOf("[noacc :") != -1) {
-            return this.codeFaustArray[this.indexSlider].indexOf("[noacc :");
-        }
-        else if (this.codeFaustArray[this.indexSlider].indexOf("[ noacc :") != -1) {
-            return this.codeFaustArray[this.indexSlider].indexOf("[ noacc :");
-        }
-        else {
-            return -1;
-        }
-    };
-    CodeFaustParser.prototype.removeOldAccValue = function (acc) {
-        var stringSlider = this.codeFaustArray[this.indexSlider];
-        while (stringSlider.charAt(this.indexAccelerometer) != "]") {
-            stringSlider = stringSlider.slice(0, this.indexAccelerometer) + stringSlider.slice(this.indexAccelerometer + 1);
-        }
-        stringSlider = stringSlider.slice(0, this.indexAccelerometer) + stringSlider.slice(this.indexAccelerometer + 1);
-        this.codeFaustArray[this.indexSlider] = stringSlider;
-    };
-    CodeFaustParser.prototype.addNewAccValue = function () {
-        var accType;
-        if (this.isEnabled) {
-            accType = "[acc:";
-        }
-        else {
-            accType = "[noacc:";
-        }
-        var stringSlider = this.codeFaustArray[this.indexSlider];
-        stringSlider = stringSlider.slice(0, this.indexAccelerometer) + accType + this.newAccValue + "]" + stringSlider.slice(this.indexAccelerometer);
-        this.codeFaustArray[this.indexSlider] = stringSlider;
-    };
-    //reform the initial faust code from the array of the line code faust return this code
-    CodeFaustParser.prototype.recomposeCodeFaust = function () {
-        this.newCodeFaust = "";
-        for (var i = 0; i < this.codeFaustArray.length; i++) {
-            this.newCodeFaust += this.codeFaustArray[i] + "\n";
-        }
-        console.log(this.newCodeFaust);
-        return this.newCodeFaust;
-    };
-    return CodeFaustParser;
-})();
 //Accelerometer Class
 /// <reference path="Utilitary.ts"/>
 /// <reference path="Modules/FaustInterface.ts"/>
@@ -2154,7 +2003,7 @@ var ModuleClass = (function () {
         var moduleFaustInterface = new FaustInterfaceControler(function (faustInterface) { _this.interfaceSliderCallback(faustInterface); }, function (adress, value) { _this.moduleFaust.fDSP.setValue(adress, value); });
         this.moduleControles = moduleFaustInterface.parseFaustJsonUI(JSON.parse(this.moduleFaust.fDSP.json()).ui, this);
     };
-    //create FaustInterfaceControler, set its callback and add its AccelerometerSlider
+    // Create FaustInterfaceControler, set its callback and add its AccelerometerSlider
     ModuleClass.prototype.createFaustInterface = function () {
         for (var i = 0; i < this.moduleControles.length; i++) {
             var faustInterfaceControler = this.moduleControles[i];
@@ -2167,14 +2016,14 @@ var ModuleClass = (function () {
             faustInterfaceControler.createAccelerometer();
         }
     };
-    //delete all FaustInterfaceControler
+    // Delete all FaustInterfaceControler
     ModuleClass.prototype.deleteFaustInterface = function () {
         this.deleteAccelerometerRef();
         while (this.moduleView.fInterfaceContainer.childNodes.length != 0) {
             this.moduleView.fInterfaceContainer.removeChild(this.moduleView.fInterfaceContainer.childNodes[0]);
         }
     };
-    //remove AccelerometerSlider ref from AccelerometerHandler
+    // Remove AccelerometerSlider ref from AccelerometerHandler
     ModuleClass.prototype.deleteAccelerometerRef = function () {
         for (var i = 0; i < this.moduleControles.length; i++) {
             if (this.moduleControles[i].accelerometerSlider != null && this.moduleControles[i].accelerometerSlider != undefined) {
@@ -2203,7 +2052,7 @@ var ModuleClass = (function () {
         console.log("TEST1 EXIT");
         console.log("TEST2 ENTER");
         var s = updateAccInFaustCode(this.moduleFaust.fSource, details.sliderName, m);
-        console.log(s);
+        //console.log(s);
         console.log("TEST2 EXIT");
         //var newCodeFaust: CodeFaustParser = new CodeFaustParser(this.moduleFaust.fSource, details.sliderName, details.newAccValue, details.isEnabled);
         this.moduleFaust.fSource = s; //newCodeFaust.replaceAccValue();
