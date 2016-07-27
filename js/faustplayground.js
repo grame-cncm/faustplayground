@@ -21,7 +21,7 @@ var Ressources = (function () {
         resumeInit(app);
     };
     return Ressources;
-})();
+}());
 //Contain Message, MessageView, Confirm, Confirm view class
 var Message = (function () {
     //Message show up and set a time out, if nothing happen, it remove it self
@@ -106,7 +106,7 @@ var Message = (function () {
         this.displayMessage();
     };
     return Message;
-})();
+}());
 var MessageView = (function () {
     function MessageView() {
     }
@@ -124,7 +124,7 @@ var MessageView = (function () {
         return messageContainer;
     };
     return MessageView;
-})();
+}());
 // take message text and callback as parmater
 //if validate, the callback is used, other with the confirm is removed
 var Confirm = (function () {
@@ -153,7 +153,7 @@ var Confirm = (function () {
         }
     };
     return Confirm;
-})();
+}());
 var ConfirmView = (function () {
     function ConfirmView() {
     }
@@ -180,7 +180,7 @@ var ConfirmView = (function () {
         return messageContainer;
     };
     return ConfirmView;
-})();
+}());
 // class to handel Drive Api request//
 // using the v2 version
 /// <reference path="Messages.ts"/>
@@ -420,7 +420,7 @@ var DriveAPI = (function () {
         });
     };
     return DriveAPI;
-})();
+}());
 /// <reference path="Modules/ModuleClass.ts"/>
 /// <reference path="Scenes/SceneClass.ts"/>
 /// <reference path="Ressources.ts"/>
@@ -506,12 +506,12 @@ var Utilitary = (function () {
     Utilitary.isAccelerometerOn = false;
     Utilitary.isAccelerometerEditOn = false;
     return Utilitary;
-})();
+}());
 var PositionModule = (function () {
     function PositionModule() {
     }
     return PositionModule;
-})();
+}());
 /*				DRAGGING.JS
     Handles Graphical Drag of Modules and Connections
     This is a historical file from Chris Wilson, modified for Faust ModuleClass needs.
@@ -873,8 +873,12 @@ var Drag = (function () {
         return true;
     };
     return Drag;
-})();
-// YO : ajout d'une fonction pour updater les metadata d'accelerometre d'un slider
+}());
+/// <reference path="Messages.ts"/>
+//==============================================================================================
+// updateAccInFaustCode (faustcode : string, name: string, newaccvalue: string) : string;
+// Update the acc metadata associated to <name> in <faustcode>. Returns the updated faust code
+//==============================================================================================
 // Iterate into faust code to find next path-string.
 var PathIterator = (function () {
     function PathIterator(faustCode) {
@@ -913,7 +917,7 @@ var PathIterator = (function () {
         }
     };
     return PathIterator;
-})();
+}());
 // Forge accelerometer metadata -> "acc: bla bla bla"" or "noacc: bla bla bla""
 function forgeAccMetadata(newAccValue, isEnabled) {
     if (isEnabled) {
@@ -979,7 +983,10 @@ function match(uiname, uipath) {
     console.log("> match(" + uiname + "," + path + " [" + uipath + "]) -> " + found);
     return found;
 }
-//  Replace the acc value associated to name in a faust code. Returns the updated faust code
+//==============================================================================================
+// updateAccInFaustCode (faustcode : string, name: string, newaccvalue: string) : string;
+// Update the acc metadata associated to <name> in <faustcode>. Returns the updated faust code
+//==============================================================================================
 function updateAccInFaustCode(faustcode, name, newaccvalue) {
     // Creates a path iterator to iterate the faust code from ui path to ui path
     var cc = new PathIterator(faustcode);
@@ -1017,7 +1024,7 @@ var AccMeta = (function () {
     function AccMeta() {
     }
     return AccMeta;
-})();
+}());
 //Contains the info regarding the mapping of the FaustInterfaceControler and the accelerometer
 var AccelerometerSlider = (function () {
     function AccelerometerSlider(accParams) {
@@ -1051,7 +1058,7 @@ var AccelerometerSlider = (function () {
         this.amax = max;
     };
     return AccelerometerSlider;
-})();
+}());
 //object responsible of storing all accelerometerSlider and propagate to them the accelerometer infos. 
 var AccelerometerHandler = (function () {
     function AccelerometerHandler() {
@@ -1143,7 +1150,7 @@ var AccelerometerHandler = (function () {
     //faustInterfaceControler of the AccelerometerEditView
     AccelerometerHandler.faustInterfaceControlerEdit = null;
     return AccelerometerHandler;
-})();
+}());
 /***************************************************************************************
 ********************  Converter objects use to map acc and faust value *****************
 ****************************************************************************************/
@@ -1164,7 +1171,7 @@ var MinMaxClip = (function () {
         }
     };
     return MinMaxClip;
-})();
+}());
 var Interpolator = (function () {
     function Interpolator(lo, hi, v1, v2) {
         this.range = new MinMaxClip(lo, hi);
@@ -1186,7 +1193,7 @@ var Interpolator = (function () {
         return { amin: this.range.fLo, amax: this.range.fHi };
     };
     return Interpolator;
-})();
+}());
 var Interpolator3pt = (function () {
     function Interpolator3pt(lo, mid, hi, v1, vMid, v2) {
         this.fSegment1 = new Interpolator(lo, mid, v1, vMid);
@@ -1202,7 +1209,7 @@ var Interpolator3pt = (function () {
         return { amin: lowHighSegment1.amin, amid: lowHighSegment2.amin, amax: lowHighSegment2.amax };
     };
     return Interpolator3pt;
-})();
+}());
 var AccUpConverter = (function () {
     function AccUpConverter(amin, amid, amax, fmin, fmid, fmax) {
         this.fActive = true;
@@ -1226,7 +1233,7 @@ var AccUpConverter = (function () {
     AccUpConverter.prototype.getActive = function () { return this.fActive; };
     ;
     return AccUpConverter;
-})();
+}());
 var AccDownConverter = (function () {
     function AccDownConverter(amin, amid, amax, fmin, fmid, fmax) {
         this.fActive = true;
@@ -1250,7 +1257,7 @@ var AccDownConverter = (function () {
     AccDownConverter.prototype.getActive = function () { return this.fActive; };
     ;
     return AccDownConverter;
-})();
+}());
 var AccUpDownConverter = (function () {
     function AccUpDownConverter(amin, amid, amax, fmin, fmid, fmax) {
         this.fActive = true;
@@ -1274,7 +1281,7 @@ var AccUpDownConverter = (function () {
     AccUpDownConverter.prototype.getActive = function () { return this.fActive; };
     ;
     return AccUpDownConverter;
-})();
+}());
 var AccDownUpConverter = (function () {
     function AccDownUpConverter(amin, amid, amax, fmin, fmid, fmax) {
         this.fActive = true;
@@ -1298,7 +1305,7 @@ var AccDownUpConverter = (function () {
     AccDownUpConverter.prototype.getActive = function () { return this.fActive; };
     ;
     return AccDownUpConverter;
-})();
+}());
 /// <reference path="../Accelerometer.ts"/>
 /// <reference path="../Utilitary.ts"/>
 /*				FAUSTINTERFACE.JS
@@ -1501,7 +1508,7 @@ var FaustInterfaceControler = (function () {
         this.faustInterfaceView.output.textContent = String(value.toFixed(parseFloat(this.precision)));
     };
     return FaustInterfaceControler;
-})();
+}());
 /********************************************************************
  ********************* ADD GRAPHICAL ELEMENTS ***********************
  ********************************************************************/
@@ -1566,7 +1573,7 @@ var FaustInterfaceView = (function () {
         return button;
     };
     return FaustInterfaceView;
-})();
+}());
 /// <reference path="../Connect.ts"/>
 /*MODULEFAUST.JS
 HAND - MADE JAVASCRIPT CLASS CONTAINING A FAUST MODULE */
@@ -1608,7 +1615,7 @@ var ModuleFaust = (function () {
         return this.fDSP;
     };
     return ModuleFaust;
-})();
+}());
 /*				MODULEVIEW.JS
     HAND-MADE JAVASCRIPT CLASS CONTAINING A FAUST MODULE  INTERFACE
     
@@ -1749,7 +1756,7 @@ var ModuleView = (function () {
         return false;
     };
     return ModuleView;
-})();
+}());
 /*				MODULECLASS.JS
     HAND-MADE JAVASCRIPT CLASS CONTAINING A FAUST MODULE AND ITS INTERFACE
     
@@ -2150,7 +2157,7 @@ var ModuleClass = (function () {
     };
     ModuleClass.isNodesModuleUnstyle = true;
     return ModuleClass;
-})();
+}());
 /*				CONNECT.JS
     Handles Audio/Graphical Connection/Deconnection of modules
     This is a historical file from Chris Wilson, modified for Faust ModuleClass needs.
@@ -2298,7 +2305,7 @@ var Connector = (function () {
     };
     Connector.connectorId = 0;
     return Connector;
-})();
+}());
 /// <reference path="Lib/qrcode.d.ts"/>
 "use strict";
 /************************************************************
@@ -2386,7 +2393,7 @@ var ExportLib = (function () {
         return data[platform];
     };
     return ExportLib;
-})();
+}());
 /*				EQUIVALENTFAUST.JS
 
     HELPER FUNCTIONS TO CREATE FAUST EQUIVALENT EXPRESSION FROM A PATCH
@@ -2402,7 +2409,7 @@ var ModuleTree = (function () {
     function ModuleTree() {
     }
     return ModuleTree;
-})();
+}());
 var EquivalentFaust = (function () {
     function EquivalentFaust() {
     }
@@ -2559,7 +2566,7 @@ var EquivalentFaust = (function () {
             return null;
     };
     return EquivalentFaust;
-})();
+}());
 //--------Plus Utilisé ---------------Create Faust Equivalent Module of the Scene
 //    // To avoid sharing instances of a same factory in the resulting Faust Equivalent
 //    wrapSourceCodesInGroups(){
@@ -2728,7 +2735,7 @@ var ExportView = (function () {
         return exportContainer;
     };
     return ExportView;
-})();
+}());
 /*				EXPORT.JS
     Handles Graphical elements for the Export Feature of the normal Playground
         
@@ -2911,7 +2918,7 @@ var Export = (function () {
     Export.exportUrl = "http://faustservice.grame.fr";
     Export.targetsUrl = "http://faustservice.grame.fr/targets";
     return Export;
-})();
+}());
 /*				PLAYGROUND.JS
     Init Normal Scene with all its graphical elements
 
@@ -2982,7 +2989,7 @@ var SceneView = (function () {
         var playgroundView = this;
     };
     return SceneView;
-})();
+}());
 /*				SCENECLASS.JS
     HAND-MADE JAVASCRIPT CLASS CONTAINING THE API OF A GENERIC SCENE
 */
@@ -3518,52 +3525,52 @@ var Scene = (function () {
         ModuleClass.isNodesModuleUnstyle = true;
     };
     return Scene;
-})();
+}());
 var JsonSaveCollection = (function () {
     function JsonSaveCollection() {
     }
     return JsonSaveCollection;
-})();
+}());
 var JsonSaveModule = (function () {
     function JsonSaveModule() {
     }
     return JsonSaveModule;
-})();
+}());
 var JsonOutputsSave = (function () {
     function JsonOutputsSave() {
     }
     return JsonOutputsSave;
-})();
+}());
 var JsonInputsSave = (function () {
     function JsonInputsSave() {
     }
     return JsonInputsSave;
-})();
+}());
 var JsonParamsSave = (function () {
     function JsonParamsSave() {
     }
     return JsonParamsSave;
-})();
+}());
 var JsonAccSaves = (function () {
     function JsonAccSaves() {
     }
     return JsonAccSaves;
-})();
+}());
 var JsonAccSave = (function () {
     function JsonAccSave() {
     }
     return JsonAccSave;
-})();
+}());
 var JsonSliderSave = (function () {
     function JsonSliderSave() {
     }
     return JsonSliderSave;
-})();
+}());
 var JsonFactorySave = (function () {
     function JsonFactorySave() {
     }
     return JsonFactorySave;
-})();
+}());
 /// <reference path="Messages.ts"/>
 //class ErrorFaust
 var ErrorFaust = (function () {
@@ -3573,7 +3580,7 @@ var ErrorFaust = (function () {
         new Message(errorMessage);
     };
     return ErrorFaust;
-})();
+}());
 //LibraryView.ts : LibraryView Class which contains all the graphical parts of the library
 /// <reference path="../Utilitary.ts"/>
 /// <reference path="../Lib/perfectScrollBar/js/perfect-ScrollBar.min.d.ts"/>
@@ -3638,7 +3645,7 @@ var LibraryView = (function () {
         return libraryContent;
     };
     return LibraryView;
-})();
+}());
 /*				LIBRARY.JS
     Creates Graphical Library of Faust Modules
     Connects with faust.grame.fr to receive the json description of available modules
@@ -3742,7 +3749,7 @@ var Library = (function () {
         return elementComplete.replace(stringStructureRemoved, "").replace(".dsp", "");
     };
     return Library;
-})();
+}());
 //HelpView.ts: HelpView class contains the graphical structure of the help menu.
 var HelpView = (function () {
     function HelpView() {
@@ -3769,7 +3776,7 @@ var HelpView = (function () {
         return helpContainer;
     };
     return HelpView;
-})();
+}());
 //Help.ts : Help class, that controle behaviour of the help panel.
 /// <reference path="HelpView.ts"/>
 var Help = (function () {
@@ -3779,7 +3786,7 @@ var Help = (function () {
         //this.helpView.videoIframe.contentWindow.postMessage('{"event":"command","func":"' + 'stopVideo' + '","args":""}', '*');
     };
     return Help;
-})();
+}());
 /// <reference path="../Utilitary.ts"/>
 var LoadView = (function () {
     function LoadView() {
@@ -3908,7 +3915,7 @@ var LoadView = (function () {
         return loadContainer;
     };
     return LoadView;
-})();
+}());
 /// <reference path="../DriveAPI.ts"/>   
 /// <reference path="LoadView.ts"/>   
 var Load = (function () {
@@ -3978,7 +3985,7 @@ var Load = (function () {
         document.dispatchEvent(event);
     };
     return Load;
-})();
+}());
 /// <reference path="../Utilitary.ts"/>
 var SaveView = (function () {
     function SaveView() {
@@ -4134,7 +4141,7 @@ var SaveView = (function () {
         return saveContainer;
     };
     return SaveView;
-})();
+}());
 /// <reference path="../Lib/fileSaver.min.d.ts"/>
 /// <reference path="../Messages.ts"/>
 /// <reference path="../Utilitary.ts"/>
@@ -4308,7 +4315,7 @@ var Save = (function () {
         confirmCallBack();
     };
     return Save;
-})();
+}());
 /// <reference path="../Utilitary.ts"/>
 var AccelerometerEditView = (function () {
     function AccelerometerEditView() {
@@ -4503,7 +4510,7 @@ var AccelerometerEditView = (function () {
         return blockLayer;
     };
     return AccelerometerEditView;
-})();
+}());
 //AccelerometerEdit
 /// <reference path="../Accelerometer.ts"/>
 /// <reference path="AccelerometerEditView.ts"/>
@@ -4946,7 +4953,7 @@ var AccelerometerEdit = (function () {
         Utilitary.accHandler.axisSplitter(this.accSlid, rangeVal, rangeVal, rangeVal, Utilitary.accHandler.applyNewValueToModule);
     };
     return AccelerometerEdit;
-})();
+}());
 //Menu.ts  Menu class which handles the menu behaviours and contains the MenuView
 /// <reference path="Library.ts"/>
 /// <reference path="LibraryView.ts"/>
@@ -5424,7 +5431,7 @@ var Menu = (function () {
         }
     };
     return Menu;
-})();
+}());
 //MenuView.ts : MenuView Class which contains all the graphical parts of the menu
 /// <reference path="../Accelerometer.ts"/>
 /// <reference path="AccelerometerEditView.ts"/>
@@ -5558,7 +5565,7 @@ var MenuView = (function () {
         this.contentsMenu = contentsMenu;
     };
     return MenuView;
-})();
+}());
 /*     APP.JS
 
 
@@ -5911,7 +5918,7 @@ var App = (function () {
     App.prototype.errorCallBack = function (message) {
     };
     return App;
-})();
+}());
 /*				MAIN.JS
     Entry point of the Program
     intefaces used through the app

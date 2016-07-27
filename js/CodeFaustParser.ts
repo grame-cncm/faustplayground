@@ -1,6 +1,9 @@
-﻿
+﻿/// <reference path="Messages.ts"/>
 
-// YO : ajout d'une fonction pour updater les metadata d'accelerometre d'un slider
+//==============================================================================================
+// updateAccInFaustCode (faustcode : string, name: string, newaccvalue: string) : string;
+// Update the acc metadata associated to <name> in <faustcode>. Returns the updated faust code
+//==============================================================================================
 
 
 // Iterate into faust code to find next path-string.
@@ -121,7 +124,11 @@ function match(uiname:string, uipath:string):boolean
     return found;
 }
 
-//  Replace the acc value associated to name in a faust code. Returns the updated faust code
+//==============================================================================================
+// updateAccInFaustCode (faustcode : string, name: string, newaccvalue: string) : string;
+// Update the acc metadata associated to <name> in <faustcode>. Returns the updated faust code
+//==============================================================================================
+
 function updateAccInFaustCode(faustcode : string, name: string, newaccvalue: string) : string
 {
     // Creates a path iterator to iterate the faust code from ui path to ui path
