@@ -1,4 +1,5 @@
 ﻿/// <reference path="Messages.ts"/>
+/// <reference path="Utilitary.ts"/>
 
 //==============================================================================================
 // updateAccInFaustCode (faustcode : string, name: string, newaccvalue: string) : string;
@@ -26,7 +27,7 @@ class PathIterator
     { 
         var p1 = this.fFaustCode.indexOf('"', this.fEnd+1);
         var p2 = this.fFaustCode.indexOf('"', p1+1);
-        console.log(`Current positions : ${this.fEnd}, ${p1}, ${p2}`);
+        //console.log(`Current positions : ${this.fEnd}, ${p1}, ${p2}`);
 
         //if ( (this.fEnd < p0) && (p0 < p1) && (p1 < p2) ) 
         if ( (this.fEnd < p1) && (p1 < p2) ) 
@@ -34,7 +35,7 @@ class PathIterator
             this.fStart = p1;
             this.fEnd   = p2+1;
             var path = this.fFaustCode.slice(this.fStart,this.fEnd);
-            console.log(`findNextPathString -> ${path}`);
+            //console.log(`findNextPathString -> ${path}`);
             return path;
         } else {
             console.log(`no more path found: ${this.fEnd}, ${p1}, ${p2}`);
@@ -99,13 +100,13 @@ function replaceAccInPath(oldpath:string, newacc:string): string
     if (i<0) {
         // no acc metada found, add at the end
         var newpath:string = oldpath.slice(0,-1) + "[" + newacc +"]" + '"';
-        console.log(`> replaceAccInPath(${oldpath}, ${newacc}) -> ${newpath}`);
+        //console.log(`> replaceAccInPath(${oldpath}, ${newacc}) -> ${newpath}`);
         return newpath;
     } else {
         var j = oldpath.indexOf("]",i);
         if (j>0) {
             var newpath:string =  oldpath.slice(0,i) + newacc + oldpath.slice(j);
-            console.log(`>replaceAccInPath("${oldpath}", ${newacc}) -> ${newpath}`);
+            //console.log(`>replaceAccInPath("${oldpath}", ${newacc}) -> ${newpath}`);
             return newpath;
         }
     }
@@ -120,7 +121,7 @@ function match(uiname:string, uipath:string):boolean
 {
     var path:string     = removeMetadata(uipath.slice(1,-1));
     var found:boolean   = path.indexOf(uiname) >= 0;
-    console.log(`> match(${uiname},${path} [${uipath}]) -> ${found}`);
+    //console.log(`> match(${uiname},${path} [${uipath}]) -> ${found}`);
     return found;
 }
 

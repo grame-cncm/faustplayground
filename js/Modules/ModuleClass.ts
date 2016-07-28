@@ -370,20 +370,11 @@ class ModuleClass  {
         this.moduleFaust.fDSP.setValue(address, value)
     }
 
-    //parse Code faust to remove old acceleromter value and add new ones
+    // Updates Faust Code with new accelerometer metadata
     updateCodeFaust(details: ElementCodeFaustParser) {
-        console.log("TEST1 ENTER");
         var m = forgeAccMetadata(details.newAccValue, details.isEnabled);
-        console.log(m);
-        console.log("TEST1 EXIT");
-
-        console.log("TEST2 ENTER");
         var s = updateAccInFaustCode(this.moduleFaust.fSource, details.sliderName, m );
-        //console.log(s);
-        console.log("TEST2 EXIT");
-        
-        //var newCodeFaust: CodeFaustParser = new CodeFaustParser(this.moduleFaust.fSource, details.sliderName, details.newAccValue, details.isEnabled);
-        this.moduleFaust.fSource = s; //newCodeFaust.replaceAccValue();
+        this.moduleFaust.fSource = s; 
     }
     
     //---- Generic callback for Faust Interface
