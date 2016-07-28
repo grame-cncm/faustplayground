@@ -323,7 +323,7 @@ class ModuleClass  {
         this.moduleControles = moduleFaustInterface.parseFaustJsonUI(JSON.parse(this.moduleFaust.fDSP.json()).ui, this);
     }
 
-    //create FaustInterfaceControler, set its callback and add its AccelerometerSlider
+    // Create FaustInterfaceControler, set its callback and add its AccelerometerSlider
     createFaustInterface() {
         for (var i = 0; i < this.moduleControles.length; i++) {
             var faustInterfaceControler = this.moduleControles[i];
@@ -337,7 +337,7 @@ class ModuleClass  {
         }
     }
 
-    //delete all FaustInterfaceControler
+    // Delete all FaustInterfaceControler
     private deleteFaustInterface(): void {
         this.deleteAccelerometerRef();
 
@@ -346,7 +346,7 @@ class ModuleClass  {
         }
     }
 
-    //remove AccelerometerSlider ref from AccelerometerHandler
+    // Remove AccelerometerSlider ref from AccelerometerHandler
     private deleteAccelerometerRef() {
         for (var i = 0; i < this.moduleControles.length; i++) {
             if (this.moduleControles[i].accelerometerSlider != null && this.moduleControles[i].accelerometerSlider != undefined) {
@@ -372,9 +372,20 @@ class ModuleClass  {
 
     //parse Code faust to remove old acceleromter value and add new ones
     updateCodeFaust(details: ElementCodeFaustParser) {
-        var newCodeFaust: CodeFaustParser = new CodeFaustParser(this.moduleFaust.fSource, details.sliderName, details.newAccValue, details.isEnabled);
-        this.moduleFaust.fSource = newCodeFaust.replaceAccValue();
+        console.log("TEST1 ENTER");
+        var m = forgeAccMetadata(details.newAccValue, details.isEnabled);
+        console.log(m);
+        console.log("TEST1 EXIT");
+
+        console.log("TEST2 ENTER");
+        var s = updateAccInFaustCode(this.moduleFaust.fSource, details.sliderName, m );
+        //console.log(s);
+        console.log("TEST2 EXIT");
+        
+        //var newCodeFaust: CodeFaustParser = new CodeFaustParser(this.moduleFaust.fSource, details.sliderName, details.newAccValue, details.isEnabled);
+        this.moduleFaust.fSource = s; //newCodeFaust.replaceAccValue();
     }
+    
     //---- Generic callback for Faust Interface
     //---- Called every time an element of the UI changes value
     interfaceSliderCallback(faustControler: FaustInterfaceControler): any {
