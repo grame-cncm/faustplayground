@@ -10,8 +10,8 @@ interface Window {
     DeviceMotionEvent: DeviceMotionEvent
 }
 
-enum Axis { x, y, z };
-enum Curve { Up, Down, UpDown, DownUp };
+enum Axis { x, y, z }
+enum Curve { Up, Down, UpDown, DownUp }
 
 //object describing value off accelerometer metadata values. 
 class AccMeta {
@@ -59,7 +59,7 @@ class AccelerometerSlider {
             this.min = accParams.min;
             this.max = accParams.max;
             this.init = accParams.init;
-            this.label = accParams.label
+            this.label = accParams.label;
             this.isActive = Utilitary.isAccelerometerOn;
         }
     }
@@ -67,7 +67,7 @@ class AccelerometerSlider {
     setAttributes(fMetaAcc: string) {
         if (fMetaAcc!=null) {
             var arrayMeta = fMetaAcc.split(" ");
-            this.axis = <Axis>parseInt(arrayMeta[0])
+            this.axis = <Axis>parseInt(arrayMeta[0]);
             this.curve = <Curve>parseInt(arrayMeta[1]);
             this.amin = parseInt(arrayMeta[2]);
             this.amid = parseInt(arrayMeta[3]);
@@ -276,16 +276,16 @@ class AccUpConverter implements UpdatableValueConverter {
         this.faustToAcc = new Interpolator3pt(fmin, fmid, fmax, amin, amid, amax);
     }
     uiToFaust(x: number) { return this.accToFaust.returnMappedValue(x) }
-    faustToUi(x: number) { return this.accToFaust.returnMappedValue(x) };
+    faustToUi(x: number) { return this.accToFaust.returnMappedValue(x) }
     setMappingValues(amin: number, amid: number, amax: number, min: number, init: number, max: number): void {
         this.accToFaust = new Interpolator3pt(amin, amid, amax, min, init, max);
         this.faustToAcc = new Interpolator3pt(min, init, max, amin, amid, amax);
-    };
+    }
     getMappingValues(amin: number, amid: number, amax: number): InterpolateObject3pt {
         return this.accToFaust.getMappingValues(amin, amid, amax);
-    };
-    setActive(onOff: boolean): void { this.fActive = onOff };
-    getActive(): boolean{ return this.fActive };
+    }
+    setActive(onOff: boolean): void { this.fActive = onOff }
+    getActive(): boolean{ return this.fActive }
 }
 
 class AccDownConverter implements UpdatableValueConverter {
@@ -298,16 +298,16 @@ class AccDownConverter implements UpdatableValueConverter {
         this.faustToAcc = new Interpolator3pt(fmin, fmid, fmax, amax, amid, amin);
     }
     uiToFaust(x: number) { return this.accToFaust.returnMappedValue(x) }
-    faustToUi(x: number) { return this.accToFaust.returnMappedValue(x) };
+    faustToUi(x: number) { return this.accToFaust.returnMappedValue(x) }
     setMappingValues(amin: number, amid: number, amax: number, min: number, init: number, max: number): void {
         this.accToFaust = new Interpolator3pt(amin, amid, amax, max, init, min);
         this.faustToAcc = new Interpolator3pt(min, init, max, amax, amid, amin);
-    };
+    }
     getMappingValues(amin: number, amid: number, amax: number): InterpolateObject3pt {
         return this.accToFaust.getMappingValues(amin, amid, amax);
-    };
-    setActive(onOff: boolean): void { this.fActive = onOff };
-    getActive(): boolean { return this.fActive };
+    }
+    setActive(onOff: boolean): void { this.fActive = onOff }
+    getActive(): boolean { return this.fActive }
 }
 
 class AccUpDownConverter {
@@ -320,16 +320,16 @@ class AccUpDownConverter {
         this.faustToAcc = new Interpolator(fmin, fmax, amin, amax);
     }
     uiToFaust(x: number) { return this.accToFaust.returnMappedValue(x) }
-    faustToUi(x: number) { return this.accToFaust.returnMappedValue(x) };
+    faustToUi(x: number) { return this.accToFaust.returnMappedValue(x) }
     setMappingValues(amin: number, amid: number, amax: number, min: number, init: number, max: number): void {
         this.accToFaust = new Interpolator3pt(amin, amid, amax, min, max, min);
         this.faustToAcc = new Interpolator(min, max, amin, amax);
-    };
+    }
     getMappingValues(amin: number, amid: number, amax: number): InterpolateObject3pt {
         return this.accToFaust.getMappingValues(amin, amid, amax);
-    };
-    setActive(onOff: boolean): void { this.fActive = onOff };
-    getActive(): boolean { return this.fActive };
+    }
+    setActive(onOff: boolean): void { this.fActive = onOff }
+    getActive(): boolean { return this.fActive }
 }
 
 class AccDownUpConverter {
@@ -342,14 +342,14 @@ class AccDownUpConverter {
         this.faustToAcc = new Interpolator(fmin, fmax, amin, amax);
     }
     uiToFaust(x: number) { return this.accToFaust.returnMappedValue(x) }
-    faustToUi(x: number) { return this.accToFaust.returnMappedValue(x) };
+    faustToUi(x: number) { return this.accToFaust.returnMappedValue(x) }
     setMappingValues(amin: number, amid: number, amax: number, min: number, init: number, max: number): void {
         this.accToFaust = new Interpolator3pt(amin, amid, amax, max, min, max);
         this.faustToAcc = new Interpolator(min, max, amin, amax);
-    };
+    }
     getMappingValues(amin: number, amid: number, amax: number): InterpolateObject3pt {
         return this.accToFaust.getMappingValues(amin, amid, amax);
-    };
-    setActive(onOff: boolean): void { this.fActive = onOff };
-    getActive(): boolean { return this.fActive };
+    }
+    setActive(onOff: boolean): void { this.fActive = onOff }
+    getActive(): boolean { return this.fActive }
 }

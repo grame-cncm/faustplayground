@@ -137,7 +137,13 @@ class App {
             return null;
         }
 
-        var module: ModuleClass = new ModuleClass(Utilitary.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), (module) => { Utilitary.currentScene.removeModule(module) }, this.compileFaust);
+        var module: ModuleClass = new ModuleClass(Utilitary.idX++,
+                                                  this.tempModuleX,
+                                                  this.tempModuleY,
+                                                  this.tempModuleName,
+                                                  document.getElementById("modules"),
+                                                  (module) => { Utilitary.currentScene.removeModule(module) },
+                                                  this.compileFaust);
         module.moduleFaust.setSource(this.tempModuleSourceCode);
         module.createDSP(factory);
         module.setFaustInterfaceControles();
@@ -148,18 +154,18 @@ class App {
         if (this.tempModuleName != "input" && this.tempModuleName != "output") {
             module.moduleView.fModuleContainer.ondrop = (e) => {
                 e.stopPropagation();
-                this.styleOnDragEnd()
+                this.styleOnDragEnd();
                 this.uploadOn(this, module, 0, 0, e)
             };
         }
         module.moduleView.fModuleContainer.ondragover = () => {
             module.moduleView.fModuleContainer.style.opacity = "1";
             module.moduleView.fModuleContainer.style.boxShadow = "0 0 40px rgb(255, 0, 0)";
-        }
+        };
         module.moduleView.fModuleContainer.ondragleave = () => {
             module.moduleView.fModuleContainer.style.opacity = "0.5";
             module.moduleView.fModuleContainer.style.boxShadow = "0 5px 10px rgba(0, 0, 0, 0.4)";
-        }
+        };
         // the current scene add the module and hide the loading page 
         Utilitary.currentScene.addModule(module);
         if (!Utilitary.currentScene.isInitLoading) {
