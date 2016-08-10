@@ -15,6 +15,7 @@ class MenuView {
     accButton: HTMLElement;
     loadButton: HTMLElement;
     saveButton: HTMLElement;
+    playersButton: HTMLElement;
     libraryContent: HTMLElement;
     loadContent: HTMLElement;
     exportContent: HTMLElement;
@@ -96,13 +97,17 @@ class MenuView {
         cleanButton.className = "buttonsLittleMenu";
         this.cleanButton = cleanButton;
 
+        this.playersButton = document.createElement('div');
+        this.playersButton.id = 'playersButton';
+        this.playersButton.className = 'buttonsMenu';
+        this.playersButton.innerText = Utilitary.messageRessource.buttonPlayers;
 
         if (!Utilitary.isAccelerometerOn) {
             accButton.style.opacity = "0.2";
-
         }
 
         buttonsMenu.appendChild(libraryButtonMenu);
+        buttonsMenu.appendChild(this.playersButton);
         buttonsMenu.appendChild(loadButtonMenu)
         buttonsMenu.appendChild(editButtonMenu);
         buttonsMenu.appendChild(saveButtonMenu);

@@ -1,49 +1,41 @@
 ﻿<?xml version="1.0" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" >
-<html class="no-js" lang="en">
-<head>
+<html>
+	<head>
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+		<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+		<title>FaustPlayGround</title>
+    <link rel="shortcut icon" href="favicon.ico" />
 
-	<title>FaustPlayGround</title>
-
-	<link rel="shortcut icon" href="favicon.ico" />
-
-<!-- CSS DESCRIPTIONS -->
-	<link rel="stylesheet" href="css/Reset.css" />
-	<link rel="stylesheet" href="css/Main.css" />
-	<link rel="stylesheet" href="css/FaustInterface.css" />
-	<link rel="stylesheet" href="css/Library.css" />
-	<link rel="stylesheet" href="css/Modules.css" />
-	<link rel="stylesheet" href="css/Scenes.css" />
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/Reset.css" />
+    <link rel="stylesheet" href="css/Main.css" />
+    <link rel="stylesheet" href="css/FaustInterface.css" />
+    <link rel="stylesheet" href="css/Library.css" />
+    <link rel="stylesheet" href="css/Modules.css" />
+    <link rel="stylesheet" href="css/Scenes.css" />
     <link rel="stylesheet" href="css/Playground.css" />
     <link rel="stylesheet" href="css/Menu.css" />
-	<link rel="stylesheet" href="css/AccelerometerEdit.css" />
+    <link rel="stylesheet" href="css/AccelerometerEdit.css" />
     <link rel="stylesheet" href="css/perfect-scrollbar.min.css" />
-<!-- JAVASCRIPT FUNCTIONS -->
+  </head>
+  <body>
+      <div id="loadingPage">
+          <div id="loadingTextBig">Loading</div>
+      </div>
+  </body>
 
 
-	<script>
-	if (window != window.top)
-		document.write("<style>header {display:none}</style>")
-	</script>
-</head>
-<body>
-    <div id="loadingPage">
-        <div id="loadingTextBig">Loading</div>
-    </div>
-</body>
+  <!-- JS libraries -->
+  <script type="text/javascript" src="js/Lib/AudioContextMonkeyPatch.js"></script>
+  <script type="text/javascript" src="js/Lib/qrcode.js"></script>
+  <script type="text/javascript" src="js/Lib/perfectScrollBar/js/perfect-scrollbar.min.js"></script>
+  <script type="text/javascript" src="js/Lib/webaudio-asm-worker-wrapper.js"></script>
+  <script type="text/javascript" src="js/Lib/FileSaver.min.js"></script>
+  <script type="text/javascript" src="https://apis.google.com/js/client.js?onload=checkAuth"></script>
 
-
-<!-- JAVASCRIPT LIBRARIES USED -->
-<script src="js/Lib/AudioContextMonkeyPatch.js"></script>
-<script src="js/Lib/qrcode.js"></script>
-<script src="js/Lib/perfectScrollBar/js/perfect-scrollbar.min.js"></script>
-<script src="js/Lib/webaudio-asm-worker-wrapper.js"></script>
-<script src="js/Lib/FileSaver.min.js"></script>
-<script src="https://apis.google.com/js/client.js?onload=checkAuth"></script>
-
-<script src="js/faustplayground.js"></script>
+  <!-- JS Faust Play Ground -->
+  <script src="js/faustplayground.js"></script>
 
 </html>

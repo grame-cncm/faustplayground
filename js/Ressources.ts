@@ -51,6 +51,7 @@ class Ressources {
 
     //MenuView messages
     buttonLibrary: string;
+    buttonPlayers: string;
     buttonLoad: string;
     buttonEdit: string;
     buttonSave: string;

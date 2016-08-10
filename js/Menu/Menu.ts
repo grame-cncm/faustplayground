@@ -11,7 +11,8 @@
     /// <reference path="AccelerometerEdit.ts"/>
     /// <reference path="../DriveAPI.ts"/> 
     /// <reference path="../Messages.ts"/>
-  
+    /// <reference path="Players.ts"/>
+
 interface Document {
     cancelFullScreen: () => any;
     mozCancelFullScreen: () => any;
@@ -30,7 +31,7 @@ class Menu {
     currentMenuChoices: MenuChoices = MenuChoices.null;
     menuView: MenuView;
     library: Library;
-    load: Load
+    load: Load;
     save: Save;
     expor: Export;
     accEdit: AccelerometerEdit;
@@ -38,6 +39,7 @@ class Menu {
     isFullScreen: boolean = false;
     isAccelerometer: boolean = Utilitary.isAccelerometerOn;
     drive: DriveAPI;
+    players: Players;
 
     constructor(htmlContainer: HTMLElement) {
         //create and init menu view wich gone create and init all sub menus views
@@ -57,16 +59,16 @@ class Menu {
         this.menuView.cleanButton.addEventListener("click", () => { new Confirm(Utilitary.messageRessource.confirmEmptyScene, (callback) => { this.cleanScene(callback) }) });
 
         //add eventListern customs
-        document.addEventListener("updatename", (e) => { this.updatePatchNameToInput(e) })
+        document.addEventListener("updatename", (e) => { this.updatePatchNameToInput(e) });
         document.addEventListener("codeeditevent", () => { this.customeCodeEditEvent() });
         document.addEventListener("updatelist", () => { this.updateSelectLocalEvent() });
         document.addEventListener("authon", () => { this.authOn() });
         document.addEventListener("authoff", () => { this.authOff() });
-        document.addEventListener("fillselect", (optionEvent: CustomEvent) => { this.fillSelectCloud(optionEvent) })
+        document.addEventListener("fillselect", (optionEvent: CustomEvent) => { this.fillSelectCloud(optionEvent) });
         document.addEventListener("updatecloudselect", () => { this.updateSelectCloudEvent() });
-        document.addEventListener("startloaddrive", () => { this.startLoadingDrive() })
-        document.addEventListener("finishloaddrive", () => { this.finishLoadingDrive() })
-        document.addEventListener("clouderror", (e: CustomEvent) => { this.connectionProblem(e) })
+        document.addEventListener("startloaddrive", () => { this.startLoadingDrive() });
+        document.addEventListener("finishloaddrive", () => { this.finishLoadingDrive() });
+        document.addEventListener("clouderror", (e: CustomEvent) => { Menu.connectionProblem(e) });
 
         //create and init all menus objects
         this.library = new Library();
@@ -77,11 +79,11 @@ class Menu {
         this.drive = new DriveAPI();
         this.load.drive = this.drive;
         this.load.setEventListeners();
-        this.fillSelectLocal(this.load.loadView.existingSceneSelect);
+        Menu.fillSelectLocal(this.load.loadView.existingSceneSelect);
         this.save = new Save();
         this.save.saveView = this.menuView.saveView;
         this.save.setEventListeners();
-        this.fillSelectLocal(this.save.saveView.existingSceneSelect);
+        Menu.fillSelectLocal(this.save.saveView.existingSceneSelect);
         this.expor = new Export();
         this.expor.exportView = this.menuView.exportView;
         this.expor.uploadTargets();
@@ -89,6 +91,7 @@ class Menu {
         this.help = new Help();
         this.help.helpView = this.menuView.helpView;
         this.accEdit = new AccelerometerEdit(this.menuView.accEditView);
+        this.players = new Players();
     }
 
 
@@ -321,7 +324,7 @@ class Menu {
     //hide all elements currently displayed in the menu
     cleanMenu() {
         if (this.accEdit.isOn) {
-            this.accEdit.editAction()
+            this.accEdit.editAction();
             this.menuView.editButtonMenu.style.backgroundColor = this.menuView.menuColorDefault;
             this.menuView.editButtonMenu.style.boxShadow = "none";
             this.menuView.contentsMenu.style.display = "block";
@@ -377,7 +380,6 @@ class Menu {
 
     //handle the enabing/disabling of all slider having a accelerometer
     accelerometer() {
-        var checkboxs = document.getElementsByClassName("accCheckbox")
         if (this.isAccelerometer) {
             this.isAccelerometer = false;
             Utilitary.isAccelerometerOn = false;
@@ -415,7 +417,7 @@ class Menu {
     //removing all modules from the scene
     cleanScene(callBack: () => void) {
 
-        var modules = this.sceneCurrent.getModules()
+        var modules = this.sceneCurrent.getModules();
 
         while (modules.length != 0) {
             if (modules[0].patchID != "output" && modules[0].patchID != "input") {
@@ -437,24 +439,24 @@ class Menu {
 
     //refresh the select boxes of localstorage when adding or removing a saved scene
     updateSelectLocalEvent() {
-        this.updateSelectLocal(this.menuView.loadView.existingSceneSelect);
-        this.updateSelectLocal(this.menuView.saveView.existingSceneSelect)
+        Menu.updateSelectLocal(this.menuView.loadView.existingSceneSelect);
+        Menu.updateSelectLocal(this.menuView.saveView.existingSceneSelect)
     }
 
     //empty a selectBox
-    clearSelect(select: HTMLSelectElement) {
+    static clearSelect(select: HTMLSelectElement) {
         select.innerHTML = "";
 
     }
 
     //refresh a select box
-    updateSelectLocal(select: HTMLSelectElement) {
-        this.clearSelect(select);
-        this.fillSelectLocal(select);
+    static updateSelectLocal(select: HTMLSelectElement) {
+        Menu.clearSelect(select);
+        Menu.fillSelectLocal(select);
     }
 
     //fill select box
-    fillSelectLocal(select: HTMLSelectElement) {
+    static fillSelectLocal(select: HTMLSelectElement) {
         if (typeof sessionStorage != 'undefined') {
             for (var i = 0; i < localStorage.length; i++) {
                 var option = document.createElement("option");
@@ -499,14 +501,14 @@ class Menu {
         this.save.saveView.buttonConnectDrive.style.display = "block";
         this.save.saveView.buttonCloudSuppr.style.display = "none";
         this.save.saveView.inputCloudStorage.style.display = "none";
-        this.clearSelect(this.save.saveView.cloudSelectFile);
-        this.clearSelect(this.load.loadView.cloudSelectFile);
+        Menu.clearSelect(this.save.saveView.cloudSelectFile);
+        Menu.clearSelect(this.load.loadView.cloudSelectFile);
 
         window.open("https://accounts.google.com/logout", "newwindow", "width=500,height=700")
 
     }
     //display Drive Connection error
-    connectionProblem(event: CustomEvent) {
+    static connectionProblem(event: CustomEvent) {
         new Message(Utilitary.messageRessource.errorConnectionCloud + " : " + event.detail)
     }
 
@@ -517,8 +519,8 @@ class Menu {
         this.save.saveView.cloudSelectFile.add(optionSave);
     }
     updateSelectCloudEvent() {
-        this.clearSelect(this.load.loadView.cloudSelectFile);
-        this.clearSelect(this.save.saveView.cloudSelectFile);
+        Menu.clearSelect(this.load.loadView.cloudSelectFile);
+        Menu.clearSelect(this.save.saveView.cloudSelectFile);
         this.drive.updateConnection();
     }
     
