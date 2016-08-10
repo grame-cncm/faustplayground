@@ -24,8 +24,8 @@ window.addEventListener('load', init, false);
 //then resumeInit on callback when text is loaded
 function init(): void {
     var app: App = new App();
-    var ressource = new Ressources
-    ressource.getRessources(app);
+    var ressources = new Ressources();
+    ressources.getRessources(app);
 }
 //callback when text is loaded. resume the initialization
 function resumeInit(app: App) {
