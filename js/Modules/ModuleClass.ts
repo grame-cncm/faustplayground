@@ -1,8 +1,7 @@
 /*				MODULECLASS.JS
 	HAND-MADE JAVASCRIPT CLASS CONTAINING A FAUST MODULE AND ITS INTERFACE
-	
 
-		
+
 */
 
 /// <reference path="../Dragging.ts"/>
@@ -25,7 +24,7 @@
 class ModuleClass  {
     static isNodesModuleUnstyle: boolean = true;
     //drag object to handle dragging of module and connection
-    drag: Drag = new Drag()
+    drag: Drag = new Drag();
     dragList: Drag[] = [];
     //used only for save or recall
     patchID: string;
@@ -49,8 +48,8 @@ class ModuleClass  {
 
     constructor(id: number, x: number, y: number, name: string, htmlElementModuleContainer: HTMLElement, removeModuleCallBack: (m: ModuleClass) => void, compileFaust: (compileFaust: CompileFaust) => void) {
         this.eventConnectorHandler = (event: MouseEvent) => { this.dragCnxCallback(event, this) };
-        this.eventCloseEditHandler = (event: MouseEvent) => { this.recompileSource(event, this) }
-        this.eventOpenEditHandler = () => { this.edit() }
+        this.eventCloseEditHandler = (event: MouseEvent) => { this.recompileSource(event, this) };
+        this.eventOpenEditHandler = () => { this.edit() };
         this.compileFaust = compileFaust;
 
         this.deleteCallback = removeModuleCallBack;
@@ -129,7 +128,7 @@ class ModuleClass  {
             newdrag.isDragConnector = true;
             newdrag.originTarget = <HTMLElement>event.target;
             module.dragList.push(newdrag);
-            var index = module.dragList.length - 1
+            var index = module.dragList.length - 1;
             module.dragList[index].getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module, e) => { module.dragList[index].startDraggingConnector(el, x, y, module, e) });
 
         } else if (event.type == "touchmove") {
@@ -160,7 +159,7 @@ class ModuleClass  {
 
     deleteModule(): void {
 
-        var connector: Connector = new Connector()
+        var connector: Connector = new Connector();
         connector.disconnectModule(this);
 
         this.deleteFaustInterface();	
@@ -204,7 +203,7 @@ class ModuleClass  {
                 throw new Error("create DSP Error factory null")
             }
         } catch (e) {
-            new Message(Utilitary.messageRessource.errorCreateDSP + " : " + e)
+            new Message(Utilitary.messageRessource.errorCreateDSP + " : " + e);
             Utilitary.hideFullPageLoading();
         }
     }
@@ -213,24 +212,24 @@ class ModuleClass  {
     private updateDSP(factory: Factory, module: ModuleClass): void {
 
         var toDelete: IfDSP = module.moduleFaust.fDSP;
-	
+
         // 	Save Cnx
-        var saveOutCnx: Connector[] = new Array().concat(module.moduleFaust.fOutputConnections);
-        var saveInCnx: Connector[] = new Array().concat(module.moduleFaust.fInputConnections);
-			
+        var saveOutCnx: Connector[] = [].concat(module.moduleFaust.fOutputConnections);
+        var saveInCnx: Connector[] = [].concat(module.moduleFaust.fInputConnections);
+
         // Delete old ModuleClass 
         var connector: Connector = new Connector();
         connector.disconnectModule(module);
 
         module.deleteFaustInterface();
         module.moduleView.deleteInputOutputNodes();	
- 		
+
         // Create new one
 
         module.createDSP(factory);
         module.moduleFaust.fName = module.moduleFaust.fTempName;
-        module.moduleFaust.fSource = module.moduleFaust.fTempSource
-        module.setFaustInterfaceControles()
+        module.moduleFaust.fSource = module.moduleFaust.fTempSource;
+        module.setFaustInterfaceControles();
         module.createFaustInterface();
         module.addInputOutputNodes();
 
@@ -264,7 +263,7 @@ class ModuleClass  {
 
         this.saveInterfaceParams();
 
-        var event: CustomEvent = new CustomEvent("codeeditevent")
+        var event: CustomEvent = new CustomEvent("codeeditevent");
         document.dispatchEvent(event);
 
         this.deleteFaustInterface();
@@ -284,7 +283,7 @@ class ModuleClass  {
     //---- Update ModuleClass with new name/code source
     update(name: string, code: string): void {
 
-        var event: CustomEvent = new CustomEvent("codeeditevent")
+        var event: CustomEvent = new CustomEvent("codeeditevent");
         document.dispatchEvent(event);
         this.moduleFaust.fTempName = name;
         this.moduleFaust.fTempSource = code;
@@ -299,7 +298,7 @@ class ModuleClass  {
         var dsp_code: string = this.moduleView.textArea.value;
         this.moduleView.textArea.style.display = "none";
         Connector.redrawOutputConnections(this, this.drag);
-        Connector.redrawInputConnections(this, this.drag)
+        Connector.redrawInputConnections(this, this.drag);
         module.update(this.moduleView.fTitle.textContent, dsp_code);
         module.recallInterfaceParams();
 
@@ -373,7 +372,7 @@ class ModuleClass  {
     // Updates Faust Code with new accelerometer metadata
     updateCodeFaust(details: ElementCodeFaustParser) {
         var m = forgeAccMetadata(details.newAccValue, details.isEnabled);
-        var s = updateAccInFaustCode(this.moduleFaust.fSource, details.sliderName, m );
+        var s = updateAccInFaustCode(this.moduleFaust.fSource, details.sliderName, m);
         this.moduleFaust.fSource = s; 
     }
     
@@ -473,15 +472,15 @@ class ModuleClass  {
     //manage style of node when touchover will dragging
     //make the use easier for connections
     styleInputNodeTouchDragOver(el: HTMLElement) {
-        el.style.border = "15px double rgb(0, 211, 255)"
-        el.style.left = "-32px"
-        el.style.marginTop = "-32px"
+        el.style.border = "15px double rgb(0, 211, 255)";
+        el.style.left = "-32px";
+        el.style.marginTop = "-32px";
         ModuleClass.isNodesModuleUnstyle = false;
     }
     styleOutputNodeTouchDragOver(el: HTMLElement) {
-        el.style.border = "15px double rgb(0, 211, 255)"
-        el.style.right = "-32px"
-        el.style.marginTop = "-32px"
+        el.style.border = "15px double rgb(0, 211, 255)";
+        el.style.right = "-32px";
+        el.style.marginTop = "-32px";
         ModuleClass.isNodesModuleUnstyle = false;
     }
 }
