@@ -1,150 +1,516 @@
-/*				CONNECT.JS
-    Handles Audio/Graphical Connection/Deconnection of modules
-    This is a historical file from Chris Wilson, modified for Faust ModuleClass needs.
-        
-*/
-/// <reference path="Modules/ModuleClass.ts"/>
+/// <reference path="App.ts"/>
 /// <reference path="Utilitary.ts"/>
-/// <reference path="Dragging.ts"/>
-"use strict";
-var Connector = (function () {
-    function Connector() {
+//contains all the key of resources json files in folders ressources
+var Ressources = (function () {
+    function Ressources() {
     }
-    // connect input node to device input
-    Connector.prototype.connectInput = function (inputModule, divSrc) {
-        divSrc.audioNode.connect(inputModule.moduleFaust.getDSP().getProcessor());
+    //get ressource depending on the location, default is french
+    Ressources.prototype.getRessources = function (app) {
+        var _this = this;
+        var localization = navigator.language;
+        if (localization == "fr" || localization == "fr-FR") {
+            Utilitary.getXHR("ressources/ressources_fr-FR.json", function (ressource) { _this.loadMessages(ressource, app); }, Utilitary.errorCallBack);
+        }
+        else {
+            Utilitary.getXHR("ressources/ressources_en-EN.json", function (ressource) { _this.loadMessages(ressource, app); }, Utilitary.errorCallBack);
+        }
     };
-    //connect output to device output
-    Connector.prototype.connectOutput = function (outputModule, divOut) {
-        outputModule.moduleFaust.getDSP().getProcessor().connect(divOut.audioNode);
+    // load the json object
+    Ressources.prototype.loadMessages = function (ressourceJson, app) {
+        Utilitary.messageRessource = JSON.parse(ressourceJson);
+        resumeInit(app);
     };
-    // Connect Nodes in Web Audio Graph
-    Connector.prototype.connectModules = function (source, destination) {
-        var sourceDSP;
-        var destinationDSP;
-        if (destination != null && destination.moduleFaust.getDSP) {
-            destinationDSP = destination.moduleFaust.getDSP();
+    return Ressources;
+}());
+//Contain Message, MessageView, Confirm, Confirm view class
+var Message = (function () {
+    //Message show up and set a time out, if nothing happen, it remove it self
+    //if one click, it stays, if double click it's removed (also the close button works)
+    //fadeOutType can be eather null or "messageTransitionOutFast", to have new animation create new rules css
+    function Message(message, fadeOutType, duration, delay) {
+        var _this = this;
+        this.isTouch = false;
+        this.fadeOutType = "messageTransitionOut";
+        this.duration = 10000;
+        this.delay = 4000;
+        this.messageView = new MessageView();
+        this.messageViewContainer = this.messageView.init();
+        this.messageView.message.textContent = message;
+        this.removeEventHandler = function (e) { _this.removeMessage(e); };
+        this.messageView.closeButton.addEventListener("click", this.removeEventHandler);
+        if (fadeOutType != undefined) {
+            this.fadeOutType = fadeOutType;
         }
-        if (source.moduleFaust.getDSP) {
-            sourceDSP = source.moduleFaust.getDSP();
+        if (duration != undefined) {
+            this.duration = duration;
         }
-        if (sourceDSP.getProcessor && destinationDSP.getProcessor()) {
-            sourceDSP.getProcessor().connect(destinationDSP.getProcessor());
+        if (delay != undefined) {
+            this.delay = delay;
         }
-        source.setDSPValue();
-        destination.setDSPValue();
+        document.getElementById("dialogue").appendChild(this.messageViewContainer);
+        this.timeoutHide = setTimeout(function () { _this.hideMessage(); }, this.duration);
+        setTimeout(function () { _this.displayMessage(); }, 500);
+        document.addEventListener("messagedbltouch", function () { _this.removeEventHandler(); });
+        this.messageViewContainer.addEventListener("click", function (e) { _this.clearTimeouts(e); });
+        this.messageViewContainer.addEventListener("click", function () { _this.dbleTouchMessage(); });
+        this.messageViewContainer.addEventListener("dblclick", function () { _this.removeEventHandler(); });
+    }
+    Message.prototype.displayMessage = function () {
+        this.messageViewContainer.classList.remove("messageHide");
+        this.messageViewContainer.classList.add("messageShow");
+        this.messageViewContainer.classList.add("messageTransitionIn");
+        this.messageViewContainer.classList.remove(this.fadeOutType);
     };
-    // Disconnect Nodes in Web Audio Graph
-    Connector.prototype.disconnectModules = function (source, destination) {
-        // We want to be dealing with the audio node elements from here on
-        var sourceCopy = source;
-        var sourceCopyDSP;
-        // Searching for src/dst DSP if existing
-        if (sourceCopy != undefined && sourceCopy.moduleFaust.getDSP) {
-            sourceCopyDSP = sourceCopy.moduleFaust.getDSP();
-            sourceCopyDSP.getProcessor().disconnect();
+    Message.prototype.hideMessage = function () {
+        var _this = this;
+        if (this.messageViewContainer != undefined) {
+            this.messageViewContainer.classList.remove("messageTransitionIn");
+            this.messageViewContainer.classList.add(this.fadeOutType);
+            this.messageViewContainer.classList.add("messageHide");
+            this.messageViewContainer.classList.remove("messageShow");
+            this.timeoutRemove = setTimeout(function () { _this.removeMessage(); }, this.delay);
         }
-        // Reconnect all disconnected connections (because disconnect API cannot break a single connection)
-        if (source != undefined && source.moduleFaust.getOutputConnections()) {
-            for (var i = 0; i < source.moduleFaust.getOutputConnections().length; i++) {
-                if (source.moduleFaust.getOutputConnections()[i].destination != destination)
-                    this.connectModules(source, source.moduleFaust.getOutputConnections()[i].destination);
+    };
+    Message.prototype.removeMessage = function (e) {
+        if (e != undefined) {
+            e.stopPropagation();
+            e.preventDefault();
+        }
+        if (this.messageViewContainer != undefined) {
+            this.messageViewContainer.remove();
+            delete this.messageViewContainer;
+        }
+    };
+    Message.prototype.dbleTouchMessage = function () {
+        var _this = this;
+        if (!this.isTouch) {
+            this.isTouch = true;
+            window.setTimeout(function () { _this.isTouch = false; }, 300);
+        }
+        else {
+            this.dispatchEventCloseDblTouch();
+            this.isTouch = false;
+        }
+    };
+    Message.prototype.dispatchEventCloseDblTouch = function () {
+        var event = new CustomEvent("messagedbltouch");
+        document.dispatchEvent(event);
+    };
+    Message.prototype.clearTimeouts = function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        clearTimeout(this.timeoutHide);
+        if (this.timeoutRemove != undefined) {
+            clearTimeout(this.timeoutRemove);
+        }
+        this.displayMessage();
+    };
+    return Message;
+}());
+var MessageView = (function () {
+    function MessageView() {
+    }
+    MessageView.prototype.init = function () {
+        var messageContainer = document.createElement("div");
+        messageContainer.className = "messageContainer messageHide messageTransitionIn";
+        var closeButton = document.createElement("div");
+        closeButton.id = "closeButton";
+        this.closeButton = closeButton;
+        var message = document.createElement("div");
+        message.className = "message";
+        this.message = message;
+        messageContainer.appendChild(closeButton);
+        messageContainer.appendChild(message);
+        return messageContainer;
+    };
+    return MessageView;
+}());
+// take message text and callback as parmater
+//if validate, the callback is used, other with the confirm is removed
+var Confirm = (function () {
+    function Confirm(message, callback) {
+        var _this = this;
+        this.confirmView = new ConfirmView();
+        this.confirmViewContainer = this.confirmView.init();
+        this.confirmView.message.textContent = message;
+        document.getElementById("dialogue").appendChild(this.confirmViewContainer);
+        this.displayMessage();
+        this.confirmView.validButton.addEventListener("click", function () { callback(function () { _this.removeMessage(); }); });
+        this.confirmView.cancelButton.addEventListener("click", function () { _this.removeMessage(); });
+    }
+    Confirm.prototype.displayMessage = function () {
+        this.confirmViewContainer.classList.remove("messageHide");
+        this.confirmViewContainer.classList.add("messageShow");
+    };
+    Confirm.prototype.removeMessage = function (e) {
+        if (e != undefined) {
+            e.stopPropagation();
+            e.preventDefault();
+        }
+        if (this.confirmViewContainer != undefined) {
+            this.confirmViewContainer.remove();
+            delete this.confirmViewContainer;
+        }
+    };
+    return Confirm;
+}());
+var ConfirmView = (function () {
+    function ConfirmView() {
+    }
+    ConfirmView.prototype.init = function () {
+        var messageContainer = document.createElement("div");
+        messageContainer.className = "messageContainer messageHide";
+        var message = document.createElement("div");
+        message.className = "message";
+        this.message = message;
+        var validContainer = document.createElement("div");
+        validContainer.className = "validConfirmContainer";
+        var validButton = document.createElement("button");
+        validButton.id = "validButton";
+        validButton.className = "accButton";
+        this.validButton = validButton;
+        var cancelButton = document.createElement("button");
+        cancelButton.id = "cancelButton";
+        cancelButton.className = "accButton";
+        this.cancelButton = cancelButton;
+        validContainer.appendChild(cancelButton);
+        validContainer.appendChild(validButton);
+        messageContainer.appendChild(message);
+        messageContainer.appendChild(validContainer);
+        return messageContainer;
+    };
+    return ConfirmView;
+}());
+// class to handel Drive Api request//
+// using the v2 version
+/// <reference path="Messages.ts"/>
+/// <reference path="Utilitary.ts"/>
+var DriveAPI = (function () {
+    function DriveAPI() {
+        this.CLIENT_ID = '937268536763-j0tfilisap0274toolo0hehndnhgsrva.apps.googleusercontent.com';
+        this.SCOPES = ['https://www.googleapis.com/auth/drive'];
+        this.faustFolder = "FaustPlayground";
+        this.isFaustFolderPresent = false;
+        this.extension = ".jfaust";
+    }
+    /**
+     * Check if current user has authorized this application.
+    * disable to deactivate pop up window when not connected
+     */
+    DriveAPI.prototype.checkAuth = function () {
+    };
+    DriveAPI.prototype.updateConnection = function () {
+        var _this = this;
+        gapi.auth.authorize({
+            'client_id': this.CLIENT_ID,
+            'scope': this.SCOPES.join(' '),
+            'immediate': true
+        }, function (authResult) { _this.handleAuthResult(authResult); });
+    };
+    /**
+     * Handle response from authorization server.
+     *
+     * @param {Object} authResult Authorization result.
+     */
+    DriveAPI.prototype.handleAuthResult = function (authResult, auto) {
+        var buttonConnect = document.getElementById('buttonConnectLoadDrive');
+        var buttonConnect2 = document.getElementById('buttonConnectSaveDrive');
+        if (authResult && !authResult.error) {
+            // Hide auth UI, then load client library.
+            var event = new CustomEvent("authon");
+            document.dispatchEvent(event);
+            this.loadDriveApi();
+        }
+        else {
+            // Show auth UI, allowing the user to initiate authorization by
+            // clicking authorize button.
+            var event = new CustomEvent("authoff");
+            document.dispatchEvent(event);
+        }
+        if (authResult.error) {
+            var event = new CustomEvent("clouderror", { 'detail': authResult.error });
+            document.dispatchEvent(event);
+        }
+    };
+    /**
+     * Initiate auth flow in response to user clicking authorize button.
+     *
+     * @param {Event} event Button click event.
+     */
+    DriveAPI.prototype.handleAuthClick = function (event) {
+        var _this = this;
+        gapi.auth.authorize({ client_id: this.CLIENT_ID, scope: this.SCOPES, immediate: false }, function (authResult) { _this.handleAuthResult(authResult); });
+        return false;
+    };
+    /**
+     * Load Drive API client library.
+     */
+    DriveAPI.prototype.loadDriveApi = function () {
+        var _this = this;
+        var event = new CustomEvent("startloaddrive");
+        document.dispatchEvent(event);
+        gapi.client.load('drive', 'v2', function () { _this.listFolder(); });
+    };
+    /**
+     * Print files.
+     */
+    DriveAPI.prototype.listFolder = function () {
+        var _this = this;
+        var request = gapi.client.drive.files.list({
+            'maxResults': 10000,
+            'q': "title contains 'jfaust' and trashed!=true "
+        });
+        request.execute(function (resp) {
+            var event = new CustomEvent("finishloaddrive");
+            document.dispatchEvent(event);
+            var files = resp.items;
+            if (files && files.length > 0) {
+                for (var i = 0; i < files.length; i++) {
+                    var file = files[i];
+                    if (file.fileExtension == "jfaust") {
+                        _this.appendPre(file.title, file.id);
+                    }
+                }
+            }
+            else {
+                _this.appendPre(Utilitary.messageRessource.noFileOnCloud, null);
+            }
+        });
+    };
+    DriveAPI.prototype.getFileMetadata = function (fileId) {
+        var _this = this;
+        var request = gapi.client.drive.files.get({
+            'fileId': fileId
+        });
+        request.execute(function (file) {
+            _this.appendPre(file.title, file.id);
+        });
+    };
+    /**
+     * Append a pre element to the body containing the given message
+     * as its text node.
+     *
+     * @param {string} message Text to be placed in pre element.
+     */
+    DriveAPI.prototype.appendPre = function (name, id) {
+        var option = document.createElement("option");
+        option.value = id;
+        option.textContent = name.replace(/.jfaust$/, '');
+        var event = new CustomEvent("fillselect", { 'detail': option });
+        document.dispatchEvent(event);
+    };
+    /**
+ * Download a file's content.
+ *
+ * @param {File} file Drive File instance.
+ * @param {Function} callback Function to call when the request is complete.
+ */
+    DriveAPI.prototype.downloadFile = function (file, callback) {
+        if (file.downloadUrl) {
+            var accessToken = gapi.auth.getToken().access_token;
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', file.downloadUrl);
+            xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+            xhr.onload = function () {
+                callback(xhr.responseText);
+            };
+            xhr.onerror = function () {
+                callback(null);
+            };
+            xhr.send();
+        }
+        else {
+            callback(null);
+        }
+    };
+    /**
+ * Print a file's metadata.
+ *
+ * @param {String} fileId ID of the file to print metadata for.
+ */
+    DriveAPI.prototype.getFile = function (fileId, callback) {
+        var _this = this;
+        var request = gapi.client.drive.files.get({
+            'fileId': fileId
+        });
+        try {
+            request.execute(function (resp) {
+                _this.lastSavedFileMetadata = resp;
+                callback(resp);
+            });
+        }
+        catch (e) {
+            new Message("erreur");
+        }
+    };
+    DriveAPI.prototype.createFile = function (fileName, callback) {
+        var _this = this;
+        var event = new CustomEvent("startloaddrive");
+        document.dispatchEvent(event);
+        var request = gapi.client.request({
+            'path': '/drive/v2/files',
+            'method': 'POST',
+            'body': {
+                "title": fileName + this.extension,
+                "mimeType": "application/json"
+            }
+        });
+        request.execute(function (resp) {
+            _this.getFile(resp.id, function (fileMetada) { _this.updateFile(resp.id, fileMetada, _this.tempBlob, null); });
+        });
+    };
+    /**
+ * Update an existing file's metadata and content.
+ *
+ * @param {String} fileId ID of the file to update.
+ * @param {Object} fileMetadata existing Drive file's metadata.
+ * @param {File} fileData File object to read data from.
+ * @param {Function} callback Callback function to call when the request is complete.
+ */
+    DriveAPI.prototype.updateFile = function (fileId, fileMetadata, fileData, callback) {
+        var event = new CustomEvent("startloaddrive");
+        document.dispatchEvent(event);
+        var boundary = '-------314159265358979323846';
+        var delimiter = "\r\n--" + boundary + "\r\n";
+        var close_delim = "\r\n--" + boundary + "--";
+        var reader = new FileReader();
+        reader.readAsBinaryString(fileData);
+        reader.onload = function (e) {
+            var contentType = fileData.type || 'application/octet-stream';
+            // Updating the metadata is optional and you can instead use the value from drive.files.get.
+            var base64Data = btoa(reader.result);
+            var multipartRequestBody = delimiter +
+                'Content-Type: application/json\r\n\r\n' +
+                JSON.stringify(fileMetadata) +
+                delimiter +
+                'Content-Type: ' + contentType + '\r\n' +
+                'Content-Transfer-Encoding: base64\r\n' +
+                '\r\n' +
+                base64Data +
+                close_delim;
+            var request = gapi.client.request({
+                'path': '/upload/drive/v2/files/' + fileId,
+                'method': 'PUT',
+                'params': { 'uploadType': 'multipart', 'alt': 'json' },
+                'headers': {
+                    'Content-Type': 'multipart/mixed; boundary="' + boundary + '"'
+                },
+                'body': multipartRequestBody
+            });
+            if (!callback) {
+                callback = function () {
+                    var event = new CustomEvent("updatecloudselect");
+                    document.dispatchEvent(event);
+                    event = new CustomEvent("successave");
+                    document.dispatchEvent(event);
+                };
+            }
+            request.execute(callback);
+        };
+    };
+    DriveAPI.prototype.trashFile = function (fileId) {
+        var event = new CustomEvent("startloaddrive");
+        document.dispatchEvent(event);
+        var request = gapi.client.drive.files.trash({
+            'fileId': fileId
+        });
+        request.execute(function (resp) {
+            var event = new CustomEvent("updatecloudselect");
+            document.dispatchEvent(event);
+        });
+    };
+    return DriveAPI;
+}());
+/// <reference path="Modules/ModuleClass.ts"/>
+/// <reference path="Scenes/SceneClass.ts"/>
+/// <reference path="Ressources.ts"/>
+/// <reference path="DriveAPI.ts"/>
+/// <reference path="Main.ts"/>
+var Utilitary = (function () {
+    function Utilitary() {
+    }
+    Utilitary.errorCallBack = function (message) {
+    };
+    Utilitary.showFullPageLoading = function () {
+        document.getElementById("loadingPage").style.visibility = "visible";
+        //too demanding for mobile firefox...
+        //document.getElementById("Normal").style.filter = "blur(2px)"
+        //document.getElementById("Normal").style.webkitFilter = "blur(2px)"
+        //document.getElementById("menuContainer").style.filter = "blur(2px)"
+        //document.getElementById("menuContainer").style.webkitFilter = "blur(2px)"
+    };
+    Utilitary.hideFullPageLoading = function () {
+        document.getElementById("loadingPage").style.visibility = "hidden";
+        //document.getElementById("Normal").style.filter = "none"
+        //document.getElementById("Normal").style.webkitFilter = "none"
+        //document.getElementById("menuContainer").style.filter = "none"
+        //document.getElementById("menuContainer").style.webkitFilter = "none"
+    };
+    Utilitary.isAppPedagogique = function () {
+        if (window.location.href.indexOf("kids.html") > -1) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    };
+    //generic function to make XHR request
+    Utilitary.getXHR = function (url, callback, errCallback) {
+        var getrequest = new XMLHttpRequest();
+        getrequest.onreadystatechange = function () {
+            console.log("enter onreadystatechange");
+            if (getrequest.readyState == 4 && getrequest.status == 200) {
+                callback(getrequest.responseText);
+            }
+            else if (getrequest.readyState == 4 && getrequest.status == 400) {
+                errCallback(getrequest.responseText);
+            }
+        };
+        getrequest.open("GET", url, true);
+        getrequest.send(null);
+    };
+    Utilitary.addLoadingLogo = function (idTarget) {
+        var loadingDiv = document.createElement("div");
+        loadingDiv.className = "loadingDiv";
+        var loadingImg = document.createElement("img");
+        loadingImg.src = Utilitary.baseImg + "logoAnim.gif";
+        loadingImg.id = "loadingImg";
+        var loadingText = document.createElement("span");
+        loadingText.textContent = Utilitary.messageRessource.loading;
+        loadingText.id = "loadingText";
+        loadingDiv.appendChild(loadingImg);
+        loadingDiv.appendChild(loadingText);
+        if (document.getElementById(idTarget) != null) {
+            document.getElementById(idTarget).appendChild(loadingDiv);
+        }
+    };
+    Utilitary.removeLoadingLogo = function (idTarget) {
+        var divTarget = document.getElementById(idTarget);
+        if (divTarget != null && divTarget.getElementsByClassName("loadingDiv").length > 0) {
+            while (divTarget.getElementsByClassName("loadingDiv").length != 0) {
+                divTarget.getElementsByClassName("loadingDiv")[0].remove();
             }
         }
     };
-    /**************************************************/
-    /***************** Save Connection*****************/
-    /**************************************************/
-    //----- Add connection to src and dst connections structures
-    Connector.prototype.saveConnection = function (source, destination, connectorShape) {
-        this.connectorShape = connectorShape;
-        this.destination = destination;
-        this.source = source;
+    Utilitary.addFullPageLoading = function () {
+        var loadingText = document.getElementById("loadingTextBig");
+        loadingText.id = "loadingTextBig";
+        loadingText.textContent = Utilitary.messageRessource.loading;
     };
-    /***************************************************************/
-    /**************** Create/Break Connection(s) *******************/
-    /***************************************************************/
-    Connector.prototype.createConnection = function (source, outtarget, destination, intarget) {
-        var drag = new Drag();
-        drag.startDraggingConnection(source, outtarget);
-        drag.stopDraggingConnection(source, destination);
+    Utilitary.replaceAll = function (str, find, replace) {
+        return str.replace(new RegExp(find, 'g'), replace);
     };
-    Connector.prototype.deleteConnection = function (event, drag) {
-        event.stopPropagation();
-        this.breakSingleInputConnection(this.source, this.destination, this);
-        return true;
-    };
-    Connector.prototype.breakSingleInputConnection = function (source, destination, connector) {
-        this.disconnectModules(source, destination);
-        // delete connection from src .outputConnections,
-        if (source != undefined && source.moduleFaust.getOutputConnections) {
-            source.moduleFaust.removeOutputConnection(connector);
-        }
-        // delete connection from dst .inputConnections,
-        if (destination != undefined && destination.moduleFaust.getInputConnections) {
-            destination.moduleFaust.removeInputConnection(connector);
-        }
-        // and delete the connectorShape
-        if (connector.connectorShape)
-            connector.connectorShape.remove();
-    };
-    // Disconnect a node from all its connections
-    Connector.prototype.disconnectModule = function (module) {
-        //for all output nodes
-        if (module.moduleFaust.getOutputConnections && module.moduleFaust.getOutputConnections()) {
-            while (module.moduleFaust.getOutputConnections().length > 0)
-                this.breakSingleInputConnection(module, module.moduleFaust.getOutputConnections()[0].destination, module.moduleFaust.getOutputConnections()[0]);
-        }
-        //for all input nodes 
-        if (module.moduleFaust.getInputConnections && module.moduleFaust.getInputConnections()) {
-            while (module.moduleFaust.getInputConnections().length > 0)
-                this.breakSingleInputConnection(module.moduleFaust.getInputConnections()[0].source, module, module.moduleFaust.getInputConnections()[0]);
-        }
-    };
-    Connector.redrawInputConnections = function (module, drag) {
-        var offset = module.moduleView.getInputNode();
-        var x = module.moduleView.inputOutputNodeDimension / 2; // + window.scrollX ;
-        var y = module.moduleView.inputOutputNodeDimension / 2; // + window.scrollY;
-        while (offset) {
-            x += offset.offsetLeft;
-            y += offset.offsetTop;
-            offset = offset.offsetParent;
-        }
-        for (var c = 0; c < module.moduleFaust.getInputConnections().length; c++) {
-            var currentConnectorShape = module.moduleFaust.getInputConnections()[c].connectorShape;
-            var x1 = x;
-            var y1 = y;
-            var x2 = currentConnectorShape.x2;
-            var y2 = currentConnectorShape.y2;
-            var d = drag.setCurvePath(x1, y1, x2, y2, drag.calculBezier(x1, x2), drag.calculBezier(x1, x2));
-            currentConnectorShape.setAttributeNS(null, "d", d);
-            drag.updateConnectorShapePath(currentConnectorShape, x1, x2, y1, y2);
-        }
-    };
-    Connector.redrawOutputConnections = function (module, drag) {
-        var offset = module.moduleView.getOutputNode();
-        var x = module.moduleView.inputOutputNodeDimension / 2; // + window.scrollX ;
-        var y = module.moduleView.inputOutputNodeDimension / 2; // + window.scrollY;
-        while (offset) {
-            x += offset.offsetLeft;
-            y += offset.offsetTop;
-            offset = offset.offsetParent;
-        }
-        for (var c = 0; c < module.moduleFaust.getOutputConnections().length; c++) {
-            if (module.moduleFaust.getOutputConnections()[c].connectorShape) {
-                var currentConnectorShape = module.moduleFaust.getOutputConnections()[c].connectorShape;
-                var x1 = currentConnectorShape.x1;
-                var y1 = currentConnectorShape.y1;
-                var x2 = x;
-                var y2 = y;
-                var d = drag.setCurvePath(x1, y1, x2, y2, drag.calculBezier(x1, x2), drag.calculBezier(x1, x2));
-                currentConnectorShape.setAttributeNS(null, "d", d);
-                drag.updateConnectorShapePath(currentConnectorShape, x1, x2, y1, y2);
-            }
-        }
-    };
-    Connector.connectorId = 0;
-    return Connector;
+    Utilitary.messageRessource = new Ressources();
+    Utilitary.idX = 0;
+    Utilitary.baseImg = "img/";
+    Utilitary.isAccelerometerOn = false;
+    Utilitary.isAccelerometerEditOn = false;
+    return Utilitary;
+}());
+var PositionModule = (function () {
+    function PositionModule() {
+    }
+    return PositionModule;
 }());
 /*				DRAGGING.JS
     Handles Graphical Drag of Modules and Connections
@@ -508,165 +874,6 @@ var Drag = (function () {
     };
     return Drag;
 }());
-//Contain Message, MessageView, Confirm, Confirm view class
-var Message = (function () {
-    //Message show up and set a time out, if nothing happen, it remove it self
-    //if one click, it stays, if double click it's removed (also the close button works)
-    //fadeOutType can be eather null or "messageTransitionOutFast", to have new animation create new rules css
-    function Message(message, fadeOutType, duration, delay) {
-        var _this = this;
-        this.isTouch = false;
-        this.fadeOutType = "messageTransitionOut";
-        this.duration = 10000;
-        this.delay = 4000;
-        this.messageView = new MessageView();
-        this.messageViewContainer = this.messageView.init();
-        this.messageView.message.textContent = message;
-        this.removeEventHandler = function (e) { _this.removeMessage(e); };
-        this.messageView.closeButton.addEventListener("click", this.removeEventHandler);
-        if (fadeOutType != undefined) {
-            this.fadeOutType = fadeOutType;
-        }
-        if (duration != undefined) {
-            this.duration = duration;
-        }
-        if (delay != undefined) {
-            this.delay = delay;
-        }
-        document.getElementById("dialogue").appendChild(this.messageViewContainer);
-        this.timeoutHide = setTimeout(function () { _this.hideMessage(); }, this.duration);
-        setTimeout(function () { _this.displayMessage(); }, 500);
-        document.addEventListener("messagedbltouch", function () { _this.removeEventHandler(); });
-        this.messageViewContainer.addEventListener("click", function (e) { _this.clearTimeouts(e); });
-        this.messageViewContainer.addEventListener("click", function () { _this.dbleTouchMessage(); });
-        this.messageViewContainer.addEventListener("dblclick", function () { _this.removeEventHandler(); });
-    }
-    Message.prototype.displayMessage = function () {
-        this.messageViewContainer.classList.remove("messageHide");
-        this.messageViewContainer.classList.add("messageShow");
-        this.messageViewContainer.classList.add("messageTransitionIn");
-        this.messageViewContainer.classList.remove(this.fadeOutType);
-    };
-    Message.prototype.hideMessage = function () {
-        var _this = this;
-        if (this.messageViewContainer != undefined) {
-            this.messageViewContainer.classList.remove("messageTransitionIn");
-            this.messageViewContainer.classList.add(this.fadeOutType);
-            this.messageViewContainer.classList.add("messageHide");
-            this.messageViewContainer.classList.remove("messageShow");
-            this.timeoutRemove = setTimeout(function () { _this.removeMessage(); }, this.delay);
-        }
-    };
-    Message.prototype.removeMessage = function (e) {
-        if (e != undefined) {
-            e.stopPropagation();
-            e.preventDefault();
-        }
-        if (this.messageViewContainer != undefined) {
-            this.messageViewContainer.remove();
-            delete this.messageViewContainer;
-        }
-    };
-    Message.prototype.dbleTouchMessage = function () {
-        var _this = this;
-        if (!this.isTouch) {
-            this.isTouch = true;
-            window.setTimeout(function () { _this.isTouch = false; }, 300);
-        }
-        else {
-            this.dispatchEventCloseDblTouch();
-            this.isTouch = false;
-        }
-    };
-    Message.prototype.dispatchEventCloseDblTouch = function () {
-        var event = new CustomEvent("messagedbltouch");
-        document.dispatchEvent(event);
-    };
-    Message.prototype.clearTimeouts = function (e) {
-        e.stopPropagation();
-        e.preventDefault();
-        clearTimeout(this.timeoutHide);
-        if (this.timeoutRemove != undefined) {
-            clearTimeout(this.timeoutRemove);
-        }
-        this.displayMessage();
-    };
-    return Message;
-}());
-var MessageView = (function () {
-    function MessageView() {
-    }
-    MessageView.prototype.init = function () {
-        var messageContainer = document.createElement("div");
-        messageContainer.className = "messageContainer messageHide messageTransitionIn";
-        var closeButton = document.createElement("div");
-        closeButton.id = "closeButton";
-        this.closeButton = closeButton;
-        var message = document.createElement("div");
-        message.className = "message";
-        this.message = message;
-        messageContainer.appendChild(closeButton);
-        messageContainer.appendChild(message);
-        return messageContainer;
-    };
-    return MessageView;
-}());
-// take message text and callback as parmater
-//if validate, the callback is used, other with the confirm is removed
-var Confirm = (function () {
-    function Confirm(message, callback) {
-        var _this = this;
-        this.confirmView = new ConfirmView();
-        this.confirmViewContainer = this.confirmView.init();
-        this.confirmView.message.textContent = message;
-        document.getElementById("dialogue").appendChild(this.confirmViewContainer);
-        this.displayMessage();
-        this.confirmView.validButton.addEventListener("click", function () { callback(function () { _this.removeMessage(); }); });
-        this.confirmView.cancelButton.addEventListener("click", function () { _this.removeMessage(); });
-    }
-    Confirm.prototype.displayMessage = function () {
-        this.confirmViewContainer.classList.remove("messageHide");
-        this.confirmViewContainer.classList.add("messageShow");
-    };
-    Confirm.prototype.removeMessage = function (e) {
-        if (e != undefined) {
-            e.stopPropagation();
-            e.preventDefault();
-        }
-        if (this.confirmViewContainer != undefined) {
-            this.confirmViewContainer.remove();
-            delete this.confirmViewContainer;
-        }
-    };
-    return Confirm;
-}());
-var ConfirmView = (function () {
-    function ConfirmView() {
-    }
-    ConfirmView.prototype.init = function () {
-        var messageContainer = document.createElement("div");
-        messageContainer.className = "messageContainer messageHide";
-        var message = document.createElement("div");
-        message.className = "message";
-        this.message = message;
-        var validContainer = document.createElement("div");
-        validContainer.className = "validConfirmContainer";
-        var validButton = document.createElement("button");
-        validButton.id = "validButton";
-        validButton.className = "accButton";
-        this.validButton = validButton;
-        var cancelButton = document.createElement("button");
-        cancelButton.id = "cancelButton";
-        cancelButton.className = "accButton";
-        this.cancelButton = cancelButton;
-        validContainer.appendChild(cancelButton);
-        validContainer.appendChild(validButton);
-        messageContainer.appendChild(message);
-        messageContainer.appendChild(validContainer);
-        return messageContainer;
-    };
-    return ConfirmView;
-}());
 /// <reference path="Messages.ts"/>
 /// <reference path="Utilitary.ts"/>
 //==============================================================================================
@@ -795,6 +1002,289 @@ function updateAccInFaustCode(faustcode, name, newaccvalue) {
     new Message(name + Utilitary.messageRessource.errorAccSliderNotFound);
     return faustcode;
 }
+//Accelerometer Class
+/// <reference path="Utilitary.ts"/>
+/// <reference path="Modules/FaustInterface.ts"/>
+var Axis;
+(function (Axis) {
+    Axis[Axis["x"] = 0] = "x";
+    Axis[Axis["y"] = 1] = "y";
+    Axis[Axis["z"] = 2] = "z";
+})(Axis || (Axis = {}));
+var Curve;
+(function (Curve) {
+    Curve[Curve["Up"] = 0] = "Up";
+    Curve[Curve["Down"] = 1] = "Down";
+    Curve[Curve["UpDown"] = 2] = "UpDown";
+    Curve[Curve["DownUp"] = 3] = "DownUp";
+})(Curve || (Curve = {}));
+//object describing value off accelerometer metadata values. 
+var AccMeta = (function () {
+    function AccMeta() {
+    }
+    return AccMeta;
+}());
+//Contains the info regarding the mapping of the FaustInterfaceControler and the accelerometer
+var AccelerometerSlider = (function () {
+    function AccelerometerSlider(accParams) {
+        if (accParams != null) {
+            this.isEnabled = accParams.isEnabled;
+            this.acc = accParams.acc;
+            this.setAttributes(accParams.acc);
+            this.address = accParams.address;
+            this.min = accParams.min;
+            this.max = accParams.max;
+            this.init = accParams.init;
+            this.label = accParams.label;
+            this.isActive = Utilitary.isAccelerometerOn;
+        }
+    }
+    AccelerometerSlider.prototype.setAttributes = function (fMetaAcc) {
+        if (fMetaAcc != null) {
+            var arrayMeta = fMetaAcc.split(" ");
+            this.axis = parseInt(arrayMeta[0]);
+            this.curve = parseInt(arrayMeta[1]);
+            this.amin = parseInt(arrayMeta[2]);
+            this.amid = parseInt(arrayMeta[3]);
+            this.amax = parseInt(arrayMeta[4]);
+        }
+    };
+    AccelerometerSlider.prototype.setAttributesDetailed = function (axis, curve, min, mid, max) {
+        this.axis = axis;
+        this.curve = curve;
+        this.amin = min;
+        this.amid = mid;
+        this.amax = max;
+    };
+    return AccelerometerSlider;
+}());
+//object responsible of storing all accelerometerSlider and propagate to them the accelerometer infos. 
+var AccelerometerHandler = (function () {
+    function AccelerometerHandler() {
+    }
+    // get Accelerometer value
+    AccelerometerHandler.prototype.getAccelerometerValue = function () {
+        var _this = this;
+        if (window.DeviceMotionEvent) {
+            window.addEventListener("devicemotion", function (event) { _this.propagate(event); }, false);
+        }
+        else {
+            // Browser doesn't support DeviceMotionEvent
+            console.log(Utilitary.messageRessource.noDeviceMotion);
+        }
+    };
+    // propagate the new x, y, z value of the accelerometer to the registred object
+    AccelerometerHandler.prototype.propagate = function (event) {
+        var x = event.accelerationIncludingGravity.x;
+        var y = event.accelerationIncludingGravity.y;
+        var z = event.accelerationIncludingGravity.z;
+        for (var i = 0; i < AccelerometerHandler.faustInterfaceControler.length; i++) {
+            if (AccelerometerHandler.faustInterfaceControler[i].accelerometerSlider.isActive && AccelerometerHandler.faustInterfaceControler[i].accelerometerSlider.isEnabled) {
+                this.axisSplitter(AccelerometerHandler.faustInterfaceControler[i].accelerometerSlider, x, y, z, this.applyNewValueToModule);
+            }
+        }
+        // update the faustInterfaceControler of the AccelerometerEditView
+        if (AccelerometerHandler.faustInterfaceControlerEdit != null) {
+            this.axisSplitter(AccelerometerHandler.faustInterfaceControlerEdit.accelerometerSlider, x, y, z, this.applyValueToEdit);
+        }
+    };
+    //create and register accelerometerSlide
+    AccelerometerHandler.registerAcceleratedSlider = function (accParams, faustInterfaceControler, sliderEdit) {
+        var accelerometerSlide = new AccelerometerSlider(accParams);
+        faustInterfaceControler.accelerometerSlider = accelerometerSlide;
+        AccelerometerHandler.curveSplitter(accelerometerSlide);
+        if (sliderEdit) {
+            AccelerometerHandler.faustInterfaceControlerEdit = faustInterfaceControler;
+        }
+        else {
+            AccelerometerHandler.faustInterfaceControler.push(faustInterfaceControler);
+        }
+    };
+    //give the good axis value to the accelerometerslider, convert it to the faust value before
+    AccelerometerHandler.prototype.axisSplitter = function (accelerometerSlide, x, y, z, callBack) {
+        switch (accelerometerSlide.axis) {
+            case Axis.x:
+                var newVal = accelerometerSlide.converter.uiToFaust(x);
+                callBack(accelerometerSlide, newVal, x);
+                break;
+            case Axis.y:
+                var newVal = accelerometerSlide.converter.uiToFaust(y);
+                callBack(accelerometerSlide, newVal, y);
+                break;
+            case Axis.z:
+                var newVal = accelerometerSlide.converter.uiToFaust(z);
+                callBack(accelerometerSlide, newVal, z);
+                break;
+        }
+    };
+    //update value of the dsp
+    AccelerometerHandler.prototype.applyNewValueToModule = function (accSlid, newVal, axeValue) {
+        accSlid.callbackValueChange(accSlid.address, newVal);
+    };
+    //update value of the edit range in AccelerometerEditView
+    AccelerometerHandler.prototype.applyValueToEdit = function (accSlid, newVal, axeValue) {
+        AccelerometerHandler.faustInterfaceControlerEdit.faustInterfaceView.slider.value = axeValue.toString();
+    };
+    //Apply the right converter with the right curve to an accelerometerSlider 
+    AccelerometerHandler.curveSplitter = function (accelerometerSlide) {
+        switch (accelerometerSlide.curve) {
+            case Curve.Up:
+                accelerometerSlide.converter = new AccUpConverter(accelerometerSlide.amin, accelerometerSlide.amid, accelerometerSlide.amax, accelerometerSlide.min, accelerometerSlide.init, accelerometerSlide.max);
+                break;
+            case Curve.Down:
+                accelerometerSlide.converter = new AccDownConverter(accelerometerSlide.amin, accelerometerSlide.amid, accelerometerSlide.amax, accelerometerSlide.min, accelerometerSlide.init, accelerometerSlide.max);
+                break;
+            case Curve.UpDown:
+                accelerometerSlide.converter = new AccUpDownConverter(accelerometerSlide.amin, accelerometerSlide.amid, accelerometerSlide.amax, accelerometerSlide.min, accelerometerSlide.init, accelerometerSlide.max);
+                break;
+            case Curve.DownUp:
+                accelerometerSlide.converter = new AccDownUpConverter(accelerometerSlide.amin, accelerometerSlide.amid, accelerometerSlide.amax, accelerometerSlide.min, accelerometerSlide.init, accelerometerSlide.max);
+                break;
+            default:
+                accelerometerSlide.converter = new AccUpConverter(accelerometerSlide.amin, accelerometerSlide.amid, accelerometerSlide.amax, accelerometerSlide.min, accelerometerSlide.init, accelerometerSlide.max);
+        }
+    };
+    //array containing all the FaustInterfaceControler of the scene
+    AccelerometerHandler.faustInterfaceControler = [];
+    //faustInterfaceControler of the AccelerometerEditView
+    AccelerometerHandler.faustInterfaceControlerEdit = null;
+    return AccelerometerHandler;
+}());
+/***************************************************************************************
+********************  Converter objects use to map acc and faust value *****************
+****************************************************************************************/
+var MinMaxClip = (function () {
+    function MinMaxClip(x, y) {
+        this.fLo = Math.min(x, y);
+        this.fHi = Math.max(x, y);
+    }
+    MinMaxClip.prototype.clip = function (x) {
+        if (x < this.fLo) {
+            return this.fLo;
+        }
+        else if (x > this.fHi) {
+            return this.fHi;
+        }
+        else {
+            return x;
+        }
+    };
+    return MinMaxClip;
+}());
+var Interpolator = (function () {
+    function Interpolator(lo, hi, v1, v2) {
+        this.range = new MinMaxClip(lo, hi);
+        if (hi != lo) {
+            //regular case
+            this.fCoef = (v2 - v1) / (hi - lo);
+            this.fOffset = v1 - lo * this.fCoef;
+        }
+        else {
+            this.fCoef = 0;
+            this.fOffset = (v1 + v2) / 2;
+        }
+    }
+    Interpolator.prototype.returnMappedValue = function (v) {
+        var x = this.range.clip(v);
+        return this.fOffset + x * this.fCoef;
+    };
+    Interpolator.prototype.getLowHigh = function (amin, amax) {
+        return { amin: this.range.fLo, amax: this.range.fHi };
+    };
+    return Interpolator;
+}());
+var Interpolator3pt = (function () {
+    function Interpolator3pt(lo, mid, hi, v1, vMid, v2) {
+        this.fSegment1 = new Interpolator(lo, mid, v1, vMid);
+        this.fSegment2 = new Interpolator(mid, hi, vMid, v2);
+        this.fMiddle = mid;
+    }
+    Interpolator3pt.prototype.returnMappedValue = function (x) {
+        return (x < this.fMiddle) ? this.fSegment1.returnMappedValue(x) : this.fSegment2.returnMappedValue(x);
+    };
+    Interpolator3pt.prototype.getMappingValues = function (amin, amid, amax) {
+        var lowHighSegment1 = this.fSegment1.getLowHigh(amin, amid);
+        var lowHighSegment2 = this.fSegment2.getLowHigh(amid, amax);
+        return { amin: lowHighSegment1.amin, amid: lowHighSegment2.amin, amax: lowHighSegment2.amax };
+    };
+    return Interpolator3pt;
+}());
+var AccUpConverter = (function () {
+    function AccUpConverter(amin, amid, amax, fmin, fmid, fmax) {
+        this.fActive = true;
+        this.accToFaust = new Interpolator3pt(amin, amid, amax, fmin, fmid, fmax);
+        this.faustToAcc = new Interpolator3pt(fmin, fmid, fmax, amin, amid, amax);
+    }
+    AccUpConverter.prototype.uiToFaust = function (x) { return this.accToFaust.returnMappedValue(x); };
+    AccUpConverter.prototype.faustToUi = function (x) { return this.accToFaust.returnMappedValue(x); };
+    AccUpConverter.prototype.setMappingValues = function (amin, amid, amax, min, init, max) {
+        this.accToFaust = new Interpolator3pt(amin, amid, amax, min, init, max);
+        this.faustToAcc = new Interpolator3pt(min, init, max, amin, amid, amax);
+    };
+    AccUpConverter.prototype.getMappingValues = function (amin, amid, amax) {
+        return this.accToFaust.getMappingValues(amin, amid, amax);
+    };
+    AccUpConverter.prototype.setActive = function (onOff) { this.fActive = onOff; };
+    AccUpConverter.prototype.getActive = function () { return this.fActive; };
+    return AccUpConverter;
+}());
+var AccDownConverter = (function () {
+    function AccDownConverter(amin, amid, amax, fmin, fmid, fmax) {
+        this.fActive = true;
+        this.accToFaust = new Interpolator3pt(amin, amid, amax, fmax, fmid, fmin);
+        this.faustToAcc = new Interpolator3pt(fmin, fmid, fmax, amax, amid, amin);
+    }
+    AccDownConverter.prototype.uiToFaust = function (x) { return this.accToFaust.returnMappedValue(x); };
+    AccDownConverter.prototype.faustToUi = function (x) { return this.accToFaust.returnMappedValue(x); };
+    AccDownConverter.prototype.setMappingValues = function (amin, amid, amax, min, init, max) {
+        this.accToFaust = new Interpolator3pt(amin, amid, amax, max, init, min);
+        this.faustToAcc = new Interpolator3pt(min, init, max, amax, amid, amin);
+    };
+    AccDownConverter.prototype.getMappingValues = function (amin, amid, amax) {
+        return this.accToFaust.getMappingValues(amin, amid, amax);
+    };
+    AccDownConverter.prototype.setActive = function (onOff) { this.fActive = onOff; };
+    AccDownConverter.prototype.getActive = function () { return this.fActive; };
+    return AccDownConverter;
+}());
+var AccUpDownConverter = (function () {
+    function AccUpDownConverter(amin, amid, amax, fmin, fmid, fmax) {
+        this.fActive = true;
+        this.accToFaust = new Interpolator3pt(amin, amid, amax, fmin, fmax, fmin);
+        this.faustToAcc = new Interpolator(fmin, fmax, amin, amax);
+    }
+    AccUpDownConverter.prototype.uiToFaust = function (x) { return this.accToFaust.returnMappedValue(x); };
+    AccUpDownConverter.prototype.faustToUi = function (x) { return this.accToFaust.returnMappedValue(x); };
+    AccUpDownConverter.prototype.setMappingValues = function (amin, amid, amax, min, init, max) {
+        this.accToFaust = new Interpolator3pt(amin, amid, amax, min, max, min);
+        this.faustToAcc = new Interpolator(min, max, amin, amax);
+    };
+    AccUpDownConverter.prototype.getMappingValues = function (amin, amid, amax) {
+        return this.accToFaust.getMappingValues(amin, amid, amax);
+    };
+    AccUpDownConverter.prototype.setActive = function (onOff) { this.fActive = onOff; };
+    AccUpDownConverter.prototype.getActive = function () { return this.fActive; };
+    return AccUpDownConverter;
+}());
+var AccDownUpConverter = (function () {
+    function AccDownUpConverter(amin, amid, amax, fmin, fmid, fmax) {
+        this.fActive = true;
+        this.accToFaust = new Interpolator3pt(amin, amid, amax, fmax, fmin, fmax);
+        this.faustToAcc = new Interpolator(fmin, fmax, amin, amax);
+    }
+    AccDownUpConverter.prototype.uiToFaust = function (x) { return this.accToFaust.returnMappedValue(x); };
+    AccDownUpConverter.prototype.faustToUi = function (x) { return this.accToFaust.returnMappedValue(x); };
+    AccDownUpConverter.prototype.setMappingValues = function (amin, amid, amax, min, init, max) {
+        this.accToFaust = new Interpolator3pt(amin, amid, amax, max, min, max);
+        this.faustToAcc = new Interpolator(min, max, amin, amax);
+    };
+    AccDownUpConverter.prototype.getMappingValues = function (amin, amid, amax) {
+        return this.accToFaust.getMappingValues(amin, amid, amax);
+    };
+    AccDownUpConverter.prototype.setActive = function (onOff) { this.fActive = onOff; };
+    AccDownUpConverter.prototype.getActive = function () { return this.fActive; };
+    return AccDownUpConverter;
+}());
 /// <reference path="../Accelerometer.ts"/>
 /// <reference path="../Utilitary.ts"/>
 /*				FAUSTINTERFACE.JS
@@ -1639,6 +2129,154 @@ var ModuleClass = (function () {
     };
     ModuleClass.isNodesModuleUnstyle = true;
     return ModuleClass;
+}());
+/*				CONNECT.JS
+    Handles Audio/Graphical Connection/Deconnection of modules
+    This is a historical file from Chris Wilson, modified for Faust ModuleClass needs.
+        
+*/
+/// <reference path="Modules/ModuleClass.ts"/>
+/// <reference path="Utilitary.ts"/>
+/// <reference path="Dragging.ts"/>
+"use strict";
+var Connector = (function () {
+    function Connector() {
+    }
+    // connect input node to device input
+    Connector.prototype.connectInput = function (inputModule, divSrc) {
+        divSrc.audioNode.connect(inputModule.moduleFaust.getDSP().getProcessor());
+    };
+    //connect output to device output
+    Connector.prototype.connectOutput = function (outputModule, divOut) {
+        outputModule.moduleFaust.getDSP().getProcessor().connect(divOut.audioNode);
+    };
+    // Connect Nodes in Web Audio Graph
+    Connector.prototype.connectModules = function (source, destination) {
+        var sourceDSP;
+        var destinationDSP;
+        if (destination != null && destination.moduleFaust.getDSP) {
+            destinationDSP = destination.moduleFaust.getDSP();
+        }
+        if (source.moduleFaust.getDSP) {
+            sourceDSP = source.moduleFaust.getDSP();
+        }
+        if (sourceDSP.getProcessor && destinationDSP.getProcessor()) {
+            sourceDSP.getProcessor().connect(destinationDSP.getProcessor());
+        }
+        source.setDSPValue();
+        destination.setDSPValue();
+    };
+    // Disconnect Nodes in Web Audio Graph
+    Connector.prototype.disconnectModules = function (source, destination) {
+        // We want to be dealing with the audio node elements from here on
+        var sourceCopy = source;
+        var sourceCopyDSP;
+        // Searching for src/dst DSP if existing
+        if (sourceCopy != undefined && sourceCopy.moduleFaust.getDSP) {
+            sourceCopyDSP = sourceCopy.moduleFaust.getDSP();
+            sourceCopyDSP.getProcessor().disconnect();
+        }
+        // Reconnect all disconnected connections (because disconnect API cannot break a single connection)
+        if (source != undefined && source.moduleFaust.getOutputConnections()) {
+            for (var i = 0; i < source.moduleFaust.getOutputConnections().length; i++) {
+                if (source.moduleFaust.getOutputConnections()[i].destination != destination)
+                    this.connectModules(source, source.moduleFaust.getOutputConnections()[i].destination);
+            }
+        }
+    };
+    /**************************************************/
+    /***************** Save Connection*****************/
+    /**************************************************/
+    //----- Add connection to src and dst connections structures
+    Connector.prototype.saveConnection = function (source, destination, connectorShape) {
+        this.connectorShape = connectorShape;
+        this.destination = destination;
+        this.source = source;
+    };
+    /***************************************************************/
+    /**************** Create/Break Connection(s) *******************/
+    /***************************************************************/
+    Connector.prototype.createConnection = function (source, outtarget, destination, intarget) {
+        var drag = new Drag();
+        drag.startDraggingConnection(source, outtarget);
+        drag.stopDraggingConnection(source, destination);
+    };
+    Connector.prototype.deleteConnection = function (event, drag) {
+        event.stopPropagation();
+        this.breakSingleInputConnection(this.source, this.destination, this);
+        return true;
+    };
+    Connector.prototype.breakSingleInputConnection = function (source, destination, connector) {
+        this.disconnectModules(source, destination);
+        // delete connection from src .outputConnections,
+        if (source != undefined && source.moduleFaust.getOutputConnections) {
+            source.moduleFaust.removeOutputConnection(connector);
+        }
+        // delete connection from dst .inputConnections,
+        if (destination != undefined && destination.moduleFaust.getInputConnections) {
+            destination.moduleFaust.removeInputConnection(connector);
+        }
+        // and delete the connectorShape
+        if (connector.connectorShape)
+            connector.connectorShape.remove();
+    };
+    // Disconnect a node from all its connections
+    Connector.prototype.disconnectModule = function (module) {
+        //for all output nodes
+        if (module.moduleFaust.getOutputConnections && module.moduleFaust.getOutputConnections()) {
+            while (module.moduleFaust.getOutputConnections().length > 0)
+                this.breakSingleInputConnection(module, module.moduleFaust.getOutputConnections()[0].destination, module.moduleFaust.getOutputConnections()[0]);
+        }
+        //for all input nodes 
+        if (module.moduleFaust.getInputConnections && module.moduleFaust.getInputConnections()) {
+            while (module.moduleFaust.getInputConnections().length > 0)
+                this.breakSingleInputConnection(module.moduleFaust.getInputConnections()[0].source, module, module.moduleFaust.getInputConnections()[0]);
+        }
+    };
+    Connector.redrawInputConnections = function (module, drag) {
+        var offset = module.moduleView.getInputNode();
+        var x = module.moduleView.inputOutputNodeDimension / 2; // + window.scrollX ;
+        var y = module.moduleView.inputOutputNodeDimension / 2; // + window.scrollY;
+        while (offset) {
+            x += offset.offsetLeft;
+            y += offset.offsetTop;
+            offset = offset.offsetParent;
+        }
+        for (var c = 0; c < module.moduleFaust.getInputConnections().length; c++) {
+            var currentConnectorShape = module.moduleFaust.getInputConnections()[c].connectorShape;
+            var x1 = x;
+            var y1 = y;
+            var x2 = currentConnectorShape.x2;
+            var y2 = currentConnectorShape.y2;
+            var d = drag.setCurvePath(x1, y1, x2, y2, drag.calculBezier(x1, x2), drag.calculBezier(x1, x2));
+            currentConnectorShape.setAttributeNS(null, "d", d);
+            drag.updateConnectorShapePath(currentConnectorShape, x1, x2, y1, y2);
+        }
+    };
+    Connector.redrawOutputConnections = function (module, drag) {
+        var offset = module.moduleView.getOutputNode();
+        var x = module.moduleView.inputOutputNodeDimension / 2; // + window.scrollX ;
+        var y = module.moduleView.inputOutputNodeDimension / 2; // + window.scrollY;
+        while (offset) {
+            x += offset.offsetLeft;
+            y += offset.offsetTop;
+            offset = offset.offsetParent;
+        }
+        for (var c = 0; c < module.moduleFaust.getOutputConnections().length; c++) {
+            if (module.moduleFaust.getOutputConnections()[c].connectorShape) {
+                var currentConnectorShape = module.moduleFaust.getOutputConnections()[c].connectorShape;
+                var x1 = currentConnectorShape.x1;
+                var y1 = currentConnectorShape.y1;
+                var x2 = x;
+                var y2 = y;
+                var d = drag.setCurvePath(x1, y1, x2, y2, drag.calculBezier(x1, x2), drag.calculBezier(x1, x2));
+                currentConnectorShape.setAttributeNS(null, "d", d);
+                drag.updateConnectorShapePath(currentConnectorShape, x1, x2, y1, y2);
+            }
+        }
+    };
+    Connector.connectorId = 0;
+    return Connector;
 }());
 /// <reference path="Lib/qrcode.d.ts"/>
 "use strict";
@@ -3120,246 +3758,6 @@ var Help = (function () {
         //this.helpView.videoIframe.contentWindow.postMessage('{"event":"command","func":"' + 'stopVideo' + '","args":""}', '*');
     };
     return Help;
-}());
-// class to handel Drive Api request//
-// using the v2 version
-/// <reference path="Messages.ts"/>
-/// <reference path="Utilitary.ts"/>
-var DriveAPI = (function () {
-    function DriveAPI() {
-        this.CLIENT_ID = '937268536763-j0tfilisap0274toolo0hehndnhgsrva.apps.googleusercontent.com';
-        this.SCOPES = ['https://www.googleapis.com/auth/drive'];
-        this.faustFolder = "FaustPlayground";
-        this.isFaustFolderPresent = false;
-        this.extension = ".jfaust";
-    }
-    /**
-     * Check if current user has authorized this application.
-    * disable to deactivate pop up window when not connected
-     */
-    DriveAPI.prototype.checkAuth = function () {
-    };
-    DriveAPI.prototype.updateConnection = function () {
-        var _this = this;
-        gapi.auth.authorize({
-            'client_id': this.CLIENT_ID,
-            'scope': this.SCOPES.join(' '),
-            'immediate': true
-        }, function (authResult) { _this.handleAuthResult(authResult); });
-    };
-    /**
-     * Handle response from authorization server.
-     *
-     * @param {Object} authResult Authorization result.
-     */
-    DriveAPI.prototype.handleAuthResult = function (authResult, auto) {
-        var buttonConnect = document.getElementById('buttonConnectLoadDrive');
-        var buttonConnect2 = document.getElementById('buttonConnectSaveDrive');
-        if (authResult && !authResult.error) {
-            // Hide auth UI, then load client library.
-            var event = new CustomEvent("authon");
-            document.dispatchEvent(event);
-            this.loadDriveApi();
-        }
-        else {
-            // Show auth UI, allowing the user to initiate authorization by
-            // clicking authorize button.
-            var event = new CustomEvent("authoff");
-            document.dispatchEvent(event);
-        }
-        if (authResult.error) {
-            var event = new CustomEvent("clouderror", { 'detail': authResult.error });
-            document.dispatchEvent(event);
-        }
-    };
-    /**
-     * Initiate auth flow in response to user clicking authorize button.
-     *
-     * @param {Event} event Button click event.
-     */
-    DriveAPI.prototype.handleAuthClick = function (event) {
-        var _this = this;
-        gapi.auth.authorize({ client_id: this.CLIENT_ID, scope: this.SCOPES, immediate: false }, function (authResult) { _this.handleAuthResult(authResult); });
-        return false;
-    };
-    /**
-     * Load Drive API client library.
-     */
-    DriveAPI.prototype.loadDriveApi = function () {
-        var _this = this;
-        var event = new CustomEvent("startloaddrive");
-        document.dispatchEvent(event);
-        gapi.client.load('drive', 'v2', function () { _this.listFolder(); });
-    };
-    /**
-     * Print files.
-     */
-    DriveAPI.prototype.listFolder = function () {
-        var _this = this;
-        var request = gapi.client.drive.files.list({
-            'maxResults': 10000,
-            'q': "title contains 'jfaust' and trashed!=true "
-        });
-        request.execute(function (resp) {
-            var event = new CustomEvent("finishloaddrive");
-            document.dispatchEvent(event);
-            var files = resp.items;
-            if (files && files.length > 0) {
-                for (var i = 0; i < files.length; i++) {
-                    var file = files[i];
-                    if (file.fileExtension == "jfaust") {
-                        _this.appendPre(file.title, file.id);
-                    }
-                }
-            }
-            else {
-                _this.appendPre(Utilitary.messageRessource.noFileOnCloud, null);
-            }
-        });
-    };
-    DriveAPI.prototype.getFileMetadata = function (fileId) {
-        var _this = this;
-        var request = gapi.client.drive.files.get({
-            'fileId': fileId
-        });
-        request.execute(function (file) {
-            _this.appendPre(file.title, file.id);
-        });
-    };
-    /**
-     * Append a pre element to the body containing the given message
-     * as its text node.
-     *
-     * @param {string} message Text to be placed in pre element.
-     */
-    DriveAPI.prototype.appendPre = function (name, id) {
-        var option = document.createElement("option");
-        option.value = id;
-        option.textContent = name.replace(/.jfaust$/, '');
-        var event = new CustomEvent("fillselect", { 'detail': option });
-        document.dispatchEvent(event);
-    };
-    /**
- * Download a file's content.
- *
- * @param {File} file Drive File instance.
- * @param {Function} callback Function to call when the request is complete.
- */
-    DriveAPI.prototype.downloadFile = function (file, callback) {
-        if (file.downloadUrl) {
-            var accessToken = gapi.auth.getToken().access_token;
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', file.downloadUrl);
-            xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);
-            xhr.onload = function () {
-                callback(xhr.responseText);
-            };
-            xhr.onerror = function () {
-                callback(null);
-            };
-            xhr.send();
-        }
-        else {
-            callback(null);
-        }
-    };
-    /**
- * Print a file's metadata.
- *
- * @param {String} fileId ID of the file to print metadata for.
- */
-    DriveAPI.prototype.getFile = function (fileId, callback) {
-        var _this = this;
-        var request = gapi.client.drive.files.get({
-            'fileId': fileId
-        });
-        try {
-            request.execute(function (resp) {
-                _this.lastSavedFileMetadata = resp;
-                callback(resp);
-            });
-        }
-        catch (e) {
-            new Message("erreur");
-        }
-    };
-    DriveAPI.prototype.createFile = function (fileName, callback) {
-        var _this = this;
-        var event = new CustomEvent("startloaddrive");
-        document.dispatchEvent(event);
-        var request = gapi.client.request({
-            'path': '/drive/v2/files',
-            'method': 'POST',
-            'body': {
-                "title": fileName + this.extension,
-                "mimeType": "application/json"
-            }
-        });
-        request.execute(function (resp) {
-            _this.getFile(resp.id, function (fileMetada) { _this.updateFile(resp.id, fileMetada, _this.tempBlob, null); });
-        });
-    };
-    /**
- * Update an existing file's metadata and content.
- *
- * @param {String} fileId ID of the file to update.
- * @param {Object} fileMetadata existing Drive file's metadata.
- * @param {File} fileData File object to read data from.
- * @param {Function} callback Callback function to call when the request is complete.
- */
-    DriveAPI.prototype.updateFile = function (fileId, fileMetadata, fileData, callback) {
-        var event = new CustomEvent("startloaddrive");
-        document.dispatchEvent(event);
-        var boundary = '-------314159265358979323846';
-        var delimiter = "\r\n--" + boundary + "\r\n";
-        var close_delim = "\r\n--" + boundary + "--";
-        var reader = new FileReader();
-        reader.readAsBinaryString(fileData);
-        reader.onload = function (e) {
-            var contentType = fileData.type || 'application/octet-stream';
-            // Updating the metadata is optional and you can instead use the value from drive.files.get.
-            var base64Data = btoa(reader.result);
-            var multipartRequestBody = delimiter +
-                'Content-Type: application/json\r\n\r\n' +
-                JSON.stringify(fileMetadata) +
-                delimiter +
-                'Content-Type: ' + contentType + '\r\n' +
-                'Content-Transfer-Encoding: base64\r\n' +
-                '\r\n' +
-                base64Data +
-                close_delim;
-            var request = gapi.client.request({
-                'path': '/upload/drive/v2/files/' + fileId,
-                'method': 'PUT',
-                'params': { 'uploadType': 'multipart', 'alt': 'json' },
-                'headers': {
-                    'Content-Type': 'multipart/mixed; boundary="' + boundary + '"'
-                },
-                'body': multipartRequestBody
-            });
-            if (!callback) {
-                callback = function () {
-                    var event = new CustomEvent("updatecloudselect");
-                    document.dispatchEvent(event);
-                    event = new CustomEvent("successave");
-                    document.dispatchEvent(event);
-                };
-            }
-            request.execute(callback);
-        };
-    };
-    DriveAPI.prototype.trashFile = function (fileId) {
-        var event = new CustomEvent("startloaddrive");
-        document.dispatchEvent(event);
-        var request = gapi.client.drive.files.trash({
-            'fileId': fileId
-        });
-        request.execute(function (resp) {
-            var event = new CustomEvent("updatecloudselect");
-            document.dispatchEvent(event);
-        });
-    };
-    return DriveAPI;
 }());
 /// <reference path="../Utilitary.ts"/>
 var LoadView = (function () {
@@ -5018,6 +5416,145 @@ var Menu = (function () {
     };
     return Menu;
 }());
+//MenuView.ts : MenuView Class which contains all the graphical parts of the menu
+/// <reference path="../Accelerometer.ts"/>
+/// <reference path="AccelerometerEditView.ts"/>
+/// <reference path="LoadView.ts"/>
+/// <reference path="SaveView.ts"/>
+var MenuView = (function () {
+    function MenuView() {
+        this.HTMLElementsMenu = [];
+        this.HTMLButtonsMenu = [];
+        this.menuColorDefault = "rgba(227, 64, 80, 0.73)";
+        this.menuColorSelected = "rgb(209, 64, 80)";
+    }
+    MenuView.prototype.init = function (htmlContainer) {
+        var menuContainer = document.createElement('div');
+        menuContainer.id = "menuContainer";
+        this.menuContainer = menuContainer;
+        /////////////////////////create menu's buttons and there containers
+        var buttonsMenu = document.createElement("div");
+        buttonsMenu.id = "buttonsMenu";
+        var libraryButtonMenu = document.createElement("div");
+        libraryButtonMenu.id = "libraryButtonMenu";
+        libraryButtonMenu.className = "buttonsMenu";
+        libraryButtonMenu.appendChild(document.createTextNode(Utilitary.messageRessource.buttonLibrary));
+        this.libraryButtonMenu = libraryButtonMenu;
+        var exportButtonMenu = document.createElement("div");
+        exportButtonMenu.id = "exportButtonMenu";
+        exportButtonMenu.className = "buttonsMenu";
+        exportButtonMenu.appendChild(document.createTextNode(Utilitary.messageRessource.buttonExport));
+        this.exportButtonMenu = exportButtonMenu;
+        var helpButtonMenu = document.createElement("div");
+        helpButtonMenu.id = "helpButtonMenu";
+        helpButtonMenu.className = "buttonsMenu";
+        helpButtonMenu.appendChild(document.createTextNode(Utilitary.messageRessource.buttonHelp));
+        this.helpButtonMenu = helpButtonMenu;
+        var editButtonMenu = document.createElement("div");
+        editButtonMenu.id = "EditButtonMenu";
+        editButtonMenu.className = "buttonsMenu";
+        editButtonMenu.appendChild(document.createTextNode(Utilitary.messageRessource.buttonEdit));
+        this.editButtonMenu = editButtonMenu;
+        var loadButtonMenu = document.createElement("div");
+        loadButtonMenu.id = "loadButtonMenu";
+        loadButtonMenu.className = "buttonsMenu";
+        loadButtonMenu.appendChild(document.createTextNode(Utilitary.messageRessource.buttonLoad));
+        this.loadButton = loadButtonMenu;
+        var saveButtonMenu = document.createElement("div");
+        saveButtonMenu.id = "saveButtonMenu";
+        saveButtonMenu.className = "buttonsMenu";
+        saveButtonMenu.appendChild(document.createTextNode(Utilitary.messageRessource.buttonSave));
+        this.saveButton = saveButtonMenu;
+        var fullScreenButton = document.createElement("div");
+        fullScreenButton.id = "fullScreenButton";
+        fullScreenButton.className = "buttonsLittleMenu";
+        this.fullScreenButton = fullScreenButton;
+        var accButton = document.createElement("div");
+        accButton.id = "accButton";
+        accButton.className = "buttonsLittleMenu";
+        this.accButton = accButton;
+        var cleanButton = document.createElement("div");
+        cleanButton.id = "cleanButton";
+        cleanButton.className = "buttonsLittleMenu";
+        this.cleanButton = cleanButton;
+        this.playersButton = document.createElement('div');
+        this.playersButton.id = 'playersButton';
+        this.playersButton.className = 'buttonsMenu';
+        this.playersButton.innerText = Utilitary.messageRessource.buttonPlayers;
+        if (!Utilitary.isAccelerometerOn) {
+            accButton.style.opacity = "0.2";
+        }
+        buttonsMenu.appendChild(libraryButtonMenu);
+        buttonsMenu.appendChild(this.playersButton);
+        buttonsMenu.appendChild(loadButtonMenu);
+        buttonsMenu.appendChild(editButtonMenu);
+        buttonsMenu.appendChild(saveButtonMenu);
+        buttonsMenu.appendChild(exportButtonMenu);
+        buttonsMenu.appendChild(helpButtonMenu);
+        buttonsMenu.appendChild(fullScreenButton);
+        buttonsMenu.appendChild(accButton);
+        buttonsMenu.appendChild(cleanButton);
+        this.HTMLButtonsMenu.push(libraryButtonMenu, loadButtonMenu, saveButtonMenu, exportButtonMenu, helpButtonMenu);
+        var myScene = document.createElement("div");
+        myScene.id = "PatchName";
+        myScene.className = "sceneTitle";
+        myScene.textContent = Utilitary.currentScene.sceneName;
+        buttonsMenu.appendChild(myScene);
+        this.patchNameScene = myScene;
+        //////////////////create menu's Contents and there containers
+        var contentsMenu = document.createElement("div");
+        contentsMenu.id = "contentsMenu";
+        contentsMenu.style.display = "none";
+        var closeButton = document.createElement("div");
+        closeButton.id = "closeButton";
+        this.closeButton = closeButton;
+        var CloseButtonContainer = document.createElement("div");
+        CloseButtonContainer.id = "closeButtonContainer";
+        CloseButtonContainer.appendChild(closeButton);
+        var libraryView = new LibraryView();
+        var libraryContent = libraryView.initLibraryView();
+        libraryContent.style.display = "none";
+        this.libraryView = libraryView;
+        var loadView = new LoadView();
+        var loadContent = loadView.initLoadView();
+        loadContent.style.display = "none";
+        this.loadView = loadView;
+        var saveView = new SaveView();
+        var saveContent = saveView.initSaveView();
+        saveContent.style.display = "none";
+        this.saveView = saveView;
+        var exportView = new ExportView();
+        var exportContent = exportView.initExportView();
+        exportContent.style.display = "none";
+        this.exportView = exportView;
+        var helpView = new HelpView();
+        var helpContent = helpView.initHelpView();
+        helpContent.style.display = "none";
+        this.helpView = helpView;
+        var accEditView = new AccelerometerEditView();
+        var accEditContent = accEditView.initAccelerometerEdit();
+        accEditContent.style.display = "none";
+        this.accEditView = accEditView;
+        contentsMenu.appendChild(CloseButtonContainer);
+        contentsMenu.appendChild(libraryContent);
+        contentsMenu.appendChild(loadContent);
+        contentsMenu.appendChild(saveContent);
+        contentsMenu.appendChild(exportContent);
+        contentsMenu.appendChild(helpContent);
+        menuContainer.appendChild(buttonsMenu);
+        menuContainer.appendChild(contentsMenu);
+        menuContainer.appendChild(accEditContent);
+        htmlContainer.appendChild(menuContainer);
+        this.HTMLElementsMenu.push(libraryContent, loadContent, saveContent, exportContent, helpContent);
+        this.libraryContent = libraryContent;
+        this.loadContent = loadContent;
+        this.saveContent = saveContent;
+        this.exportContent = exportContent;
+        this.helpContent = helpContent;
+        this.contentsMenu = contentsMenu;
+    };
+    return MenuView;
+}());
 /*     APP.JS
 
 
@@ -5085,7 +5622,7 @@ var App = (function () {
         }, true);
     };
     //create div to append messages and confirms
-    App.prototype.createDialogue = function () {
+    App.createDialogue = function () {
         var dialogue = document.createElement("div");
         dialogue.id = "dialogue";
         document.getElementsByTagName("body")[0].appendChild(dialogue);
@@ -5371,30 +5908,6 @@ var App = (function () {
     };
     return App;
 }());
-/// <reference path="App.ts"/>
-/// <reference path="Utilitary.ts"/>
-//contains all the key of resources json files in folders ressources
-var Ressources = (function () {
-    function Ressources() {
-    }
-    //get ressource depending on the location, default is french
-    Ressources.prototype.getRessources = function (app) {
-        var _this = this;
-        var localization = navigator.language;
-        if (localization == "fr" || localization == "fr-FR") {
-            Utilitary.getXHR("ressources/ressources_fr-FR.json", function (ressource) { _this.loadMessages(ressource, app); }, Utilitary.errorCallBack);
-        }
-        else {
-            Utilitary.getXHR("ressources/ressources_en-EN.json", function (ressource) { _this.loadMessages(ressource, app); }, Utilitary.errorCallBack);
-        }
-    };
-    // load the json object
-    Ressources.prototype.loadMessages = function (ressourceJson, app) {
-        Utilitary.messageRessource = JSON.parse(ressourceJson);
-        resumeInit(app);
-    };
-    return Ressources;
-}());
 /*				MAIN.JS
     Entry point of the Program
     intefaces used through the app
@@ -5418,7 +5931,7 @@ function init() {
 //callback when text is loaded. resume the initialization
 function resumeInit(app) {
     //create div which will contain all Messages and Confirm
-    app.createDialogue();
+    App.createDialogue();
     //create audiocontext if available, otherwise app can't work
     try {
         Utilitary.audioContext = new AudioContext();
@@ -5476,517 +5989,4 @@ function IosInit2() {
     }
     window.removeEventListener('touchstart', IosInit2, false);
 }
-/// <reference path="Modules/ModuleClass.ts"/>
-/// <reference path="Scenes/SceneClass.ts"/>
-/// <reference path="Ressources.ts"/>
-/// <reference path="DriveAPI.ts"/>
-/// <reference path="Main.ts"/>
-var Utilitary = (function () {
-    function Utilitary() {
-    }
-    Utilitary.errorCallBack = function (message) {
-    };
-    Utilitary.showFullPageLoading = function () {
-        document.getElementById("loadingPage").style.visibility = "visible";
-        //too demanding for mobile firefox...
-        //document.getElementById("Normal").style.filter = "blur(2px)"
-        //document.getElementById("Normal").style.webkitFilter = "blur(2px)"
-        //document.getElementById("menuContainer").style.filter = "blur(2px)"
-        //document.getElementById("menuContainer").style.webkitFilter = "blur(2px)"
-    };
-    Utilitary.hideFullPageLoading = function () {
-        document.getElementById("loadingPage").style.visibility = "hidden";
-        //document.getElementById("Normal").style.filter = "none"
-        //document.getElementById("Normal").style.webkitFilter = "none"
-        //document.getElementById("menuContainer").style.filter = "none"
-        //document.getElementById("menuContainer").style.webkitFilter = "none"
-    };
-    Utilitary.isAppPedagogique = function () {
-        if (window.location.href.indexOf("kids.html") > -1) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    };
-    //generic function to make XHR request
-    Utilitary.getXHR = function (url, callback, errCallback) {
-        var getrequest = new XMLHttpRequest();
-        getrequest.onreadystatechange = function () {
-            console.log("enter onreadystatechange");
-            if (getrequest.readyState == 4 && getrequest.status == 200) {
-                callback(getrequest.responseText);
-            }
-            else if (getrequest.readyState == 4 && getrequest.status == 400) {
-                errCallback(getrequest.responseText);
-            }
-        };
-        getrequest.open("GET", url, true);
-        getrequest.send(null);
-    };
-    Utilitary.addLoadingLogo = function (idTarget) {
-        var loadingDiv = document.createElement("div");
-        loadingDiv.className = "loadingDiv";
-        var loadingImg = document.createElement("img");
-        loadingImg.src = Utilitary.baseImg + "logoAnim.gif";
-        loadingImg.id = "loadingImg";
-        var loadingText = document.createElement("span");
-        loadingText.textContent = Utilitary.messageRessource.loading;
-        loadingText.id = "loadingText";
-        loadingDiv.appendChild(loadingImg);
-        loadingDiv.appendChild(loadingText);
-        if (document.getElementById(idTarget) != null) {
-            document.getElementById(idTarget).appendChild(loadingDiv);
-        }
-    };
-    Utilitary.removeLoadingLogo = function (idTarget) {
-        var divTarget = document.getElementById(idTarget);
-        if (divTarget != null && divTarget.getElementsByClassName("loadingDiv").length > 0) {
-            while (divTarget.getElementsByClassName("loadingDiv").length != 0) {
-                divTarget.getElementsByClassName("loadingDiv")[0].remove();
-            }
-        }
-    };
-    Utilitary.addFullPageLoading = function () {
-        var loadingText = document.getElementById("loadingTextBig");
-        loadingText.id = "loadingTextBig";
-        loadingText.textContent = Utilitary.messageRessource.loading;
-    };
-    Utilitary.replaceAll = function (str, find, replace) {
-        return str.replace(new RegExp(find, 'g'), replace);
-    };
-    Utilitary.messageRessource = new Ressources();
-    Utilitary.idX = 0;
-    Utilitary.baseImg = "img/";
-    Utilitary.isAccelerometerOn = false;
-    Utilitary.isAccelerometerEditOn = false;
-    return Utilitary;
-}());
-var PositionModule = (function () {
-    function PositionModule() {
-    }
-    return PositionModule;
-}());
-//Accelerometer Class
-/// <reference path="Utilitary.ts"/>
-/// <reference path="Modules/FaustInterface.ts"/>
-var Axis;
-(function (Axis) {
-    Axis[Axis["x"] = 0] = "x";
-    Axis[Axis["y"] = 1] = "y";
-    Axis[Axis["z"] = 2] = "z";
-})(Axis || (Axis = {}));
-var Curve;
-(function (Curve) {
-    Curve[Curve["Up"] = 0] = "Up";
-    Curve[Curve["Down"] = 1] = "Down";
-    Curve[Curve["UpDown"] = 2] = "UpDown";
-    Curve[Curve["DownUp"] = 3] = "DownUp";
-})(Curve || (Curve = {}));
-//object describing value off accelerometer metadata values. 
-var AccMeta = (function () {
-    function AccMeta() {
-    }
-    return AccMeta;
-}());
-//Contains the info regarding the mapping of the FaustInterfaceControler and the accelerometer
-var AccelerometerSlider = (function () {
-    function AccelerometerSlider(accParams) {
-        if (accParams != null) {
-            this.isEnabled = accParams.isEnabled;
-            this.acc = accParams.acc;
-            this.setAttributes(accParams.acc);
-            this.address = accParams.address;
-            this.min = accParams.min;
-            this.max = accParams.max;
-            this.init = accParams.init;
-            this.label = accParams.label;
-            this.isActive = Utilitary.isAccelerometerOn;
-        }
-    }
-    AccelerometerSlider.prototype.setAttributes = function (fMetaAcc) {
-        if (fMetaAcc != null) {
-            var arrayMeta = fMetaAcc.split(" ");
-            this.axis = parseInt(arrayMeta[0]);
-            this.curve = parseInt(arrayMeta[1]);
-            this.amin = parseInt(arrayMeta[2]);
-            this.amid = parseInt(arrayMeta[3]);
-            this.amax = parseInt(arrayMeta[4]);
-        }
-    };
-    AccelerometerSlider.prototype.setAttributesDetailed = function (axis, curve, min, mid, max) {
-        this.axis = axis;
-        this.curve = curve;
-        this.amin = min;
-        this.amid = mid;
-        this.amax = max;
-    };
-    return AccelerometerSlider;
-}());
-//object responsible of storing all accelerometerSlider and propagate to them the accelerometer infos. 
-var AccelerometerHandler = (function () {
-    function AccelerometerHandler() {
-    }
-    // get Accelerometer value
-    AccelerometerHandler.prototype.getAccelerometerValue = function () {
-        var _this = this;
-        if (window.DeviceMotionEvent) {
-            window.addEventListener("devicemotion", function (event) { _this.propagate(event); }, false);
-        }
-        else {
-            // Browser doesn't support DeviceMotionEvent
-            console.log(Utilitary.messageRessource.noDeviceMotion);
-        }
-    };
-    // propagate the new x, y, z value of the accelerometer to the registred object
-    AccelerometerHandler.prototype.propagate = function (event) {
-        var x = event.accelerationIncludingGravity.x;
-        var y = event.accelerationIncludingGravity.y;
-        var z = event.accelerationIncludingGravity.z;
-        for (var i = 0; i < AccelerometerHandler.faustInterfaceControler.length; i++) {
-            if (AccelerometerHandler.faustInterfaceControler[i].accelerometerSlider.isActive && AccelerometerHandler.faustInterfaceControler[i].accelerometerSlider.isEnabled) {
-                this.axisSplitter(AccelerometerHandler.faustInterfaceControler[i].accelerometerSlider, x, y, z, this.applyNewValueToModule);
-            }
-        }
-        // update the faustInterfaceControler of the AccelerometerEditView
-        if (AccelerometerHandler.faustInterfaceControlerEdit != null) {
-            this.axisSplitter(AccelerometerHandler.faustInterfaceControlerEdit.accelerometerSlider, x, y, z, this.applyValueToEdit);
-        }
-    };
-    //create and register accelerometerSlide
-    AccelerometerHandler.registerAcceleratedSlider = function (accParams, faustInterfaceControler, sliderEdit) {
-        var accelerometerSlide = new AccelerometerSlider(accParams);
-        faustInterfaceControler.accelerometerSlider = accelerometerSlide;
-        AccelerometerHandler.curveSplitter(accelerometerSlide);
-        if (sliderEdit) {
-            AccelerometerHandler.faustInterfaceControlerEdit = faustInterfaceControler;
-        }
-        else {
-            AccelerometerHandler.faustInterfaceControler.push(faustInterfaceControler);
-        }
-    };
-    //give the good axis value to the accelerometerslider, convert it to the faust value before
-    AccelerometerHandler.prototype.axisSplitter = function (accelerometerSlide, x, y, z, callBack) {
-        switch (accelerometerSlide.axis) {
-            case Axis.x:
-                var newVal = accelerometerSlide.converter.uiToFaust(x);
-                callBack(accelerometerSlide, newVal, x);
-                break;
-            case Axis.y:
-                var newVal = accelerometerSlide.converter.uiToFaust(y);
-                callBack(accelerometerSlide, newVal, y);
-                break;
-            case Axis.z:
-                var newVal = accelerometerSlide.converter.uiToFaust(z);
-                callBack(accelerometerSlide, newVal, z);
-                break;
-        }
-    };
-    //update value of the dsp
-    AccelerometerHandler.prototype.applyNewValueToModule = function (accSlid, newVal, axeValue) {
-        accSlid.callbackValueChange(accSlid.address, newVal);
-    };
-    //update value of the edit range in AccelerometerEditView
-    AccelerometerHandler.prototype.applyValueToEdit = function (accSlid, newVal, axeValue) {
-        AccelerometerHandler.faustInterfaceControlerEdit.faustInterfaceView.slider.value = axeValue.toString();
-    };
-    //Apply the right converter with the right curve to an accelerometerSlider 
-    AccelerometerHandler.curveSplitter = function (accelerometerSlide) {
-        switch (accelerometerSlide.curve) {
-            case Curve.Up:
-                accelerometerSlide.converter = new AccUpConverter(accelerometerSlide.amin, accelerometerSlide.amid, accelerometerSlide.amax, accelerometerSlide.min, accelerometerSlide.init, accelerometerSlide.max);
-                break;
-            case Curve.Down:
-                accelerometerSlide.converter = new AccDownConverter(accelerometerSlide.amin, accelerometerSlide.amid, accelerometerSlide.amax, accelerometerSlide.min, accelerometerSlide.init, accelerometerSlide.max);
-                break;
-            case Curve.UpDown:
-                accelerometerSlide.converter = new AccUpDownConverter(accelerometerSlide.amin, accelerometerSlide.amid, accelerometerSlide.amax, accelerometerSlide.min, accelerometerSlide.init, accelerometerSlide.max);
-                break;
-            case Curve.DownUp:
-                accelerometerSlide.converter = new AccDownUpConverter(accelerometerSlide.amin, accelerometerSlide.amid, accelerometerSlide.amax, accelerometerSlide.min, accelerometerSlide.init, accelerometerSlide.max);
-                break;
-            default:
-                accelerometerSlide.converter = new AccUpConverter(accelerometerSlide.amin, accelerometerSlide.amid, accelerometerSlide.amax, accelerometerSlide.min, accelerometerSlide.init, accelerometerSlide.max);
-        }
-    };
-    //array containing all the FaustInterfaceControler of the scene
-    AccelerometerHandler.faustInterfaceControler = [];
-    //faustInterfaceControler of the AccelerometerEditView
-    AccelerometerHandler.faustInterfaceControlerEdit = null;
-    return AccelerometerHandler;
-}());
-/***************************************************************************************
-********************  Converter objects use to map acc and faust value *****************
-****************************************************************************************/
-var MinMaxClip = (function () {
-    function MinMaxClip(x, y) {
-        this.fLo = Math.min(x, y);
-        this.fHi = Math.max(x, y);
-    }
-    MinMaxClip.prototype.clip = function (x) {
-        if (x < this.fLo) {
-            return this.fLo;
-        }
-        else if (x > this.fHi) {
-            return this.fHi;
-        }
-        else {
-            return x;
-        }
-    };
-    return MinMaxClip;
-}());
-var Interpolator = (function () {
-    function Interpolator(lo, hi, v1, v2) {
-        this.range = new MinMaxClip(lo, hi);
-        if (hi != lo) {
-            //regular case
-            this.fCoef = (v2 - v1) / (hi - lo);
-            this.fOffset = v1 - lo * this.fCoef;
-        }
-        else {
-            this.fCoef = 0;
-            this.fOffset = (v1 + v2) / 2;
-        }
-    }
-    Interpolator.prototype.returnMappedValue = function (v) {
-        var x = this.range.clip(v);
-        return this.fOffset + x * this.fCoef;
-    };
-    Interpolator.prototype.getLowHigh = function (amin, amax) {
-        return { amin: this.range.fLo, amax: this.range.fHi };
-    };
-    return Interpolator;
-}());
-var Interpolator3pt = (function () {
-    function Interpolator3pt(lo, mid, hi, v1, vMid, v2) {
-        this.fSegment1 = new Interpolator(lo, mid, v1, vMid);
-        this.fSegment2 = new Interpolator(mid, hi, vMid, v2);
-        this.fMiddle = mid;
-    }
-    Interpolator3pt.prototype.returnMappedValue = function (x) {
-        return (x < this.fMiddle) ? this.fSegment1.returnMappedValue(x) : this.fSegment2.returnMappedValue(x);
-    };
-    Interpolator3pt.prototype.getMappingValues = function (amin, amid, amax) {
-        var lowHighSegment1 = this.fSegment1.getLowHigh(amin, amid);
-        var lowHighSegment2 = this.fSegment2.getLowHigh(amid, amax);
-        return { amin: lowHighSegment1.amin, amid: lowHighSegment2.amin, amax: lowHighSegment2.amax };
-    };
-    return Interpolator3pt;
-}());
-var AccUpConverter = (function () {
-    function AccUpConverter(amin, amid, amax, fmin, fmid, fmax) {
-        this.fActive = true;
-        this.accToFaust = new Interpolator3pt(amin, amid, amax, fmin, fmid, fmax);
-        this.faustToAcc = new Interpolator3pt(fmin, fmid, fmax, amin, amid, amax);
-    }
-    AccUpConverter.prototype.uiToFaust = function (x) { return this.accToFaust.returnMappedValue(x); };
-    AccUpConverter.prototype.faustToUi = function (x) { return this.accToFaust.returnMappedValue(x); };
-    AccUpConverter.prototype.setMappingValues = function (amin, amid, amax, min, init, max) {
-        this.accToFaust = new Interpolator3pt(amin, amid, amax, min, init, max);
-        this.faustToAcc = new Interpolator3pt(min, init, max, amin, amid, amax);
-    };
-    AccUpConverter.prototype.getMappingValues = function (amin, amid, amax) {
-        return this.accToFaust.getMappingValues(amin, amid, amax);
-    };
-    AccUpConverter.prototype.setActive = function (onOff) { this.fActive = onOff; };
-    AccUpConverter.prototype.getActive = function () { return this.fActive; };
-    return AccUpConverter;
-}());
-var AccDownConverter = (function () {
-    function AccDownConverter(amin, amid, amax, fmin, fmid, fmax) {
-        this.fActive = true;
-        this.accToFaust = new Interpolator3pt(amin, amid, amax, fmax, fmid, fmin);
-        this.faustToAcc = new Interpolator3pt(fmin, fmid, fmax, amax, amid, amin);
-    }
-    AccDownConverter.prototype.uiToFaust = function (x) { return this.accToFaust.returnMappedValue(x); };
-    AccDownConverter.prototype.faustToUi = function (x) { return this.accToFaust.returnMappedValue(x); };
-    AccDownConverter.prototype.setMappingValues = function (amin, amid, amax, min, init, max) {
-        this.accToFaust = new Interpolator3pt(amin, amid, amax, max, init, min);
-        this.faustToAcc = new Interpolator3pt(min, init, max, amax, amid, amin);
-    };
-    AccDownConverter.prototype.getMappingValues = function (amin, amid, amax) {
-        return this.accToFaust.getMappingValues(amin, amid, amax);
-    };
-    AccDownConverter.prototype.setActive = function (onOff) { this.fActive = onOff; };
-    AccDownConverter.prototype.getActive = function () { return this.fActive; };
-    return AccDownConverter;
-}());
-var AccUpDownConverter = (function () {
-    function AccUpDownConverter(amin, amid, amax, fmin, fmid, fmax) {
-        this.fActive = true;
-        this.accToFaust = new Interpolator3pt(amin, amid, amax, fmin, fmax, fmin);
-        this.faustToAcc = new Interpolator(fmin, fmax, amin, amax);
-    }
-    AccUpDownConverter.prototype.uiToFaust = function (x) { return this.accToFaust.returnMappedValue(x); };
-    AccUpDownConverter.prototype.faustToUi = function (x) { return this.accToFaust.returnMappedValue(x); };
-    AccUpDownConverter.prototype.setMappingValues = function (amin, amid, amax, min, init, max) {
-        this.accToFaust = new Interpolator3pt(amin, amid, amax, min, max, min);
-        this.faustToAcc = new Interpolator(min, max, amin, amax);
-    };
-    AccUpDownConverter.prototype.getMappingValues = function (amin, amid, amax) {
-        return this.accToFaust.getMappingValues(amin, amid, amax);
-    };
-    AccUpDownConverter.prototype.setActive = function (onOff) { this.fActive = onOff; };
-    AccUpDownConverter.prototype.getActive = function () { return this.fActive; };
-    return AccUpDownConverter;
-}());
-var AccDownUpConverter = (function () {
-    function AccDownUpConverter(amin, amid, amax, fmin, fmid, fmax) {
-        this.fActive = true;
-        this.accToFaust = new Interpolator3pt(amin, amid, amax, fmax, fmin, fmax);
-        this.faustToAcc = new Interpolator(fmin, fmax, amin, amax);
-    }
-    AccDownUpConverter.prototype.uiToFaust = function (x) { return this.accToFaust.returnMappedValue(x); };
-    AccDownUpConverter.prototype.faustToUi = function (x) { return this.accToFaust.returnMappedValue(x); };
-    AccDownUpConverter.prototype.setMappingValues = function (amin, amid, amax, min, init, max) {
-        this.accToFaust = new Interpolator3pt(amin, amid, amax, max, min, max);
-        this.faustToAcc = new Interpolator(min, max, amin, amax);
-    };
-    AccDownUpConverter.prototype.getMappingValues = function (amin, amid, amax) {
-        return this.accToFaust.getMappingValues(amin, amid, amax);
-    };
-    AccDownUpConverter.prototype.setActive = function (onOff) { this.fActive = onOff; };
-    AccDownUpConverter.prototype.getActive = function () { return this.fActive; };
-    return AccDownUpConverter;
-}());
-//MenuView.ts : MenuView Class which contains all the graphical parts of the menu
-/// <reference path="../Accelerometer.ts"/>
-/// <reference path="AccelerometerEditView.ts"/>
-/// <reference path="LoadView.ts"/>
-/// <reference path="SaveView.ts"/>
-var MenuView = (function () {
-    function MenuView() {
-        this.HTMLElementsMenu = [];
-        this.HTMLButtonsMenu = [];
-        this.menuColorDefault = "rgba(227, 64, 80, 0.73)";
-        this.menuColorSelected = "rgb(209, 64, 80)";
-    }
-    MenuView.prototype.init = function (htmlContainer) {
-        var menuContainer = document.createElement('div');
-        menuContainer.id = "menuContainer";
-        this.menuContainer = menuContainer;
-        /////////////////////////create menu's buttons and there containers
-        var buttonsMenu = document.createElement("div");
-        buttonsMenu.id = "buttonsMenu";
-        var libraryButtonMenu = document.createElement("div");
-        libraryButtonMenu.id = "libraryButtonMenu";
-        libraryButtonMenu.className = "buttonsMenu";
-        libraryButtonMenu.appendChild(document.createTextNode(Utilitary.messageRessource.buttonLibrary));
-        this.libraryButtonMenu = libraryButtonMenu;
-        var exportButtonMenu = document.createElement("div");
-        exportButtonMenu.id = "exportButtonMenu";
-        exportButtonMenu.className = "buttonsMenu";
-        exportButtonMenu.appendChild(document.createTextNode(Utilitary.messageRessource.buttonExport));
-        this.exportButtonMenu = exportButtonMenu;
-        var helpButtonMenu = document.createElement("div");
-        helpButtonMenu.id = "helpButtonMenu";
-        helpButtonMenu.className = "buttonsMenu";
-        helpButtonMenu.appendChild(document.createTextNode(Utilitary.messageRessource.buttonHelp));
-        this.helpButtonMenu = helpButtonMenu;
-        var editButtonMenu = document.createElement("div");
-        editButtonMenu.id = "EditButtonMenu";
-        editButtonMenu.className = "buttonsMenu";
-        editButtonMenu.appendChild(document.createTextNode(Utilitary.messageRessource.buttonEdit));
-        this.editButtonMenu = editButtonMenu;
-        var loadButtonMenu = document.createElement("div");
-        loadButtonMenu.id = "loadButtonMenu";
-        loadButtonMenu.className = "buttonsMenu";
-        loadButtonMenu.appendChild(document.createTextNode(Utilitary.messageRessource.buttonLoad));
-        this.loadButton = loadButtonMenu;
-        var saveButtonMenu = document.createElement("div");
-        saveButtonMenu.id = "saveButtonMenu";
-        saveButtonMenu.className = "buttonsMenu";
-        saveButtonMenu.appendChild(document.createTextNode(Utilitary.messageRessource.buttonSave));
-        this.saveButton = saveButtonMenu;
-        var fullScreenButton = document.createElement("div");
-        fullScreenButton.id = "fullScreenButton";
-        fullScreenButton.className = "buttonsLittleMenu";
-        this.fullScreenButton = fullScreenButton;
-        var accButton = document.createElement("div");
-        accButton.id = "accButton";
-        accButton.className = "buttonsLittleMenu";
-        this.accButton = accButton;
-        var cleanButton = document.createElement("div");
-        cleanButton.id = "cleanButton";
-        cleanButton.className = "buttonsLittleMenu";
-        this.cleanButton = cleanButton;
-        this.playersButton = document.createElement('div');
-        this.playersButton.id = 'playersButton';
-        this.playersButton.className = 'buttonsMenu';
-        this.playersButton.innerText = Utilitary.messageRessource.buttonPlayers;
-        if (!Utilitary.isAccelerometerOn) {
-            accButton.style.opacity = "0.2";
-        }
-        buttonsMenu.appendChild(libraryButtonMenu);
-        buttonsMenu.appendChild(this.playersButton);
-        buttonsMenu.appendChild(loadButtonMenu);
-        buttonsMenu.appendChild(editButtonMenu);
-        buttonsMenu.appendChild(saveButtonMenu);
-        buttonsMenu.appendChild(exportButtonMenu);
-        buttonsMenu.appendChild(helpButtonMenu);
-        buttonsMenu.appendChild(fullScreenButton);
-        buttonsMenu.appendChild(accButton);
-        buttonsMenu.appendChild(cleanButton);
-        this.HTMLButtonsMenu.push(libraryButtonMenu, loadButtonMenu, saveButtonMenu, exportButtonMenu, helpButtonMenu);
-        var myScene = document.createElement("div");
-        myScene.id = "PatchName";
-        myScene.className = "sceneTitle";
-        myScene.textContent = Utilitary.currentScene.sceneName;
-        buttonsMenu.appendChild(myScene);
-        this.patchNameScene = myScene;
-        //////////////////create menu's Contents and there containers
-        var contentsMenu = document.createElement("div");
-        contentsMenu.id = "contentsMenu";
-        contentsMenu.style.display = "none";
-        var closeButton = document.createElement("div");
-        closeButton.id = "closeButton";
-        this.closeButton = closeButton;
-        var CloseButtonContainer = document.createElement("div");
-        CloseButtonContainer.id = "closeButtonContainer";
-        CloseButtonContainer.appendChild(closeButton);
-        var libraryView = new LibraryView();
-        var libraryContent = libraryView.initLibraryView();
-        libraryContent.style.display = "none";
-        this.libraryView = libraryView;
-        var loadView = new LoadView();
-        var loadContent = loadView.initLoadView();
-        loadContent.style.display = "none";
-        this.loadView = loadView;
-        var saveView = new SaveView();
-        var saveContent = saveView.initSaveView();
-        saveContent.style.display = "none";
-        this.saveView = saveView;
-        var exportView = new ExportView();
-        var exportContent = exportView.initExportView();
-        exportContent.style.display = "none";
-        this.exportView = exportView;
-        var helpView = new HelpView();
-        var helpContent = helpView.initHelpView();
-        helpContent.style.display = "none";
-        this.helpView = helpView;
-        var accEditView = new AccelerometerEditView();
-        var accEditContent = accEditView.initAccelerometerEdit();
-        accEditContent.style.display = "none";
-        this.accEditView = accEditView;
-        contentsMenu.appendChild(CloseButtonContainer);
-        contentsMenu.appendChild(libraryContent);
-        contentsMenu.appendChild(loadContent);
-        contentsMenu.appendChild(saveContent);
-        contentsMenu.appendChild(exportContent);
-        contentsMenu.appendChild(helpContent);
-        menuContainer.appendChild(buttonsMenu);
-        menuContainer.appendChild(contentsMenu);
-        menuContainer.appendChild(accEditContent);
-        htmlContainer.appendChild(menuContainer);
-        this.HTMLElementsMenu.push(libraryContent, loadContent, saveContent, exportContent, helpContent);
-        this.libraryContent = libraryContent;
-        this.loadContent = loadContent;
-        this.saveContent = saveContent;
-        this.exportContent = exportContent;
-        this.helpContent = helpContent;
-        this.contentsMenu = contentsMenu;
-    };
-    return MenuView;
-}());
 //# sourceMappingURL=faustplayground.js.map

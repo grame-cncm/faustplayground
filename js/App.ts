@@ -41,22 +41,13 @@ Create Factories and Modules
 
 class App {
     private static currentScene: number;
-    private static src: IHTMLDivElementSrc;
-    private static out: IHTMLDivElementOut;
 
     menu: Menu;
-    scenes: Scene[];
 
     tempModuleName: string;
-    tempPatchId: string;
     tempModuleSourceCode: string;
     tempModuleX: number;
     tempModuleY: number;
-    tempParams: IJsonParamsSave;
-
-    inputs: any[];
-    outputs: any[];
-    params: any[];
 
     factory: Factory;
 
@@ -69,27 +60,27 @@ class App {
     }
 
     createMenu(): void {
-        this.menu = new Menu(document.getElementsByTagName('body')[0])
+        this.menu = new Menu(document.getElementsByTagName('body')[0]);
         //pass the scene to the menu to allow it to access the scene
         this.menu.setMenuScene(Utilitary.currentScene);
 
         //add eventlistener on the scene to hide menu when clicked or touched
         Utilitary.currentScene.getSceneContainer().addEventListener("mousedown", () => {
             if (!this.menu.accEdit.isOn) {
-                this.menu.newMenuChoices = MenuChoices.null
-                this.menu.menuHandler(this.menu.newMenuChoices)
+                this.menu.newMenuChoices = MenuChoices.null;
+                this.menu.menuHandler(this.menu.newMenuChoices);
             }
         }, true);
         Utilitary.currentScene.getSceneContainer().addEventListener("touchstart", () => {
             if (!this.menu.accEdit.isOn) {
-                this.menu.newMenuChoices = MenuChoices.null
-                this.menu.menuHandler(this.menu.newMenuChoices)
+                this.menu.newMenuChoices = MenuChoices.null;
+                this.menu.menuHandler(this.menu.newMenuChoices);
             }
         }, true);
     }
 
     //create div to append messages and confirms
-    createDialogue() {
+    static createDialogue() {
         var dialogue = document.createElement("div");
         dialogue.id = "dialogue";
         document.getElementsByTagName("body")[0].appendChild(dialogue)

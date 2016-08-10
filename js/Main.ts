@@ -30,7 +30,7 @@ function init(): void {
 //callback when text is loaded. resume the initialization
 function resumeInit(app: App) {
     //create div which will contain all Messages and Confirm
-    app.createDialogue();
+    App.createDialogue();
     //create audiocontext if available, otherwise app can't work
     try {
         Utilitary.audioContext = new AudioContext();
@@ -39,7 +39,7 @@ function resumeInit(app: App) {
         Utilitary.hideFullPageLoading();
     }
     Utilitary.addFullPageLoading();
-    
+
     app.createAllScenes();
     app.createMenu();
 
@@ -55,7 +55,7 @@ function resumeInit(app: App) {
     //error catcher
     window.addEventListener("error", (e: ErrorEvent) => {
         if (e.message == "Uncaught Error: workerError" || e.message == "Error: workerError") {
-            new Message(Utilitary.messageRessource.errorOccuredMessage + e.message)
+            new Message(Utilitary.messageRessource.errorOccuredMessage + e.message);
             Utilitary.hideFullPageLoading();
         }
         if (e.message == "Uncaught Error: Upload2Error") {
@@ -100,5 +100,3 @@ function IosInit2() {
     }
     window.removeEventListener('touchstart', IosInit2, false)
 }
-
-
