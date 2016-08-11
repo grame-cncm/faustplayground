@@ -386,7 +386,7 @@ var Drag = (function () {
             else if (currentHoverElement.parentElement.classList.contains("node-output")) {
                 module.styleOutputNodeTouchDragOver(currentHoverElement.parentElement);
             }
-            else if (!ModuleClass.isNodesModuleUnstyle) {
+            else if (!Module.isNodesModuleUnstyle) {
                 var customEvent = new CustomEvent("unstylenode");
                 document.dispatchEvent(customEvent);
             }
@@ -1401,8 +1401,8 @@ var ModuleFaust = (function () {
 /// <reference path="ModuleFaust.ts"/>
 /// <reference path="ModuleView.ts"/>
 "use strict";
-var ModuleClass = (function () {
-    function ModuleClass(id, x, y, name, htmlElementModuleContainer, removeModuleCallBack, compileFaust) {
+var Module = (function () {
+    function Module(id, x, y, name, htmlElementModuleContainer, removeModuleCallBack, compileFaust) {
         var _this = this;
         //drag object to handle dragging of module and connection
         this.drag = new Drag();
@@ -1421,7 +1421,7 @@ var ModuleClass = (function () {
         this.addEvents();
     }
     //add all event listener to the moduleView
-    ModuleClass.prototype.addEvents = function () {
+    Module.prototype.addEvents = function () {
         var _this = this;
         this.moduleView.getModuleContainer().addEventListener("mousedown", this.eventDraggingHandler, false);
         this.moduleView.getModuleContainer().addEventListener("touchstart", this.eventDraggingHandler, false);
@@ -1451,7 +1451,7 @@ var ModuleClass = (function () {
         }
     };
     /***************  PRIVATE METHODS  ******************************/
-    ModuleClass.prototype.dragCallback = function (event, module) {
+    Module.prototype.dragCallback = function (event, module) {
         if (event.type == "mousedown") {
             module.drag.getDraggingMouseEvent(event, module, function (el, x, y, module, e) { module.drag.startDraggingModule(el, x, y, module, e); });
         }
@@ -1471,7 +1471,7 @@ var ModuleClass = (function () {
             module.drag.getDraggingTouchEvent(event, module, function (el, x, y, module, e) { module.drag.stopDraggingModule(el, x, y, module, e); });
         }
     };
-    ModuleClass.prototype.dragCnxCallback = function (event, module) {
+    Module.prototype.dragCnxCallback = function (event, module) {
         if (event.type == "mousedown") {
             module.drag.getDraggingMouseEvent(event, module, function (el, x, y, module, e) { module.drag.startDraggingConnector(el, x, y, module, e); });
         }
@@ -1508,7 +1508,7 @@ var ModuleClass = (function () {
         }
     };
     /*******************************  PUBLIC METHODS  **********************************/
-    ModuleClass.prototype.deleteModule = function () {
+    Module.prototype.deleteModule = function () {
         var connector = new Connector();
         connector.disconnectModule(this);
         this.deleteFaustInterface();
@@ -1519,7 +1519,7 @@ var ModuleClass = (function () {
         this.deleteCallback(this);
     };
     //make module smaller
-    ModuleClass.prototype.minModule = function () {
+    Module.prototype.minModule = function () {
         this.moduleView.fInterfaceContainer.classList.add("mini");
         this.moduleView.fTitle.classList.add("miniTitle");
         this.moduleView.miniButton.style.display = "none";
@@ -1528,7 +1528,7 @@ var ModuleClass = (function () {
         Connector.redrawOutputConnections(this, this.drag);
     };
     //restore module size
-    ModuleClass.prototype.maxModule = function () {
+    Module.prototype.maxModule = function () {
         this.moduleView.fInterfaceContainer.classList.remove("mini");
         this.moduleView.fTitle.classList.remove("miniTitle");
         this.moduleView.maxButton.style.display = "none";
@@ -1537,7 +1537,7 @@ var ModuleClass = (function () {
         Connector.redrawOutputConnections(this, this.drag);
     };
     //--- Create and Update are called once a source code is compiled and the factory exists
-    ModuleClass.prototype.createDSP = function (factory) {
+    Module.prototype.createDSP = function (factory) {
         this.moduleFaust.factory = factory;
         try {
             if (factory != null) {
@@ -1553,7 +1553,7 @@ var ModuleClass = (function () {
         }
     };
     //--- Update DSP in module 
-    ModuleClass.prototype.updateDSP = function (factory, module) {
+    Module.prototype.updateDSP = function (factory, module) {
         var toDelete = module.moduleFaust.fDSP;
         // 	Save Cnx
         var saveOutCnx = [].concat(module.moduleFaust.fOutputConnections);
@@ -1586,13 +1586,13 @@ var ModuleClass = (function () {
         }
         Utilitary.hideFullPageLoading();
     };
-    ModuleClass.prototype.deleteDSP = function (todelete) {
+    Module.prototype.deleteDSP = function (todelete) {
         // 	TO DO SAFELY --> FOR NOW CRASHES SOMETIMES
         // 		if(todelete)
         // 		    faust.deleteDSPInstance(todelete);
     };
     /******************** EDIT SOURCE & RECOMPILE *************************/
-    ModuleClass.prototype.edit = function () {
+    Module.prototype.edit = function () {
         this.saveInterfaceParams();
         var event = new CustomEvent("codeeditevent");
         document.dispatchEvent(event);
@@ -1608,7 +1608,7 @@ var ModuleClass = (function () {
         this.moduleView.fEditImg.removeEventListener("touchend", this.eventOpenEditHandler);
     };
     //---- Update ModuleClass with new name/code source
-    ModuleClass.prototype.update = function (name, code) {
+    Module.prototype.update = function (name, code) {
         var event = new CustomEvent("codeeditevent");
         document.dispatchEvent(event);
         this.moduleFaust.fTempName = name;
@@ -1617,7 +1617,7 @@ var ModuleClass = (function () {
         this.compileFaust({ name: name, sourceCode: code, x: this.moduleView.x, y: this.moduleView.y, callback: function (factory) { module.updateDSP(factory, module); } });
     };
     //---- React to recompilation triggered by click on icon
-    ModuleClass.prototype.recompileSource = function (event, module) {
+    Module.prototype.recompileSource = function (event, module) {
         Utilitary.showFullPageLoading();
         var buttonImage = event.target;
         var dsp_code = this.moduleView.textArea.value;
@@ -1634,14 +1634,14 @@ var ModuleClass = (function () {
     };
     /***************** CREATE/DELETE the DSP Interface ********************/
     // Fill fInterfaceContainer with the DSP's Interface (--> see FaustInterface.js)
-    ModuleClass.prototype.setFaustInterfaceControles = function () {
+    Module.prototype.setFaustInterfaceControles = function () {
         var _this = this;
         this.moduleView.fTitle.textContent = this.moduleFaust.fName;
         var moduleFaustInterface = new FaustInterfaceControler(function (faustInterface) { _this.interfaceSliderCallback(faustInterface); }, function (adress, value) { _this.moduleFaust.fDSP.setValue(adress, value); });
         this.moduleControles = moduleFaustInterface.parseFaustJsonUI(JSON.parse(this.moduleFaust.fDSP.json()).ui, this);
     };
     // Create FaustInterfaceControler, set its callback and add its AccelerometerSlider
-    ModuleClass.prototype.createFaustInterface = function () {
+    Module.prototype.createFaustInterface = function () {
         for (var i = 0; i < this.moduleControles.length; i++) {
             var faustInterfaceControler = this.moduleControles[i];
             faustInterfaceControler.setParams();
@@ -1654,14 +1654,14 @@ var ModuleClass = (function () {
         }
     };
     // Delete all FaustInterfaceControler
-    ModuleClass.prototype.deleteFaustInterface = function () {
+    Module.prototype.deleteFaustInterface = function () {
         this.deleteAccelerometerRef();
         while (this.moduleView.fInterfaceContainer.childNodes.length != 0) {
             this.moduleView.fInterfaceContainer.removeChild(this.moduleView.fInterfaceContainer.childNodes[0]);
         }
     };
     // Remove AccelerometerSlider ref from AccelerometerHandler
-    ModuleClass.prototype.deleteAccelerometerRef = function () {
+    Module.prototype.deleteAccelerometerRef = function () {
         for (var i = 0; i < this.moduleControles.length; i++) {
             if (this.moduleControles[i].accelerometerSlider != null && this.moduleControles[i].accelerometerSlider != undefined) {
                 var index = AccelerometerHandler.faustInterfaceControler.indexOf(this.moduleControles[i]);
@@ -1672,24 +1672,24 @@ var ModuleClass = (function () {
         this.moduleControles = [];
     };
     // set DSP value to all FaustInterfaceControlers
-    ModuleClass.prototype.setDSPValue = function () {
+    Module.prototype.setDSPValue = function () {
         for (var i = 0; i < this.moduleControles.length; i++) {
             this.moduleFaust.fDSP.setValue(this.moduleControles[i].itemParam.address, this.moduleControles[i].value);
         }
     };
     // set DSP value to specific FaustInterfaceControlers
-    ModuleClass.prototype.setDSPValueCallback = function (address, value) {
+    Module.prototype.setDSPValueCallback = function (address, value) {
         this.moduleFaust.fDSP.setValue(address, value);
     };
     // Updates Faust Code with new accelerometer metadata
-    ModuleClass.prototype.updateCodeFaust = function (details) {
+    Module.prototype.updateCodeFaust = function (details) {
         var m = forgeAccMetadata(details.newAccValue, details.isEnabled);
         var s = updateAccInFaustCode(this.moduleFaust.fSource, details.sliderName, m);
         this.moduleFaust.fSource = s;
     };
     //---- Generic callback for Faust Interface
     //---- Called every time an element of the UI changes value
-    ModuleClass.prototype.interfaceSliderCallback = function (faustControler) {
+    Module.prototype.interfaceSliderCallback = function (faustControler) {
         var val;
         if (faustControler.faustInterfaceView.slider) {
             var input = faustControler.faustInterfaceView.slider;
@@ -1713,7 +1713,7 @@ var ModuleClass = (function () {
         // 	Search for DSP then update the value of its parameter.
         this.moduleFaust.fDSP.setValue(text, val);
     };
-    ModuleClass.prototype.interfaceButtonCallback = function (faustControler, val) {
+    Module.prototype.interfaceButtonCallback = function (faustControler, val) {
         var input = faustControler.faustInterfaceView.button;
         var text = faustControler.itemParam.address;
         faustControler.value = val.toString();
@@ -1725,7 +1725,7 @@ var ModuleClass = (function () {
         this.moduleFaust.fDSP.setValue(text, val.toString());
     };
     // Save graphical parameters of a Faust Node
-    ModuleClass.prototype.saveInterfaceParams = function () {
+    Module.prototype.saveInterfaceParams = function () {
         var interfaceElements = this.moduleView.fInterfaceContainer.childNodes;
         var controls = this.moduleControles;
         for (var j = 0; j < controls.length; j++) {
@@ -1733,21 +1733,21 @@ var ModuleClass = (function () {
             this.fModuleInterfaceParams[text] = controls[j].value;
         }
     };
-    ModuleClass.prototype.recallInterfaceParams = function () {
+    Module.prototype.recallInterfaceParams = function () {
         for (var key in this.fModuleInterfaceParams)
             this.moduleFaust.fDSP.setValue(key, this.fModuleInterfaceParams[key]);
     };
-    ModuleClass.prototype.getInterfaceParams = function () {
+    Module.prototype.getInterfaceParams = function () {
         return this.fModuleInterfaceParams;
     };
-    ModuleClass.prototype.setInterfaceParams = function (parameters) {
+    Module.prototype.setInterfaceParams = function (parameters) {
         this.fModuleInterfaceParams = parameters;
     };
-    ModuleClass.prototype.addInterfaceParam = function (path, value) {
+    Module.prototype.addInterfaceParam = function (path, value) {
         this.fModuleInterfaceParams[path] = value.toString();
     };
     /******************* GET/SET INPUT/OUTPUT NODES **********************/
-    ModuleClass.prototype.addInputOutputNodes = function () {
+    Module.prototype.addInputOutputNodes = function () {
         var module = this;
         if (this.moduleFaust.fDSP.getNumInputs() > 0 && this.moduleView.fName != "input") {
             this.moduleView.setInputNode();
@@ -1766,20 +1766,20 @@ var ModuleClass = (function () {
     };
     //manage style of node when touchover will dragging
     //make the use easier for connections
-    ModuleClass.prototype.styleInputNodeTouchDragOver = function (el) {
+    Module.prototype.styleInputNodeTouchDragOver = function (el) {
         el.style.border = "15px double rgb(0, 211, 255)";
         el.style.left = "-32px";
         el.style.marginTop = "-32px";
-        ModuleClass.isNodesModuleUnstyle = false;
+        Module.isNodesModuleUnstyle = false;
     };
-    ModuleClass.prototype.styleOutputNodeTouchDragOver = function (el) {
+    Module.prototype.styleOutputNodeTouchDragOver = function (el) {
         el.style.border = "15px double rgb(0, 211, 255)";
         el.style.right = "-32px";
         el.style.marginTop = "-32px";
-        ModuleClass.isNodesModuleUnstyle = false;
+        Module.isNodesModuleUnstyle = false;
     };
-    ModuleClass.isNodesModuleUnstyle = true;
-    return ModuleClass;
+    Module.isNodesModuleUnstyle = true;
+    return Module;
 }());
 /// <reference path="Lib/qrcode.d.ts"/>
 "use strict";
@@ -2569,7 +2569,7 @@ var Scene = (function () {
     Scene.prototype.integrateInput = function () {
         var _this = this;
         var positionInput = this.positionInputModule();
-        this.fAudioInput = new ModuleClass(Utilitary.idX++, positionInput.x, positionInput.y, "input", this.sceneView.inputOutputModuleContainer, function (module) { _this.removeModule(module); }, this.compileFaust);
+        this.fAudioInput = new Module(Utilitary.idX++, positionInput.x, positionInput.y, "input", this.sceneView.inputOutputModuleContainer, function (module) { _this.removeModule(module); }, this.compileFaust);
         this.fAudioInput.patchID = "input";
         var scene = this;
         this.compileFaust({ name: "input", sourceCode: "process=_,_;", x: positionInput.x, y: positionInput.y, callback: function (factory) { scene.integrateAudioInput(factory); } });
@@ -2578,7 +2578,7 @@ var Scene = (function () {
         var _this = this;
         var positionOutput = this.positionOutputModule();
         var scene = this;
-        this.fAudioOutput = new ModuleClass(Utilitary.idX++, positionOutput.x, positionOutput.y, "output", this.sceneView.inputOutputModuleContainer, function (module) { _this.removeModule(module); }, this.compileFaust);
+        this.fAudioOutput = new Module(Utilitary.idX++, positionOutput.x, positionOutput.y, "output", this.sceneView.inputOutputModuleContainer, function (module) { _this.removeModule(module); }, this.compileFaust);
         this.fAudioOutput.patchID = "output";
         this.addMuteOutputListner(this.fAudioOutput);
         this.compileFaust({ name: "output", sourceCode: "process=_,_;", x: positionOutput.x, y: positionOutput.y, callback: function (factory) { scene.integrateAudioOutput(factory); } });
@@ -2802,7 +2802,7 @@ var Scene = (function () {
                 Utilitary.hideFullPageLoading();
                 return;
             }
-            var module = new ModuleClass(Utilitary.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), function (module) { _this.removeModule(module); }, this.compileFaust);
+            var module = new Module(Utilitary.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), function (module) { _this.removeModule(module); }, this.compileFaust);
             module.moduleFaust.setSource(this.tempModuleSourceCode);
             module.createDSP(factory);
             module.patchID = this.tempPatchId;
@@ -2997,7 +2997,7 @@ var Scene = (function () {
                 modules[i].moduleView.fOutputNode.style.marginTop = "-18px";
             }
         }
-        ModuleClass.isNodesModuleUnstyle = true;
+        Module.isNodesModuleUnstyle = true;
     };
     return Scene;
 }());
@@ -5407,7 +5407,7 @@ var App = (function () {
             Utilitary.hideFullPageLoading();
             return null;
         }
-        var module = new ModuleClass(Utilitary.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), function (module) { Utilitary.currentScene.removeModule(module); }, this.compileFaust);
+        var module = new Module(Utilitary.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), function (module) { Utilitary.currentScene.removeModule(module); }, this.compileFaust);
         module.moduleFaust.setSource(this.tempModuleSourceCode);
         module.createDSP(factory);
         module.setFaustInterfaceControles();

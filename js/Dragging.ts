@@ -40,7 +40,7 @@ class Drag {
     isDragConnector: boolean = false;
 
     //used to dispatch the element, the location and the event to the callback function with click event
-    getDraggingMouseEvent(mouseEvent: MouseEvent, module: ModuleClass, draggingFunction: (el: HTMLElement, x: number, y: number, module: ModuleClass, event: Event) => void) {
+    getDraggingMouseEvent(mouseEvent: MouseEvent, module: Module, draggingFunction: (el: HTMLElement, x: number, y: number, module: Module, event: Event) => void) {
         var event = <Event>mouseEvent;
         var el = <HTMLElement>mouseEvent.target;
         var x = mouseEvent.clientX + window.scrollX;
@@ -50,7 +50,7 @@ class Drag {
 
 
     //used to dispatch the element, the location and the event to the callback function with touch event
-    getDraggingTouchEvent(touchEvent: TouchEvent, module: ModuleClass, draggingFunction: (el: HTMLElement, x: number, y: number, module: ModuleClass, event: Event) => void) {
+    getDraggingTouchEvent(touchEvent: TouchEvent, module: Module, draggingFunction: (el: HTMLElement, x: number, y: number, module: Module, event: Event) => void) {
         var event = <Event>touchEvent;
         if (touchEvent.targetTouches.length > 0) {
             var touch: Touch = touchEvent.targetTouches[0];
@@ -74,7 +74,7 @@ class Drag {
         }
     }
 
-    startDraggingModule(el: HTMLElement, x: number, y: number, module: ModuleClass, event: Event): void {
+    startDraggingModule(el: HTMLElement, x: number, y: number, module: Module, event: Event): void {
 
         var moduleContainer: HTMLElement = module.moduleView.getModuleContainer();       
 
@@ -96,7 +96,7 @@ class Drag {
         event.preventDefault();
     }
 
-    whileDraggingModule(el: HTMLElement, x: number, y: number, module: ModuleClass,event:Event): void {
+    whileDraggingModule(el: HTMLElement, x: number, y: number, module: Module,event:Event): void {
 
         var moduleContainer = module.moduleView.getModuleContainer();
 
@@ -115,7 +115,7 @@ class Drag {
         event.stopPropagation();
     }
 
-    stopDraggingModule(el: HTMLElement, x: number, y: number, module: ModuleClass, event: Event): void {
+    stopDraggingModule(el: HTMLElement, x: number, y: number, module: Module, event: Event): void {
         // Stop capturing mousemove and mouseup events.
         document.removeEventListener("mouseup", module.eventDraggingHandler, false)
         document.removeEventListener("mousemove", module.eventDraggingHandler, false)
@@ -143,7 +143,7 @@ class Drag {
     }
 
 
-    startDraggingConnection(module: ModuleClass, target: HTMLElement):void {
+    startDraggingConnection(module: Module, target: HTMLElement):void {
 
         // if this is the green or red button, use its parent.
         if (target.classList.contains("node-button"))
@@ -191,7 +191,7 @@ class Drag {
         document.getElementById("svgCanvas").appendChild(curve);
     }
 
-    stopDraggingConnection(sourceModule: ModuleClass, destination: ModuleClass, target?: HTMLElement): void {
+    stopDraggingConnection(sourceModule: Module, destination: Module, target?: HTMLElement): void {
 
 
         if (sourceModule.moduleView.getInterfaceContainer().lastLit) {
@@ -236,7 +236,7 @@ class Drag {
             this.connector.connectorShape.setAttributeNS(null, "d", d);
             this.updateConnectorShapePath(this.connector.connectorShape, x1, x2, y1, y2);
 
-            var src: ModuleClass, dst: ModuleClass;
+            var src: Module, dst: Module;
 
 		    // If connecting from output to input
             if (this.isOriginInput) {
@@ -291,7 +291,7 @@ class Drag {
         this.connector.connectorShape = null;
     }
 
-    startDraggingConnector(target: HTMLElement, x: number, y: number, module: ModuleClass, event: Event): void {
+    startDraggingConnector(target: HTMLElement, x: number, y: number, module: Module, event: Event): void {
 
 
         this.startDraggingConnection(module,target);
@@ -308,7 +308,7 @@ class Drag {
 
 
 
-    whileDraggingConnector(target: HTMLElement, x: number, y: number, module: ModuleClass, event: Event) {
+    whileDraggingConnector(target: HTMLElement, x: number, y: number, module: Module, event: Event) {
 
         if (this.isDragConnector) {
             var currentHoverElement = <HTMLElement>document.elementFromPoint(x - scrollX, y - scrollY);
@@ -320,7 +320,7 @@ class Drag {
                 module.styleInputNodeTouchDragOver(currentHoverElement.parentElement);
             } else if (currentHoverElement.parentElement.classList.contains("node-output")) {
                 module.styleOutputNodeTouchDragOver(currentHoverElement.parentElement);
-            } else if (!ModuleClass.isNodesModuleUnstyle) {
+            } else if (!Module.isNodesModuleUnstyle) {
                 var customEvent = new CustomEvent("unstylenode")
                 document.dispatchEvent(customEvent);
 
@@ -381,7 +381,7 @@ class Drag {
         event.stopPropagation();
     }
 
-    stopDraggingConnector(target: HTMLElement, x: number, y: number, module: ModuleClass): void {
+    stopDraggingConnector(target: HTMLElement, x: number, y: number, module: Module): void {
         x = x - window.scrollX;
         y = y - window.scrollY;
         // Stop capturing mousemove and mouseup events.
@@ -390,9 +390,9 @@ class Drag {
 
         var arrivingHTMLNode: HTMLElement = target;
         var arrivingHTMLParentNode: HTMLElement = <HTMLElement>arrivingHTMLNode.offsetParent;
-        var arrivingNode: ModuleClass;
+        var arrivingNode: Module;
 
-        var modules: ModuleClass[] = Utilitary.currentScene.getModules();
+        var modules: Module[] = Utilitary.currentScene.getModules();
 
         for (var i = 0; i < modules.length; i++){
             if ((this.isOriginInput && modules[i].moduleView.isPointInOutput(x, y)) || modules[i].moduleView.isPointInInput(x, y)) {
@@ -429,7 +429,7 @@ class Drag {
             return true
         }
     }
-    isConnectionUnique(moduleSource: ModuleClass, moduleDestination: ModuleClass): boolean {
+    isConnectionUnique(moduleSource: Module, moduleDestination: Module): boolean {
         if (this.isOriginInput) {
             for (var i = 0; i < moduleSource.moduleFaust.fInputConnections.length; i++) {
                 for (var j = 0; j < moduleDestination.moduleFaust.fOutputConnections.length; j++) {

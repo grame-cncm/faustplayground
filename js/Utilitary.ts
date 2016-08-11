@@ -8,7 +8,7 @@
 
 class Utilitary {
     static audioContext: AudioContext;
-    static moduleList: ModuleClass[];
+    static moduleList: Module[];
     static currentScene: Scene;
     static messageRessource: Ressources = new Ressources();
     static idX: number = 0;

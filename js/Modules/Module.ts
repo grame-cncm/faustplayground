@@ -21,7 +21,7 @@
 
 
 
-class ModuleClass  {
+class Module  {
     static isNodesModuleUnstyle: boolean = true;
     //drag object to handle dragging of module and connection
     drag: Drag = new Drag();
@@ -33,7 +33,7 @@ class ModuleClass  {
     moduleFaust: ModuleFaust;
     moduleControles: FaustInterfaceControler[] = [];
 
-    private deleteCallback: (module: ModuleClass) => void;
+    private deleteCallback: (module: Module) => void;
     private fModuleInterfaceParams: { [label: string]: string } = {};
 
     eventDraggingHandler: (event: MouseEvent) => void;
@@ -46,7 +46,7 @@ class ModuleClass  {
 
 
 
-    constructor(id: number, x: number, y: number, name: string, htmlElementModuleContainer: HTMLElement, removeModuleCallBack: (m: ModuleClass) => void, compileFaust: (compileFaust: CompileFaust) => void) {
+    constructor(id: number, x: number, y: number, name: string, htmlElementModuleContainer: HTMLElement, removeModuleCallBack: (m: Module) => void, compileFaust: (compileFaust: CompileFaust) => void) {
         this.eventConnectorHandler = (event: MouseEvent) => { this.dragCnxCallback(event, this) };
         this.eventCloseEditHandler = (event: MouseEvent) => { this.recompileSource(event, this) };
         this.eventOpenEditHandler = () => { this.edit() };
@@ -98,7 +98,7 @@ class ModuleClass  {
 
     /***************  PRIVATE METHODS  ******************************/
 
-    private dragCallback(event: Event, module: ModuleClass): void {
+    private dragCallback(event: Event, module: Module): void {
 
         if (event.type == "mousedown") {
             module.drag.getDraggingMouseEvent(<MouseEvent>event, module, (el, x, y, module, e) => { module.drag.startDraggingModule(el, x, y, module, e) });
@@ -116,7 +116,7 @@ class ModuleClass  {
 
     }
 
-    private dragCnxCallback(event: Event, module: ModuleClass): void {
+    private dragCnxCallback(event: Event, module: Module): void {
         if (event.type == "mousedown") {
             module.drag.getDraggingMouseEvent(<MouseEvent>event, module, (el, x, y, module, e) => { module.drag.startDraggingConnector(el, x, y, module, e) });
         } else if (event.type == "mouseup") {
@@ -209,7 +209,7 @@ class ModuleClass  {
     }
 
     //--- Update DSP in module 
-    private updateDSP(factory: Factory, module: ModuleClass): void {
+    private updateDSP(factory: Factory, module: Module): void {
 
         var toDelete: IfDSP = module.moduleFaust.fDSP;
 
@@ -287,12 +287,12 @@ class ModuleClass  {
         document.dispatchEvent(event);
         this.moduleFaust.fTempName = name;
         this.moduleFaust.fTempSource = code;
-        var module: ModuleClass = this;
+        var module: Module = this;
         this.compileFaust({ name: name, sourceCode: code, x: this.moduleView.x, y: this.moduleView.y, callback: (factory) => { module.updateDSP(factory, module) }});
     }
 	
     //---- React to recompilation triggered by click on icon
-    private recompileSource(event: MouseEvent, module: ModuleClass): void {
+    private recompileSource(event: MouseEvent, module: Module): void {
         Utilitary.showFullPageLoading();
         var buttonImage: HTMLfEdit = <HTMLfEdit>event.target;
         var dsp_code: string = this.moduleView.textArea.value;
@@ -451,7 +451,7 @@ class ModuleClass  {
 		
     /******************* GET/SET INPUT/OUTPUT NODES **********************/
     addInputOutputNodes(): void {
-        var module: ModuleClass = this;
+        var module: Module = this;
         if (this.moduleFaust.fDSP.getNumInputs() > 0 && this.moduleView.fName != "input") {
             this.moduleView.setInputNode();
             this.moduleView.fInputNode.addEventListener("mousedown", this.eventConnectorHandler);
@@ -475,13 +475,13 @@ class ModuleClass  {
         el.style.border = "15px double rgb(0, 211, 255)";
         el.style.left = "-32px";
         el.style.marginTop = "-32px";
-        ModuleClass.isNodesModuleUnstyle = false;
+        Module.isNodesModuleUnstyle = false;
     }
     styleOutputNodeTouchDragOver(el: HTMLElement) {
         el.style.border = "15px double rgb(0, 211, 255)";
         el.style.right = "-32px";
         el.style.marginTop = "-32px";
-        ModuleClass.isNodesModuleUnstyle = false;
+        Module.isNodesModuleUnstyle = false;
     }
 }
 

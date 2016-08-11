@@ -128,7 +128,7 @@ class App {
             return null;
         }
 
-        var module: ModuleClass = new ModuleClass(Utilitary.idX++,
+        var module: Module = new Module(Utilitary.idX++,
                                                   this.tempModuleX,
                                                   this.tempModuleY,
                                                   this.tempModuleName,
@@ -221,7 +221,7 @@ class App {
 
 
     //-- Upload content dropped on the page and allocate the content to the right function
-    uploadOn(app: App, module: ModuleClass, x: number, y: number, e: DragEvent) {
+    uploadOn(app: App, module: Module, x: number, y: number, e: DragEvent) {
         Utilitary.showFullPageLoading();
         e.preventDefault();
         
@@ -265,7 +265,7 @@ class App {
     }
 
     //used for Url pointing at a dsp file
-    uploadUrl(app: App, module: ModuleClass, x: number, y: number, url: string) {
+    uploadUrl(app: App, module: Module, x: number, y: number, url: string) {
         var filename: string = url.toString().split('/').pop();
         filename = filename.toString().split('.').shift();
         Utilitary.getXHR(url, (codeFaust)=>{
@@ -281,7 +281,7 @@ class App {
 
 
     // used for dsp code faust
-    uploadCodeFaust(app: App, module: ModuleClass, x: number, y: number, e: DragEvent, dsp_code:string) {
+    uploadCodeFaust(app: App, module: Module, x: number, y: number, e: DragEvent, dsp_code:string) {
         dsp_code = "process = vgroup(\"" + "TEXT" + "\",environment{" + dsp_code + "}.process);";
         if (!module) {
             app.compileFaust({ name: "TEXT", sourceCode: dsp_code, x: x, y: y, callback: (factory) => { app.createModule(factory) }});
@@ -291,14 +291,14 @@ class App {
     }
 
     //used for File containing code faust or jfaust/json scene descriptor get the file then pass it to loadFile()
-    uploadFileFaust(app: App, module: ModuleClass, x: number, y: number, e: DragEvent, dsp_code: string) {
+    uploadFileFaust(app: App, module: Module, x: number, y: number, e: DragEvent, dsp_code: string) {
         var files: FileList = e.dataTransfer.files;
         var file: File = files[0];
         this.loadFile(file, module, x, y); 
     }
 
     //Load file dsp or jfaust
-    loadFile(file: File, module: ModuleClass, x: number, y: number) {
+    loadFile(file: File, module: Module, x: number, y: number) {
         var dsp_code: string;
         var reader: FileReader = new FileReader();
 
@@ -357,7 +357,7 @@ class App {
         this.menu.menuView.menuContainer.classList.add("no_pointer");
         Utilitary.currentScene.sceneView.dropElementScene.style.display = "block";
         Utilitary.currentScene.getSceneContainer().style.boxShadow = "0 0 200px #00f inset";
-        var modules: ModuleClass[] = Utilitary.currentScene.getModules();
+        var modules: Module[] = Utilitary.currentScene.getModules();
         for (var i = 0; i < modules.length; i++) {
             modules[i].moduleView.fModuleContainer.style.opacity="0.5"
         }
@@ -368,7 +368,7 @@ class App {
         this.menu.menuView.menuContainer.style.opacity = "1";
         Utilitary.currentScene.sceneView.dropElementScene.style.display = "none";
         Utilitary.currentScene.getSceneContainer().style.boxShadow = "none";
-        var modules: ModuleClass[] = Utilitary.currentScene.getModules();
+        var modules: Module[] = Utilitary.currentScene.getModules();
         for (var i = 0; i < modules.length; i++) {
             modules[i].moduleView.fModuleContainer.style.opacity = "1";
             modules[i].moduleView.fModuleContainer.style.boxShadow ="0 5px 10px rgba(0, 0, 0, 0.4)"

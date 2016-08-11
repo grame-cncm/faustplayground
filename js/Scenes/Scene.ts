@@ -14,14 +14,14 @@
 class Scene {
     //temporary arrays used to recall a scene from a jfaust file
     arrayRecalScene: JsonSaveModule[] = [];
-    arrayRecalledModule: ModuleClass[] = [];
+    arrayRecalledModule: Module[] = [];
 
     isMute: boolean = false;
     //-- Audio Input/Output
-    fAudioOutput: ModuleClass;
-    fAudioInput: ModuleClass;
+    fAudioOutput: Module;
+    fAudioInput: Module;
     //-- Modules contained in the scene
-    private fModuleList: ModuleClass[] = [];
+    private fModuleList: Module[] = [];
     //-- Graphical Scene container
     sceneView: SceneView;
     sceneName: string = "Patch";
@@ -91,7 +91,7 @@ class Scene {
     }
 
     //add listner on the output module to give the user the possibility to mute/onmute the scene
-    addMuteOutputListner(moduleOutput: ModuleClass) {
+    addMuteOutputListner(moduleOutput: Module) {
         moduleOutput.moduleView.fModuleContainer.ontouchstart = () => { this.dbleTouchOutput() }
         moduleOutput.moduleView.fModuleContainer.ondblclick = () => { this.dispatchEventMuteUnmute()}
     }
@@ -116,9 +116,9 @@ class Scene {
 
 
     /******************** HANDLE MODULES IN SCENE ************************/
-    getModules(): ModuleClass[] { return this.fModuleList; }
-    addModule(module: ModuleClass): void { this.fModuleList.push(module); }
-    removeModule(module: ModuleClass): void {
+    getModules(): Module[] { return this.fModuleList; }
+    addModule(module: Module): void { this.fModuleList.push(module); }
+    removeModule(module: Module): void {
         this.fModuleList.splice(this.fModuleList.indexOf(module), 1);
 
     }
@@ -138,7 +138,7 @@ class Scene {
     /*************** ACTIONS ON AUDIO IN/OUTPUT ***************************/
     integrateInput() {
         var positionInput: PositionModule = this.positionInputModule();
-        this.fAudioInput = new ModuleClass(Utilitary.idX++, positionInput.x, positionInput.y, "input", this.sceneView.inputOutputModuleContainer, (module) => { this.removeModule(module) }, this.compileFaust);
+        this.fAudioInput = new Module(Utilitary.idX++, positionInput.x, positionInput.y, "input", this.sceneView.inputOutputModuleContainer, (module) => { this.removeModule(module) }, this.compileFaust);
         this.fAudioInput.patchID = "input";
         var scene: Scene = this;
         this.compileFaust({ name:"input", sourceCode:"process=_,_;", x:positionInput.x, y:positionInput.y, callback:(factory)=>{ scene.integrateAudioInput(factory) }});
@@ -147,7 +147,7 @@ class Scene {
     integrateOutput() {
         var positionOutput: PositionModule = this.positionOutputModule();
         var scene: Scene = this;
-        this.fAudioOutput = new ModuleClass(Utilitary.idX++, positionOutput.x, positionOutput.y, "output", this.sceneView.inputOutputModuleContainer, (module) => { this.removeModule(module) }, this.compileFaust);
+        this.fAudioOutput = new Module(Utilitary.idX++, positionOutput.x, positionOutput.y, "output", this.sceneView.inputOutputModuleContainer, (module) => { this.removeModule(module) }, this.compileFaust);
         this.fAudioOutput.patchID = "output";
         this.addMuteOutputListner(this.fAudioOutput);
         this.compileFaust({ name: "output", sourceCode: "process=_,_;", x: positionOutput.x, y: positionOutput.y, callback: (factory) => { scene.integrateAudioOutput(factory) } });
@@ -174,8 +174,8 @@ class Scene {
         this.isInitLoading = false;
     }
 
-    getAudioOutput(): ModuleClass { return this.fAudioOutput; }
-    getAudioInput(): ModuleClass { return this.fAudioInput; }
+    getAudioOutput(): Module { return this.fAudioOutput; }
+    getAudioInput(): Module { return this.fAudioInput; }
 
     /********************************************************************
 **********************  ACTIVATE PHYSICAL IN/OUTPUT *****************
@@ -214,7 +214,7 @@ class Scene {
     }
 
 
-    activateAudioOutput(sceneOutput: ModuleClass): void {
+    activateAudioOutput(sceneOutput: Module): void {
 
         var out = <IHTMLDivElementOut>document.createElement("div");
         out.id = "audioOutput";
@@ -400,7 +400,7 @@ class Scene {
                 return;
             }
 
-            var module: ModuleClass = new ModuleClass(Utilitary.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), (module) => {this.removeModule(module) }, this.compileFaust);
+            var module: Module = new Module(Utilitary.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), (module) => {this.removeModule(module) }, this.compileFaust);
             module.moduleFaust.setSource(this.tempModuleSourceCode);
             module.createDSP(factory);
             module.patchID = this.tempPatchId;
@@ -430,7 +430,7 @@ class Scene {
     }
 
     //recall of the accelerometer mapping parameters for each FaustInterfaceControler of the Module
-    recallAccValues(jsonAccs: IJsonAccSaves, module: ModuleClass) {
+    recallAccValues(jsonAccs: IJsonAccSaves, module: Module) {
         if (jsonAccs != undefined) {
             for (var i in jsonAccs.controles) {
                 var controle = jsonAccs.controles[i];
@@ -477,7 +477,7 @@ class Scene {
     }
 
     //connect Modules recalled
-    connectModule(module: ModuleClass) {
+    connectModule(module: Module) {
         try {
             for (var i = 0; i < module.moduleFaust.recallInputsSource.length; i++) {
                 var moduleSource = this.getModuleByPatchId(module.moduleFaust.recallInputsSource[i]);
@@ -500,7 +500,7 @@ class Scene {
     }
 
     //use to identify the module to be connected to when recalling connections between modules
-    getModuleByPatchId(patchId: string): ModuleClass {
+    getModuleByPatchId(patchId: string): Module {
         if (patchId == "output") {
             return this.fAudioOutput;
         } else if (patchId == "input") {
@@ -597,7 +597,7 @@ class Scene {
                 modules[i].moduleView.fOutputNode.style.marginTop = "-18px";
             }
         }
-        ModuleClass.isNodesModuleUnstyle = true;
+        Module.isNodesModuleUnstyle = true;
 
     }
 

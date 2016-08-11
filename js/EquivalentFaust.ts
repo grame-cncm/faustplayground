@@ -45,7 +45,7 @@ class EquivalentFaust {
 
     giveIdToModules(scene: Scene):void {
 
-        var modules: ModuleClass[] = scene.getModules();
+        var modules: Module[] = scene.getModules();
 
         for (var i = 0; i < modules.length; i++) {
             modules[i].patchID = String(i + 1);
@@ -73,7 +73,7 @@ class EquivalentFaust {
         return null;
     }
 
-    createTree(module: ModuleClass, parent): ModuleTree {
+    createTree(module: Module, parent): ModuleTree {
         var moduleTree: ModuleTree = new ModuleTree();
         moduleTree.patchID = module.patchID;
         moduleTree.course = [];
@@ -176,7 +176,7 @@ class EquivalentFaust {
     }
 
     // Computing the trees unconnected to the output
-    connectUnconnectedModules(faustModuleList: ModuleClass[], output: ModuleClass):void {
+    connectUnconnectedModules(faustModuleList: Module[], output: Module):void {
 
         for (var i in faustModuleList) {
 
@@ -192,7 +192,7 @@ class EquivalentFaust {
     //Calculate Faust Equivalent of the Scene
     getFaustEquivalent(scene: Scene, patchName: string): string {
 
-        var faustModuleList:ModuleClass[]= scene.getModules();
+        var faustModuleList:Module[]= scene.getModules();
 
         if (faustModuleList.length > 0) {
 

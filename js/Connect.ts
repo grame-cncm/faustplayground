@@ -25,20 +25,20 @@ interface ConnectorShape extends SVGElement {
 class Connector {
     static connectorId: number = 0;
     connectorShape: ConnectorShape;
-    source: ModuleClass;
-    destination: ModuleClass;
+    source: Module;
+    destination: Module;
 
     // connect input node to device input
-    connectInput(inputModule: ModuleClass, divSrc: IHTMLDivElementSrc): void {
+    connectInput(inputModule: Module, divSrc: IHTMLDivElementSrc): void {
         divSrc.audioNode.connect(inputModule.moduleFaust.getDSP().getProcessor());
     }
 
     //connect output to device output
-    connectOutput(outputModule: ModuleClass, divOut: IHTMLDivElementOut): void {
+    connectOutput(outputModule: Module, divOut: IHTMLDivElementOut): void {
         outputModule.moduleFaust.getDSP().getProcessor().connect(divOut.audioNode);
     }
     // Connect Nodes in Web Audio Graph
-    connectModules(source: ModuleClass, destination: ModuleClass): void {
+    connectModules(source: Module, destination: Module): void {
         var sourceDSP: IfDSP;
         var destinationDSP: IfDSP;
         if (destination != null && destination.moduleFaust.getDSP) {
@@ -56,10 +56,10 @@ class Connector {
     }
 
     // Disconnect Nodes in Web Audio Graph
-    disconnectModules(source: ModuleClass, destination: ModuleClass):void {
+    disconnectModules(source: Module, destination: Module):void {
 	
         // We want to be dealing with the audio node elements from here on
-        var sourceCopy: ModuleClass = source;
+        var sourceCopy: Module = source;
         var sourceCopyDSP: IfDSP;
         // Searching for src/dst DSP if existing
 
@@ -83,7 +83,7 @@ class Connector {
     /**************************************************/
 
     //----- Add connection to src and dst connections structures
-    saveConnection(source: ModuleClass, destination: ModuleClass, connectorShape: ConnectorShape):void {
+    saveConnection(source: Module, destination: Module, connectorShape: ConnectorShape):void {
         this.connectorShape = connectorShape;
         this.destination = destination;
         this.source = source;
@@ -93,7 +93,7 @@ class Connector {
     /**************** Create/Break Connection(s) *******************/
     /***************************************************************/
 
-    createConnection(source: ModuleClass, outtarget: HTMLElement, destination: ModuleClass, intarget: HTMLElement):void {
+    createConnection(source: Module, outtarget: HTMLElement, destination: Module, intarget: HTMLElement):void {
         var drag: Drag = new Drag();
         drag.startDraggingConnection(source, outtarget);
         drag.stopDraggingConnection(source, destination);
@@ -107,7 +107,7 @@ class Connector {
         return true;
     }
 
-    breakSingleInputConnection(source: ModuleClass, destination: ModuleClass, connector: Connector) {
+    breakSingleInputConnection(source: Module, destination: Module, connector: Connector) {
 
         this.disconnectModules(source, destination);
 		
@@ -127,7 +127,7 @@ class Connector {
     }
 
     // Disconnect a node from all its connections
-    disconnectModule(module: ModuleClass) {
+    disconnectModule(module: Module) {
 
         //for all output nodes
         if (module.moduleFaust.getOutputConnections && module.moduleFaust.getOutputConnections()) {
@@ -143,7 +143,7 @@ class Connector {
 	    }
     }
 
-    static redrawInputConnections(module: ModuleClass, drag: Drag) {
+    static redrawInputConnections(module: Module, drag: Drag) {
         var offset: HTMLElement = module.moduleView.getInputNode();
         var x = module.moduleView.inputOutputNodeDimension / 2// + window.scrollX ;
         var y = module.moduleView.inputOutputNodeDimension / 2// + window.scrollY;
@@ -167,7 +167,7 @@ class Connector {
             drag.updateConnectorShapePath(currentConnectorShape, x1, x2, y1, y2);
         }
     }
-    static redrawOutputConnections(module: ModuleClass, drag: Drag) {
+    static redrawOutputConnections(module: Module, drag: Drag) {
         var offset: HTMLElement = module.moduleView.getOutputNode();
         var x = module.moduleView.inputOutputNodeDimension / 2// + window.scrollX ;
         var y = module.moduleView.inputOutputNodeDimension / 2// + window.scrollY;

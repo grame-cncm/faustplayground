@@ -85,7 +85,7 @@ class FaustInterfaceControler {
         this.setDSPValueCallback=setDSPValueCallback;
     }
     //parse interface json from faust webaudio-asm-wrapper to create corresponding FaustInterfaceControler
-    parseFaustJsonUI(ui: Iitems[], module: ModuleClass): FaustInterfaceControler[] {
+    parseFaustJsonUI(ui: Iitems[], module: Module): FaustInterfaceControler[] {
         this.faustControlers = [];
         for (var i = 0; i < ui.length; i++) {
             this.parse_group(ui[i], module);
@@ -93,12 +93,12 @@ class FaustInterfaceControler {
         return this.faustControlers;
     }
 
-    parse_group(group: Iitems, module: ModuleClass): void {
+    parse_group(group: Iitems, module: Module): void {
         if (group.items)
             this.parse_items(group.items, module);
     }
 
-    parse_item(item: any, module: ModuleClass): void {
+    parse_item(item: any, module: Module): void {
 
         var params = module.getInterfaceParams();
 
@@ -146,7 +146,7 @@ class FaustInterfaceControler {
         }
     }
 
-    parse_items(items: Iitems[], node: ModuleClass): void {
+    parse_items(items: Iitems[], node: Module): void {
         for (var i = 0; i < items.length; i++)
             this.parse_item(items[i], node);
     }
