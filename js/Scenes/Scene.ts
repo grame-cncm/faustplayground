@@ -38,15 +38,15 @@ class Scene {
     tempParams: IJsonParamsSave;
 
     //callback function to compile faust code from App
-    compileFaust: (compile: CompileFaust) => void
-    
-    
+    compileFaust: (compile: CompileFaust) => void;
+
+
 
 
     constructor(identifiant: string, compileFaust: (compileFaust: CompileFaust) => void, sceneView?: SceneView) {
         this.compileFaust = compileFaust;
         this.sceneView = new SceneView();
-        this.sceneView.initNormalScene(this)
+        this.sceneView.initNormalScene(this);
         this.integrateSceneInBody();
         this.integrateOutput();
         document.addEventListener("unstylenode", () => { this.unstyleNode() });
@@ -62,7 +62,7 @@ class Scene {
     /*********************** MUTE/UNMUTE SCENE ***************************/
     muteScene(): void {
         var out: IHTMLDivElementOut = <IHTMLDivElementOut>document.getElementById("audioOutput");
-        
+
         if (out != null) {
             if (out.audioNode.context.suspend != undefined) {//because of Edge not supporting audioContext.suspend() yet
                 out.audioNode.context.suspend();
@@ -71,13 +71,14 @@ class Scene {
             }
         }
     }
+
     unmuteScene(): void {
         console.log("timeIn");
         window.setTimeout(() => { this.delayedUnmuteScene() }, 500)
     }
 
     delayedUnmuteScene() {//because of probable Firefox bug with audioContext.resume() when resume to close from suspend
-        console.log("timeout")
+        console.log("timeout");
         var out: IHTMLDivElementOut = <IHTMLDivElementOut>document.getElementById("audioOutput");
 
         if (out != null) {
@@ -92,7 +93,7 @@ class Scene {
 
     //add listner on the output module to give the user the possibility to mute/onmute the scene
     addMuteOutputListner(moduleOutput: Module) {
-        moduleOutput.moduleView.fModuleContainer.ontouchstart = () => { this.dbleTouchOutput() }
+        moduleOutput.moduleView.fModuleContainer.ontouchstart = () => { this.dbleTouchOutput() };
         moduleOutput.moduleView.fModuleContainer.ondblclick = () => { this.dispatchEventMuteUnmute()}
     }
 
@@ -122,15 +123,16 @@ class Scene {
         this.fModuleList.splice(this.fModuleList.indexOf(module), 1);
 
     }
-	
+
     private cleanModules():void {
         for (var i = this.fModuleList.length - 1; i >= 0; i--) {
             this.fModuleList[i].deleteModule();
             this.removeModule(this.fModuleList[i]);
         }
     }
+
     /*******************************  PUBLIC METHODS  **********************************/
-    
+
     integrateSceneInBody(): void {
         document.body.appendChild(this.sceneView.fSceneContainer);
     }
@@ -138,23 +140,43 @@ class Scene {
     /*************** ACTIONS ON AUDIO IN/OUTPUT ***************************/
     integrateInput() {
         var positionInput: PositionModule = this.positionInputModule();
-        this.fAudioInput = new Module(Utilitary.idX++, positionInput.x, positionInput.y, "input", this.sceneView.inputOutputModuleContainer, (module) => { this.removeModule(module) }, this.compileFaust);
+        this.fAudioInput = new Module(Utilitary.idX++,
+                                      positionInput.x,
+                                      positionInput.y,
+                                      "input",
+                                      this.sceneView.inputOutputModuleContainer,
+                                      (module) => { this.removeModule(module) },
+                                      this.compileFaust);
         this.fAudioInput.patchID = "input";
-        var scene: Scene = this;
-        this.compileFaust({ name:"input", sourceCode:"process=_,_;", x:positionInput.x, y:positionInput.y, callback:(factory)=>{ scene.integrateAudioInput(factory) }});
-        
+        this.compileFaust({ name:"input",
+                            sourceCode:"process=_,_;",
+                            x:positionInput.x,
+                            y:positionInput.y,
+                            callback:(factory) => { this.integrateAudioInput(factory) }
+                           });
     }
+
     integrateOutput() {
         var positionOutput: PositionModule = this.positionOutputModule();
-        var scene: Scene = this;
-        this.fAudioOutput = new Module(Utilitary.idX++, positionOutput.x, positionOutput.y, "output", this.sceneView.inputOutputModuleContainer, (module) => { this.removeModule(module) }, this.compileFaust);
+        this.fAudioOutput = new Module(Utilitary.idX++,
+                                       positionOutput.x,
+                                       positionOutput.y,
+                                       "output",
+                                       this.sceneView.inputOutputModuleContainer,
+                                       (module) => { this.removeModule(module) },
+                                       this.compileFaust);
         this.fAudioOutput.patchID = "output";
         this.addMuteOutputListner(this.fAudioOutput);
-        this.compileFaust({ name: "output", sourceCode: "process=_,_;", x: positionOutput.x, y: positionOutput.y, callback: (factory) => { scene.integrateAudioOutput(factory) } });
+        this.compileFaust({ name: "output",
+                            sourceCode: "process=_,_;",
+                            x: positionOutput.x,
+                            y: positionOutput.y,
+                            callback: (factory) => { this.integrateAudioOutput(factory) }
+                           });
     }
 
     private integrateAudioOutput(factory: Factory): void {
-        
+
         if (this.fAudioOutput) {
             this.fAudioOutput.moduleFaust.setSource("process=_,_;");
             this.fAudioOutput.createDSP(factory);
@@ -191,12 +213,12 @@ class Scene {
         if (navigatorLoc.getUserMedia) {
 
             navigatorLoc.getUserMedia({ audio: true }, (mediaStream) => { this.getDevice(mediaStream) },  (e)=>{
-                this.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)"
+                this.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)";
                 this.fAudioInput.moduleView.fInterfaceContainer.title = Utilitary.messageRessource.errorGettingAudioInput;
                 new Message(Utilitary.messageRessource.errorGettingAudioInput);
             });
         } else {
-            this.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)"
+            this.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)";
             new Message(Utilitary.messageRessource.errorInputAPINotAvailable);
             this.fAudioInput.moduleView.fInterfaceContainer.title = Utilitary.messageRessource.errorInputAPINotAvailable;
         }
@@ -208,7 +230,6 @@ class Scene {
         var src = <IHTMLDivElementSrc>document.getElementById("input");
         src.audioNode = Utilitary.audioContext.createMediaStreamSource(device);
         document.body.appendChild(src);
-        var drag: Drag = new Drag();
         var connect: Connector = new Connector();
         connect.connectInput(this.fAudioInput, src);
     }
@@ -238,7 +259,7 @@ class Scene {
         }
 
 
-        var json: string
+        var json: string;
         var jsonObjectCollection: JsonSaveCollection = {};
 
         for (var i = 0; i < this.fModuleList.length; i++) {
@@ -250,7 +271,7 @@ class Scene {
                 jsonObject.code = this.fModuleList[i].moduleFaust.getSource();
                 jsonObject.name = this.fModuleList[i].moduleFaust.getName();
                 jsonObject.x = this.fModuleList[i].moduleView.getModuleContainer().getBoundingClientRect().left.toString();
-                jsonObject.y = this.fModuleList[i].moduleView.getModuleContainer().getBoundingClientRect().top.toString()
+                jsonObject.y = this.fModuleList[i].moduleView.getModuleContainer().getBoundingClientRect().top.toString();
 
 
                 var inputs: Connector[] = this.fModuleList[i].moduleFaust.getInputConnections();
@@ -276,7 +297,7 @@ class Scene {
 
                 var params = this.fModuleList[i].moduleFaust.getDSP().controls();
                 var jsonParams: JsonParamsSave = new JsonParamsSave();
-                jsonParams.sliders = []
+                jsonParams.sliders = [];
                 if (params) {
                     for (var j = 0; j < params.length; j++) {
                         var jsonSlider: JsonSliderSave = new JsonSliderSave();
@@ -317,7 +338,7 @@ class Scene {
             }
         }
 
-        json = JSON.stringify(jsonObjectCollection)
+        json = JSON.stringify(jsonObjectCollection);
         return json;
     }
 
@@ -327,7 +348,7 @@ class Scene {
             try {
                 var jsonObjectCollection: JsonSaveCollection = JSON.parse(json);
             } catch (e) {
-                new Message(Utilitary.messageRessource.errorJsonCorrupted)
+                new Message(Utilitary.messageRessource.errorJsonCorrupted);
                 Utilitary.hideFullPageLoading();
             }
             //this.parent.currentNumberDSP = this.fModuleList.length;
@@ -345,12 +366,12 @@ class Scene {
     // recall module at rank 0 of arrayRecalScene
     // direct use of the asm.js code if exist
     // or compile the faust code
-    // 
+    //
     // When arrayRecalScene empty, connect the modules in the scene
 
     lunchModuleCreation() {
         if (this.arrayRecalScene.length != 0) {
-            var jsonObject = this.arrayRecalScene[0]
+            var jsonObject = this.arrayRecalScene[0];
             if (jsonObject.factory != undefined) {
                 this.tempPatchId = jsonObject.patchId;
                 var factory: Factory = faust.readDSPFactoryFromMachine(jsonObject.factory);
@@ -360,7 +381,12 @@ class Scene {
             } else if (jsonObject.patchId != "output" && jsonObject.patchId != "input") {
                 this.tempPatchId = jsonObject.patchId;
                 this.sceneName = jsonObject.sceneName;
-                var argumentCompile = { name:jsonObject.name,sourceCode: jsonObject.code,x: parseFloat(jsonObject.x),y: parseFloat(jsonObject.y), callback:(factory) => { this.createModule(factory) }}
+                var argumentCompile = { name:jsonObject.name,
+                                        sourceCode: jsonObject.code,
+                                        x: parseFloat(jsonObject.x),
+                                        y: parseFloat(jsonObject.y),
+                                        callback:(factory) => { this.createModule(factory) }
+                                       };
                 this.compileFaust(argumentCompile);
             } else {
                 this.arrayRecalScene.shift();
@@ -400,7 +426,13 @@ class Scene {
                 return;
             }
 
-            var module: Module = new Module(Utilitary.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), (module) => {this.removeModule(module) }, this.compileFaust);
+            var module: Module = new Module(Utilitary.idX++,
+                                            this.tempModuleX,
+                                            this.tempModuleY,
+                                            this.tempModuleName,
+                                            document.getElementById("modules"),
+                                            (module) => {this.removeModule(module) },
+                                            this.compileFaust);
             module.moduleFaust.setSource(this.tempModuleSourceCode);
             module.createDSP(factory);
             module.patchID = this.tempPatchId;
@@ -527,15 +559,11 @@ class Scene {
         newName =Utilitary.replaceAll(newName, "'", "_");
         return newName;
     }
-    //check if string start only with letter (no accent) 
+    //check if string start only with letter (no accent)
     //and contains only letter (no accent) underscore and number for a lenght between 1 and 50 char
     static isNameValid(newName: string): boolean {
         var pattern: RegExp = new RegExp("^[a-zA-Z_][a-zA-Z_0-9]{1,50}$");
-        if (pattern.test(newName)) {
-            return true
-        } else {
-            return false
-        }
+        return pattern.test(newName);
     }
 
     //rename scene if format is correct and return true otherwise return false
@@ -549,7 +577,7 @@ class Scene {
             input.style.boxShadow = "0 0 0 green inset";
             input.style.border = "none";
             input.value = Utilitary.currentScene.sceneName;
-            var event: CustomEvent = new CustomEvent("updatename")
+            var event: CustomEvent = new CustomEvent("updatename");
             document.dispatchEvent(event);
             return true;
         } else {
@@ -568,18 +596,21 @@ class Scene {
         position.y = window.innerHeight / 2;
         return position
     }
+
     positionOutputModule(): PositionModule {
         var position: PositionModule = new PositionModule();
         position.x = window.innerWidth - 98;
         position.y = window.innerHeight / 2;
         return position
     }
+
     positionDblTapModule(): PositionModule {
         var position: PositionModule = new PositionModule();
         position.x = window.innerWidth / 2;
         position.y = window.innerHeight / 2;
         return position
     }
+
     /***************** Unstyle node connection of all modules on touchscreen  ***************/
     unstyleNode() {
         var modules = this.getModules();
@@ -642,7 +673,7 @@ class JsonSaveModule implements IJsonSaveModule {
     y: string;
     inputs: IJsonInputsSave;
     outputs: IJsonOutputsSave;
-    params: IJsonParamsSave
+    params: IJsonParamsSave;
     acc: IJsonAccSaves;
     factory: IJsonFactorySave;
 
