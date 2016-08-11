@@ -2,7 +2,7 @@
 	HAND-MADE JAVASCRIPT CLASS CONTAINING THE API OF A GENERIC SCENE
 */
 /// <reference path="../Connect.ts"/>
-/// <reference path="../Modules/ModuleClass.ts"/>
+/// <reference path="../Modules/Module.ts"/>
 /// <reference path="../Lib/webaudio-asm-worker-wrapper.d.ts"/>
 /// <reference path="../Utilitary.ts"/>
 /// <reference path="../Messages.ts"/>

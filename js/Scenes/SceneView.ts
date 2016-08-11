@@ -4,7 +4,7 @@
 	This is the unique scene of the Normal Playground
 		
 */
-/// <reference path="../Scenes/SceneClass.ts"/>
+/// <reference path="../Scenes/Scene.ts"/>
 /// <reference path="../Menu/Export.ts"/>
 
 

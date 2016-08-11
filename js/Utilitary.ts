@@ -1,5 +1,5 @@
-/// <reference path="Modules/ModuleClass.ts"/>
-/// <reference path="Scenes/SceneClass.ts"/>
+/// <reference path="Modules/Module.ts"/>
+/// <reference path="Scenes/Scene.ts"/>
 /// <reference path="Ressources.ts"/>
 /// <reference path="DriveAPI.ts"/>
 /// <reference path="Main.ts"/>

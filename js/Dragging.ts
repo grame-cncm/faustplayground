@@ -9,7 +9,7 @@
 */
 
 /// <reference path="Connect.ts"/>
-/// <reference path="Modules/ModuleClass.ts"/>
+/// <reference path="Modules/Module.ts"/>
 /// <reference path="Utilitary.ts"/>
 
 

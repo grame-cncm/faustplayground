@@ -10,8 +10,8 @@ Create Factories and Modules
 
 
     */
-/// <reference path="Scenes/SceneClass.ts"/>
-/// <reference path="Modules/ModuleClass.ts"/>
+/// <reference path="Scenes/Scene.ts"/>
+/// <reference path="Modules/Module.ts"/>
 /// <reference path="Modules/ModuleView.ts"/>
 /// <reference path="Modules/ModuleFaust.ts"/>
 /// <reference path="Connect.ts"/>

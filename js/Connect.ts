@@ -4,7 +4,7 @@
 		
 */
 
-/// <reference path="Modules/ModuleClass.ts"/>
+/// <reference path="Modules/Module.ts"/>
 /// <reference path="Utilitary.ts"/>
 /// <reference path="Dragging.ts"/>
 
