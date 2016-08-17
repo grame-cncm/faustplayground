@@ -11,7 +11,7 @@ onmessage = function(e) {
     var name = "FaustDSP";
     var name_ptr = Module._malloc(name.length + 1);
     var error_msg_ptr = Module._malloc(256);
-    
+
     Module.writeStringToMemory(name, name_ptr);
     Module.writeStringToMemory(code, code_ptr);
 
@@ -19,20 +19,20 @@ onmessage = function(e) {
     var getCLibFaustVersion = Module.cwrap('getCLibFaustVersion', 'number', []);
     var freeCDSP = Module.cwrap('freeCDSP', null, ['number']);
 
-    console.log("libfaustworker.js version : %s", Pointer_stringify(getCLibFaustVersion()));
+    console.log("libfaustworker.js version :", Pointer_stringify(getCLibFaustVersion()));
 
     // Add 'cn' option with the factory name
     argv = (argv === null) ? new Array() : argv;
     argv.push("-cn", factory_name);
 
     // Prepare 'argv' array for C side
-    var ptr_size = 4; 
+    var ptr_size = 4;
     var argv_ptr = Module._malloc(argv.length * ptr_size);  // Get buffer from emscripten.
     var argv_ptr_buffer = new Int32Array(Module.HEAP32.buffer, argv_ptr, argv.length);  // Get a integer view on the newly allocated buffer.
     for (var i = 0; i < argv.length; i++) {
         var arg_ptr = Module._malloc(argv[i].length + 1);
         Module.writeStringToMemory(argv[i], arg_ptr);
-        argv_ptr_buffer[i] = arg_ptr; 
+        argv_ptr_buffer[i] = arg_ptr;
     }
 
     var factory_code_ptr = createAsmCDSPFactoryFromString(name_ptr, code_ptr, argv.length, argv_ptr, error_msg_ptr);
