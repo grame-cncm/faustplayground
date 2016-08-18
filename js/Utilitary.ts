@@ -143,21 +143,21 @@ class PositionModule implements IPositionModule {
 //    active: boolean;
 //}
 //
-interface MediaStreamAudioSourceNode extends AudioNode {
-
-}
+//interface MediaStreamAudioSourceNode extends AudioNode {
+//
+//}
 //
 //interface MediaStreamAudioDestinationNode extends AudioNode {
 //    stream: MediaStream;
 //}
 
-interface AudioContext {
-    close: () => void;
-    createMediaStreamSource: (m: MediaStream) => MediaStreamAudioSourceNode;
-    createMediaStreamDestination: () => any;
-    resume: () => void;
-    suspend: () => void;
-}
+//interface AudioContext {
+//    close: () => void;
+//    createMediaStreamSource: (m: MediaStream) => MediaStreamAudioSourceNode;
+//    createMediaStreamDestination: () => any;
+//    resume: () => void;
+//    suspend: () => void;
+//}
 interface IHTMLDivElementSrc extends HTMLDivElement {
     audioNode: MediaStreamAudioSourceNode;
 }

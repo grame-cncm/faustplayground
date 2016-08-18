@@ -1,12 +1,13 @@
 /*				CONNECT.JS
 	Handles Audio/Graphical Connection/Deconnection of modules
-	This is a historical file from Chris Wilson, modified for Faust ModuleClass needs.	
-		
+	This is a historical file from Chris Wilson, modified for Faust ModuleClass needs.
+
 */
 
 /// <reference path="Modules/Module.ts"/>
 /// <reference path="Utilitary.ts"/>
 /// <reference path="Dragging.ts"/>
+/// <reference path="Lib/webaudioapi/waa.d.ts"/>
 
 
 "use strict";
@@ -37,6 +38,13 @@ class Connector {
     connectOutput(outputModule: Module, divOut: IHTMLDivElementOut): void {
         outputModule.moduleFaust.getDSP().getProcessor().connect(divOut.audioNode);
     }
+
+    getBroadcastStream(outputModule: Module, ctx: AudioContext): MediaStream {
+        var dst: MediaStreamAudioDestinationNode = ctx.createMediaStreamDestination();
+        outputModule.moduleFaust.getDSP().getProcessor().connect(dst);
+        return dst.stream;
+    }
+
     // Connect Nodes in Web Audio Graph
     connectModules(source: Module, destination: Module): void {
         var sourceDSP: IfDSP;
@@ -57,7 +65,7 @@ class Connector {
 
     // Disconnect Nodes in Web Audio Graph
     disconnectModules(source: Module, destination: Module):void {
-	
+
         // We want to be dealing with the audio node elements from here on
         var sourceCopy: Module = source;
         var sourceCopyDSP: IfDSP;
@@ -67,8 +75,8 @@ class Connector {
             sourceCopyDSP = sourceCopy.moduleFaust.getDSP();
             sourceCopyDSP.getProcessor().disconnect();
         }
-        
-		
+
+
         // Reconnect all disconnected connections (because disconnect API cannot break a single connection)
         if (source!=undefined&&source.moduleFaust.getOutputConnections()) {
             for (var i = 0; i < source.moduleFaust.getOutputConnections().length; i++){
@@ -110,7 +118,7 @@ class Connector {
     breakSingleInputConnection(source: Module, destination: Module, connector: Connector) {
 
         this.disconnectModules(source, destination);
-		
+
         // delete connection from src .outputConnections,
         if (source != undefined && source.moduleFaust.getOutputConnections) {
             source.moduleFaust.removeOutputConnection(connector);
@@ -120,7 +128,7 @@ class Connector {
         if (destination != undefined && destination.moduleFaust.getInputConnections) {
             destination.moduleFaust.removeInputConnection(connector);
         }
-		
+
 	    // and delete the connectorShape
 	    if(connector.connectorShape)
 		    connector.connectorShape.remove( );
@@ -135,8 +143,8 @@ class Connector {
             while (module.moduleFaust.getOutputConnections().length > 0)
                 this.breakSingleInputConnection(module, module.moduleFaust.getOutputConnections()[0].destination, module.moduleFaust.getOutputConnections()[0]);
 	    }
-	
-        //for all input nodes 
+
+        //for all input nodes
         if (module.moduleFaust.getInputConnections && module.moduleFaust.getInputConnections()) {
             while (module.moduleFaust.getInputConnections().length > 0)
                 this.breakSingleInputConnection(module.moduleFaust.getInputConnections()[0].source, module, module.moduleFaust.getInputConnections()[0]);
@@ -188,7 +196,7 @@ class Connector {
                     var x2 = x;
                     var y2 = y;
                     var d = drag.setCurvePath(x1, y1, x2, y2, drag.calculBezier(x1, x2), drag.calculBezier(x1, x2))
-                    
+
                     currentConnectorShape.setAttributeNS(null, "d", d);
                     drag.updateConnectorShapePath(currentConnectorShape,x1, x2, y1, y2);
 

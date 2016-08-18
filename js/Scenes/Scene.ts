@@ -7,6 +7,7 @@
 /// <reference path="../Utilitary.ts"/>
 /// <reference path="../Messages.ts"/>
 /// <reference path="SceneView.ts"/>
+/// <reference path="../Broadcast.ts"/>
 
 
 "use strict";
@@ -20,6 +21,7 @@ class Scene {
     //-- Audio Input/Output
     fAudioOutput: Module;
     fAudioInput: Module;
+    broadcast: Broadcast;
     //-- Modules contained in the scene
     private fModuleList: Module[] = [];
     //-- Graphical Scene container
@@ -241,8 +243,10 @@ class Scene {
         out.id = "audioOutput";
         out.audioNode = Utilitary.audioContext.destination;
         document.body.appendChild(out);
-        var connect: Connector = new Connector();
-        connect.connectOutput(sceneOutput, out);
+        var ctor: Connector = new Connector();
+        ctor.connectOutput(sceneOutput, out);
+        var stream: MediaStream = ctor.getBroadcastStream(sceneOutput, Utilitary.audioContext);
+        this.broadcast = new Broadcast(stream);
     }
 
 
