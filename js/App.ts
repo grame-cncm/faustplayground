@@ -236,7 +236,7 @@ class App {
             // CASE 1 : the dropped object is a url to some faust code
             var url = e.dataTransfer.getData('URL');
             console.log("URL DROP : "+ url);
-            this.uploadUrl(app, module, x, y, url);
+            this.downloadUrl(app, module, x, y, url);
 
         } else if (e.dataTransfer.getData('URL').split(':').shift() != "file") {
             var dsp_code: string = e.dataTransfer.getData('text');
@@ -264,7 +264,7 @@ class App {
     }
 
     //used for Url pointing at a dsp file
-    uploadUrl(app: App, module: Module, x: number, y: number, url: string) {
+    downloadUrl(app: App, module: Module, x: number, y: number, url: string) {
         var filename: string = url.toString().split('/').pop();
         filename = filename.toString().split('.').shift();
         Utilitary.getXHR(url, (codeFaust)=>{
@@ -343,7 +343,7 @@ class App {
     dblTouchUpload(e: CustomEvent) {
         Utilitary.showFullPageLoading();
         var position: PositionModule = Utilitary.currentScene.positionDblTapModule();
-        this.uploadUrl(this, null, position.x, position.y, e.detail);
+        this.downloadUrl(this, null, position.x, position.y, e.detail);
 
     }
 
