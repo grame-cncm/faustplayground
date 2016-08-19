@@ -61,8 +61,7 @@ class Module  {
         this.deleteCallback = removeModuleCallBack;
         this.eventDraggingHandler = (event)=>{ this.dragCallback(event, this) };
 
-        this.moduleView = new ModuleView();
-        this.moduleView.createModuleView(id, x, y, name, htmlElementModuleContainer);
+        this.moduleView = new ModuleView(id, x, y, name, htmlElementModuleContainer);
         this.moduleFaust = new ModuleFaust(name);
         this.addEvents();
 
