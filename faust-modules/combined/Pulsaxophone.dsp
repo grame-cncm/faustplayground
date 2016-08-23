@@ -3,6 +3,7 @@ declare author "ER"; //From Saxophone by Romain Michon;
 
 import("music.lib");
 import("instrument.lib");
+import("effect.lib");
 import("filter.lib");
 
 /* =============== DESCRIPTION ================= :

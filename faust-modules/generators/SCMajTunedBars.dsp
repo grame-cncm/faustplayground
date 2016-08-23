@@ -2,6 +2,7 @@ declare name "C Major Tuned Bars";
 declare author "ER";//From "Tuned Bar" by Romain Michon (rmichon@ccrma.stanford.edu);
 
 import("music.lib");
+import("filter.lib");
 import("instrument.lib");
 
 /* =============== DESCRIPTION ================= :

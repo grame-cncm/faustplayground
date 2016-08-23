@@ -13,6 +13,7 @@ declare author "ER"; //From Saxophone by Romain Michon;
 */
 
 import("music.lib");
+import("filter.lib");
 import("instrument.lib");
 
 //==================== INSTRUMENT =======================

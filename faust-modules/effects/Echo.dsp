@@ -2,7 +2,6 @@ declare name "Echo";
 
 import("math.lib");
 import("music.lib");
-import("filter.lib");
 
 /* ============ DESCRIPTION =============
 

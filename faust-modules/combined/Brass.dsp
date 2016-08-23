@@ -10,6 +10,8 @@ declare reference "https://ccrma.stanford.edu/~jos/pasp/Brasses.html";
 //Modification GRAME July 2015
 
 import("music.lib");
+import("effect.lib");
+import("filter.lib");
 import("instrument.lib");
 
 /* =============== DESCRIPTION ================= :

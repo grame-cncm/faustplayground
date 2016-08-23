@@ -6,6 +6,7 @@ declare description "This object implements a helmholtz resonator (biquad filter
 
 import("math.lib");
 import("music.lib");
+import("effect.lib");
 import("instrument.lib");
 import("filter.lib");
 

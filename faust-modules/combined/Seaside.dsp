@@ -12,6 +12,7 @@ declare autho "ER";
 
 import("music.lib");
 import("filter.lib");
+import("effect.lib");
 import("instrument.lib");
 
 process = Pink : bandpass(1, Lowf, Highf) <: instrReverbSea :> _

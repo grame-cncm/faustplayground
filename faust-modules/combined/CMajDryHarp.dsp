@@ -6,6 +6,7 @@ declare author  "ER";//Adapted from Harpe by Yann Orlarey;
 
 import("music.lib"); 
 import("filter.lib");
+import("effect.lib");
 import("instrument.lib");
 
 /* =============== DESCRIPTION ================= :

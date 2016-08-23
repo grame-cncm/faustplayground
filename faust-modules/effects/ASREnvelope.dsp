@@ -1,6 +1,7 @@
 declare name "ASR Envelope";
 
 import("music.lib");
+import("filter.lib");
 import("instrument.lib");
 
 /* =========== DESCRITPTION ============

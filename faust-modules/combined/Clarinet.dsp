@@ -10,6 +10,8 @@ declare reference "https://ccrma.stanford.edu/~jos/pasp/Woodwinds.html";
 //Modification Grame July 2015
 
 import("music.lib");
+import("filter.lib");
+import("effect.lib");
 import("instrument.lib");
 
 /* =============== DESCRIPTION ================= :

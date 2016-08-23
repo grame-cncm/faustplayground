@@ -2,6 +2,8 @@ declare name "Tuned Bars";
 declare author "ER";//From "Tuned Bar" by Romain Michon (rmichon@ccrma.stanford.edu);
 
 import("music.lib");
+import("effect.lib");
+import("filter.lib");
 import("instrument.lib");
 
 /* =============== DESCRIPTION ================= :

@@ -20,6 +20,7 @@ declare reference "https://ccrma.stanford.edu/~jos/pasp/Brasses.html";
 */
 
 import("music.lib");
+import("filter.lib");
 import("instrument.lib");
 
 //==================== INSTRUMENT =======================

@@ -3,6 +3,7 @@ declare description "WaveGuide Brass instrument from STK";
 declare author "ER"; //Adapted from Brass by Romain Michon (rmichon@ccrma.stanford.edu);
 
 import("music.lib");
+import("filter.lib");
 import("instrument.lib");
 
 /* ========= DESCRITPION ===========

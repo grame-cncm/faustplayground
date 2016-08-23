@@ -10,6 +10,7 @@ declare description "This instrument uses banded waveguide. For more information
 
 import("music.lib");
 import("instrument.lib");
+import("effect.lib");
 import("filter.lib");
 
 /* ============ DESCRIPTION =============
