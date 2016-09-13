@@ -119,8 +119,14 @@ class Scene {
 
 
     /******************** HANDLE MODULES IN SCENE ************************/
-    getModules(): Module[] { return this.fModuleList; }
-    addModule(module: Module): void { this.fModuleList.push(module); }
+    getModules(): Module[] {
+        return this.fModuleList;
+    }
+
+    addModule(module: Module): void {
+        this.fModuleList.push(module);
+    }
+
     removeModule(module: Module): void {
         this.fModuleList.splice(this.fModuleList.indexOf(module), 1);
 
@@ -175,6 +181,24 @@ class Scene {
                             y: positionOutput.y,
                             callback: (factory) => { this.integrateAudioOutput(factory) }
                            });
+        //var dummy: Module = new RemoteModule(Utilitary.idX++,
+        //                               positionOutput.x-300,
+        //                               positionOutput.y + 200,
+        //                               'dummy',
+        //                               this.sceneView.inputOutputModuleContainer,
+        //                               (module) => {this.removeModule(module)},
+        //                               this.compileFaust
+        //                               );
+        //dummy.moduleFaust.setSource('process=+;');
+        //this.compileFaust({name: 'dummy',
+        //                   sourceCode: 'process=_,_;',
+        //                   x: 0,
+        //                   y: 0,
+        //                   callback: function(factory: Factory){
+        //                       console.warn('prout');
+        //                   }
+        //                   });
+        ////dummy.createDSP();
     }
 
     private integrateAudioOutput(factory: Factory): void {
