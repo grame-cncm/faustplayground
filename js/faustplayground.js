@@ -1603,7 +1603,7 @@ var ModuleFaust = (function () {
 }());
 /*				MODULEVIEW.JS
     HAND-MADE JAVASCRIPT CLASS CONTAINING A FAUST MODULE  INTERFACE
-    
+
     Interface structure
     ===================
     DIV --> this.fModuleContainer
@@ -1615,10 +1615,8 @@ var ModuleFaust = (function () {
     ===================*/
 /// <reference path="../Utilitary.ts"/>
 var ModuleView = (function () {
-    function ModuleView() {
+    function ModuleView(ID, x, y, name, htmlParent) {
         this.inputOutputNodeDimension = 32;
-    }
-    ModuleView.prototype.createModuleView = function (ID, x, y, name, htmlParent) {
         //------- GRAPHICAL ELEMENTS OF MODULE
         var fModuleContainer = document.createElement("div");
         fModuleContainer.className = "moduleFaust";
@@ -1682,7 +1680,7 @@ var ModuleView = (function () {
         this.fTitle = fTitle;
         this.x = x;
         this.y = y;
-    };
+    }
     // ------ Returns Graphical input and output Node
     ModuleView.prototype.getOutputNode = function () { return this.fOutputNode; };
     ModuleView.prototype.getInputNode = function () { return this.fInputNode; };
@@ -1769,8 +1767,7 @@ var Module = (function () {
         this.compileFaust = compileFaust;
         this.deleteCallback = removeModuleCallBack;
         this.eventDraggingHandler = function (event) { _this.dragCallback(event, _this); };
-        this.moduleView = new ModuleView();
-        this.moduleView.createModuleView(id, x, y, name, htmlElementModuleContainer);
+        this.moduleView = new ModuleView(id, x, y, name, htmlElementModuleContainer);
         this.moduleFaust = new ModuleFaust(name);
         this.addEvents();
     }
@@ -3089,8 +3086,12 @@ var Scene = (function () {
         }
     };
     /******************** HANDLE MODULES IN SCENE ************************/
-    Scene.prototype.getModules = function () { return this.fModuleList; };
-    Scene.prototype.addModule = function (module) { this.fModuleList.push(module); };
+    Scene.prototype.getModules = function () {
+        return this.fModuleList;
+    };
+    Scene.prototype.addModule = function (module) {
+        this.fModuleList.push(module);
+    };
     Scene.prototype.removeModule = function (module) {
         this.fModuleList.splice(this.fModuleList.indexOf(module), 1);
     };
@@ -5696,7 +5697,9 @@ var App = (function () {
         var args = ["-I", location.origin + "/faustplayground/faustcode/"];
         //try to create the asm.js code/factory with the faust code given. Then callback to function passing the factory.
         try {
-            this.factory = faust.createDSPFactory(compileFaust.sourceCode, args, function (factory) { compileFaust.callback(factory); });
+            faust.createDSPFactory(compileFaust.sourceCode, args, function (factory) {
+                compileFaust.callback(factory);
+            });
         }
         catch (error) {
             new Message(error);
@@ -5737,7 +5740,7 @@ var App = (function () {
             module.moduleView.fModuleContainer.style.opacity = "0.5";
             module.moduleView.fModuleContainer.style.boxShadow = "0 5px 10px rgba(0, 0, 0, 0.4)";
         };
-        // the current scene add the module and hide the loading page 
+        // the current scene add the module and hide the loading page
         Utilitary.currentScene.addModule(module);
         if (!Utilitary.currentScene.isInitLoading) {
             Utilitary.hideFullPageLoading();
@@ -5747,7 +5750,7 @@ var App = (function () {
     ***********************  HANDLE DRAG AND DROP ***********************
     ********************************************************************/
     //-- custom event to load file from the load menu with the file explorer
-    //Init drag and drop reactions, scroll event and body resize event to resize svg element size, 
+    //Init drag and drop reactions, scroll event and body resize event to resize svg element size,
     // add custom double touch event to load dsp from the library menu
     App.prototype.setGeneralAppListener = function (app) {
         var _this = this;
@@ -5807,7 +5810,7 @@ var App = (function () {
             // CASE 1 : the dropped object is a url to some faust code
             var url = e.dataTransfer.getData('URL');
             console.log("URL DROP : " + url);
-            this.uploadUrl(app, module, x, y, url);
+            this.downloadUrl(app, module, x, y, url);
         }
         else if (e.dataTransfer.getData('URL').split(':').shift() != "file") {
             var dsp_code = e.dataTransfer.getData('text');
@@ -5836,7 +5839,7 @@ var App = (function () {
         }
     };
     //used for Url pointing at a dsp file
-    App.prototype.uploadUrl = function (app, module, x, y, url) {
+    App.prototype.downloadUrl = function (app, module, x, y, url) {
         var filename = url.toString().split('/').pop();
         filename = filename.toString().split('.').shift();
         Utilitary.getXHR(url, function (codeFaust) {
@@ -5908,7 +5911,7 @@ var App = (function () {
     App.prototype.dblTouchUpload = function (e) {
         Utilitary.showFullPageLoading();
         var position = Utilitary.currentScene.positionDblTapModule();
-        this.uploadUrl(this, null, position.x, position.y, e.detail);
+        this.downloadUrl(this, null, position.x, position.y, e.detail);
     };
     ////////////////////////////// design on drag or drop //////////////////////////////////////
     // manage style during a drag and drop event
