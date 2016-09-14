@@ -265,7 +265,7 @@ class App {
 
     //used for Url pointing at a dsp file
     downloadUrl(app: App, module: Module, x: number, y: number, url: string) {
-        var filename: string = url.toString().split('/').pop();
+        var filename: string = url.split('/').pop();
         filename = filename.toString().split('.').shift();
         Utilitary.getXHR(url, (codeFaust)=>{
             var dsp_code: string = "process = vgroup(\"" + filename + "\",environment{" + codeFaust + "}.process);";
