@@ -266,15 +266,22 @@ class App {
     //used for Url pointing at a dsp file
     downloadUrl(app: App, module: Module, x: number, y: number, url: string) {
         var filename: string = url.split('/').pop();
-        filename = filename.toString().split('.').shift();
-        Utilitary.getXHR(url, (codeFaust)=>{
-            var dsp_code: string = "process = vgroup(\"" + filename + "\",environment{" + codeFaust + "}.process);";
-
-            if (module == null) {
-                app.compileFaust({ name:filename, sourceCode:dsp_code, x:x, y:y, callback:(factory) => { app.createModule(factory) }});
-            } else {
-                 module.update(filename, dsp_code);
-            }
+        filename = filename.split('.').shift();
+        Utilitary.getXHR(url,
+            (codeFaust)=>{
+                var dsp_code: string = "process = vgroup(\"" + filename + "\",environment{" + codeFaust + "}.process);";
+                if (module == null) {
+                    app.compileFaust({ name:filename,
+                                       sourceCode:dsp_code,
+                                       x:x,
+                                       y:y,
+                                       callback:(factory) => {
+                                           app.createModule(factory)
+                                       }
+                                      });
+                } else {
+                     module.update(filename, dsp_code);
+                }
         }, Utilitary.errorCallBack)
     }
 
