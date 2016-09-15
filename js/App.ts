@@ -1,4 +1,4 @@
-﻿/*     APP.JS
+/*     APP.JS
 
 
 Class App
@@ -102,7 +102,7 @@ class App {
         if (currentScene) { currentScene.muteScene() };
 
         //locate libraries used in libfaust compiler
-        var args: string[] = ["-I", location.origin + "/faustplayground/faustcode/"];
+        var args: string[] = ["-I", /[^#]*/.exec(location.href) + "faustcode/"];
 
         //try to create the asm.js code/factory with the faust code given. Then callback to function passing the factory.
         try {
@@ -128,12 +128,12 @@ class App {
         }
 
         var module: Module = new Module(Utilitary.idX++,
-                                                  this.tempModuleX,
-                                                  this.tempModuleY,
-                                                  this.tempModuleName,
-                                                  document.getElementById("modules"),
-                                                  (module) => { Utilitary.currentScene.removeModule(module) },
-                                                  this.compileFaust);
+                                        this.tempModuleX,
+                                        this.tempModuleY,
+                                        this.tempModuleName,
+                                        document.getElementById("modules"),
+                                        (module) => { Utilitary.currentScene.removeModule(module) },
+                                        this.compileFaust);
         module.moduleFaust.setSource(this.tempModuleSourceCode);
         module.createDSP(factory);
         module.setFaustInterfaceControles();
