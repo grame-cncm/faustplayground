@@ -231,18 +231,18 @@ class Scene {
 
     activateAudioInput(): void {
 
-        var navigatorLoc: Navigator = navigator;
-        if (!navigatorLoc.getUserMedia) {
-            navigatorLoc.getUserMedia = navigatorLoc.webkitGetUserMedia || navigatorLoc.mozGetUserMedia;
-        }
+        navigator.getUserMedia = (navigator.getUserMedia) ? navigator.getUserMedia : navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
-        if (navigatorLoc.getUserMedia) {
+        if (navigator.getUserMedia) {
 
-            navigatorLoc.getUserMedia({ audio: true }, (mediaStream) => { this.getDevice(mediaStream) },  (e)=>{
-                this.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)";
-                this.fAudioInput.moduleView.fInterfaceContainer.title = Utilitary.messageRessource.errorGettingAudioInput;
-                new Message(Utilitary.messageRessource.errorGettingAudioInput);
-            });
+            navigator.getUserMedia({ audio: true },
+                                      (mediaStream) => { this.getDevice(mediaStream) },
+                                      (e) => {
+                                          console.error(e.name, e.message);
+                                          this.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)";
+                                          this.fAudioInput.moduleView.fInterfaceContainer.title = Utilitary.messageRessource.errorGettingAudioInput;
+                                          new Message(Utilitary.messageRessource.errorGettingAudioInput);
+                                      });
         } else {
             this.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)";
             new Message(Utilitary.messageRessource.errorInputAPINotAvailable);
