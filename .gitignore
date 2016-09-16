@@ -1,2 +1,4 @@
 ssl
 *.pid
+js/faustplayground.js
+js/faustplayground.js.map
