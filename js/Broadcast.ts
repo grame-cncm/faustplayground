@@ -26,6 +26,7 @@ class Broadcast {
                             /https?:\/\/([^#]*)/.exec(location.href)[1] +
                             'websocket';
         this.ws = new WebSocket(wsurl);
+        this.ws.addEventListener('message', (msg) => this.onWsMessage(msg));
     }
 
     private iceCallback(event: RTCIceCandidateEvent) {
@@ -33,11 +34,31 @@ class Broadcast {
     }
 
     private announceOffer(desc) {
-        console.info('Offer:', desc);
+        var msg = {type: 'Offer',
+                   data: desc.toJSON()};
+
+        switch (this.ws.readyState) {
+            case WebSocket.CONNECTING :
+                this.ws.addEventListener('open',
+                                         () => {this.ws.send(JSON.stringify(msg));});
+                break;
+            case WebSocket.OPEN :
+                this.ws.send(JSON.stringify(msg));
+                break;
+            default :
+                console.error('Unable to announce offer with a websocket at this status:',
+                              this.ws.readyState);
+
+        }
+        //console.info('Offer:', desc);
     }
 
     private onCreateOfferError(error) {
         console.error('Offer error:', error);
+    }
+
+    private onWsMessage(msg) {
+        console.info(msg.data);
     }
 }
 
