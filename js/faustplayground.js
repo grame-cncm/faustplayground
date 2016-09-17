@@ -891,17 +891,17 @@ var PathIterator = (function () {
     PathIterator.prototype.findNextPathString = function () {
         var p1 = this.fFaustCode.indexOf('"', this.fEnd + 1);
         var p2 = this.fFaustCode.indexOf('"', p1 + 1);
-        console.log("Current positions : " + this.fEnd + ", " + p1 + ", " + p2);
+        //console.log(`Current positions : ${this.fEnd}, ${p1}, ${p2}`);
         //if ( (this.fEnd < p0) && (p0 < p1) && (p1 < p2) ) 
         if ((this.fEnd < p1) && (p1 < p2)) {
             this.fStart = p1;
             this.fEnd = p2 + 1;
             var path = this.fFaustCode.slice(this.fStart, this.fEnd);
-            console.log("findNextPathString -> " + path);
+            //console.log(`findNextPathString -> ${path}`);
             return path;
         }
         else {
-            console.log("no more path found: " + this.fEnd + ", " + p1 + ", " + p2);
+            //console.log(`no more path found: ${this.fEnd}, ${p1}, ${p2}`);
             return "";
         }
     };
@@ -945,7 +945,7 @@ function removeMetadata(uipath) {
                 i = k + 1;
             }
             else {
-                console.log("removeMetada() called on incorrect label: " + uipath);
+                console.log("ERROR: removeMetada() called on incorrect label: " + uipath);
                 return uipath;
             }
         }
@@ -961,14 +961,14 @@ function replaceAccInPath(oldpath, newacc) {
     if (i < 0) {
         // no acc metada found, add at the end
         var newpath = oldpath.slice(0, -1) + "[" + newacc + "]" + '"';
-        console.log("> replaceAccInPath(" + oldpath + ", " + newacc + ") -> " + newpath);
+        //console.log(`> replaceAccInPath(${oldpath}, ${newacc}) -> ${newpath}`);
         return newpath;
     }
     else {
         var j = oldpath.indexOf("]", i);
         if (j > 0) {
             var newpath = oldpath.slice(0, i) + newacc + oldpath.slice(j);
-            console.log(">replaceAccInPath(\"" + oldpath + "\", " + newacc + ") -> " + newpath);
+            //console.log(`> replaceAccInPath("${oldpath}", ${newacc}) -> ${newpath}`);
             return newpath;
         }
     }
@@ -980,7 +980,7 @@ function replaceAccInPath(oldpath, newacc) {
 function match(uiname, uipath) {
     var path = removeMetadata(uipath.slice(1, -1));
     var found = path.indexOf(uiname) >= 0;
-    console.log("> match(" + uiname + "," + path + " [" + uipath + "]) -> " + found);
+    //console.log(`> match(${uiname},${path} [${uipath}]) -> ${found}`);
     return found;
 }
 //==============================================================================================
