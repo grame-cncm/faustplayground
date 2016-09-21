@@ -4,6 +4,7 @@
 
 class Broadcast {
     pc: RTCPeerConnection;
+    icecandidates: Array<RTCIceCandidate>;
     ws: WebSocket;
 
     static offer_options = {
@@ -16,6 +17,8 @@ class Broadcast {
                 server=null,
                 pc_constraints={optional:[]}) {
         this.pc = new RTCPeerConnection(server, pc_constraints);
+        this.icecandidates = new Array<RTCIceCandidate>();
+
         this.pc.onicecandidate = (event) => this.iceCallback(event);
         this.pc.addStream(stream);
         this.pc.createOffer(Broadcast.offer_options).then(
@@ -30,33 +33,34 @@ class Broadcast {
     }
 
     private iceCallback(event: RTCIceCandidateEvent) {
-        console.info('iceCallback', event);
+        if(event.candidate)
+            this.icecandidates.push(event.candidate);
     }
 
     private announceOffer(desc) {
         // Set local descpription and then, send offer via websocket.
         this.pc.setLocalDescription(desc).then(
             () => {
-
-                var msg = {
-                    type: 'Offer',
-                    data: desc.toJSON()
-                };
-
-                switch (this.ws.readyState) {
-                    case WebSocket.CONNECTING :
-                        this.ws.addEventListener('open',
-                            () => {
-                                this.ws.send(JSON.stringify(msg));
-                            });
-                        break;
-                    case WebSocket.OPEN :
-                        this.ws.send(JSON.stringify(msg));
-                        break;
-                    default :
-                        console.error('Unable to announce offer with a websocket at this status:',
-                            this.ws.readyState);
-                }
+                //
+                //var msg = {
+                //    type: 'Offer',
+                //    data: desc.toJSON()
+                //};
+                //
+                //switch (this.ws.readyState) {
+                //    case WebSocket.CONNECTING :
+                //        this.ws.addEventListener('open',
+                //            () => {
+                //                this.ws.send(JSON.stringify(msg));
+                //            });
+                //        break;
+                //    case WebSocket.OPEN :
+                //        this.ws.send(JSON.stringify(msg));
+                //        break;
+                //    default :
+                //        console.error('Unable to announce offer with a websocket at this status:',
+                //            this.ws.readyState);
+                //}
             }
         );
     }
@@ -80,7 +84,7 @@ class Broadcast {
         //    },
         //    (error) => {console.error('merde :', error);}
         //);
-        //console.info('onOffer', offer)
+        console.info('onOffer', offer)
     }
 }
 
