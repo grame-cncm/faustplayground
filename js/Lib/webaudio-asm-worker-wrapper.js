@@ -298,7 +298,7 @@ faust.createDSPFactoryAux = function (code, argv, max_polyphony, callback) {
     }, false)
     worker.onerror = function (event) {
         event.preventDefault();
-        throw new Error("workerError");
+        throw new Error(event.message);
     };
     worker.postMessage({ code: code, argv: argv, factory_name: factory_name });
 
