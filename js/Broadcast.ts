@@ -34,23 +34,31 @@ class Broadcast {
     }
 
     private announceOffer(desc) {
-        var msg = {type: 'Offer',
-                   data: desc.toJSON()};
+        // Set local descpription and then, send offer via websocket.
+        this.pc.setLocalDescription(desc).then(
+            () => {
 
-        switch (this.ws.readyState) {
-            case WebSocket.CONNECTING :
-                this.ws.addEventListener('open',
-                                         () => {this.ws.send(JSON.stringify(msg));});
-                break;
-            case WebSocket.OPEN :
-                this.ws.send(JSON.stringify(msg));
-                break;
-            default :
-                console.error('Unable to announce offer with a websocket at this status:',
-                              this.ws.readyState);
+                var msg = {
+                    type: 'Offer',
+                    data: desc.toJSON()
+                };
 
-        }
-        //console.info('Offer:', desc);
+                switch (this.ws.readyState) {
+                    case WebSocket.CONNECTING :
+                        this.ws.addEventListener('open',
+                            () => {
+                                this.ws.send(JSON.stringify(msg));
+                            });
+                        break;
+                    case WebSocket.OPEN :
+                        this.ws.send(JSON.stringify(msg));
+                        break;
+                    default :
+                        console.error('Unable to announce offer with a websocket at this status:',
+                            this.ws.readyState);
+                }
+            }
+        );
     }
 
     private onCreateOfferError(error) {
@@ -64,12 +72,15 @@ class Broadcast {
     }
 
     private onOffer(offer) {
-        var pc: RTCPeerConnection = new RTCPeerConnection(null, {optional:[]});
-        pc.setRemoteDescription(offer).then(
-            () => {console.log('setRemoteDescription Ok !');},
-            (error) => {console.error('merde :', error);}
-        );
-        console.info('onOffer', offer)
+        //var pcr: RTCPeerConnection = new RTCPeerConnection(null, {optional:[]});
+        //pcr.setRemoteDescription(offer).then(
+        //    () => {
+        //        console.log('setRemoteDescription Ok !');
+        //        pcr.createAnswer();
+        //    },
+        //    (error) => {console.error('merde :', error);}
+        //);
+        //console.info('onOffer', offer)
     }
 }
 
