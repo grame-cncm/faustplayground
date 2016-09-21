@@ -75,12 +75,10 @@ class Scene {
     }
 
     unmuteScene(): void {
-        console.log("timeIn");
         window.setTimeout(() => { this.delayedUnmuteScene() }, 500)
     }
 
     delayedUnmuteScene() {//because of probable Firefox bug with audioContext.resume() when resume to close from suspend
-        console.log("timeout");
         var out: IHTMLDivElementOut = <IHTMLDivElementOut>document.getElementById("audioOutput");
 
         if (out != null) {

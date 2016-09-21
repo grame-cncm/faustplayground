@@ -53,13 +53,12 @@ class Utilitary {
         var getrequest: XMLHttpRequest = new XMLHttpRequest();
 
         getrequest.onreadystatechange = function () {
-            console.log("enter onreadystatechange");
             if (getrequest.readyState == 4 && getrequest.status == 200) {
                 callback(getrequest.responseText);
             } else if (getrequest.readyState == 4 && getrequest.status == 400) {
                 errCallback(getrequest.responseText);
             }
-        }
+        };
 
         getrequest.open("GET", url, true);
         getrequest.send(null);
