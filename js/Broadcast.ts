@@ -58,7 +58,18 @@ class Broadcast {
     }
 
     private onWsMessage(msg) {
-        console.info(msg.data);
+        var msg = JSON.parse(msg.data);
+        this['on'+msg['type']](msg['data']);
+        //console.info(msg.data);
+    }
+
+    private onOffer(offer) {
+        var pc: RTCPeerConnection = new RTCPeerConnection(null, {optional:[]});
+        pc.setRemoteDescription(offer).then(
+            () => {console.log('setRemoteDescription Ok !');},
+            (error) => {console.error('merde :', error);}
+        );
+        console.info('onOffer', offer)
     }
 }
 
