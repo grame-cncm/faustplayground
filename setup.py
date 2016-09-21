@@ -22,5 +22,6 @@ setup(
     package_dir={'': 'py'},
 
     install_requires=['twisted',
-                      'autobahn'],
+                      'autobahn',
+                      'pyopenssl'],
 )
