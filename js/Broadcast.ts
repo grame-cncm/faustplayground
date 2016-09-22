@@ -6,6 +6,7 @@ class Broadcast {
     pc: RTCPeerConnection;
     icecandidates: Array<RTCIceCandidate>;
     ws: WebSocket;
+    wspeer: string;
 
     static offer_options = {
         offerToReceiveAudio: 1,
@@ -32,6 +33,11 @@ class Broadcast {
         this.ws.addEventListener('message', (msg) => this.onWsMessage(msg));
     }
 
+    private send(msg: WSMessage) {
+        console.log('send:', msg);
+        this.ws.send(msg.toJSON());
+    }
+
     private iceCallback(event: RTCIceCandidateEvent) {
         if(event.candidate)
             this.icecandidates.push(event.candidate);
@@ -41,26 +47,20 @@ class Broadcast {
         // Set local descpription and then, send offer via websocket.
         this.pc.setLocalDescription(desc).then(
             () => {
-                //
-                //var msg = {
-                //    type: 'Offer',
-                //    data: desc.toJSON()
-                //};
-                //
-                //switch (this.ws.readyState) {
-                //    case WebSocket.CONNECTING :
-                //        this.ws.addEventListener('open',
-                //            () => {
-                //                this.ws.send(JSON.stringify(msg));
-                //            });
-                //        break;
-                //    case WebSocket.OPEN :
-                //        this.ws.send(JSON.stringify(msg));
-                //        break;
-                //    default :
-                //        console.error('Unable to announce offer with a websocket at this status:',
-                //            this.ws.readyState);
-                //}
+                var msg: WSMessage = new WSMessage('Offer', undefined, desc);
+
+                switch (this.ws.readyState) {
+                    case WebSocket.CONNECTING :
+                        this.ws.addEventListener('open',
+                            () => this.send(msg));
+                        break;
+                    case WebSocket.OPEN :
+                        this.send(msg);
+                        break;
+                    default :
+                        console.error('Unable to announce offer with a websocket at this status:',
+                            this.ws.readyState);
+                }
             }
         );
     }
@@ -70,12 +70,19 @@ class Broadcast {
     }
 
     private onWsMessage(msg) {
-        var msg = JSON.parse(msg.data);
-        this['on'+msg['type']](msg['data']);
+        var wsmsg = WSMessage.fromJSON(msg.data);
+        var cb = this['on' + wsmsg.type];
+        if (cb)
+            cb(wsmsg);
+        else
+            console.warn('"on' + wsmsg.type + '" not implemented.');
+        //var msg = JSON.parse(msg.data);
+        //this['on'+msg['type']](msg['data']);
         //console.info(msg.data);
     }
 
     private onOffer(offer) {
+        //document.dispatchEvent(new CustomEvent('offer', {detail: offer}));
         //var pcr: RTCPeerConnection = new RTCPeerConnection(null, {optional:[]});
         //pcr.setRemoteDescription(offer).then(
         //    () => {
@@ -86,8 +93,38 @@ class Broadcast {
         //);
         console.info('onOffer', offer)
     }
+
+    private onWhoami(msg: WSMessage) {
+        console.info('I am:', msg.payload);
+        this.wspeer = msg.payload;
+    }
 }
 
 
-class RemoteModule extends Module {
+class WSMessage {
+    type: string;
+    from: string;
+    payload: any;
+
+    constructor(type: string, from?: string, payload?: any) {
+        this.type = type;
+        this.from = from;
+        this.payload = payload;
+    }
+
+    toJSON(): string {
+        var payload = (this.payload.hasOwnProperty('toJSON')) ?
+                       this.payload.toJSON() :
+                       JSON.stringify(this.payload);
+        return JSON.stringify({
+            type: this.type,
+            from: this.from,
+            payload: payload
+        })
+    }
+
+    static fromJSON(json: string): WSMessage {
+        var msg: any = JSON.parse(json);
+        return new WSMessage(msg.type, msg.from, JSON.parse(msg.payload));
+    }
 }
