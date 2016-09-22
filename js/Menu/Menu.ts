@@ -9,7 +9,7 @@
     /// <reference path="Load.ts"/>
     /// <reference path="Save.ts"/>
     /// <reference path="AccelerometerEdit.ts"/>
-    /// <reference path="../DriveAPI.ts"/> 
+    /// <reference path="../DriveAPI.ts"/>
     /// <reference path="../Messages.ts"/>
     /// <reference path="Players.ts"/>
 
@@ -43,8 +43,7 @@ class Menu {
 
     constructor(htmlContainer: HTMLElement) {
         //create and init menu view wich gone create and init all sub menus views
-        this.menuView = new MenuView();
-        this.menuView.init(htmlContainer);
+        this.menuView = new MenuView(htmlContainer);
 
         //add Event Listeners
         this.menuView.libraryButtonMenu.onclick = () => { this.menuHandler(this.newMenuChoices = MenuChoices.library) };
@@ -341,7 +340,7 @@ class Menu {
         }
     }
 
-    //update all element that display the scene name 
+    //update all element that display the scene name
     updatePatchNameToInput(e: Event) {
         this.menuView.patchNameScene.textContent = Utilitary.currentScene.sceneName;
         this.menuView.exportView.dynamicName.textContent = Utilitary.currentScene.sceneName;
@@ -393,7 +392,7 @@ class Menu {
                 if (!Utilitary.isAccelerometerEditOn) {
                     slider.disabled = false;
                 }
-                
+
             }
         } else if (!this.isAccelerometer) {
             this.menuView.accButton.style.opacity = "1";
@@ -523,7 +522,7 @@ class Menu {
         Menu.clearSelect(this.save.saveView.cloudSelectFile);
         this.drive.updateConnection();
     }
-    
+
     startLoadingDrive() {
         if (!this.isMenuDriveLoading) {
             this.isMenuDriveLoading = true;

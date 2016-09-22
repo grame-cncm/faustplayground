@@ -24,7 +24,7 @@ class MenuView {
     contentsMenu: HTMLElement;
     closeButton: HTMLElement;
     HTMLElementsMenu: HTMLElement[] = [];
-    HTMLButtonsMenu: HTMLElement[] = []
+    HTMLButtonsMenu: HTMLElement[] = [];
     patchNameScene: HTMLElement;
     libraryView: LibraryView;
     loadView: LoadView;
@@ -36,7 +36,7 @@ class MenuView {
     menuColorSelected: string = "rgb(209, 64, 80)";
 
 
-    init(htmlContainer: HTMLElement): void {
+    constructor(htmlContainer: HTMLElement) {
         var menuContainer: HTMLElement = document.createElement('div');
         menuContainer.id = "menuContainer";
         this.menuContainer = menuContainer;
@@ -108,7 +108,7 @@ class MenuView {
 
         buttonsMenu.appendChild(libraryButtonMenu);
         buttonsMenu.appendChild(this.playersButton);
-        buttonsMenu.appendChild(loadButtonMenu)
+        buttonsMenu.appendChild(loadButtonMenu);
         buttonsMenu.appendChild(editButtonMenu);
         buttonsMenu.appendChild(saveButtonMenu);
         buttonsMenu.appendChild(exportButtonMenu);
@@ -132,7 +132,7 @@ class MenuView {
         contentsMenu.id = "contentsMenu";
         contentsMenu.style.display = "none";
 
-        var closeButton: HTMLElement = document.createElement("div")
+        var closeButton: HTMLElement = document.createElement("div");
         closeButton.id = "closeButton";
         this.closeButton = closeButton;
 
@@ -185,7 +185,7 @@ class MenuView {
 
 
         htmlContainer.appendChild(menuContainer);
-        this.HTMLElementsMenu.push(libraryContent, loadContent, saveContent, exportContent, helpContent)
+        this.HTMLElementsMenu.push(libraryContent, loadContent, saveContent, exportContent, helpContent);
 
         this.libraryContent = libraryContent;
         this.loadContent = loadContent;
