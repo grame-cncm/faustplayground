@@ -22,7 +22,7 @@ interface HTMLElement {
     mozRequestFullScreen: () => any;
 }
 
-enum MenuChoices { library, export, help, kids, edit, save, load, null }
+enum MenuChoices { library, export, help, kids, edit, save, load, null, players }
 
 class Menu {
     isMenuDriveLoading: boolean = false;
@@ -46,16 +46,30 @@ class Menu {
         this.menuView = new MenuView(htmlContainer);
 
         //add Event Listeners
-        this.menuView.libraryButtonMenu.onclick = () => { this.menuHandler(this.newMenuChoices = MenuChoices.library) };
-        this.menuView.exportButtonMenu.onclick = () => { this.menuHandler(this.newMenuChoices = MenuChoices.export) };
-        this.menuView.helpButtonMenu.onclick = () => { this.menuHandler(this.newMenuChoices = MenuChoices.help) };
-        this.menuView.editButtonMenu.addEventListener("click", () => { this.menuHandler(this.newMenuChoices = MenuChoices.edit) });
-        this.menuView.closeButton.onclick = () => { this.menuHandler(this.newMenuChoices = MenuChoices.null) };
-        this.menuView.saveButton.addEventListener("click", () => { this.menuHandler(this.newMenuChoices = MenuChoices.save) });
-        this.menuView.loadButton.addEventListener("click", () => { this.menuHandler(this.newMenuChoices = MenuChoices.load) });
-        this.menuView.fullScreenButton.addEventListener("click", () => { this.fullScreen() });
-        this.menuView.accButton.addEventListener("click", () => { this.accelerometer() });
-        this.menuView.cleanButton.addEventListener("click", () => { new Confirm(Utilitary.messageRessource.confirmEmptyScene, (callback) => { this.cleanScene(callback) }) });
+        this.menuView.libraryButtonMenu.onclick =
+            () => { this.menuHandler(this.newMenuChoices = MenuChoices.library) };
+        this.menuView.playersButton.addEventListener('click',
+            () => this.menuHandler(this.newMenuChoices = MenuChoices.players)
+        );
+        this.menuView.exportButtonMenu.onclick =
+            () => { this.menuHandler(this.newMenuChoices = MenuChoices.export) };
+        this.menuView.helpButtonMenu.onclick =
+            () => { this.menuHandler(this.newMenuChoices = MenuChoices.help) };
+        this.menuView.editButtonMenu.addEventListener("click",
+            () => { this.menuHandler(this.newMenuChoices = MenuChoices.edit) });
+        this.menuView.closeButton.onclick =
+            () => { this.menuHandler(this.newMenuChoices = MenuChoices.null) };
+        this.menuView.saveButton.addEventListener("click",
+            () => { this.menuHandler(this.newMenuChoices = MenuChoices.save) });
+        this.menuView.loadButton.addEventListener("click",
+            () => { this.menuHandler(this.newMenuChoices = MenuChoices.load) });
+        this.menuView.fullScreenButton.addEventListener("click",
+            () => { this.fullScreen() });
+        this.menuView.accButton.addEventListener("click",
+            () => { this.accelerometer() });
+        this.menuView.cleanButton.addEventListener("click",
+            () => { new Confirm(Utilitary.messageRessource.confirmEmptyScene,
+                                (callback) => { this.cleanScene(callback) }) });
 
         //add eventListern customs
         document.addEventListener("updatename", (e) => { this.updatePatchNameToInput(e) });
@@ -68,6 +82,9 @@ class Menu {
         document.addEventListener("startloaddrive", () => { this.startLoadingDrive() });
         document.addEventListener("finishloaddrive", () => { this.finishLoadingDrive() });
         document.addEventListener("clouderror", (e: CustomEvent) => { Menu.connectionProblem(e) });
+        document.addEventListener('offer',
+            (e: CustomEvent) => this.addPlayerItem(e)
+        );
 
         //create and init all menus objects
         this.library = new Library();
@@ -101,6 +118,9 @@ class Menu {
         switch (newMenuChoices) {
             case MenuChoices.library:
                 this.libraryMenu();
+                break;
+            case MenuChoices.players:
+                this.playersMenu();
                 break;
             case MenuChoices.export:
                 this.exportMenu();
@@ -150,7 +170,33 @@ class Menu {
                 this.currentMenuChoices = MenuChoices.library;
                 break;
         }
+    }
 
+    playersMenu() {
+        switch (this.currentMenuChoices) {
+            case MenuChoices.null:
+                this.menuView.contentsMenu.style.display = "block";
+                this.menuView.playersContent.style.display = "block";
+                this.currentMenuChoices = MenuChoices.players;
+                this.menuView.playersButton.style.backgroundColor = this.menuView.menuColorSelected;
+                this.menuView.playersButton.style.zIndex = "1";
+                break;
+
+            case MenuChoices.players:
+                this.menuView.contentsMenu.style.display = "none";
+                this.menuView.playersContent.style.display = "none";
+                this.currentMenuChoices = MenuChoices.null;
+                this.menuView.playersButton.style.backgroundColor = this.menuView.menuColorDefault;
+                this.menuView.playersButton.style.zIndex = "0";
+                break;
+            default:
+                this.cleanMenu();
+                this.menuView.playersButton.style.backgroundColor = this.menuView.menuColorSelected;
+                this.menuView.playersButton.style.zIndex = "1";
+                this.menuView.playersContent.style.display = "block";
+                this.currentMenuChoices = MenuChoices.players;
+                break;
+        }
     }
 
     //manage the load display
@@ -511,6 +557,9 @@ class Menu {
         new Message(Utilitary.messageRessource.errorConnectionCloud + " : " + event.detail)
     }
 
+    private addPlayerItem(e: CustomEvent) {
+
+    }
 
     fillSelectCloud(optionEvent: CustomEvent) {
         this.load.loadView.cloudSelectFile.add(<HTMLOptionElement>optionEvent.detail);

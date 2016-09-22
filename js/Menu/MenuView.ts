@@ -16,6 +16,7 @@ class MenuView {
     loadButton: HTMLElement;
     saveButton: HTMLElement;
     playersButton: HTMLElement;
+    playersContent: HTMLElement;
     libraryContent: HTMLElement;
     loadContent: HTMLElement;
     exportContent: HTMLElement;
@@ -117,7 +118,13 @@ class MenuView {
         buttonsMenu.appendChild(accButton);
         buttonsMenu.appendChild(cleanButton);
 
-        this.HTMLButtonsMenu.push(libraryButtonMenu, loadButtonMenu, saveButtonMenu, exportButtonMenu, helpButtonMenu);
+        this.HTMLButtonsMenu.push(
+            libraryButtonMenu,
+            this.playersButton,
+            loadButtonMenu,
+            saveButtonMenu,
+            exportButtonMenu,
+            helpButtonMenu);
 
         var myScene: HTMLDivElement = document.createElement("div");
         myScene.id = "PatchName";
@@ -170,10 +177,15 @@ class MenuView {
         accEditContent.style.display = "none";
         this.accEditView = accEditView;
 
+        this.playersContent = document.createElement('div');
+        this.playersContent.id = 'playersContent';
+        this.playersContent.className = 'menuContent';
+        this.playersContent.style.display = 'none';
 
 
         contentsMenu.appendChild(CloseButtonContainer);
         contentsMenu.appendChild(libraryContent);
+        contentsMenu.appendChild(this.playersContent);
         contentsMenu.appendChild(loadContent);
         contentsMenu.appendChild(saveContent);
         contentsMenu.appendChild(exportContent);
@@ -185,7 +197,13 @@ class MenuView {
 
 
         htmlContainer.appendChild(menuContainer);
-        this.HTMLElementsMenu.push(libraryContent, loadContent, saveContent, exportContent, helpContent);
+        this.HTMLElementsMenu.push(
+            libraryContent,
+            this.playersContent,
+            loadContent,
+            saveContent,
+            exportContent,
+            helpContent);
 
         this.libraryContent = libraryContent;
         this.loadContent = loadContent;
