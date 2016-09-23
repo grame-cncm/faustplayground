@@ -81,8 +81,8 @@ class Broadcast {
         //console.info(msg.data);
     }
 
-    private onOffer(offer) {
-        //document.dispatchEvent(new CustomEvent('offer', {detail: offer}));
+    private onOffer(msg: WSMessage) {
+        document.dispatchEvent(new CustomEvent('Offer', {detail: msg}));
         //var pcr: RTCPeerConnection = new RTCPeerConnection(null, {optional:[]});
         //pcr.setRemoteDescription(offer).then(
         //    () => {
@@ -91,7 +91,7 @@ class Broadcast {
         //    },
         //    (error) => {console.error('merde :', error);}
         //);
-        console.info('onOffer', offer)
+        //console.info('onOffer', offer)
     }
 
     private onWhoami(msg: WSMessage) {

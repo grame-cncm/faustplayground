@@ -11,7 +11,7 @@
     /// <reference path="AccelerometerEdit.ts"/>
     /// <reference path="../DriveAPI.ts"/>
     /// <reference path="../Messages.ts"/>
-    /// <reference path="Players.ts"/>
+    /// <reference path="../Player.ts"/>
 
 interface Document {
     cancelFullScreen: () => any;
@@ -39,7 +39,7 @@ class Menu {
     isFullScreen: boolean = false;
     isAccelerometer: boolean = Utilitary.isAccelerometerOn;
     drive: DriveAPI;
-    players: Players;
+    //players: Players;
 
     constructor(htmlContainer: HTMLElement) {
         //create and init menu view wich gone create and init all sub menus views
@@ -82,7 +82,7 @@ class Menu {
         document.addEventListener("startloaddrive", () => { this.startLoadingDrive() });
         document.addEventListener("finishloaddrive", () => { this.finishLoadingDrive() });
         document.addEventListener("clouderror", (e: CustomEvent) => { Menu.connectionProblem(e) });
-        document.addEventListener('offer',
+        document.addEventListener('Offer',
             (e: CustomEvent) => this.addPlayerItem(e)
         );
 
@@ -107,7 +107,7 @@ class Menu {
         this.help = new Help();
         this.help.helpView = this.menuView.helpView;
         this.accEdit = new AccelerometerEdit(this.menuView.accEditView);
-        this.players = new Players();
+        //this.players = new Players();
     }
 
 
@@ -558,7 +558,8 @@ class Menu {
     }
 
     private addPlayerItem(e: CustomEvent) {
-
+        var item: PlayerMenuItem = new PlayerMenuItem(e.detail);
+        this.menuView.playersContent.appendChild(item.element);
     }
 
     fillSelectCloud(optionEvent: CustomEvent) {
