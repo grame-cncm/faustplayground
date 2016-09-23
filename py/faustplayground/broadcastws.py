@@ -51,8 +51,9 @@ class BroadcastServerFactory(WebSocketServerFactory) :
             client.sendMessage(whoiam.toJSON())
             self.clients[client.peer] = client
 
-            # for c in self.otherClients(client) :
-            #     client.sendMessage(dumps(c.offer))
+            # send to the new client previous offers from other clients
+            for c in self.otherClients(client) :
+                client.sendMessage(c.offer.toJSON())
 
 
     def unregister(self, client):
