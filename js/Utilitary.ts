@@ -9,7 +9,6 @@
 
 class Utilitary {
     static audioContext: AudioContext;
-    static moduleList: Module[];
     static currentScene: Scene;
     static messageRessource: Ressources = new Ressources();
     static idX: number = 0;
@@ -21,7 +20,7 @@ class Utilitary {
     static driveApi: DriveAPI;
 
     static errorCallBack(message: string) {
-
+        console.error(message);
     }
     static showFullPageLoading() {
 
@@ -40,13 +39,7 @@ class Utilitary {
         //document.getElementById("menuContainer").style.webkitFilter = "none"
 
     }
-    static isAppPedagogique(): boolean {
-        if (window.location.href.indexOf("kids.html") > -1) {
-            return true
-        } else {
-            return false
-        }
-    }
+
     //generic function to make XHR request
     static getXHR(url: string, callback: (any) => any, errCallback: (any) => any) {
 
@@ -68,7 +61,7 @@ class Utilitary {
         var loadingDiv = document.createElement("div");
         loadingDiv.className = "loadingDiv";
         var loadingImg = document.createElement("img");
-        loadingImg.src = Utilitary.baseImg + "logoAnim.gif"
+        loadingImg.src = Utilitary.baseImg + "logoAnim.gif";
         loadingImg.id = "loadingImg";
         var loadingText = document.createElement("span");
         loadingText.textContent = Utilitary.messageRessource.loading;
@@ -80,7 +73,7 @@ class Utilitary {
         }
     }
     static removeLoadingLogo(idTarget: string) {
-        var divTarget = <HTMLDivElement>document.getElementById(idTarget)
+        var divTarget = <HTMLDivElement>document.getElementById(idTarget);
         if (divTarget != null && divTarget.getElementsByClassName("loadingDiv").length > 0) {
             while (divTarget.getElementsByClassName("loadingDiv").length != 0) {
                 divTarget.getElementsByClassName("loadingDiv")[0].remove();
@@ -92,7 +85,7 @@ class Utilitary {
 
 
         var loadingText = document.getElementById("loadingTextBig");
-        loadingText.id = "loadingTextBig"
+        loadingText.id = "loadingTextBig";
         loadingText.textContent = Utilitary.messageRessource.loading;
     }
     static replaceAll(str: String, find: string, replace: string) {
@@ -102,29 +95,6 @@ class Utilitary {
 /********************************************************************
 **************************  interfaces  *****************************
 ********************************************************************/
-
-interface AudioBufferSourceNode {
-    noteOn: (any: any) => any;
-}
-
-//interface Navigator {
-//    //default way to get the devices of browsers
-//    getUserMedia(
-//        options: { video?: boolean; audio?: boolean; },
-//        success: (stream: any) => void,
-//        error?: (error: string) => void
-//    ): void;
-//    webkitGetUserMedia(
-//        options: { video?: boolean; audio?: boolean; },
-//        successCallback: (stream: any) => void,
-//        errorCallback?: (error: string) => void
-//    ): void;
-//    mozGetUserMedia(
-//        options: { video?: boolean; audio?: boolean; },
-//        successCallback: (stream: any) => void,
-//        errorCallback?: (error: string) => void
-//    ): void;
-//}
 
 interface IPositionModule {
     x: number;
@@ -137,26 +107,6 @@ class PositionModule implements IPositionModule {
 }
 
 
-//interface MediaStream {
-//    id: string;
-//    active: boolean;
-//}
-//
-//interface MediaStreamAudioSourceNode extends AudioNode {
-//
-//}
-//
-//interface MediaStreamAudioDestinationNode extends AudioNode {
-//    stream: MediaStream;
-//}
-
-//interface AudioContext {
-//    close: () => void;
-//    createMediaStreamSource: (m: MediaStream) => MediaStreamAudioSourceNode;
-//    createMediaStreamDestination: () => any;
-//    resume: () => void;
-//    suspend: () => void;
-//}
 interface IHTMLDivElementSrc extends HTMLDivElement {
     audioNode: MediaStreamAudioSourceNode;
 }
