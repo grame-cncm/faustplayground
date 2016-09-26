@@ -96,6 +96,10 @@ class Utilitary {
 **************************  interfaces  *****************************
 ********************************************************************/
 
+interface AudioBufferSourceNode {
+    noteOn: (any: any) => any;
+}
+
 interface IPositionModule {
     x: number;
     y: number;
