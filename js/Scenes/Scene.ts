@@ -238,13 +238,13 @@ class Scene {
                                       (e) => {
                                           console.error(e.name, e.message);
                                           this.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)";
-                                          this.fAudioInput.moduleView.fInterfaceContainer.title = Utilitary.messageRessource.errorGettingAudioInput;
-                                          new Message(Utilitary.messageRessource.errorGettingAudioInput);
+                                          this.fAudioInput.moduleView.fInterfaceContainer.title = _('errorGettingAudioInput');
+                                          new Message(_('errorGettingAudioInput'));
                                       });
         } else {
             this.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)";
-            new Message(Utilitary.messageRessource.errorInputAPINotAvailable);
-            this.fAudioInput.moduleView.fInterfaceContainer.title = Utilitary.messageRessource.errorInputAPINotAvailable;
+            new Message(_('errorInputAPINotAvailable'));
+            this.fAudioInput.moduleView.fInterfaceContainer.title = _('errorInputAPINotAvailable');
         }
     }
 
@@ -374,7 +374,7 @@ class Scene {
             try {
                 var jsonObjectCollection: JsonSaveCollection = JSON.parse(json);
             } catch (e) {
-                new Message(Utilitary.messageRessource.errorJsonCorrupted);
+                new Message(_('errorJsonCorrupted'));
                 Utilitary.hideFullPageLoading();
             }
             //this.parent.currentNumberDSP = this.fModuleList.length;
@@ -385,7 +385,7 @@ class Scene {
             this.lunchModuleCreation();
         } else {
             Utilitary.hideFullPageLoading();
-            new Message(Utilitary.messageRessource.errorLoading)
+            new Message(_('errorLoading'))
         }
     }
 
@@ -481,7 +481,7 @@ class Scene {
             this.arrayRecalScene.shift();
             this.lunchModuleCreation()
         } catch (e) {
-            new Message(Utilitary.messageRessource.errorCreateModuleRecall);
+            new Message(_('errorCreateModuleRecall'));
             this.arrayRecalScene.shift();
             this.lunchModuleCreation()
         }
@@ -553,7 +553,7 @@ class Scene {
                 }
             }
         } catch (e) {
-            new Message(Utilitary.messageRessource.errorConnectionRecall)
+            new Message(_('errorConnectionRecall'))
         }
     }
 
@@ -610,7 +610,7 @@ class Scene {
             spanRule.style.opacity = "1";
             input.style.boxShadow = "0 0 6px yellow inset";
             input.style.border = "3px solid red";
-            new Message(Utilitary.messageRessource.invalidSceneName);
+            new Message(_('invalidSceneName'));
             return false;
         }
     }

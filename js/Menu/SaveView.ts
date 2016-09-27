@@ -42,19 +42,19 @@ class SaveView {
 
         var nameAppTitle: HTMLSpanElement = document.createElement("span");
         nameAppTitle.id = "nameAppTitle";
-        nameAppTitle.textContent = Utilitary.messageRessource.saveDownload;
+        nameAppTitle.textContent = _('saveDownload');
         nameAppTitle.className = "exportTitle";
 
         var dynamicName: HTMLSpanElement = document.createElement("span");
         dynamicName.id = "dynamicName";
-        dynamicName.textContent = Utilitary.messageRessource.defaultSceneName;
+        dynamicName.textContent = _('defaultSceneName');
         nameAppTitle.appendChild(dynamicName);
         this.dynamicName = dynamicName;
 
         var rulesName: HTMLSpanElement = document.createElement("span");
         rulesName.id = "rulesName";
         rulesName.style.display = "none";
-        rulesName.textContent = Utilitary.messageRessource.rulesSceneName;
+        rulesName.textContent = _('rulesSceneName');
         this.rulesName = rulesName;
 
         var checkBoxPrecompile = document.createElement("input");
@@ -64,7 +64,7 @@ class SaveView {
 
         var label = document.createElement("label");
         label.id = "labelDownload";
-        label.textContent = Utilitary.messageRessource.precompileOption;
+        label.textContent = _('precompileOption');
         label.appendChild(checkBoxPrecompile);
 
 
@@ -82,7 +82,7 @@ class SaveView {
         downloadButton.type = "button";
         downloadButton.id = "downloadButton";
         downloadButton.className = "button"
-        downloadButton.textContent = Utilitary.messageRessource.buttonDownloadApp;
+        downloadButton.textContent = _('buttonDownloadApp');
 
         downloadBottomButtonContainer.appendChild(downloadButton)
 
@@ -117,7 +117,7 @@ class SaveView {
 
         var dialogGoodNews = document.createElement("div");
         dialogGoodNews.id = "dialogGoodNews";
-        dialogGoodNews.textContent = Utilitary.messageRessource.sucessSave;
+        dialogGoodNews.textContent = _('sucessSave');
         dialogGoodNews.style.opacity = "0";
         this.dialogGoodNews = dialogGoodNews;
 
@@ -125,14 +125,14 @@ class SaveView {
         localButtonSuppr.type = "button";
         localButtonSuppr.id = "localButtonSuppr";
         localButtonSuppr.className = "button"
-        localButtonSuppr.textContent = Utilitary.messageRessource.buttonSuppress;
+        localButtonSuppr.textContent = _('buttonSuppress');
         this.buttonLocalSuppr = localButtonSuppr;
 
         var localButton: HTMLButtonElement = document.createElement("button");
         localButton.type = "button";
         localButton.id = "localButton";
         localButton.className = "button"
-        localButton.textContent = Utilitary.messageRessource.buttonLocalSave;
+        localButton.textContent = _('buttonLocalSave');
         this.buttonLocalSave = localButton;
 
         var localBottomButtonContainer: HTMLElement = document.createElement("div");
@@ -153,7 +153,7 @@ class SaveView {
 
         var buttonConnectDrive = document.createElement("button");
         buttonConnectDrive.id = "buttonConnectSaveDrive";
-        buttonConnectDrive.textContent = Utilitary.messageRessource.buttonConnectCloud;
+        buttonConnectDrive.textContent = _('buttonConnectCloud');
         buttonConnectDrive.className = "button";
         this.buttonConnectDrive = buttonConnectDrive
 
@@ -176,21 +176,21 @@ class SaveView {
         cloudButtonSuppr.id = "cloudButtonSuppr";
         cloudButtonSuppr.className = "button"
         cloudButtonSuppr.style.display = "none";
-        cloudButtonSuppr.textContent = Utilitary.messageRessource.buttonSuppress;
+        cloudButtonSuppr.textContent = _('buttonSuppress');
         this.buttonCloudSuppr = cloudButtonSuppr;
 
         var cloudButton: HTMLButtonElement = document.createElement("button");
         cloudButton.type = "button";
         cloudButton.id = "cloudSaveButton";
         cloudButton.className = "button"
-        cloudButton.textContent = Utilitary.messageRessource.buttonCloudSave;
+        cloudButton.textContent = _('buttonCloudSave');
         this.buttonSaveCloud = cloudButton;
 
         var changeAccountButton: HTMLButtonElement = document.createElement("button");
         changeAccountButton.type = "button";
         //changeAccountButton.id = "changeAccountButton";
         changeAccountButton.className = "button changeAccountButton"
-        changeAccountButton.textContent = Utilitary.messageRessource.buttonLogoutCloud;
+        changeAccountButton.textContent = _('buttonLogoutCloud');
         changeAccountButton.style.display = "none";
         this.buttonChangeAccount = changeAccountButton;
 

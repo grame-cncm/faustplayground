@@ -16,7 +16,7 @@
 window.addEventListener('load', init, false);
 
 
-
+function _(s:string): string { return s;}
 
 
 
@@ -35,7 +35,7 @@ function resumeInit(app: App) {
     try {
         Utilitary.audioContext = new AudioContext();
     } catch (e) {
-        new Message(Utilitary.messageRessource.errorNoWebAudioAPI);
+        new Message(_('errorNoWebAudioAPI'));
         Utilitary.hideFullPageLoading();
     }
     Utilitary.addFullPageLoading();
@@ -55,7 +55,7 @@ function resumeInit(app: App) {
     //error catcher
     window.addEventListener("error", (e: ErrorEvent) => {
         if (e.message == "Uncaught Error: workerError" || e.message == "Error: workerError") {
-            new Message(Utilitary.messageRessource.errorOccuredMessage + e.message);
+            new Message(_('errorOccuredMessage') + e.message);
             Utilitary.hideFullPageLoading();
         }
         if (e.message == "Uncaught Error: Upload2Error") {

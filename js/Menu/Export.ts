@@ -1,6 +1,6 @@
 ﻿/*				EXPORT.JS
 	Handles Graphical elements for the Export Feature of the normal Playground
-		
+
 */
 /// <reference path="../ExportLib.ts"/>
 /// <reference path="../EquivalentFaust.ts"/>
@@ -11,7 +11,7 @@
 
 "use strict";
 
-/******************************************************************** 
+/********************************************************************
 *********************  HANDLE FAUST WEB TARGETS *********************
 ********************************************************************/
 
@@ -97,7 +97,7 @@ class Export{
         Export.targetsUrl = Export.exportUrl+"/targets";
 
         Utilitary.getXHR(Export.targetsUrl, (json: string) => { this.uploadTargetCallback(json) }, (errorMessage: string) => { Utilitary.errorCallBack(errorMessage) });
-    }	
+    }
 
     //callback to refresh Target
     uploadTargetCallback(json: string) {
@@ -110,7 +110,7 @@ class Export{
         }
         this.setDefaultSelect();
         this.updateArchitectures();
-    }	
+    }
 
     //set selection to default, currently android
     setDefaultSelect() {
@@ -121,10 +121,10 @@ class Export{
                 platefromSelect.selectedIndex = i;
             }
         }
-        
+
     }
 
-    /******************************************************************** 
+    /********************************************************************
     *********************  HANDLE POST TO FAUST WEB  ********************
     ********************************************************************/
 
@@ -143,7 +143,7 @@ class Export{
         ExportLib.getSHAKey((<HTMLInputElement>document.getElementById("faustweburl")).value, Utilitary.currentScene.sceneName, faustCode, expor.exportFaustCode);
     }
 
-    /******************************************************************** 
+    /********************************************************************
     **************  CALLBACK ONCE SHA KEY WAS CALCULATED  ***************
     ********************************************************************/
 
@@ -161,7 +161,7 @@ class Export{
         var serverUrl: string = (<HTMLInputElement>document.getElementById("faustweburl")).value;
 
         var appType: string = "binary.zip";
-	
+
         if (architecture == "android")
             appType = "binary.apk";
 
@@ -169,7 +169,7 @@ class Export{
         exportLib.sendPrecompileRequest(serverUrl, shaKey, platforme, architecture, appType, (serverUrl: string, shaKey: string, plateforme: string, architecture: string, appType: string) => { this.setDownloadOptions(serverUrl, shaKey, plateforme, architecture, appType) });
 
         // 	Delete existing content if existing
-        
+
     }
 
 
@@ -190,7 +190,7 @@ class Export{
             linkDownload.value = serverUrl + "/" + shaKey + "/" + plateforme + "/" + architecture + "/" + appType;
             linkDownload.id = "linkDownload";
             linkDownload.className = "button";
-            linkDownload.textContent = Utilitary.messageRessource.buttonDownloadApp;
+            linkDownload.textContent = _('buttonDownloadApp');
             downloadBottomButtonContainer.appendChild(linkDownload);
             this.exportView.downloadButton = linkDownload;
             this.exportView.downloadButton.onclick = () => { window.location.href = this.exportView.downloadButton.value };
@@ -210,7 +210,7 @@ class Export{
        Utilitary.removeLoadingLogo("exportResultContainer");
     }
 
-    
+
     removeQRCode() {
         var disposableExportDiv: HTMLElement = document.getElementById('disposableExportDiv');
         if (disposableExportDiv) {

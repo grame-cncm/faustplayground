@@ -2,7 +2,7 @@
 	Init Normal Scene with all its graphical elements
 
 	This is the unique scene of the Normal Playground
-		
+
 */
 /// <reference path="../Scenes/Scene.ts"/>
 /// <reference path="../Menu/Export.ts"/>
@@ -11,7 +11,7 @@
 "use strict";
 class SceneView{
 
-/******************************************************************** 
+/********************************************************************
 **************************  INITIALIZATION **************************
 ********************************************************************/
     //expor: Export = new Export()
@@ -24,7 +24,7 @@ class SceneView{
     initNormalScene(scene: Scene) {
         var container = document.createElement("div");
         container.id = "Normal";
-        
+
 
 
         var svgCanvas = <SVGElement>document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -62,12 +62,12 @@ class SceneView{
         var linkWilson: HTMLDivElement = document.createElement("div");
         linkWilson.id = "ChrisLine"
         linkWilson.className = "link";
-        linkWilson.textContent = Utilitary.messageRessource.reference;
+        linkWilson.textContent = _('reference');
         container.appendChild(linkWilson);
 
         var alink: HTMLAnchorElement = document.createElement("a");
         alink.href = "https://github.com/cwilso/WebAudio";
-        alink.textContent = Utilitary.messageRessource.chrisWilson;
+        alink.textContent = _('chrisWilson');
         linkWilson.appendChild(alink);
 
         var srcDiv: HTMLDivElement = document.createElement("div");
@@ -85,7 +85,7 @@ class SceneView{
         imageDiv.appendChild(imageLogo);
 
 
-        
+
 
         var dropElementScene = document.createElement("div");
         dropElementScene.className = "dropElementGraph";
@@ -93,10 +93,10 @@ class SceneView{
         this.dropElementScene = dropElementScene;
 
         var dropElementText = document.createElement("div");
-        dropElementText.textContent = Utilitary.messageRessource.drop;
+        dropElementText.textContent = _('drop');
         dropElementText.className = "dropElementText";
         dropElementScene.appendChild(dropElementText);
-        
+
 
         container.appendChild(dropElementScene);
         this.fSceneContainer = container;

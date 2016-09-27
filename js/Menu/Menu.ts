@@ -68,7 +68,7 @@ class Menu {
         this.menuView.accButton.addEventListener("click",
             () => { this.accelerometer() });
         this.menuView.cleanButton.addEventListener("click",
-            () => { new Confirm(Utilitary.messageRessource.confirmEmptyScene,
+            () => { new Confirm(_('confirmEmptyScene'),
                                 (callback) => { this.cleanScene(callback) }) });
 
         //add eventListern customs
@@ -395,7 +395,7 @@ class Menu {
         this.menuView.saveView.inputDownload.value = Utilitary.currentScene.sceneName;
         this.menuView.saveView.inputLocalStorage.value = Utilitary.currentScene.sceneName;
         this.menuView.saveView.inputCloudStorage.value = Utilitary.currentScene.sceneName;
-        new Message(Utilitary.messageRessource.successRenameScene, "messageTransitionOutFast", 2000, 500)
+        new Message(_('successRenameScene'), "messageTransitionOutFast", 2000, 500)
     }
 
     //handle fullscreen mode
@@ -554,7 +554,7 @@ class Menu {
     }
     //display Drive Connection error
     static connectionProblem(event: CustomEvent) {
-        new Message(Utilitary.messageRessource.errorConnectionCloud + " : " + event.detail)
+        new Message(_('errorConnectionCloud') + " : " + event.detail)
     }
 
     private addPlayerItem(e: CustomEvent) {

@@ -122,7 +122,7 @@ class App {
     //
     private createModule(factory: Factory): void {
         if (!factory) {
-            new Message(Utilitary.messageRessource.errorFactory + faust.getErrorMessage());
+            new Message(_('errorFactory') + faust.getErrorMessage());
             Utilitary.hideFullPageLoading();
             return null;
         }
@@ -258,7 +258,7 @@ class App {
 
         } else { // CASE 4 : any other strange thing
             console.log("DROP: CASE 4 STRANGE ");
-            new Message(Utilitary.messageRessource.errorObjectNotFaustCompatible);
+            new Message(_('errorObjectNotFaustCompatible'));
             Utilitary.hideFullPageLoading();
         }
     }
@@ -323,7 +323,7 @@ class App {
             type = "json";
             reader.readAsText(file);
         } else {
-            throw new Error(Utilitary.messageRessource.errorObjectNotFaustCompatible);
+            throw new Error(_('errorObjectNotFaustCompatible'));
         }
 
         reader.onloadend =(e)=>{

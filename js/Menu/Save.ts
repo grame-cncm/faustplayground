@@ -22,7 +22,7 @@ class Save {
         this.saveView.buttonChangeAccount.addEventListener("click", () => { this.logOut() });
         this.saveView.buttonSaveCloud.addEventListener("click", () => { this.saveCloud() });
         this.saveView.buttonCloudSuppr.addEventListener("click", () => { this.supprCloud() });
-        document.addEventListener("successave", () => { new Message(Utilitary.messageRessource.sucessSave,"messageTransitionOutFast",2000,500) })
+        document.addEventListener("successave", () => { new Message(_('sucessSave'),"messageTransitionOutFast",2000,500) })
     }
 
 
@@ -49,17 +49,17 @@ class Save {
                 var name = this.saveView.inputLocalStorage.value;
                 var jsonScene = this.sceneCurrent.saveScene(true)
                 if (this.isFileExisting(name)) {
-                    new Confirm(Utilitary.messageRessource.confirmReplace, (callback) => { this.replaceSaveLocal(name,jsonScene, callback) });
+                    new Confirm(_('confirmReplace'), (callback) => { this.replaceSaveLocal(name,jsonScene, callback) });
                     return;
                 }else {
                     localStorage.setItem(name, jsonScene)
                 }
-                new Message(Utilitary.messageRessource.sucessSave,"messageTransitionOutFast",2000,500)
+                new Message(_('sucessSave'),"messageTransitionOutFast",2000,500)
                 var event: CustomEvent = new CustomEvent("updatelist")
                 document.dispatchEvent(event);
 
             } else {
-                new Message(Utilitary.messageRessource.errorLocalStorage);
+                new Message(_('errorLocalStorage'));
             }
         }
     }
@@ -67,7 +67,7 @@ class Save {
     //replace an existing scene in local Storage
     replaceSaveLocal(name:string,jsonScene: string, confirmCallBack: () => void) {
         localStorage.setItem(name, jsonScene);
-        new Message(Utilitary.messageRessource.sucessSave, "messageTransitionOutFast", 2000, 500)
+        new Message(_('sucessSave'), "messageTransitionOutFast", 2000, 500)
         var event: CustomEvent = new CustomEvent("updatelist")
         document.dispatchEvent(event);
         confirmCallBack();
@@ -118,7 +118,7 @@ class Save {
     //suppr scene from local storage confirm
     supprLocal() {
         if (this.saveView.existingSceneSelect.selectedIndex > -1) {
-            new Confirm(Utilitary.messageRessource.confirmSuppr, (callbackConfirm) => { this.supprLocalCallback(callbackConfirm) })
+            new Confirm(_('confirmSuppr'), (callbackConfirm) => { this.supprLocalCallback(callbackConfirm) })
         }
     }
 
@@ -146,9 +146,9 @@ class Save {
             var name = this.saveView.inputCloudStorage.value;
             if (this.isFileCloudExisting(name)) {
 
-                new Confirm(Utilitary.messageRessource.confirmReplace, (confirmCallback) => { this.replaceCloud(name,confirmCallback) })
+                new Confirm(_('confirmReplace'), (confirmCallback) => { this.replaceCloud(name,confirmCallback) })
                 return;
-                
+
             } else {
                 var jsonScene = this.sceneCurrent.saveScene(true)
                 var blob = new Blob([jsonScene], { type: "application/json;charset=utf-8;" });
@@ -173,10 +173,10 @@ class Save {
     }
 
     //trash a file in the cloud confirm
-    //could be retreive from the cloud's trash can 
+    //could be retreive from the cloud's trash can
     supprCloud() {
         if (this.saveView.cloudSelectFile.selectedIndex > -1) {
-            new Confirm(Utilitary.messageRessource.confirmSuppr, (confirmCallBack) => { this.supprCloudCallback(confirmCallBack) })
+            new Confirm(_('confirmSuppr'), (confirmCallBack) => { this.supprCloudCallback(confirmCallBack) })
         }
     }
 
@@ -186,6 +186,6 @@ class Save {
         var id = option.value
         this.drive.trashFile(id);
         confirmCallBack();
-        
+
     }
 }

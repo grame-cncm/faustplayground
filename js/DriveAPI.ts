@@ -118,7 +118,7 @@ class DriveAPI{
                 }
 
             } else {
-                this.appendPre(Utilitary.messageRessource.noFileOnCloud, null);
+                this.appendPre(_('noFileOnCloud'), null);
             }
         });
     }
@@ -133,7 +133,7 @@ class DriveAPI{
     }
 
 
-    
+
 
     /**
      * Append a pre element to the body containing the given message
@@ -148,7 +148,7 @@ class DriveAPI{
 
         var event = new CustomEvent("fillselect", { 'detail': option })
         document.dispatchEvent(event);
-        
+
     }
     /**
  * Download a file's content.
@@ -210,7 +210,7 @@ class DriveAPI{
         request.execute((resp) => {
             this.getFile(resp.id, (fileMetada) => { this.updateFile(resp.id, fileMetada, this.tempBlob,null) })
         });
-        
+
     }
 
     /**

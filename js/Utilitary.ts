@@ -64,7 +64,7 @@ class Utilitary {
         loadingImg.src = Utilitary.baseImg + "logoAnim.gif";
         loadingImg.id = "loadingImg";
         var loadingText = document.createElement("span");
-        loadingText.textContent = Utilitary.messageRessource.loading;
+        loadingText.textContent = _('loading');
         loadingText.id = "loadingText";
         loadingDiv.appendChild(loadingImg);
         loadingDiv.appendChild(loadingText);
@@ -86,7 +86,7 @@ class Utilitary {
 
         var loadingText = document.getElementById("loadingTextBig");
         loadingText.id = "loadingTextBig";
-        loadingText.textContent = Utilitary.messageRessource.loading;
+        loadingText.textContent = _('loading');
     }
     static replaceAll(str: String, find: string, replace: string) {
         return str.replace(new RegExp(find, 'g'), replace);

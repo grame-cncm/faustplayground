@@ -78,7 +78,7 @@ class Library{
     //fill submenu and attach events
     fillSubMenu(options: string[], subMenuId: string, stringStructureRemoved: string) {
         var subMenu: HTMLUListElement = <HTMLUListElement>document.getElementById(subMenuId);
-        
+
         for (var i = 0; i < options.length; i++) {
 
             var li: HTMLLIElement = document.createElement("li");
@@ -86,10 +86,10 @@ class Library{
             li.appendChild(a);
             a.href = options[i];
             a.draggable = true;
-            a.title = Utilitary.messageRessource.hoverLibraryElement;
+            a.title = _('hoverLibraryElement');
             a.addEventListener("click", (e) => { e.preventDefault() });
 
-            var dblckickHandler = this.dispatchEventLibrary.bind(this,a.href) 
+            var dblckickHandler = this.dispatchEventLibrary.bind(this,a.href)
             a.ondblclick =  dblckickHandler;
             a.ontouchstart = (e) => { this.dbleTouchMenu(e) }
 
@@ -120,7 +120,7 @@ class Library{
         var event: CustomEvent = new CustomEvent("dbltouchlib", { 'detail': url })
         document.dispatchEvent(event);
     }
-    // init scroll to show scroll from perfectScroll.js 
+    // init scroll to show scroll from perfectScroll.js
     initScroll() {
         this.libraryView.effetLibrarySelect.scrollTop += 1;
         this.libraryView.exempleLibrarySelect.scrollTop += 1;

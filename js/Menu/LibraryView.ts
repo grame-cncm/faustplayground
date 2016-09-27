@@ -29,7 +29,7 @@ class LibraryView  {
         var instrumentLibraryTitle: HTMLSpanElement = document.createElement("span");
         instrumentLibraryTitle.id = "instrumentLibraryTitle";
         instrumentLibraryTitle.className = "libraryTitles";
-        instrumentLibraryTitle.appendChild(document.createTextNode(Utilitary.messageRessource.titleInstruments));
+        instrumentLibraryTitle.appendChild(document.createTextNode(_('titleInstruments')));
 
 
         var intrumentLibrarySelect: HTMLUListElement = document.createElement("ul");
@@ -51,7 +51,7 @@ class LibraryView  {
         var effetLibraryTitle: HTMLSpanElement = document.createElement("span");
         effetLibraryTitle.id = "effetLibraryTitle";
         effetLibraryTitle.className = "libraryTitles";
-        effetLibraryTitle.appendChild(document.createTextNode(Utilitary.messageRessource.titleEffects));
+        effetLibraryTitle.appendChild(document.createTextNode(_('titleEffects')));
 
         var effetLibrarySelect: HTMLUListElement = document.createElement("ul");
         effetLibrarySelect.id = "effetLibrarySelect";
@@ -72,7 +72,7 @@ class LibraryView  {
         var exempleLibraryTitle: HTMLSpanElement = document.createElement("span");
         exempleLibraryTitle.id = "exempleLibraryTitle";
         exempleLibraryTitle.className = "libraryTitles";
-        exempleLibraryTitle.appendChild(document.createTextNode(Utilitary.messageRessource.titleExemples));
+        exempleLibraryTitle.appendChild(document.createTextNode(_('titleExemples')));
 
 
         var exempleLibrarySelect: HTMLUListElement = document.createElement("ul");

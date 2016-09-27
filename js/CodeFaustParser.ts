@@ -14,23 +14,23 @@ class PathIterator
     fStart      : number;       // start position of the current path
     fEnd        : number;       // end position of the current path
 
-    constructor(faustCode:string) 
-    {        
+    constructor(faustCode:string)
+    {
         this.fFaustCode = faustCode;
-        this.fStart = 0;    
+        this.fStart = 0;
         this.fEnd   = 0;
     }
 
-    // search and select next string :  "...."  
+    // search and select next string :  "...."
     // (not completely safe, but should be OK)
-    findNextPathString() : string 
-    { 
+    findNextPathString() : string
+    {
         var p1 = this.fFaustCode.indexOf('"', this.fEnd+1);
         var p2 = this.fFaustCode.indexOf('"', p1+1);
         //console.log(`Current positions : ${this.fEnd}, ${p1}, ${p2}`);
 
-        //if ( (this.fEnd < p0) && (p0 < p1) && (p1 < p2) ) 
-        if ( (this.fEnd < p1) && (p1 < p2) ) 
+        //if ( (this.fEnd < p0) && (p0 < p1) && (p1 < p2) )
+        if ( (this.fEnd < p1) && (p1 < p2) )
         {
             this.fStart = p1;
             this.fEnd   = p2+1;
@@ -39,16 +39,16 @@ class PathIterator
             return path;
         } else {
             console.log(`no more path found: ${this.fEnd}, ${p1}, ${p2}`);
-            return ""; 
+            return "";
         }
     }
 
     // Replace the current selected path with a new string and return the update faust code
-    updateCurrentPathString(newstring: string) : string 
-    { 
+    updateCurrentPathString(newstring: string) : string
+    {
         if ((0 < this.fStart) && (this.fStart < this.fEnd)) {
             // we have a valide path to replace
-            return this.fFaustCode.slice(0,this.fStart) + newstring + this.fFaustCode.slice(this.fEnd); 
+            return this.fFaustCode.slice(0,this.fStart) + newstring + this.fFaustCode.slice(this.fEnd);
         } else {
             console.log("ERROR, trying to update an invalide path");
             return this.fFaustCode;
@@ -63,11 +63,11 @@ function forgeAccMetadata(newAccValue:string, isEnabled:boolean) : string
         return `acc:${newAccValue}`;
     } else{
         return  `noacc:${newAccValue}`;
-    } 
+    }
 }
 
 // Remove all metadatas of a uipath : "foo[...][...]" -> "foo"
-// Used when searching the source code for a uiname. 
+// Used when searching the source code for a uiname.
 function removeMetadata(uipath:string) : string
 {
     var r = "";     // resulting string
@@ -113,7 +113,7 @@ function replaceAccInPath(oldpath:string, newacc:string): string
     console.log(`ERROR in replaceAccInPath() : malformed path ${oldpath}`);
     return oldpath;
 }
-    
+
 
 // Checks if a ui name matches a ui path. For examples "toto" matches "[1]toto[acc:...]"
 // that is if they are identical after removing the metadata from the ui path
@@ -133,7 +133,7 @@ function match(uiname:string, uipath:string):boolean
 function updateAccInFaustCode(faustcode : string, name: string, newaccvalue: string) : string
 {
     // Creates a path iterator to iterate the faust code from ui path to ui path
-    var cc = new PathIterator(faustcode); 
+    var cc = new PathIterator(faustcode);
 
     // Search an ui path that matches
     for (var path = cc.findNextPathString(); path != ""; path = cc.findNextPathString()) {
@@ -144,6 +144,6 @@ function updateAccInFaustCode(faustcode : string, name: string, newaccvalue: str
     }
 
     // WARNING: no suitable uipath was found !
-    new Message(name + Utilitary.messageRessource.errorAccSliderNotFound);
+    new Message(name + _('errorAccSliderNotFound'));
     return faustcode;
 }

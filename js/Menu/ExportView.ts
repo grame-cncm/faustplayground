@@ -33,7 +33,7 @@ class ExportView {
         var exportResultContainer: HTMLElement = document.createElement("div");
         exportResultContainer.id = "exportResultContainer";
         exportResultContainer.className = "exportSubmenu";
-         
+
 
 
 
@@ -41,7 +41,7 @@ class ExportView {
 
         var nameAppTitle: HTMLSpanElement = document.createElement("span");
         nameAppTitle.id = "nameAppTitle";
-        nameAppTitle.textContent = Utilitary.messageRessource.appNameExport;
+        nameAppTitle.textContent = _('appNameExport');
         nameAppTitle.className = "exportTitle";
 
         var dynamicName: HTMLSpanElement = document.createElement("span");
@@ -52,7 +52,7 @@ class ExportView {
 
         var rulesName: HTMLSpanElement = document.createElement("span");
         rulesName.id = "rulesName";
-        rulesName.textContent = Utilitary.messageRessource.rulesSceneName;
+        rulesName.textContent = _('rulesSceneName');
         this.rulesName = rulesName;
 
         var input: HTMLInputElement = document.createElement("input");
@@ -68,7 +68,7 @@ class ExportView {
         renameButton.type = "button";
         renameButton.id = "buttonNameApp";
         renameButton.className = "button"
-        renameButton.textContent = Utilitary.messageRessource.buttonChangeSceneName;
+        renameButton.textContent = _('buttonChangeSceneName');
 
         renameBottomButtonContainer.appendChild(renameButton)
 
@@ -98,7 +98,7 @@ class ExportView {
 
         var lessOptionDiv = document.createElement("div")
         lessOptionDiv.id = "lessOptionDiv";
-        lessOptionDiv.textContent = Utilitary.messageRessource.lessOptions;
+        lessOptionDiv.textContent = _('lessOptions');
         lessOptionDiv.style.display = "none";
         this.lessOptionDiv = lessOptionDiv;
 
@@ -109,7 +109,7 @@ class ExportView {
 
         var exportOptionTitle: HTMLSpanElement = document.createElement("span");
         exportOptionTitle.id = "exportOptionTitle";
-        exportOptionTitle.textContent = Utilitary.messageRessource.titleExportOptions;
+        exportOptionTitle.textContent = _('titleExportOptions');
         exportOptionTitle.className = "exportTitle";
 
         var fwurl: HTMLInputElement = document.createElement("input");
@@ -126,7 +126,7 @@ class ExportView {
 
 
         var refreshButton: HTMLButtonElement = document.createElement("button");
-        refreshButton.textContent = Utilitary.messageRessource.buttonRefresh
+        refreshButton.textContent = _('buttonRefresh')
         refreshButton.id = "refreshButton";
         refreshButton.className = "button";
         this.refreshButton = refreshButton;
@@ -152,7 +152,7 @@ class ExportView {
         exportButton.id = "exportButton";
         exportButton.type = "submit";
         exportButton.className = "button";
-        exportButton.value = Utilitary.messageRessource.buttonExportScene;
+        exportButton.value = _('buttonExportScene');
         this.exportButton = exportButton;
 
 
@@ -173,12 +173,12 @@ class ExportView {
 //////////////////////////// export Result
         var exportResultTitle: HTMLSpanElement = document.createElement("span");
         exportResultTitle.id = "exportResultTitle";
-        exportResultTitle.textContent = Utilitary.messageRessource.titleDownlaodExport;
+        exportResultTitle.textContent = _('titleDownlaodExport');
         exportResultTitle.className = "exportTitle";
 
 
         exportResultContainer.appendChild(exportResultTitle);
-    
+
 
         exportContainer.appendChild(nameAppContainer);
         exportContainer.appendChild(exportOptionContainer);

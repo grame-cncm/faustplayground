@@ -55,22 +55,22 @@ class AccelerometerEditView {
         var label1 = document.createElement("label");
         label1.className = "curve"
         label1.id = "curve1"
-        label1.textContent = Utilitary.messageRessource.curve1;
+        label1.textContent = _('curve1');
 
         var label2 = document.createElement("label");
         label2.className = "curve"
         label2.id = "curve2"
-        label2.textContent = Utilitary.messageRessource.curve2;
+        label2.textContent = _('curve2');
 
         var label3 = document.createElement("label");
         label3.className = "curve"
         label3.id = "curve3"
-        label3.textContent = Utilitary.messageRessource.curve3;
+        label3.textContent = _('curve3');
 
         var label4 = document.createElement("label");
         label4.className = "curve"
         label4.id = "curve4"
-        label4.textContent = Utilitary.messageRessource.curve4;
+        label4.textContent = _('curve4');
 
         var radio1 = document.createElement("input");
         radio1.id = "radio1";
@@ -121,22 +121,22 @@ class AccelerometerEditView {
         var label0 = document.createElement("label");
         label0.className = "axe";
         label0.id = "axe0";
-        label0.textContent = Utilitary.messageRessource.axis0;
+        label0.textContent = _('axis0');
 
         var labelX = document.createElement("label");
         labelX.className = "axe";
         labelX.id = "axeX";
-        labelX.textContent = Utilitary.messageRessource.axisX;
+        labelX.textContent = _('axisX');
 
         var labelY = document.createElement("label");
         labelY.className = "axe";
         labelY.id = "axeY";
-        labelY.textContent = Utilitary.messageRessource.axisY;
+        labelY.textContent = _('axisY');
 
         var labelZ = document.createElement("label");
         labelZ.className = "axe";
         labelZ.id = "axeZ";
-        labelZ.textContent = Utilitary.messageRessource.axisZ;
+        labelZ.textContent = _('axisZ');
 
         var radio0 = document.createElement("input");
         radio0.id = "radio0";
@@ -185,7 +185,7 @@ class AccelerometerEditView {
 
         var checkOnOffLabel = document.createElement("label");
         checkOnOffLabel.id = "checkOnOffLabel";
-        checkOnOffLabel.textContent = Utilitary.messageRessource.checkBox;
+        checkOnOffLabel.textContent = _('checkBox');
         checkOnOffContainer.appendChild(checkOnOffLabel);
 
         var checkOnOff = document.createElement("input");
