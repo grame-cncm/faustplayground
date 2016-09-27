@@ -41,13 +41,46 @@ Create Factories and Modules
 
 class App {
     private static currentScene: number;
-
     menu: Menu;
-
     tempModuleName: string;
     tempModuleSourceCode: string;
     tempModuleX: number;
     tempModuleY: number;
+    audioContext: AudioContext;
+
+    constructor() {
+        //create div which will contain all Messages and Confirm
+        App.createDialogue();
+        this.audioContext = new AudioContext();
+        //TODO: remove
+        Utilitary.audioContext = this.audioContext;
+
+        Utilitary.addFullPageLoading();
+
+        this.createAllScenes();
+        this.createMenu();
+
+        var accHandler: AccelerometerHandler = new AccelerometerHandler();
+        Utilitary.accHandler = accHandler;
+        accHandler.getAccelerometerValue();
+
+        Utilitary.driveApi = new DriveAPI();
+        this.menu.setDriveApi(Utilitary.driveApi);
+        Utilitary.driveApi.checkAuth();
+
+
+        //error catcher
+        window.addEventListener("error", (e: ErrorEvent) => {
+            if (e.message == "Uncaught Error: workerError" || e.message == "Error: workerError") {
+                new Message(_('errorOccuredMessage') + e.message);
+                Utilitary.hideFullPageLoading();
+            }
+            if (e.message == "Uncaught Error: Upload2Error") {
+                Utilitary.hideFullPageLoading();
+                e.preventDefault();
+            }
+        });
+    }
 
     createAllScenes(): void {
         var sceneView: SceneView = new SceneView();

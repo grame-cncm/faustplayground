@@ -111,6 +111,6 @@ class Ressources {
     // load the json object
     loadMessages(ressourceJson: string,app:App) {
         Utilitary.messageRessource = JSON.parse(ressourceJson);
-        resumeInit(app);
+        //resumeInit(app);
     }
 }
