@@ -97,7 +97,7 @@ class AccelerometerHandler {
             window.addEventListener("devicemotion", (event: DeviceMotionEvent) => { this.propagate(event) }, false);
         } else {
             // Browser doesn't support DeviceMotionEvent
-            console.log(_('noDeviceMotion'))
+            console.log(_("It appears that your browser does not support the Device Motion API, you will therefore be unable to access the accelerometers of your device."))
         }
     }
 

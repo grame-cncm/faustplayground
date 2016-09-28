@@ -7,6 +7,9 @@ clean:
 	rm -f js/faustplayground.js
 	rm -f js/faustplayground.js.map
 
+i18n:
+	i18next js -r -f _ --fileFilter '*.ts' -o js/locales --ignore-variables
+
 sslcert:
 	rm -rf ssl
 	mkdir ssl

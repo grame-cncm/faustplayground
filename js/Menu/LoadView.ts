@@ -89,7 +89,7 @@ class LoadView {
         loadFileButton.type = "button";
         loadFileButton.id = "loadFileButton";
         loadFileButton.className = "button"
-        loadFileButton.textContent = _('buttonLoadFile');
+        loadFileButton.textContent = _("Load file");
         this.loadFileButton = loadFileButton;
 
         loadFileContainer.appendChild(loadFileDiv);
@@ -117,7 +117,7 @@ class LoadView {
         localButton.type = "button";
         localButton.id = "localLoadButton";
         localButton.className = "button"
-        localButton.textContent = _('buttonLoadLocal');
+        localButton.textContent = _("Load local scene");
         this.buttonLoadLocal = localButton;
 
         var localBottomButtonContainer: HTMLElement = document.createElement("div");
@@ -135,7 +135,7 @@ class LoadView {
 
         var buttonConnectDrive = document.createElement("button");
         buttonConnectDrive.id = "buttonConnectLoadDrive";
-        buttonConnectDrive.textContent = _('buttonConnectCloud');
+        buttonConnectDrive.textContent = _("Connect to Google Drive");
         buttonConnectDrive.className = "button"
         this.buttonConnectDrive = buttonConnectDrive
 
@@ -150,7 +150,7 @@ class LoadView {
         changeAccountButton.type = "button";
         //changeAccountButton.id = "changeAccountButton";
         changeAccountButton.className = "button changeAccountButton"
-        changeAccountButton.textContent = _('buttonLogoutCloud');
+        changeAccountButton.textContent = _("Log out");
         changeAccountButton.style.display = "none";
         this.buttonChangeAccount = changeAccountButton;
 
@@ -158,7 +158,7 @@ class LoadView {
         cloudButton.type = "button";
         cloudButton.id = "cloudLoadButton";
         cloudButton.className = "button"
-        cloudButton.textContent = _('buttonLoadCloud');
+        cloudButton.textContent = _("Load online scene");
         this.buttonLoadCloud = cloudButton;
 
         var cloudBottomButtonContainer: HTMLElement = document.createElement("div");

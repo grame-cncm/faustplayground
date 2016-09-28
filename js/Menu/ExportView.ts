@@ -41,7 +41,7 @@ class ExportView {
 
         var nameAppTitle: HTMLSpanElement = document.createElement("span");
         nameAppTitle.id = "nameAppTitle";
-        nameAppTitle.textContent = _('appNameExport');
+        nameAppTitle.textContent = _("The application is called:");
         nameAppTitle.className = "exportTitle";
 
         var dynamicName: HTMLSpanElement = document.createElement("span");
@@ -52,7 +52,7 @@ class ExportView {
 
         var rulesName: HTMLSpanElement = document.createElement("span");
         rulesName.id = "rulesName";
-        rulesName.textContent = _('rulesSceneName');
+        rulesName.textContent = _("Only alphabet letters and numbers are accepted. Spaces, apostrophes and accents are automatically replaced. The name cannot start with a number. It must be between 1 and 50 characters.");
         this.rulesName = rulesName;
 
         var input: HTMLInputElement = document.createElement("input");
@@ -68,7 +68,7 @@ class ExportView {
         renameButton.type = "button";
         renameButton.id = "buttonNameApp";
         renameButton.className = "button"
-        renameButton.textContent = _('buttonChangeSceneName');
+        renameButton.textContent = _("Change the name of the application");
 
         renameBottomButtonContainer.appendChild(renameButton)
 
@@ -84,7 +84,7 @@ class ExportView {
 
         /////////////////////////////////  export Options
         var moreOptionDiv = document.createElement("div");
-        moreOptionDiv.textContent = "+ plus d'options"
+        moreOptionDiv.textContent = _("+ more options")
         moreOptionDiv.id = "moreOptionDiv";
         moreOptionDiv.style.display = "block";
         this.moreOptionDiv = moreOptionDiv;
@@ -98,7 +98,7 @@ class ExportView {
 
         var lessOptionDiv = document.createElement("div")
         lessOptionDiv.id = "lessOptionDiv";
-        lessOptionDiv.textContent = _('lessOptions');
+        lessOptionDiv.textContent = _("- less options");
         lessOptionDiv.style.display = "none";
         this.lessOptionDiv = lessOptionDiv;
 
@@ -109,7 +109,7 @@ class ExportView {
 
         var exportOptionTitle: HTMLSpanElement = document.createElement("span");
         exportOptionTitle.id = "exportOptionTitle";
-        exportOptionTitle.textContent = _('titleExportOptions');
+        exportOptionTitle.textContent = _("Choose export");
         exportOptionTitle.className = "exportTitle";
 
         var fwurl: HTMLInputElement = document.createElement("input");
@@ -126,7 +126,7 @@ class ExportView {
 
 
         var refreshButton: HTMLButtonElement = document.createElement("button");
-        refreshButton.textContent = _('buttonRefresh')
+        refreshButton.textContent = _("Refresh server")
         refreshButton.id = "refreshButton";
         refreshButton.className = "button";
         this.refreshButton = refreshButton;
@@ -152,7 +152,7 @@ class ExportView {
         exportButton.id = "exportButton";
         exportButton.type = "submit";
         exportButton.className = "button";
-        exportButton.value = _('buttonExportScene');
+        exportButton.value = _("Export");
         this.exportButton = exportButton;
 
 
@@ -173,7 +173,7 @@ class ExportView {
 //////////////////////////// export Result
         var exportResultTitle: HTMLSpanElement = document.createElement("span");
         exportResultTitle.id = "exportResultTitle";
-        exportResultTitle.textContent = _('titleDownlaodExport');
+        exportResultTitle.textContent = _("Download");
         exportResultTitle.className = "exportTitle";
 
 

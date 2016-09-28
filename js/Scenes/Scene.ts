@@ -238,13 +238,13 @@ class Scene {
                                       (e) => {
                                           console.error(e.name, e.message);
                                           this.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)";
-                                          this.fAudioInput.moduleView.fInterfaceContainer.title = _('errorGettingAudioInput');
-                                          new Message(_('errorGettingAudioInput'));
+                                          this.fAudioInput.moduleView.fInterfaceContainer.title = _("Could not enable microphone or audio input");
+                                          new Message(_("Could not enable microphone or audio input"));
                                       });
         } else {
             this.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)";
-            new Message(_('errorInputAPINotAvailable'));
-            this.fAudioInput.moduleView.fInterfaceContainer.title = _('errorInputAPINotAvailable');
+            new Message(_("The microphone or audio input cannot be used in your browser"));
+            this.fAudioInput.moduleView.fInterfaceContainer.title = _("The microphone or audio input cannot be used in your browser");
         }
     }
 
@@ -374,7 +374,7 @@ class Scene {
             try {
                 var jsonObjectCollection: JsonSaveCollection = JSON.parse(json);
             } catch (e) {
-                new Message(_('errorJsonCorrupted'));
+                new Message(_("This file is corrupt and cannot be loaded"));
                 Utilitary.hideFullPageLoading();
             }
             //this.parent.currentNumberDSP = this.fModuleList.length;
@@ -385,7 +385,7 @@ class Scene {
             this.lunchModuleCreation();
         } else {
             Utilitary.hideFullPageLoading();
-            new Message(_('errorLoading'))
+            new Message(_("Error while loading the scene"))
         }
     }
 
@@ -481,7 +481,7 @@ class Scene {
             this.arrayRecalScene.shift();
             this.lunchModuleCreation()
         } catch (e) {
-            new Message(_('errorCreateModuleRecall'));
+            new Message(_("An error occured while creating the module, the save file is probably corrupt"));
             this.arrayRecalScene.shift();
             this.lunchModuleCreation()
         }
@@ -553,7 +553,7 @@ class Scene {
                 }
             }
         } catch (e) {
-            new Message(_('errorConnectionRecall'))
+            new Message(_("An error occured while connecting modules, the save file is probably corrupt"))
         }
     }
 
@@ -610,7 +610,7 @@ class Scene {
             spanRule.style.opacity = "1";
             input.style.boxShadow = "0 0 6px yellow inset";
             input.style.border = "3px solid red";
-            new Message(_('invalidSceneName'));
+            new Message(_("The chosen name is invalid"));
             return false;
         }
     }

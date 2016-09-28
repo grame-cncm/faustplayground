@@ -42,19 +42,19 @@ class SaveView {
 
         var nameAppTitle: HTMLSpanElement = document.createElement("span");
         nameAppTitle.id = "nameAppTitle";
-        nameAppTitle.textContent = _('saveDownload');
+        nameAppTitle.textContent = _("Download the scene: ");
         nameAppTitle.className = "exportTitle";
 
         var dynamicName: HTMLSpanElement = document.createElement("span");
         dynamicName.id = "dynamicName";
-        dynamicName.textContent = _('defaultSceneName');
+        dynamicName.textContent = _("Patch");
         nameAppTitle.appendChild(dynamicName);
         this.dynamicName = dynamicName;
 
         var rulesName: HTMLSpanElement = document.createElement("span");
         rulesName.id = "rulesName";
         rulesName.style.display = "none";
-        rulesName.textContent = _('rulesSceneName');
+        rulesName.textContent = _("Only alphabet letters and numbers are accepted. Spaces, apostrophes and accents are automatically replaced. The name cannot start with a number. It must be between 1 and 50 characters.");
         this.rulesName = rulesName;
 
         var checkBoxPrecompile = document.createElement("input");
@@ -64,7 +64,7 @@ class SaveView {
 
         var label = document.createElement("label");
         label.id = "labelDownload";
-        label.textContent = _('precompileOption');
+        label.textContent = _("Precompiled (heavier)");
         label.appendChild(checkBoxPrecompile);
 
 
@@ -82,7 +82,7 @@ class SaveView {
         downloadButton.type = "button";
         downloadButton.id = "downloadButton";
         downloadButton.className = "button"
-        downloadButton.textContent = _('buttonDownloadApp');
+        downloadButton.textContent = _("Download");
 
         downloadBottomButtonContainer.appendChild(downloadButton)
 
@@ -117,7 +117,7 @@ class SaveView {
 
         var dialogGoodNews = document.createElement("div");
         dialogGoodNews.id = "dialogGoodNews";
-        dialogGoodNews.textContent = _('sucessSave');
+        dialogGoodNews.textContent = _("File saved successfully");
         dialogGoodNews.style.opacity = "0";
         this.dialogGoodNews = dialogGoodNews;
 
@@ -125,14 +125,14 @@ class SaveView {
         localButtonSuppr.type = "button";
         localButtonSuppr.id = "localButtonSuppr";
         localButtonSuppr.className = "button"
-        localButtonSuppr.textContent = _('buttonSuppress');
+        localButtonSuppr.textContent = _("Delete");
         this.buttonLocalSuppr = localButtonSuppr;
 
         var localButton: HTMLButtonElement = document.createElement("button");
         localButton.type = "button";
         localButton.id = "localButton";
         localButton.className = "button"
-        localButton.textContent = _('buttonLocalSave');
+        localButton.textContent = _("Save locally");
         this.buttonLocalSave = localButton;
 
         var localBottomButtonContainer: HTMLElement = document.createElement("div");
@@ -153,7 +153,7 @@ class SaveView {
 
         var buttonConnectDrive = document.createElement("button");
         buttonConnectDrive.id = "buttonConnectSaveDrive";
-        buttonConnectDrive.textContent = _('buttonConnectCloud');
+        buttonConnectDrive.textContent = _("Connect to Google Drive");
         buttonConnectDrive.className = "button";
         this.buttonConnectDrive = buttonConnectDrive
 
@@ -176,21 +176,21 @@ class SaveView {
         cloudButtonSuppr.id = "cloudButtonSuppr";
         cloudButtonSuppr.className = "button"
         cloudButtonSuppr.style.display = "none";
-        cloudButtonSuppr.textContent = _('buttonSuppress');
+        cloudButtonSuppr.textContent = _("Delete");
         this.buttonCloudSuppr = cloudButtonSuppr;
 
         var cloudButton: HTMLButtonElement = document.createElement("button");
         cloudButton.type = "button";
         cloudButton.id = "cloudSaveButton";
         cloudButton.className = "button"
-        cloudButton.textContent = _('buttonCloudSave');
+        cloudButton.textContent = _("Save online");
         this.buttonSaveCloud = cloudButton;
 
         var changeAccountButton: HTMLButtonElement = document.createElement("button");
         changeAccountButton.type = "button";
         //changeAccountButton.id = "changeAccountButton";
         changeAccountButton.className = "button changeAccountButton"
-        changeAccountButton.textContent = _('buttonLogoutCloud');
+        changeAccountButton.textContent = _("Log out");
         changeAccountButton.style.display = "none";
         this.buttonChangeAccount = changeAccountButton;
 

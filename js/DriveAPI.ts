@@ -118,7 +118,7 @@ class DriveAPI{
                 }
 
             } else {
-                this.appendPre(_('noFileOnCloud'), null);
+                this.appendPre(_("No file found on Google Drive"), null);
             }
         });
     }

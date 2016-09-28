@@ -72,7 +72,7 @@ class App {
         //error catcher
         window.addEventListener("error", (e: ErrorEvent) => {
             if (e.message == "Uncaught Error: workerError" || e.message == "Error: workerError") {
-                new Message(_('errorOccuredMessage') + e.message);
+                new Message(_("An error has occured:") + e.message);
                 Utilitary.hideFullPageLoading();
             }
             if (e.message == "Uncaught Error: Upload2Error") {
@@ -155,7 +155,7 @@ class App {
     //
     private createModule(factory: Factory): void {
         if (!factory) {
-            new Message(_('errorFactory') + faust.getErrorMessage());
+            new Message(_("The provided Faust code is not correct: ") + faust.getErrorMessage());
             Utilitary.hideFullPageLoading();
             return null;
         }
@@ -291,7 +291,7 @@ class App {
 
         } else { // CASE 4 : any other strange thing
             console.log("DROP: CASE 4 STRANGE ");
-            new Message(_('errorObjectNotFaustCompatible'));
+            new Message(_("Content is not compatible with Faust"));
             Utilitary.hideFullPageLoading();
         }
     }
@@ -356,7 +356,7 @@ class App {
             type = "json";
             reader.readAsText(file);
         } else {
-            throw new Error(_('errorObjectNotFaustCompatible'));
+            throw new Error(_("Content is not compatible with Faust"));
         }
 
         reader.onloadend =(e)=>{

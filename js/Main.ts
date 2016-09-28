@@ -8,7 +8,6 @@
 */
 
 /// <reference path="App.ts"/>
-/// <reference path="Messages.ts"/>
 
 "use strict";
 
@@ -16,8 +15,20 @@
 window.addEventListener('load', init, false);
 
 
-function _(s:string): string { return s;}
+declare var i18next;
+declare var i18nextXHRBackend;
+i18next
+    .use(i18nextXHRBackend)
+    .init({
+        lng: 'fr',
+        backend: {
+            loadPath: '/js/locales/{{lng}}/{{ns}}.json',
+        }
+    });
 
+function _(s:string): string {
+    return i18next.t(s);
+}
 
 
 //initialization af the app, create app and ressource to get text with correct localization

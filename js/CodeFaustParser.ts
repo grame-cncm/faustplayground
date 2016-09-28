@@ -144,6 +144,6 @@ function updateAccInFaustCode(faustcode : string, name: string, newaccvalue: str
     }
 
     // WARNING: no suitable uipath was found !
-    new Message(name + _('errorAccSliderNotFound'));
+    new Message(name + _("Could not find slider, modifications on the slider will not be exported in the final version of the application"));
     return faustcode;
 }

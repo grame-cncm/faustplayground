@@ -208,7 +208,7 @@ class Module  {
                 throw new Error("create DSP Error factory null")
             }
         } catch (e) {
-            new Message(_('errorCreateDSP') + " : " + e);
+            new Message(_("Cannot create the DSP file, the Faust code contains errors") + " : " + e);
             Utilitary.hideFullPageLoading();
         }
     }

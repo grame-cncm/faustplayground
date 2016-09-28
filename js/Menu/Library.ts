@@ -86,7 +86,7 @@ class Library{
             li.appendChild(a);
             a.href = options[i];
             a.draggable = true;
-            a.title = _('hoverLibraryElement');
+            a.title = _("Click, drag and drop!");
             a.addEventListener("click", (e) => { e.preventDefault() });
 
             var dblckickHandler = this.dispatchEventLibrary.bind(this,a.href)
