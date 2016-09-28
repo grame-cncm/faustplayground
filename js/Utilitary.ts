@@ -1,6 +1,5 @@
 /// <reference path="Modules/Module.ts"/>
 /// <reference path="Scenes/Scene.ts"/>
-/// <reference path="Ressources.ts"/>
 /// <reference path="DriveAPI.ts"/>
 /// <reference path="Main.ts"/>
 /// <reference path="Lib/webrtc/MediaStream.d.ts" />
@@ -10,7 +9,6 @@
 class Utilitary {
     static audioContext: AudioContext;
     static currentScene: Scene;
-    static messageRessource: Ressources = new Ressources();
     static idX: number = 0;
     static baseImg: string = "img/";
     static recursiveMap: ModuleTree[];//used for EquivalentFaust
