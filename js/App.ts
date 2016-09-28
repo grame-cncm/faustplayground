@@ -39,8 +39,9 @@ Create Factories and Modules
 
 
 class App {
-    private static currentScene: number;
+    //private static currentScene: number;
     menu: Menu;
+    scene: Scene;
     tempModuleName: string;
     tempModuleSourceCode: string;
     tempModuleX: number;
@@ -83,24 +84,25 @@ class App {
 
     createAllScenes(): void {
         var sceneView: SceneView = new SceneView();
-        Utilitary.currentScene = new Scene("Normal", this.compileFaust, sceneView);
-        this.setGeneralAppListener(this);
-        App.currentScene = 0;
+        this.scene = new Scene("Normal", this.compileFaust, sceneView);
+        //TODO: remove
+        Utilitary.currentScene = this.scene;
+        this.setGeneralAppListener();
     }
 
     createMenu(): void {
         this.menu = new Menu(document.getElementsByTagName('body')[0]);
         //pass the scene to the menu to allow it to access the scene
-        this.menu.setMenuScene(Utilitary.currentScene);
+        this.menu.setMenuScene(this.scene);
 
         //add eventlistener on the scene to hide menu when clicked or touched
-        Utilitary.currentScene.getSceneContainer().addEventListener("mousedown", () => {
+        this.scene.getSceneContainer().addEventListener("mousedown", () => {
             if (!this.menu.accEdit.isOn) {
                 this.menu.newMenuChoices = MenuChoices.null;
                 this.menu.menuHandler(this.menu.newMenuChoices);
             }
         }, true);
-        Utilitary.currentScene.getSceneContainer().addEventListener("touchstart", () => {
+        this.scene.getSceneContainer().addEventListener("touchstart", () => {
             if (!this.menu.accEdit.isOn) {
                 this.menu.newMenuChoices = MenuChoices.null;
                 this.menu.menuHandler(this.menu.newMenuChoices);
@@ -129,9 +131,8 @@ class App {
         this.tempModuleX = compileFaust.x;
         this.tempModuleY = compileFaust.y;
 
-        var currentScene: Scene = Utilitary.currentScene;
-
-        if (currentScene) { currentScene.muteScene() };
+        if (this.scene)
+            this.scene.muteScene();
 
         //locate libraries used in libfaust compiler
         var args: string[] = ["-I", /[^#]*/.exec(location.href) + "faustcode/"];
@@ -145,7 +146,8 @@ class App {
             new Message(error)
         }
 
-        if (currentScene) { currentScene.unmuteScene() };
+        if (this.scene)
+            this.scene.unmuteScene();
 
     }
 
@@ -164,7 +166,7 @@ class App {
                                         this.tempModuleY,
                                         this.tempModuleName,
                                         document.getElementById("modules"),
-                                        (module) => { Utilitary.currentScene.removeModule(module) },
+                                        (module) => { this.scene.removeModule(module) },
                                         this.compileFaust);
         module.moduleFaust.setSource(this.tempModuleSourceCode);
         module.createDSP(factory);
@@ -189,10 +191,9 @@ class App {
             module.moduleView.fModuleContainer.style.boxShadow = "0 5px 10px rgba(0, 0, 0, 0.4)";
         };
         // the current scene add the module and hide the loading page
-        Utilitary.currentScene.addModule(module);
-        if (!Utilitary.currentScene.isInitLoading) {
-            Utilitary.hideFullPageLoading()
-        }
+        this.scene.addModule(module);
+        if (!this.scene.isInitLoading)
+            Utilitary.hideFullPageLoading();
 
     }
 
@@ -203,31 +204,31 @@ class App {
     //-- custom event to load file from the load menu with the file explorer
     //Init drag and drop reactions, scroll event and body resize event to resize svg element size,
     // add custom double touch event to load dsp from the library menu
-    setGeneralAppListener(app: App): void {
+    setGeneralAppListener(): void {
 
         //custom event to load file from the load menu with the file explorer
-        document.addEventListener("fileload", (e: CustomEvent) => { this.loadFileEvent(e) })
+        document.addEventListener("fileload", (e: CustomEvent) => { this.loadFileEvent(e) });
 
         //All drog and drop events
         window.ondragover = function () { this.className = 'hover'; return false; };
         window.ondragend = function () { this.className = ''; return false; };
         document.ondragstart = () => { this.styleOnDragStart() };
         document.ondragenter = (e) => {
-            var srcElement = <HTMLElement>e.srcElement
+            var srcElement = <HTMLElement>e.srcElement;
             if (srcElement.className != null && srcElement.className == "node-button") {
             } else {
                 this.styleOnDragStart()
             }
         };
         document.ondragleave = (e) => {
-            var elementTarget = <HTMLElement>e.target
+            var elementTarget = <HTMLElement>e.target;
             if (elementTarget.id == "svgCanvas") {
                 //alert("svg")
                 this.styleOnDragEnd();
                 e.stopPropagation();
                 e.preventDefault()
             }
-        }
+        };
 
         //scroll event to check the size of the document
         document.onscroll = () => {
@@ -235,12 +236,10 @@ class App {
         };
 
         //resize event
-        var body: HTMLBodyElement = document.getElementsByTagName("body")[0]
-        body.onresize = () => { this.checkRealWindowSize() };
+        window.onresize = () => { this.checkRealWindowSize() };
 
         window.ondrop = (e) => {
-            var target = <HTMLElement>e.target;
-            this.styleOnDragEnd()
+            this.styleOnDragEnd();
             var x = e.clientX;
             var y = e.clientY;
             this.uploadOn(this, null, x, y, e);
@@ -276,12 +275,12 @@ class App {
             // CASE 2 : the dropped object is some faust code
             if (dsp_code) {
                  console.log("DROP: CASE 2 ");
-                this.uploadCodeFaust(app, module, x, y, e, dsp_code);
+                this.uploadCodeFaust(app, module, x, y, dsp_code);
             } else {
                 // CASE 3 : the dropped object is a file containing some faust code or jfaust/json
                 console.log("DROP: CASE 3 ");
                 try {
-                    this.uploadFileFaust(app, module, x, y, e, dsp_code);
+                    this.uploadFileFaust(module, x, y, e);
                 } catch (error) {
                     new Message(error);
                     Utilitary.hideFullPageLoading();
@@ -319,7 +318,7 @@ class App {
 
 
     // used for dsp code faust
-    uploadCodeFaust(app: App, module: Module, x: number, y: number, e: DragEvent, dsp_code:string) {
+    uploadCodeFaust(app: App, module: Module, x: number, y: number, dsp_code:string) {
         dsp_code = "process = vgroup(\"" + "TEXT" + "\",environment{" + dsp_code + "}.process);";
         if (!module) {
             app.compileFaust({ name: "TEXT", sourceCode: dsp_code, x: x, y: y, callback: (factory) => { app.createModule(factory) }});
@@ -329,7 +328,7 @@ class App {
     }
 
     //used for File containing code faust or jfaust/json scene descriptor get the file then pass it to loadFile()
-    uploadFileFaust(app: App, module: Module, x: number, y: number, e: DragEvent, dsp_code: string) {
+    uploadFileFaust(module: Module, x: number, y: number, e: DragEvent) {
         var files: FileList = e.dataTransfer.files;
         var file: File = files[0];
         this.loadFile(file, module, x, y);
@@ -358,7 +357,7 @@ class App {
             throw new Error(_("Content is not compatible with Faust"));
         }
 
-        reader.onloadend =(e)=>{
+        reader.onloadend = () => {
             dsp_code = "process = vgroup(\"" + filename + "\",environment{" + reader.result + "}.process);";
 
             if (!module && type == "dsp") {
@@ -366,7 +365,7 @@ class App {
             } else if (type == "dsp") {
                 module.update(filename, dsp_code);
             } else if (type == "json") {
-                Utilitary.currentScene.recallScene(reader.result);
+                this.scene.recallScene(reader.result);
             }
         };
     }
@@ -374,14 +373,14 @@ class App {
     loadFileEvent(e: CustomEvent) {
         Utilitary.showFullPageLoading();
         var file: File = <File>e.detail;
-        var position: PositionModule = Utilitary.currentScene.positionDblTapModule();
+        var position: PositionModule = this.scene.positionDblTapModule();
         this.loadFile(file, null, position.x, position.y)
 
     }
     //used with the library double touch custom event
     dblTouchUpload(e: CustomEvent) {
         Utilitary.showFullPageLoading();
-        var position: PositionModule = Utilitary.currentScene.positionDblTapModule();
+        var position: PositionModule = this.scene.positionDblTapModule();
         this.downloadUrl(this, null, position.x, position.y, e.detail);
 
     }
@@ -393,9 +392,9 @@ class App {
     styleOnDragStart() {
         this.menu.menuView.menuContainer.style.opacity = "0.5";
         this.menu.menuView.menuContainer.classList.add("no_pointer");
-        Utilitary.currentScene.sceneView.dropElementScene.style.display = "block";
-        Utilitary.currentScene.getSceneContainer().style.boxShadow = "0 0 200px #00f inset";
-        var modules: Module[] = Utilitary.currentScene.getModules();
+        this.scene.sceneView.dropElementScene.style.display = "block";
+        this.scene.getSceneContainer().style.boxShadow = "0 0 200px #00f inset";
+        var modules: Module[] = this.scene.getModules();
         for (var i = 0; i < modules.length; i++) {
             modules[i].moduleView.fModuleContainer.style.opacity="0.5"
         }
@@ -404,9 +403,9 @@ class App {
         this.menu.menuView.menuContainer.classList.remove("no_pointer");
 
         this.menu.menuView.menuContainer.style.opacity = "1";
-        Utilitary.currentScene.sceneView.dropElementScene.style.display = "none";
-        Utilitary.currentScene.getSceneContainer().style.boxShadow = "none";
-        var modules: Module[] = Utilitary.currentScene.getModules();
+        this.scene.sceneView.dropElementScene.style.display = "none";
+        this.scene.getSceneContainer().style.boxShadow = "none";
+        var modules: Module[] = this.scene.getModules();
         for (var i = 0; i < modules.length; i++) {
             modules[i].moduleView.fModuleContainer.style.opacity = "1";
             modules[i].moduleView.fModuleContainer.style.boxShadow ="0 5px 10px rgba(0, 0, 0, 0.4)"
@@ -415,7 +414,6 @@ class App {
 
     //manage the window size
     checkRealWindowSize() {
-
         if (window.scrollX > 0) {
             console.log(document.getElementsByTagName("html")[0]);
             document.getElementsByTagName("html")[0].style.width = window.innerWidth + window.scrollX + "px";
@@ -434,11 +432,6 @@ class App {
             document.getElementsByTagName("html")[0].style.height = "100%";
             document.getElementById("svgCanvas").style.height = "100%";
         }
-    }
-
-
-    errorCallBack(message: string) {
-
     }
 }
 
