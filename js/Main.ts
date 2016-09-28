@@ -17,10 +17,11 @@ window.addEventListener('load', init, false);
 
 declare var i18next;
 declare var i18nextXHRBackend;
+declare var i18nextBrowserLanguageDetector;
 i18next
     .use(i18nextXHRBackend)
+    .use(i18nextBrowserLanguageDetector)
     .init({
-        lng: 'fr',
         backend: {
             loadPath: '/js/locales/{{lng}}/{{ns}}.json',
         }
