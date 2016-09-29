@@ -9,12 +9,6 @@
 
 /// <reference path="App.ts"/>
 
-"use strict";
-
-//listner on load of all element to init the app
-window.addEventListener('load', init, false);
-
-
 declare var i18next;
 declare var i18nextXHRBackend;
 declare var i18nextBrowserLanguageDetector;
@@ -25,55 +19,15 @@ i18next
         backend: {
             loadPath: '/js/locales/{{lng}}/{{ns}}.json',
         }
-    });
+    },
+    () => new App()
+
+);
 
 function _(s:string): string {
     return i18next.t(s);
 }
 
-
-//initialization af the app, create app and ressource to get text with correct localization
-//then resumeInit on callback when text is loaded
-function init(): void {
-    var app: App = new App();
-}
-////callback when text is loaded. resume the initialization
-//function resumeInit(app: App) {
-//    //create div which will contain all Messages and Confirm
-//    App.createDialogue();
-//    //create audiocontext if available, otherwise app can't work
-//    try {
-//        Utilitary.audioContext = new AudioContext();
-//    } catch (e) {
-//        new Message(_('errorNoWebAudioAPI'));
-//        Utilitary.hideFullPageLoading();
-//    }
-//    Utilitary.addFullPageLoading();
-//
-//    app.createAllScenes();
-//    app.createMenu();
-//
-//    var accHandler: AccelerometerHandler = new AccelerometerHandler();
-//    Utilitary.accHandler = accHandler;
-//    accHandler.getAccelerometerValue();
-//
-//    Utilitary.driveApi = new DriveAPI();
-//    app.menu.setDriveApi(Utilitary.driveApi);
-//    Utilitary.driveApi.checkAuth();
-//
-//
-//    //error catcher
-//    window.addEventListener("error", (e: ErrorEvent) => {
-//        if (e.message == "Uncaught Error: workerError" || e.message == "Error: workerError") {
-//            new Message(_('errorOccuredMessage') + e.message);
-//            Utilitary.hideFullPageLoading();
-//        }
-//        if (e.message == "Uncaught Error: Upload2Error") {
-//            Utilitary.hideFullPageLoading();
-//            e.preventDefault();
-//        }
-//    });
-//}
 
 //event listener to activate web audio on IOS devices, touchstart for iOS 8
 //touchend for iOS 9
