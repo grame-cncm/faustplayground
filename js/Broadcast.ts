@@ -94,6 +94,10 @@ class Broadcast {
         //console.info('onOffer', offer)
     }
 
+    private onByebye(msg: WSMessage) {
+        document.dispatchEvent(new CustomEvent('Byebye', {detail: msg}));
+    }
+
     private onWhoami(msg: WSMessage) {
         console.info('I am:', msg.payload);
         this.wspeer = msg.payload;

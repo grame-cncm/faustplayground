@@ -47,6 +47,7 @@ class App {
     tempModuleX: number;
     tempModuleY: number;
     audioContext: AudioContext;
+    players: Players;
 
     constructor() {
         //create div which will contain all Messages and Confirm
@@ -57,6 +58,7 @@ class App {
 
         Utilitary.addFullPageLoading();
 
+        this.players = new Players();
         this.createAllScenes();
         this.createMenu();
 
@@ -91,7 +93,7 @@ class App {
     }
 
     createMenu(): void {
-        this.menu = new Menu(document.getElementsByTagName('body')[0]);
+        this.menu = new Menu(document.getElementsByTagName('body')[0], this);
         //pass the scene to the menu to allow it to access the scene
         this.menu.setMenuScene(this.scene);
 
