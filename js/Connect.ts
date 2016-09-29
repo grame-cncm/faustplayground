@@ -39,9 +39,14 @@ class Connector {
         outputModule.moduleFaust.getDSP().getProcessor().connect(divOut.audioNode);
     }
 
-    getBroadcastStream(outputModule: Module, ctx: AudioContext): MediaStream {
-        var dst: MediaStreamAudioDestinationNode = ctx.createMediaStreamDestination();
-        outputModule.moduleFaust.getDSP().getProcessor().connect(dst);
+    getBroadcastStream(outputModule: Module, ctx: AudioContext): MediaStream | void {
+        try {
+            var dst:MediaStreamAudioDestinationNode = ctx.createMediaStreamDestination();
+            outputModule.moduleFaust.getDSP().getProcessor().connect(dst);
+        } catch (e) {
+            console.error('Cannot create stream for broadcasting.');
+            return null;
+        }
         return dst.stream;
     }
 

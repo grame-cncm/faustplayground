@@ -267,8 +267,9 @@ class Scene {
         document.body.appendChild(out);
         var ctor: Connector = new Connector();
         ctor.connectOutput(sceneOutput, out);
-        var stream: MediaStream = ctor.getBroadcastStream(sceneOutput, Utilitary.audioContext);
-        this.broadcast = new Broadcast(stream);
+        var stream: MediaStream | void = ctor.getBroadcastStream(sceneOutput, Utilitary.audioContext);
+        if (stream)
+            this.broadcast = new Broadcast(<MediaStream>stream);
     }
 
 
