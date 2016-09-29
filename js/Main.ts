@@ -36,8 +36,6 @@ function _(s:string): string {
 //then resumeInit on callback when text is loaded
 function init(): void {
     var app: App = new App();
-    //var ressources = new Ressources();
-    //ressources.getRessources(app);
 }
 ////callback when text is loaded. resume the initialization
 //function resumeInit(app: App) {
