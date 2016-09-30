@@ -1,6 +1,7 @@
 {
   "+ more options": "+ plus d'options",
   "- less options": "- moins d'options",
+  "An error has occured:": "Une erreur s'est produite :",
   "An error occured while connecting modules, the save file is probably corrupt": "Une erreur s'est produite lors de la connexion des modules : le fichier de sauvegarde est probablement corrompu:",
   "An error occured while creating the module, the save file is probably corrupt": "Une erreur s'est produite lors de la création du module : le fichier de sauvegarde est probablement corrompu.",
   "Cannot create the DSP file, the Faust code contains errors": "Impossible de créer le DSP : le code Faust contient des erreurs.",
@@ -16,6 +17,7 @@
   "Do you really want to delete this Patch?": "Voulez-vous vraiment supprimer ce Patch ?",
   "Do you really want to empty the scene?": "Voulez-vous vraiment vider la scène ?",
   "Download": "Téléchargement",
+  "Download the scene: ": "Télécharger la scène : ",
   "Drop here": "Déposer ici",
   "Edit": "Éditer",
   "Effects": "Effets",
@@ -26,7 +28,7 @@
   "File saved successfully": "Sauvegarde bien effectuée:",
   "Help": "Aide",
   "Instruments": "Instruments",
-  "It appears that your browser does not support the Device Motion API, you will therefore be unable to access the accelerometers of your device": "",
+  "It appears that your browser does not support the Device Motion API, you will therefore be unable to access the accelerometers of your device.": "Il semblerait que votre navigateur ne supporte pas l'API Device Motion : vous n'aurez donc pas accès aux accéléromètres de votre appareil.",
   "Library": "Biblio",
   "Load": "Charger",
   "Load file": "Charger un fichier",
@@ -35,13 +37,7 @@
   "Loading": "Chargement en cours",
   "Log out": "Déconnexion",
   "No file found on Google Drive": "Aucun fichier trouvé sur Google Drive",
-  "Only alphabet letters and numbers are accepted": {
-    " Spaces, apostrophes and accents are automatically replaced": {
-      " The name cannot start with a number": {
-        " It must be between 1 and 50 characters": ""
-      }
-    }
-  },
+  "Only alphabet letters and numbers are accepted. Spaces, apostrophes and accents are automatically replaced. The name cannot start with a number. It must be between 1 and 50 characters.": "Seules les lettres de l'alphabet et les nombres sont acceptés. Les espaces, les apostrophes et les accents sont automatiquement remplacés. Le nom ne peut pas commencer par un nombre, il doit comporter entre 1 et 50 caractères.",
   "Patch": "Patch",
   "Players": "Joueurs",
   "Precompiled (heavier)": "Précompilé (plus lourd)",
@@ -49,22 +45,22 @@
   "Save": "Sauver",
   "Save locally": "Sauvegarder localement",
   "Save online": "Sauvegarder en ligne",
+  "The application is called:": "Le nom de l'application est :",
   "The chosen name is invalid": "Le nom choisi est invalide.",
   "The microphone or audio input cannot be used in your browser": "Le micro ou l'entrée son ne peuvent pas être utilisés dans ce navigateur.",
   "The name has been changed successfully": "Le nom a bien été changé.",
-  "The name you are using already exists, if you continue the existing file will be replaced": {
-    " You can rename the scene in the Export tab": {
-      " Replace?": ""
-    }
-  },
+  "The name you are using already exists, if you continue the existing file will be replaced. You can rename the scene in the Export tab. Replace?": "Le nom que vous utilisez existe déjà, si vous continuez vous le remplacerez. Vous pouvez renommer la scène dans l'onglet Export. Continuer ?",
+  "The provided Faust code is not correct: ": "Le code Faust fourni est incorrect : ",
   "This file is corrupt and cannot be loaded": "Le fichier est corrompu : impossible de le charger.",
   "Unable to connect to Google Drive": "Connexion à Google Drive impossible.",
+  "X axis:": "axe X",
+  "Y axis:": "axe Y",
   "Your browser does not support local storage": "Votre navigateur ne permet pas la sauvegarde locale.",
+  "Z axis:": "axe Z",
   "curve 1": "courbe 1",
   "curve 2": "courbe 2",
   "curve 3": "courbe 3",
   "curve 4": "courbe 4",
   "enable/disable accelerometer": "activer/désactiver l'accéléromètre",
-  "errorNoWebAudioAPI": "",
-  "errorOccuredMessage": ""
+  "off:": ""
 }

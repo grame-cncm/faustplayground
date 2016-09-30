@@ -8,7 +8,7 @@ clean:
 	rm -f js/faustplayground.js.map
 
 i18n:
-	i18next js -r -f _ --fileFilter '*.ts' -o js/locales --ignore-variables
+	i18next js -r -f _ --fileFilter '*.ts' -o js/locales --ignore-variables --namespace-separator=":::" --key-separator="::"
 
 sslcert:
 	rm -rf ssl
