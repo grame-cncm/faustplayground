@@ -16,6 +16,8 @@ i18next
     .use(i18nextXHRBackend)
     .use(i18nextBrowserLanguageDetector)
     .init({
+        nsSeparator: ':::',
+        keySeparator: '::',
         backend: {
             loadPath: '/js/locales/{{lng}}/{{ns}}.json',
         }
