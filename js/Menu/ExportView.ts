@@ -41,7 +41,7 @@ class ExportView {
 
         var nameAppTitle: HTMLSpanElement = document.createElement("span");
         nameAppTitle.id = "nameAppTitle";
-        nameAppTitle.textContent = _("The application is called:");
+        nameAppTitle.textContent = _("The application is called: ");
         nameAppTitle.className = "exportTitle";
 
         var dynamicName: HTMLSpanElement = document.createElement("span");
