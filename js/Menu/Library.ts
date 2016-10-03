@@ -30,11 +30,6 @@
 
 
 
-interface IImageNode extends HTMLImageElement {
-    state: string;
-    section: string;
-    folder: HTMLUListElement;
-}
 interface jsonObjectLibrary {
     instrument: string;
     effet: string;
@@ -57,8 +52,10 @@ class Library{
 
     //get json with library infos
     fillLibrary() {
-        var url: string = "faust-modules/index.json"
-        Utilitary.getXHR(url, (json: string) => { this.fillLibraryCallBack(json) }, (errorMessage: string) => { Utilitary.errorCallBack(errorMessage) });
+        var url: string = "faust-modules/index.json";
+        Utilitary.getXHR(url,
+            (json: string) => { this.fillLibraryCallBack(json) },
+            (errorMessage: string) => { Utilitary.errorCallBack(errorMessage) });
     }
 
     //dispatch library info to each submenu
@@ -80,22 +77,20 @@ class Library{
         var subMenu: HTMLUListElement = <HTMLUListElement>document.getElementById(subMenuId);
 
         for (var i = 0; i < options.length; i++) {
-
             var li: HTMLLIElement = document.createElement("li");
             var a: HTMLAnchorElement = document.createElement("a");
             li.appendChild(a);
+            li.draggable = true;
             a.href = options[i];
-            a.draggable = true;
+            a.draggable = false;
             a.title = _("Click, drag and drop!");
             a.addEventListener("click", (e) => { e.preventDefault() });
 
-            var dblckickHandler = this.dispatchEventLibrary.bind(this,a.href)
-            a.ondblclick =  dblckickHandler;
-            a.ontouchstart = (e) => { this.dbleTouchMenu(e) }
+            a.ondblclick =  this.dispatchEventLibrary.bind(this,a.href);
+            a.ontouchstart = (e) => { this.dbleTouchMenu(e) };
 
             a.text = this.cleanNameElement(options[i], stringStructureRemoved);
             subMenu.appendChild(li)
-
         }
     }
 
