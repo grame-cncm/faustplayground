@@ -180,8 +180,8 @@ class App {
         if (this.tempModuleName != "input" && this.tempModuleName != "output") {
             module.moduleView.fModuleContainer.ondrop = (e) => {
                 e.stopPropagation();
-                this.styleOnDragEnd();
-                this.uploadOn(this, module, 0, 0, e)
+                this.onDragEnd();
+                this.downloadDropped(module, 0, 0, e)
             };
         }
         module.moduleView.fModuleContainer.ondragover = () => {
@@ -211,26 +211,19 @@ class App {
         //custom event to load file from the load menu with the file explorer
         document.addEventListener("fileload", (e: CustomEvent) => { this.loadFileEvent(e) });
 
-        //All drog and drop events
-        window.ondragover = function () { this.className = 'hover'; return false; };
-        window.ondragend = function () { this.className = ''; return false; };
-        document.ondragstart = () => { this.styleOnDragStart() };
-        document.ondragenter = (e) => {
-            var srcElement = <HTMLElement>e.srcElement;
-            if (srcElement.className != null && srcElement.className == "node-button") {
-            } else {
-                this.styleOnDragStart()
-            }
-        };
-        document.ondragleave = (e) => {
-            var elementTarget = <HTMLElement>e.target;
-            if (elementTarget.id == "svgCanvas") {
-                //alert("svg")
-                this.styleOnDragEnd();
-                e.stopPropagation();
-                e.preventDefault()
-            }
-        };
+        window.addEventListener('dragover',
+                                (e: DragEvent) => e.preventDefault());
+        window.addEventListener('dragstart',
+                                (e: DragEvent) => this.onDragStart(e));
+        window.addEventListener('dragend',
+                                (e: DragEvent) => this.onDragEnd());
+        window.addEventListener('drop',
+                                (e: DragEvent) => this.onDrop(e));
+
+        document.body.addEventListener('mousedown',
+                                (e: MouseEvent) => this.onMouseDown(e));
+        document.body.addEventListener('mouseup',
+                                (e: MouseEvent) => this.onMouseUp(e));
 
         //scroll event to check the size of the document
         document.onscroll = () => {
@@ -240,24 +233,17 @@ class App {
         //resize event
         window.onresize = () => { this.checkRealWindowSize() };
 
-        window.ondrop = (e) => {
-            this.styleOnDragEnd();
-            var x = e.clientX;
-            var y = e.clientY;
-            this.uploadOn(this, null, x, y, e);
-        };
-
         //custom double touch from library menu to load an effect or an intrument.
         document.addEventListener("dbltouchlib", (e: CustomEvent) => { this.dblTouchUpload(e) });
     }
 
 
     //-- Upload content dropped on the page and allocate the content to the right function
-    uploadOn(app: App, module: Module, x: number, y: number, e: DragEvent) {
+    downloadDropped(module: Module, x: number, y: number, e: DragEvent) {
         Utilitary.showFullPageLoading();
         e.preventDefault();
 
-        if (e.dataTransfer.files.length > 0) {
+        if (e.dataTransfer.files.length) {
 			// we are dropping a file
 			for (var i = 0; i < e.dataTransfer.files.length; i = i + 1) {
 				var f = e.dataTransfer.files[i];
@@ -269,7 +255,7 @@ class App {
             // CASE 1 : the dropped object is a url to some faust code
             var url = e.dataTransfer.getData('URL');
             console.log("URL DROP : "+ url);
-            this.downloadUrl(app, module, x, y, url);
+            this.downloadUrl(module, x, y, url);
 
         } else if (e.dataTransfer.getData('URL').split(':').shift() != "file") {
             var dsp_code: string = e.dataTransfer.getData('text');
@@ -277,7 +263,7 @@ class App {
             // CASE 2 : the dropped object is some faust code
             if (dsp_code) {
                  console.log("DROP: CASE 2 ");
-                this.uploadCodeFaust(app, module, x, y, dsp_code);
+                this.uploadCodeFaust(module, x, y, dsp_code);
             } else {
                 // CASE 3 : the dropped object is a file containing some faust code or jfaust/json
                 console.log("DROP: CASE 3 ");
@@ -297,19 +283,19 @@ class App {
     }
 
     //used for Url pointing at a dsp file
-    downloadUrl(app: App, module: Module, x: number, y: number, url: string) {
+    downloadUrl(module: Module, x: number, y: number, url: string) {
         var filename: string = url.split('/').pop();
         filename = filename.split('.').shift();
         Utilitary.getXHR(url,
             (codeFaust)=>{
                 var dsp_code: string = "process = vgroup(\"" + filename + "\",environment{" + codeFaust + "}.process);";
                 if (module == null) {
-                    app.compileFaust({ name:filename,
+                    this.compileFaust({ name:filename,
                                        sourceCode:dsp_code,
                                        x:x,
                                        y:y,
                                        callback:(factory) => {
-                                           app.createModule(factory)
+                                           this.createModule(factory)
                                        }
                                       });
                 } else {
@@ -320,10 +306,15 @@ class App {
 
 
     // used for dsp code faust
-    uploadCodeFaust(app: App, module: Module, x: number, y: number, dsp_code:string) {
+    uploadCodeFaust(module: Module, x: number, y: number, dsp_code:string) {
         dsp_code = "process = vgroup(\"" + "TEXT" + "\",environment{" + dsp_code + "}.process);";
         if (!module) {
-            app.compileFaust({ name: "TEXT", sourceCode: dsp_code, x: x, y: y, callback: (factory) => { app.createModule(factory) }});
+            this.compileFaust(
+                { name: "TEXT",
+                    sourceCode: dsp_code,
+                    x: x,
+                    y: y,
+                    callback: (factory) => { this.createModule(factory) }});
         } else {
             module.update("TEXT", dsp_code);
         }
@@ -383,7 +374,7 @@ class App {
     dblTouchUpload(e: CustomEvent) {
         Utilitary.showFullPageLoading();
         var position: PositionModule = this.scene.positionDblTapModule();
-        this.downloadUrl(this, null, position.x, position.y, e.detail);
+        this.downloadUrl(null, position.x, position.y, e.detail);
 
     }
 
@@ -391,7 +382,14 @@ class App {
     ////////////////////////////// design on drag or drop //////////////////////////////////////
 
     // manage style during a drag and drop event
-    styleOnDragStart() {
+    onDragStart(evt: DragEvent) {
+        var target: HTMLElement = <HTMLElement>evt.target;
+        //target.classList.add('dragging');
+        var link: HTMLAnchorElement = target.getElementsByTagName('a')[0];
+        //link.classList.add('dragging');
+
+        evt.dataTransfer.setData('text', '');
+        evt.dataTransfer.setData('URL', link.href);
         this.menu.menuView.menuContainer.style.opacity = "0.5";
         this.menu.menuView.menuContainer.classList.add("no_pointer");
         this.scene.sceneView.dropElementScene.style.display = "block";
@@ -401,9 +399,9 @@ class App {
             modules[i].moduleView.fModuleContainer.style.opacity="0.5"
         }
     }
-    styleOnDragEnd() {
-        this.menu.menuView.menuContainer.classList.remove("no_pointer");
 
+    onDragEnd() {
+        this.menu.menuView.menuContainer.classList.remove("no_pointer");
         this.menu.menuView.menuContainer.style.opacity = "1";
         this.scene.sceneView.dropElementScene.style.display = "none";
         this.scene.getSceneContainer().style.boxShadow = "none";
@@ -412,6 +410,27 @@ class App {
             modules[i].moduleView.fModuleContainer.style.opacity = "1";
             modules[i].moduleView.fModuleContainer.style.boxShadow ="0 5px 10px rgba(0, 0, 0, 0.4)"
         }
+        this.menu.closeMenu();
+    }
+
+    onDrop(e: DragEvent) {
+        this.onDragEnd();
+        var x = e.clientX;
+        var y = e.clientY;
+        this.downloadDropped(null, x, y, e);
+    }
+
+    onMouseDown(e: MouseEvent) {
+        var target: HTMLElement = <HTMLElement>e.target;
+        while(!target.draggable && target != document.body)
+            target = <HTMLElement>target.parentNode;
+        if (target.draggable)
+            target.classList.add('dragging');
+    }
+
+    onMouseUp(e: MouseEvent) {
+        for(let node of [].map.call(document.querySelectorAll('.dragging'), (n: HTMLElement) => n))
+            node.classList.remove('dragging');
     }
 
     //manage the window size

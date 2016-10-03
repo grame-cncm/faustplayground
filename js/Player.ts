@@ -6,8 +6,14 @@ class PlayerMenuItem {
 
     constructor(player: Player){
         this.player = player;
-        this.element = document.createElement('div');
-        this.element.innerText = player.ident;
+        this.element = document.createElement('li');
+        this.element.draggable = true;
+        this.element.classList.add('draggable');
+        var a: HTMLAnchorElement = document.createElement('a');
+        a.href = player.ident;
+        a.draggable = false;
+        a.innerText = player.ident;
+        this.element.appendChild(a);
     }
 }
 

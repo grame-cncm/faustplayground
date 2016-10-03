@@ -81,6 +81,7 @@ class Library{
             var a: HTMLAnchorElement = document.createElement("a");
             li.appendChild(a);
             li.draggable = true;
+            li.classList.add('draggable');
             a.href = options[i];
             a.draggable = false;
             a.title = _("Click, drag and drop!");

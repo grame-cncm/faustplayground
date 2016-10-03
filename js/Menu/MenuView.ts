@@ -177,7 +177,7 @@ class MenuView {
         accEditContent.style.display = "none";
         this.accEditView = accEditView;
 
-        this.playersContent = document.createElement('div');
+        this.playersContent = document.createElement('ul');
         this.playersContent.id = 'playersContent';
         this.playersContent.className = 'menuContent';
         this.playersContent.style.display = 'none';

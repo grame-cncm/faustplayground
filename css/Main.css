@@ -264,3 +264,12 @@ div#dialogue {
 	-khtml-user-select: none;
 	-webkit-user-select: none;
 }
+
+.draggable,
+.draggable a {
+	cursor: url(../img/openedhand.gif), url(../img/openedhand.cur), move;
+}
+
+.draggable.dragging * {
+	cursor: url(../img/closedhand.gif), url(../img/closedhand.cur), move;
+}
