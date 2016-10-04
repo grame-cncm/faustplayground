@@ -7,9 +7,9 @@ declare copyright 	"(c)GRAME 2009";
 
 /* ========== DESCRIPTION ===========
 
-- White noise generator
+- White no.noise generator
 - Head = silence
-- Bottom = Maximum volume of the noise
+- Bottom = Maximum volume of the no.noise
 
 */
 

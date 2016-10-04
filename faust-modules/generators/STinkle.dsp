@@ -13,15 +13,14 @@ declare description "This instrument uses banded waveguide. For more information
 
 */
 
-import("music.lib");
-import("filter.lib");
-import("instrument.lib");
+import("stdfaust.lib");
+instrument = library("instrument.lib");
 
 //==================== INSTRUMENT =======================
 
 process = hgroup("Tinkle",(((select-1)*-1) <:
 		//nModes resonances with nModes feedbacks for bow table look-up 
-		par(i,nModes,(resonance(i)~_))):>+:lowpass(1,5000)*(gain));
+		par(i,nModes,(resonance(i)~_))):>+:fi.lowpass(1,5000)*(gain));
 
 //==================== GUI SPECIFICATION ================
 
@@ -93,17 +92,17 @@ excitation(0,11) = 57.063034 / 10;
 //the number of modes depends on the preset being used
 nModes = nMode(preset);
 
-delayLengthBase = SR/freq;
+delayLengthBase = ma.SR/freq;
 
 //delay lengths in number of samples
 delayLength(x) = delayLengthBase/modes(preset,x);
 
 //delay lines
-delayLine(x) = delay(4096,delayLength(x));
+delayLine(x) = de.delay(4096,delayLength(x));
 
-//Filter bank: bandpass filters (declared in instrument.lib)
-radius = 1 - PI*32/SR;
-bandPassFilter(x) = bandPass(freq*modes(preset,x),radius);
+//Filter bank: fi.bandpass filters (declared in instrument.lib)
+radius = 1 - ma.PI*32/ma.SR;
+bandPassFilter(x) = instrument.bandPass(freq*modes(preset,x),radius);
 
 
 //----------------------- Algorithm implementation ----------------------------

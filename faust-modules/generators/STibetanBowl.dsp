@@ -19,16 +19,15 @@ declare description "This instrument uses banded waveguide. For more information
 
 */
 
-import("music.lib");
-import("filter.lib");
-import("instrument.lib");
+import("stdfaust.lib");
+instrument = library("instrument.lib");
 
 //==================== INSTRUMENT =======================
 
 process = (((select-1)*-1) <:
 		//nModes resonances with nModes feedbacks for bow table look-up
 		par(i,nModes,(resonance(i)~_))):>+:
-		NLFM :> lowpass(1, 5000);
+		NLFM :> fi.lowpass(1, 5000);
 
 //==================== GUI SPECIFICATION ================
 
@@ -38,8 +37,8 @@ gate = 0;
 select = hslider("[0]Play[tooltip:0=Bow; 1=Strike] [acc:2 1 -10 0 10]", 0,0,1,1);
 baseGain = 0.5;
 typeModulation = 3;
-nonLinearity = hslider("[2]Modulation[acc:0 1 -10 0 10][tooltip:Nonlinearity factor (value between 0 and 1)]",0.02,0,0.1,0.001):smooth(0.999);
-frequencyMod = hslider("[3]Modulation Frequency[unit:Hz][acc:0 0 -10 0 10]", 220,150,500,0.1):smooth(0.999);
+nonLinearity = hslider("[2]Modulation[acc:0 1 -10 0 10][tooltip:Nonlinearity factor (value between 0 and 1)]",0.02,0,0.1,0.001):si.smooth(0.999);
+frequencyMod = hslider("[3]Modulation Frequency[unit:Hz][acc:0 0 -10 0 10]", 220,150,500,0.1):si.smooth(0.999);
 nonLinAttack = 0.1;
 
 //==================== MODAL PARAMETERS ================
@@ -106,25 +105,25 @@ nlfOrder = 6;
 
 //nonLinearModultor is declared in instrument.lib, it adapts allpassnn from filter.lib
 //for using it with waveguide instruments
-NLFM =  nonLinearModulator((nonLinearity : smooth(0.999)),1,freq,
-typeModulation,(frequencyMod : smooth(0.999)),nlfOrder);
+NLFM =  instrument.nonLinearModulator((nonLinearity : si.smooth(0.999)),1,freq,
+typeModulation,(frequencyMod : si.smooth(0.999)),nlfOrder);
 
 //----------------------- Synthesis parameters computing and functions declaration ----------------------------
 
 //the number of modes depends on the preset being used
 nModes = nMode(preset);
 
-delayLengthBase = SR/freq;
+delayLengthBase = ma.SR/freq;
 
 //delay lengths in number of samples
 delayLength(x) = delayLengthBase/modes(preset,x);
 
 //delay lines
-delayLine(x) = delay(4096,delayLength(x));
+delayLine(x) = de.delay(4096,delayLength(x));
 
-//Filter bank: bandpass filters (declared in instrument.lib)
-radius = 1 - PI*32/SR;
-bandPassFilter(x) = bandPass(freq*modes(preset,x),radius);
+//Filter bank: fi.bandpass filters (declared in instrument.lib)
+radius = 1 - ma.PI*32/ma.SR;
+bandPassFilter(x) = instrument.bandPass(freq*modes(preset,x),radius);
 
 //One resonance
 resonance(x) = + : + (excitation(preset,x)*select) : delayLine(x) : *(basegains(preset,x)) : bandPassFilter(x);
