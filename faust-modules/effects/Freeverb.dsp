@@ -5,8 +5,7 @@ declare license     "BSD";
 declare copyright   "(c) GRAME 2006";
 declare reference   "https://ccrma.stanford.edu/~jos/pasp/Freeverb.html";
 
-import("music.lib");
-import("filter.lib");
+import("stdfaust.lib");
 
 
 
@@ -76,8 +75,8 @@ allpasstuningL4 = 225;
 //dampSlider      = hslider("Damp",0.5, 0, 1, 0.025)*scaledamp;
 
 dampSlider 		= 0.7*scaledamp;
-roomsizeSlider  = hslider("Reverberation Room Size[acc:1 1 -10 0 10]", 0.5, 0.1, 0.9, 0.025) : smooth(0.999) : min(0.9) :max(0.1) *scaleroom + offsetroom;
-wetSlider       = hslider("Reverberation Intensity[acc:1 1 -10 0 10]", 0.3333, 0.1, 0.9, 0.025) : smooth(0.999) : min(0.9) :max(0.1);
+roomsizeSlider  = hslider("Reverberation Room Size[acc:1 1 -10 0 10]", 0.5, 0.1, 0.9, 0.025) : si.smooth(0.999) : min(0.9) :max(0.1) *scaleroom + offsetroom;
+wetSlider       = hslider("Reverberation Intensity[acc:1 1 -10 0 10]", 0.3333, 0.1, 0.9, 0.025) : si.smooth(0.999) : min(0.9) :max(0.1);
 combfeed        = roomsizeSlider;
 
 

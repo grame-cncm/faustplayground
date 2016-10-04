@@ -1,8 +1,7 @@
 declare name "ASR Envelope";
 
-import("music.lib");
-import("filter.lib");
-import("instrument.lib");
+import("stdfaust.lib");
+instrument = library("instrument.lib");
 
 /* =========== DESCRITPTION ============
 
@@ -21,12 +20,12 @@ import("instrument.lib");
 
 */
 
-process = *(asr(a,s,r,t)):_
+process = *(en.asr(a,s,r,t)):_
 
 with{
-	a = hslider("[2]Envelope Attack[unit:s][acc:0 1 -10 0 10][style:knob]", 1, 0.01, 2, 0.01) : smooth(0.999);
+	a = hslider("[2]Envelope Attack[unit:s][acc:0 1 -10 0 10][style:knob]", 1, 0.01, 2, 0.01) : si.smooth(0.999);
 	s = 100;
-	r = hslider("[3]Envelope Release[unit:s][style:knob][acc:0 1 -10 0 10]", 0, 0.01, 5, 0.01) : smooth(0.999);
+	r = hslider("[3]Envelope Release[unit:s][style:knob][acc:0 1 -10 0 10]", 0, 0.01, 5, 0.01) : si.smooth(0.999);
 	//g = checkbox("[1]ON/OFF");
 	t = hslider("[1]ON/OFF[acc:1 0 -12 0 5]", 0, 0, 1, 1);
 	//t = (g>0)|(sl>0);

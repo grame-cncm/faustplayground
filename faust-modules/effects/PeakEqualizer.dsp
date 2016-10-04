@@ -1,7 +1,6 @@
 declare name "Peak Equalizer";
 
-import("music.lib");
-import("filter.lib");
+import("stdfaust.lib");
 
 /* =========== DESCRITPION ==============
 
@@ -15,10 +14,10 @@ import("filter.lib");
 
 */
 
-process = vgroup("Peak EQ",peak_eq(level,freq,Q))
+process = vgroup("Peak EQ",fi.peak_eq(level,freq,Q))
 
 with{
 	level = hslider("[2]Level[unit:dB][style:knob][acc:2 1 -10 0 10][tooltip: boost Level>0 or cut Level<0)", 0, -40, 32, 0.01):min(32):max(-40);
-	freq = hslider("[1]Peak Frequency[unit:Hz][acc:0 1 -10 0 10][scale:log]", 440, 50, 11000, 0.01):smooth(0.999);
-	Q = hslider("Q - Filter Bandwidth [unit:Hz][acc:2 0 -10 0 10]", 50, 20, 200, 1):smooth(0.999):min(200):max(20);
+	freq = hslider("[1]Peak Frequency[unit:Hz][acc:0 1 -10 0 10][scale:log]", 440, 50, 11000, 0.01):si.smooth(0.999);
+	Q = hslider("Q - Filter Bandwidth [unit:Hz][acc:2 0 -10 0 10]", 50, 20, 200, 1):si.smooth(0.999):min(200):max(20);
 	};
