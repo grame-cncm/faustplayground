@@ -4,11 +4,8 @@ declare version "1.0";
 declare licence "STK-4.3"; // Synthesis Tool Kit 4.3 (MIT style license);
 declare description "This object implements a helmholtz resonator (biquad filter) with a polynomial jet excitation (a la Cook).";
 
-import("math.lib");
-import("music.lib");
-import("effect.lib");
-import("instrument.lib");
-import("filter.lib");
+import("stdfaust.lib");
+instrument = library("instrument.lib"); 
 
 /* =============== DESCRIPTION ================= :
 
@@ -30,27 +27,27 @@ process = vgroup("Blowhistle Bottles", par(i, N, blow(i)) :>_<: instrReverblow: 
 blow(n)= par(i, 2, 
 	//differential pressure
 	(-(breathPressure(trigger(n))) <: 
-	((+(1))*randPressure((trigger(n))) : +(breathPressure(trigger(n)))) - *(jetTable),_ : baPaF(i,n),_)~_: !,_: 
+	((+(1))*randPressure((trigger(n))) : +(breathPressure(trigger(n)))) - *(instrument.jetTable),_ : baPaF(i,n),_)~_: !,_: 
 	//signal scaling
-	dcblocker*envelopeG(trigger(n))*(0.5)<:+(voice(i,n))*resonGain(i)):>_
+	fi.dcblocker*envelopeG(trigger(n))*(0.5)<:+(voice(i,n))*resonGain(i)):>_
 	with{
 			baPaF(0,n) = bandPassFilter(freq(n));
 			baPaF(1,n) = bandPassFilter(freq(n)*8);
 			voice(0,n) = 0*n;
-			voice(1,n) = 1*(resonbp(freq(n)*8,Q,gain):echo);
+			voice(1,n) = 1*(fi.resonbp(freq(n)*8,Q,gain):echo);
 			resonGain(0) = 1;
-			resonGain(1) =(hslider("v:[1]Instrument/Whistle Volume[acc:2 0 -10 0 10]", 0.07, 0, 0.2, 0.001))^2:smooth(0.999);
+			resonGain(1) =(hslider("v:[1]Instrument/Whistle Volume[acc:2 0 -10 0 10]", 0.07, 0, 0.2, 0.001))^2:si.smooth(0.999);
 
 			echo = _:+~(@(delayEcho):*(feedback));
 			delayEcho = 44100;
-			feedback = hslider("h:[2]Echo/Echo Intensity [style:knob][acc:2 0 -10 0 10]", 0.48, 0.2, 0.98, 0.01):smooth(0.999):min(0.98):max(0.2);
+			feedback = hslider("h:[2]Echo/Echo Intensity [style:knob][acc:2 0 -10 0 10]", 0.48, 0.2, 0.98, 0.01):si.smooth(0.999):min(0.98):max(0.2);
 			};
 
 //==================== GUI SPECIFICATION ================
 N = 10;
 Q = 30;
 position(n) = abs(hand - n) < 0.5;
-hand = hslider("v:[1]Instrument/Instrument Hand[acc:0 1 -10 0 10]", 5, 0, N, 1):int:automat(360, 15, 0.0);
+hand = hslider("v:[1]Instrument/Instrument Hand[acc:0 1 -10 0 10]", 5, 0, N, 1):int:ba.automat(360, 15, 0.0);
 envelopeAttack = 0.01;
 vibratoFreq = 5;
 vibratoGain = 0.1;
@@ -84,24 +81,24 @@ freq(d)	 = freq(d-5)*2;
 //botlle radius
 bottleRadius = 0.999;
 
-bandPassFilter(f) = bandPass(f,bottleRadius);
+bandPassFilter(f) = instrument.bandPass(f,bottleRadius);
 
 //----------------------- Algorithm implementation ----------------------------
 
 //global envelope is of type attack - decay - sustain - release
-envelopeG(t) =  gain*adsr(gain*envelopeAttack,envelopeDecay,80,envelopeRelease,t);
+envelopeG(t) =  gain*en.adsr(gain*envelopeAttack,envelopeDecay,80,envelopeRelease,t);
 
 //pressure envelope is also ADSR
-envelope(t) = pressure*adsr(gain*0.02,0.01,80,gain*0.2,t);
+envelope(t) = pressure*en.adsr(gain*0.02,0.01,80,gain*0.2,t);
 
 //vibrato
-vibrato(t) = osc(vibratoFreq)*vibratoGain*envVibrato(vibratoBegin,vibratoAttack,100,vibratoRelease,t)*osc(vibratoFreq);
+vibrato(t) = os.osc(vibratoFreq)*vibratoGain*instrument.envVibrato(vibratoBegin,vibratoAttack,100,vibratoRelease,t)*os.osc(vibratoFreq);
 
 //breat pressure
 breathPressure(t) = envelope(t) + vibrato(t);
 
-//breath noise
-randPressure(t) = noiseGain*noise*breathPressure(t) ;
+//breath no.noise
+randPressure(t) = noiseGain*no.noise*breathPressure(t) ;
 
 //------------------------- Enveloppe Trigger --------------------------------------------
 
@@ -117,9 +114,9 @@ trigger(n) = position(n): trig
 //from instrument.lib
 
 instrReverblow = _,_ <: *(reverbGain),*(reverbGain),*(1 - reverbGain),*(1 - reverbGain) : 
-zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
+re.zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
        with{
-       reverbGain = hslider("h:[3]Reverb/ Reverberation Volume (InstrReverb)[style:knob][acc:1 1 -10 0 10]", 0.237,0.137,1,0.01) : smooth(0.999);
+       reverbGain = hslider("h:[3]Reverb/ Reverberation Volume (InstrReverb)[style:knob][acc:1 1 -10 0 10]", 0.237,0.137,1,0.01) : si.smooth(0.999);
        roomSize = hslider("h:[3]Reverb/Reverberation Room Size (InstrReverb)[style:knob][acc:1 1 -10 0 10]", 0.72,0.4,2,0.01);
        rdel = 20;
        f1 = 200;

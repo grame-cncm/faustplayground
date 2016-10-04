@@ -1,15 +1,8 @@
 declare name "Modulations";
 declare author "ER";
-import("math.lib");
-import("maxmsp.lib");
-import("music.lib");
-import("oscillator.lib");
-import("reduce.lib");
-import("filter.lib");
-import("effect.lib");
 
-import("music.lib");
-import("instrument.lib");
+import("stdfaust.lib");
+instrument = library("instrument.lib"); 
 
 /* =========== DESCRIPTION ==============
 
@@ -26,19 +19,19 @@ import("instrument.lib");
 
 //======================== INSTRUMENT =============================
 
-process = vgroup("Modulations",oscil <: seq(i, 3, NLFM(i)), NLFM3 :> lowpass(1,2000) *(0.6) *(vol) <: instrReverbMod:*(vool),*(vool));
+process = vgroup("Modulations",oscil <: seq(i, 3, NLFM(i)), NLFM3 :> fi.lowpass(1,2000) *(0.6) *(vol) <: instrReverbMod:*(vool),*(vool));
 
-NLFM(n) = _ : nonLinearModulator((nonlinearity:smooth(0.999)),env(n),freq,typeMod(n),freqMod,nlfOrder) : _;
-NLFM3 = _ : nonLinearModulator((nonlinearity:smooth(0.999)),env(3),freq,typeMod(3),freqMod,nlfOrder) : _;
-oscil = osci(freq);
+NLFM(n) = _ : instrument.nonLinearModulator((nonlinearity:si.smooth(0.999)),env(n),freq,typeMod(n),freqMod,nlfOrder) : _;
+NLFM3 = _ : instrument.nonLinearModulator((nonlinearity:si.smooth(0.999)),env(3),freq,typeMod(3),freqMod,nlfOrder) : _;
+oscil = os.osci(freq);
 
 //======================== GUI SPECIFICATIONS =====================
 
-freq = hslider("h:Instrument/ Frequency [unit:Hz][acc:1 1 -10 0 15]", 330, 100, 1200, 0.1):smooth(0.999);
-freqMod = hslider("h:Instrument/Modulating Frequency[style:knob][unit:Hz][acc:0 0 -10 0 10]", 1200, 900, 1700, 0.1):smooth(0.999);
+freq = hslider("h:Instrument/ Frequency [unit:Hz][acc:1 1 -10 0 15]", 330, 100, 1200, 0.1):si.smooth(0.999);
+freqMod = hslider("h:Instrument/Modulating Frequency[style:knob][unit:Hz][acc:0 0 -10 0 10]", 1200, 900, 1700, 0.1):si.smooth(0.999);
 
-vol = (hslider("h:Instrument/ Oscillator Volume[style:knob][acc:1 0 -10 0 10]", 0.5, 0, 1, 0.01)^2):smooth(0.999);
-vool = hslider("h:Instrument/ General Volume[style:knob][acc:1 1 -10 0 10]", 1, 0.75, 4, 0.01):smooth(0.999):min(4):max(0.75);
+vol = (hslider("h:Instrument/ Oscillator Volume[style:knob][acc:1 0 -10 0 10]", 0.5, 0, 1, 0.01)^2):si.smooth(0.999);
+vool = hslider("h:Instrument/ General Volume[style:knob][acc:1 1 -10 0 10]", 1, 0.75, 4, 0.01):si.smooth(0.999):min(4):max(0.75);
 
 gate(0) = hslider("v:Modulations/Play Modulation 0 (ASR Envelope)[tooltip:noteOn = 1, noteOff = 0][acc:0 0 -30 0 10]", 0,0,1,1);
 gate(1) = hslider("v:Modulations/Play Modulation 1 (ASR Envelope)[tooltip:noteOn = 1, noteOff = 0][acc:0 0 -30 0 5]", 0,0,1,1);
@@ -51,7 +44,7 @@ nonlinearity = 0.8;
 typeMod(n) = n;
 
 env(n) = ASR(n);
-ASR(n) = asr(a,s,r,t(n));
+ASR(n) = en.asr(a,s,r,t(n));
 a = 3;
 s = 100;
 r = 2;
@@ -60,9 +53,9 @@ t(n) = gate(n);
 //----------------------- INSTRREVERB -------------------------------
 
 instrReverbMod = _,_ <: *(reverbGain),*(reverbGain),*(1 - reverbGain),*(1 - reverbGain) :
-zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
+re.zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
        with{
-       reverbGain = hslider("v:Reverb/Reverberation Volume(InstrReverb)[acc:1 1 -10 0 10]",0.25,0.05,1,0.01) : smooth(0.999):min(1):max(0.05);
+       reverbGain = hslider("v:Reverb/Reverberation Volume(InstrReverb)[acc:1 1 -10 0 10]",0.25,0.05,1,0.01) : si.smooth(0.999):min(1):max(0.05);
        roomSize = hslider("v:Reverb/Reverberation Room Size(InstrReverb)[acc:1 1 -10 0 10]", 0.5,0.05,2,0.01):min(2):max(0.05);
        rdel = 20;
        f1 = 200;

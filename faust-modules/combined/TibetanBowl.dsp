@@ -8,10 +8,8 @@ declare description "This instrument uses banded waveguide. For more information
 
 //Modification GRAME July 2015
 
-import("music.lib");
-import("instrument.lib");
-import("effect.lib");
-import("filter.lib");
+import("stdfaust.lib");
+instrument = library("instrument.lib"); 
 
 /* ============ DESCRIPTION =============
 
@@ -44,8 +42,8 @@ gate = 0;
 select = hslider("[0]Play[tooltip:0=Bow; 1=Strike] [acc:2 1 -10 0 10]", 0,0,1,1);
 baseGain = 0.5;
 typeModulation = 3;
-nonLinearity = hslider("[2]Modulation[acc:0 1 -10 0 10][tooltip:Nonlinearity factor (value between 0 and 1)]",0.02,0,0.1,0.001):smooth(0.999);
-frequencyMod = hslider("[3]Modulation Frequency[unit:Hz][acc:0 0 -10 0 10]", 220,150,500,0.1):smooth(0.999);
+nonLinearity = hslider("[2]Modulation[acc:0 1 -10 0 10][tooltip:Nonlinearity factor (value between 0 and 1)]",0.02,0,0.1,0.001):si.smooth(0.999);
+frequencyMod = hslider("[3]Modulation Frequency[unit:Hz][acc:0 0 -10 0 10]", 220,150,500,0.1):si.smooth(0.999);
 nonLinAttack = 0.1;
 //==================== MODAL PARAMETERS ================
 
@@ -111,31 +109,31 @@ nlfOrder = 6;
 
 //nonLinearModultor is declared in instrument.lib, it adapts allpassnn from filter.lib
 //for using it with waveguide instruments
-NLFM =  nonLinearModulator((nonLinearity : smooth(0.999)),1,freq,
-typeModulation,(frequencyMod : smooth(0.999)),nlfOrder);
+NLFM =  instrument.nonLinearModulator((nonLinearity : si.smooth(0.999)),1,freq,
+typeModulation,(frequencyMod : si.smooth(0.999)),nlfOrder);
 
 //----------------------- Synthesis parameters computing and functions declaration ----------------------------
 
 //the number of modes depends on the preset being used
 nModes = nMode(preset);
 
-delayLengthBase = SR/freq;
+delayLengthBase = ma.SR/freq;
 
-//delay lengths in number of samples
+//de.delay lengths in number of samples
 delayLength(x) = delayLengthBase/modes(preset,x);
 
-//delay lines
-delayLine(x) = delay(4096,delayLength(x));
+//de.delay lines
+delayLine(x) = de.delay(4096,delayLength(x));
 
-//Filter bank: bandpass filters (declared in instrument.lib)
-radius = 1 - PI*32/SR;
-bandPassFilter(x) = bandPass(freq*modes(preset,x),radius);
+//Filter bank: fi.bandpass filters (declared in instrument.lib)
+radius = 1 - ma.PI*32/ma.SR;
+bandPassFilter(x) = instrument.bandPass(freq*modes(preset,x),radius);
 
 stereoo(periodDuration) = _ <: _,widthdelay : stereopanner
 	   with{
 		W = 0.5;
 		A = 0.6;
-		widthdelay = delay(4096,W*periodDuration/2);
+		widthdelay = de.delay(4096,W*periodDuration/2);
 		stereopanner = _,_ : *(1.0-A), *(A);
 	   };
 stereo = stereoo(delayLengthBase);
@@ -147,9 +145,9 @@ resonance(x) = + : + (excitation(preset,x)*select) : delayLine(x) : *(basegains(
 //----------------------- Reverb (ajout accelerometre 05/2015) ----------------
 
 instrReverbAccel = _,_ <: *(reverbGain),*(reverbGain),*(1 - reverbGain),*(1 - reverbGain) :
-zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
+re.zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
        with{
-       reverbGain = hslider("v:[4]Reverb/[1]Reverberation Volume (InstrReverb) [acc:1 1 -10 0 10]",0.2,0.02,1,0.01) : smooth(0.999) :min(1):max(0.02);
+       reverbGain = hslider("v:[4]Reverb/[1]Reverberation Volume (InstrReverb) [acc:1 1 -10 0 10]",0.2,0.02,1,0.01) : si.smooth(0.999) :min(1):max(0.02);
        roomSize = hslider("v:[4]Reverb/[2]Reverberation Room Size (InstrReverb)[acc:1 1 -10 0 10]", 0.2,0.02,2,0.01):min(2):max(0.02);
        rdel = 20;
        f1 = 200;

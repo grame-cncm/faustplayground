@@ -1,9 +1,8 @@
 declare name "Flappy Flute";
 declare author "ER";// Adapted from "Nonlinear WaveGuide Flute" by Romain Michon (rmichon@ccrma.stanford.edu)
 
-import("music.lib");
-import("instrument.lib");
-import("effect.lib");
+import("stdfaust.lib");
+instrument = library("instrument.lib"); 
 
 /* =============== DESCRIPTION ======================== :
 
@@ -27,9 +26,9 @@ process = vgroup("Flappy Flute", flute : echo <: instrReverbFlute);
 
 //==================== GUI SPECIFICATION ================
 
-freq = hslider("[1]Frequency[unit:Hz][tooltip:Tone frequency][acc:1 1 -10 0 10]", 440,247,1200,1):smooth(0.999);
-pressure = hslider("h:[3]Parameters/ Pressure[style:knob][acc:0 0 -10 0 10]", 1, 0.6, 1, 0.01):smooth(0.999):min(1):max(0.6);
-breathAmp = hslider("h:[3]Parameters/Breath Noise[style:knob][acc:0 1 -10 0 10]", 0.01, 0.01, 0.2, 0.01):smooth(0.999):min(0.2):max(0.01);
+freq = hslider("[1]Frequency[unit:Hz][tooltip:Tone frequency][acc:1 1 -10 0 10]", 440,247,1200,1):si.smooth(0.999);
+pressure = hslider("h:[3]Parameters/ Pressure[style:knob][acc:0 0 -10 0 10]", 1, 0.6, 1, 0.01):si.smooth(0.999):min(1):max(0.6);
+breathAmp = hslider("h:[3]Parameters/Breath Noise[style:knob][acc:0 1 -10 0 10]", 0.01, 0.01, 0.2, 0.01):si.smooth(0.999):min(0.2):max(0.01);
 
 gate = pulsaflute.gate;
 vibratoFreq = 5;//hslider("h:Parameters/Vibrato Frequency[style:knob][unit:Hz]",5,1,15,0.1);
@@ -38,7 +37,7 @@ env1Attack = 0.05;//hslider("h:Parameters/Envelope Attack[unit:s][style:knob][to
 //----------------------- Echo ----------------------------------------
 
 echo = +~ @(22050) *(feedback);
-feedback = hslider("h:[4]Reverberation/Echo Intensity[style:knob][acc:2 0 -10 10 0 0.001] ", 0.001, 0.001, 0.65, 0.001):smooth(0.999):min(0.65):max(0.001);
+feedback = hslider("h:[4]Reverberation/Echo Intensity[style:knob][acc:2 0 -10 10 0 0.001] ", 0.001, 0.001, 0.65, 0.001):si.smooth(0.999):min(0.65):max(0.001);
 
 //----------------------- Pulsar --------------------------------------
 
@@ -48,11 +47,11 @@ pulsaflute = environment{
 gate = phasor_bin(1) :-(0.001):pulsar;
 ratio_env = (0.5);
 fade = (0.5);
-speed = hslider ("h:[2]Instrument/[2]Speed (Granulator)[style:knob][acc:0 1 -10 0 10]", 4,1,16,0.0001):lowpass(1,1);
-proba = hslider ("h:[2]Instrument/[3]Probability (Granulator)[unit:%][style:knob][acc:1 0 -10 0 10]", 88,60,100,1) *(0.01) : lowpass(1,1);
+speed = hslider ("h:[2]Instrument/[2]Speed (Granulator)[style:knob][acc:0 1 -10 0 10]", 4,1,16,0.0001):fi.lowpass(1,1);
+proba = hslider ("h:[2]Instrument/[3]Probability (Granulator)[unit:%][style:knob][acc:1 0 -10 0 10]", 88,60,100,1) *(0.01) : fi.lowpass(1,1);
 
-phasor_bin (init) =  (+(float(speed)/float(SR)) : fmod(_,1.0)) ~ *(init);
-pulsar = _<:(((_)<(ratio_env)):@(100))*((proba)>((_),(noise:abs):latch)); 
+phasor_bin (init) =  (+(float(speed)/float(ma.SR)) : fmod(_,1.0)) ~ *(init);
+pulsar = _<:(((_)<(ratio_env)):@(100))*((proba)>((_),(no.noise:abs):ba.latch)); 
 
 };
 
@@ -85,12 +84,12 @@ env1Release = 0.05;
 nlfOrder = 6; 
 
 //attack - sustain - release envelope for nonlinearity (declared in instrument.lib)
-envelopeMod = asr(nonLinAttack,100,0.1,gate);
+envelopeMod = en.asr(nonLinAttack,100,0.1,gate);
 
 //nonLinearModultor is declared in instrument.lib, it adapts allpassnn from filter.lib 
 //for using it with waveguide instruments
-NLFM =  nonLinearModulator((nonLinearity : smooth(0.999)),envelopeMod,freq,
-     typeModulation,(frequencyMod : smooth(0.999)),nlfOrder);
+NLFM =  instrument.nonLinearModulator((nonLinearity : si.smooth(0.999)),envelopeMod,freq,
+     typeModulation,(frequencyMod : si.smooth(0.999)),nlfOrder);
 
 //----------------------- Synthesis parameters computing and functions declaration ----------------------------
 
@@ -99,35 +98,35 @@ feedBack1 = 0.4;
 feedBack2 = 0.4;
 
 //Delay Lines
-embouchureDelayLength = (SR/freq)/2-2;
-boreDelayLength = SR/freq-2;
-embouchureDelay = fdelay(4096,embouchureDelayLength);
-boreDelay = fdelay(4096,boreDelayLength);
+embouchureDelayLength = (ma.SR/freq)/2-2;
+boreDelayLength = ma.SR/freq-2;
+embouchureDelay = de.fdelay(4096,embouchureDelayLength);
+boreDelay = de.fdelay(4096,boreDelayLength);
 
 //Polinomial
 poly = _ <: _ - _*_*_;
 
 //jet filter is a lowwpass filter (declared in filter.lib)
-reflexionFilter = lowpass(1,2000);
+reflexionFilter = fi.lowpass(1,2000);
 
 //----------------------- Algorithm implementation ----------------------------
 
 //Pressure envelope
-env1 = adsr(env1Attack,env1Decay,90,env1Release,(gate | pressureEnvelope))*pressure*1.1; 
+env1 = en.adsr(env1Attack,env1Decay,90,env1Release,(gate | pressureEnvelope))*pressure*1.1; 
 
 //Global envelope
-env2 = asr(env2Attack,100,env2Release,gate)*0.5;
+env2 = en.asr(env2Attack,100,env2Release,gate)*0.5;
 
 //Vibrato Envelope
-vibratoEnvelope = envVibrato(vibratoBegin,vibratoAttack,100,vibratoRelease,gate)*vibratoGain; 
+vibratoEnvelope = instrument.envVibrato(vibratoBegin,vibratoAttack,100,vibratoRelease,gate)*vibratoGain; 
 
-vibrato = osc(vibratoFreq)*vibratoEnvelope;
+vibrato = os.osc(vibratoFreq)*vibratoEnvelope;
 
-breath = noise*env1;
+breath = no.noise*env1;
 
 flow = env1 + breath*breathAmp + vibrato;
 
-instrReverbFlute = zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
+instrReverbFlute = re.zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
        with{
        roomSize = hslider("h:[4]Reverberation/Reverberation Room Size (InstrReverb)[style:knob][acc:1 1 -30 0 16]", 0.72,0.05,2,0.01):min(2):max(0.05);
        rdel = 20;

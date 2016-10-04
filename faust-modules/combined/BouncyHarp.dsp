@@ -1,9 +1,7 @@
 declare name "Bouncy Harp";
 declare author "ER"; //From Nonlinear EKS by Julius Smith and Romain Michon;
 
-import("music.lib");    // Define SR, delay
-import("instrument.lib");
-import("effect.lib"); 
+import("stdfaust.lib");
 
 /* =============== DESCRIPTION ================= :
 
@@ -32,7 +30,7 @@ capture = _<:capt,_ : select2(B)
 		R = (I-I') <= 0;		// Reset capture when button is pressed
 		D = (+(I):*(R))~_;		// Compute capture duration while button is pressed: 0..NNNN0..MMM
 
-		capt = *(B) : (+ : delay(1048576, D-1)) ~ *(1.0-B) ;
+		capt = *(B) : (+ : de.delay(1048576, D-1)) ~ *(1.0-B) ;
 		};															
 
 //==================== GUI SPECIFICATION ================
@@ -48,7 +46,7 @@ beta = hslider("[4]Picking Position [acc:2 1 -10 0 10]", 0.13, 0.02, 0.5, 0.01);
 t60 = hslider("[5]Resonance (InstrReverb)[acc:1 1 -10 0 10]", 5, 0.5, 10, 0.01);  // -60db decay time (sec)
 
 B = 0.5;
-L = -10 : db2linear;
+L = -10 : ba.db2linear;
 
 //---------------------------------- FREQUENCY TABLE ---------------------------
 freq(0) = 115;
@@ -58,15 +56,15 @@ freq(3) = 160;
 freq(4) = 175;
 
 freq(d)	 = freq(d-5)*(2);
-octave(d) = freq(d) * hslider("[2]Hight[acc:0 0 -10 0 10]", 3, 1, 6, 0.1) : smooth(0.999);	
+octave(d) = freq(d) * hslider("[2]Hight[acc:0 0 -10 0 10]", 3, 1, 6, 0.1) : si.smooth(0.999);	
 	
 
 //==================== SIGNAL PROCESSING ================
 
 //----------------------- noiseburst -------------------------
-// White noise burst (adapted from Faust's karplus.dsp example)
-// Requires music.lib (for noise)
-noiseburst(d,e) = noise : *(trigger(d,e))
+// White no.noise burst (adapted from Faust's karplus.dsp example)
+// Requires music.lib (for no.noise)
+noiseburst(d,e) = no.noise : *(trigger(d,e))
 with{
 upfront(x) = (x-x') > 0;
 decay(n,x) = x - (x>0)/n;
@@ -75,11 +73,11 @@ position(d) = abs(hand - d) < 0.5;
 trigger(d,n) = position(d) : upfront : release(n) : > (0.0);
 };
 
-P(f) = SR/f ; // fundamental period in samples
-Pmax = 4096; // maximum P (for delay-line allocation)
+P(f) = ma.SR/f ; // fundamental period in samples
+Pmax = 4096; // maximum P (for de.delay-line allocation)
 
-ppdel(f) = beta*P(f); // pick position delay
-pickposfilter(f) = ffcombfilter(Pmax,ppdel(f),-1); // defined in filter.lib
+ppdel(f) = beta*P(f); // pick position de.delay
+pickposfilter(f) = fi.ffcombfilter(Pmax,ppdel(f),-1); // defined in filter.lib
 
 excitation(d,e) = noiseburst(d,e) : *(gain); // defined in signal.lib
 
@@ -95,16 +93,16 @@ dampingfilter2(f,x) = rho(f) * (h0 * x' + h1*(x+x''));
 
 loopfilter(f) = dampingfilter2(f); // or dampingfilter1
 
-filtered_excitation(d,e,f) = excitation(d,e) : smooth(pickangle) 
-		    : pickposfilter(f) : levelfilter(L,f); // see filter.lib
+filtered_excitation(d,e,f) = excitation(d,e) : si.smooth(pickangle) 
+		    : pickposfilter(f) : fi.levelfilter(L,f); // see filter.lib
 
 
-stringloop(f) = (+ : fdelay4(Pmax, P(f)-2)) ~ (loopfilter(f));
+stringloop(f) = (+ : de.fdelay4(Pmax, P(f)-2)) ~ (loopfilter(f));
 
 instrReverbHarp = _,_ <: *(reverbGain),*(reverbGain),*(1 - reverbGain),*(1 - reverbGain) : 
-zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
+re.zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
        with{
-       reverbGain = hslider("v:[8]Reverb/ Reverberation Volume (InstrReverb)[acc:1 1 -10 20 0 0.5] ",0.5,0.1,1,0.01) : smooth(0.999);
+       reverbGain = hslider("v:[8]Reverb/ Reverberation Volume (InstrReverb)[acc:1 1 -10 20 0 0.5] ",0.5,0.1,1,0.01) : si.smooth(0.999);
        roomSize = hslider("v:[8]Reverb/ÒReverberation Room Size (InstrReverb)[acc:1 1 -10 0 25]", 0.72,0.01,2,0.01);
        rdel = 20;
        f1 = 200;

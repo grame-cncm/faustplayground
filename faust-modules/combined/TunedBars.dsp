@@ -1,10 +1,8 @@
 declare name "Tuned Bars";
 declare author "ER";//From "Tuned Bar" by Romain Michon (rmichon@ccrma.stanford.edu);
 
-import("music.lib");
-import("effect.lib");
-import("filter.lib");
-import("instrument.lib");
+import("stdfaust.lib");
+instrument = library("instrument.lib"); 
 
 /* =============== DESCRIPTION ================= :
 
@@ -37,9 +35,9 @@ N = 10;
 
 gain = 1;
 gate(n) = position(n) : upfront;
-hand = hslider("[1]Instrument Hand[acc:1 0 -10 0 10]", 5, 0, N, 1):smooth(0.999):min(N):max(0):int:automat(B, 15, 0.0);
-B = hslider("[3]Speed[style:knob][acc:0 1 -10 0 10]", 360, 120, 720, 60): smooth(0.99) : min(720) : max(120) : int;
-hight = hslider("[2]Hight[acc:0 1 -10 0 10]", 4, 0.5, 8, 0.1);//:smooth(0.999);
+hand = hslider("[1]Instrument Hand[acc:1 0 -10 0 10]", 5, 0, N, 1):si.smooth(0.999):min(N):max(0):int:ba.automat(B, 15, 0.0);
+B = hslider("[3]Speed[style:knob][acc:0 1 -10 0 10]", 360, 120, 720, 60): si.smooth(0.99) : min(720) : max(120) : int;
+hight = hslider("[2]Hight[acc:0 1 -10 0 10]", 4, 0.5, 8, 0.1);//:si.smooth(0.999);
 octave(d) = freq(d)*(hight);
 position(n) = abs(hand - n) < 0.5;
 upfront(x) = x>x';
@@ -90,17 +88,17 @@ nModes = nMode(preset);
 tableOffset = 0;
 tableSlope = 10 - (9*bowPressure);
 
-delayLengthBase(f) = SR/f;
+delayLengthBase(f) = ma.SR/f;
 
-//delay lengths in number of samples
+//de.delay lengths in number of samples
 delayLength(x,f) = delayLengthBase(f)/modes(preset,x);
 
-//delay lines
-delayLine(x,f) = delay(4096,delayLength(x,f));
+//de.delay lines
+delayLine(x,f) = de.delay(4096,delayLength(x,f));
 
-//Filter bank: bandpass filters (declared in instrument.lib)
-radius = 1 - PI*32/SR;
-bandPassFilter(x,f) = bandPass(f*modes(preset,x),radius);
+//Filter bank: fi.bandpass filters (declared in instrument.lib)
+radius = 1 - ma.PI*32/ma.SR;
+bandPassFilter(x,f) = instrument.bandPass(f*modes(preset,x),radius);
 
 //----------------------- Algorithm implementation ----------------------------
 
@@ -108,15 +106,15 @@ bandPassFilter(x,f) = bandPass(f*modes(preset,x),radius);
 resonance(x,f,g) = + : + (excitation(preset,x,g)*select) : delayLine(x,f) : *(basegains(preset,x)) : bandPassFilter(x,f);
 
 echo = +~(@(22050)*(feedback));
-//feedback = hslider("Echo Intensity (Feedback)[acc:1 1 -5 0 12]", 0.1, 0.05, 0.65, 0.01):smooth(0.999):min(0.05):max(0.65);
+//feedback = hslider("Echo Intensity (Feedback)[acc:1 1 -5 0 12]", 0.1, 0.05, 0.65, 0.01):si.smooth(0.999):min(0.05):max(0.65);
 feedback = 0.8;
 drywet(x,y) 	= (1-c)*x + c*y
 				with {
-					c = hslider("[4]Echo Intensity[style:knob][unit:%][acc:1 1 -8 0 10]", 20,0,99,0.01)*(0.01):smooth(0.999):min(0.99):max(0.001);
+					c = hslider("[4]Echo Intensity[style:knob][unit:%][acc:1 1 -8 0 10]", 20,0,99,0.01)*(0.01):si.smooth(0.999):min(0.99):max(0.001);
 					};
 					
 //instrReverb from instrument.lib
-instrReverbChime = zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+       
+instrReverbChime = re.zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+       
 	with{
        roomSize = hslider("h:[5]Reverb/Reverberation Room Size (InstrReverb)[style:knob][acc:1 1 -10 0 12]", 0.2,0.1,1.7,0.01):min(1.7):max(0.1);
        rdel = 20;

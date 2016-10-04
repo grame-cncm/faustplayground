@@ -9,10 +9,8 @@ declare reference "https://ccrma.stanford.edu/~jos/pasp/Woodwinds.html";
 
 //Modification Grame July 2015
 
-import("music.lib");
-import("filter.lib");
-import("effect.lib");
-import("instrument.lib");
+import("stdfaust.lib");
+instrument = library("instrument.lib"); 
 
 /* =============== DESCRIPTION ================= :
 
@@ -26,7 +24,7 @@ import("instrument.lib");
  ==> Downward = to reach lower frequencies
  ==> Upward = To 'through' the sound in the air = vanishes, comes back when Tilt
 - Rocking = from full sound to breathy sound
-- Shaking in right position = noise impulses
+- Shaking in right position = no.noise impulses
 
 */
 
@@ -47,7 +45,7 @@ process = vgroup("CLARINET",
 	
 //==================== GUI SPECIFICATION ================
 
-freq = hslider("h:[2]Instrument/Frequency[unit:Hz][tooltip:Tone frequency][acc:1 1 -14 0 12]", 440,110,1300,0.01):smooth(0.999);
+freq = hslider("h:[2]Instrument/Frequency[unit:Hz][tooltip:Tone frequency][acc:1 1 -14 0 12]", 440,110,1300,0.01):si.smooth(0.999);
 gain = 1;
 gate = hslider("[1]ON/OFF (ASR Envelope)",0,0,1,1);
 
@@ -69,36 +67,36 @@ envelopeRelease = 0.1;
 
 //----------------------- Synthesis PARAMETERS computing and functions declaration ----------------------------
 
-//reed table PARAMETERS
+//instrument.reed table PARAMETERS
 reedTableOffset = 0.7;
 reedTableSlope = -0.44 + (0.26*reedStiffness);
 
-//the reed function is declared in INSTRUMENT.lib
-reedTable = reed(reedTableOffset,reedTableSlope);
+//the instrument.reed function is declared in INSTRUMENT.lib
+reedTable = instrument.reed(reedTableOffset,reedTableSlope);
 
-//delay line with a length adapted in function of the order of nonlinear filter
-delayLength = SR/freq*0.5 - 1.5;// - (nlfOrder*nonLinearity)*(typeModulation < 2);
-delayLine = fdelay(4096,delayLength);
+//de.delay line with a length adapted in function of the order of nonlinear filter
+delayLength = ma.SR/freq*0.5 - 1.5;// - (nlfOrder*nonLinearity)*(typeModulation < 2);
+delayLine = de.fdelay(4096,delayLength);
 
 //one zero filter used as a allpass: pole is set to -1
-filter = oneZero0(0.5,0.5);
+filter = instrument.oneZero0(0.5,0.5);
 
 //----------------------- Algorithm implementation ----------------------------
 
-//Breath pressure + vibrato + breath noise + envelope (Attack / Decay / Sustain / Release)
-envelope = adsr(envelopeAttack,envelopeDecay,100,envelopeRelease,gate)*pressure*0.9;
+//Breath pressure + vibrato + breath no.noise + envelope (Attack / Decay / Sustain / Release)
+envelope = en.adsr(envelopeAttack,envelopeDecay,100,envelopeRelease,gate)*pressure*0.9;
 
-vibrato = osc(vibratoFreq)*vibratoGain*
-	envVibrato(0.1*2*vibratoAttack,0.9*2*vibratoAttack,100,vibratoRelease,gate);
-breath = envelope + envelope*noise*noiseGain;
+vibrato = os.osc(vibratoFreq)*vibratoGain*
+	instrument.envVibrato(0.1*2*vibratoAttack,0.9*2*vibratoAttack,100,vibratoRelease,gate);
+breath = envelope + envelope*no.noise*noiseGain;
 breathPressure = breath + breath*vibrato;
 
 //----------------------- INSTRREVERB ----------------------------
 
 instrReverbCla = _,_ <: *(reverbGain),*(reverbGain),*(1 - reverbGain),*(1 - reverbGain) : 
-zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
+re.zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
        with{
-       reverbGain = hslider("h:[4]Reverb/ Reverberation Volume (InstrReverb)[style:knob][acc:1 1 -15 0 15]", 0.137,0.05,1,0.01) :smooth(0.999):min(1):max(0.05);
+       reverbGain = hslider("h:[4]Reverb/ Reverberation Volume (InstrReverb)[style:knob][acc:1 1 -15 0 15]", 0.137,0.05,1,0.01) :si.smooth(0.999):min(1):max(0.05);
        roomSize = hslider("h:[4]Reverb/Reverberation Room Size (InstrReverb)[style:knob][acc:1 1 -15 0 15]", 0.45,0.05,2,0.01):min(2):max(0.05);   
        rdel = 20;
        f1 = 200;
