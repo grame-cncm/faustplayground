@@ -2008,7 +2008,7 @@ var ModuleClass = (function () {
     ModuleClass.prototype.setFaustInterfaceControles = function () {
         var _this = this;
         this.moduleView.fTitle.textContent = this.moduleFaust.fName;
-        var moduleFaustInterface = new FaustInterfaceControler(function (faustInterface) { _this.interfaceSliderCallback(faustInterface); }, function (adress, value) { _this.moduleFaust.fDSP.setValue(adress, value); });
+        var moduleFaustInterface = new FaustInterfaceControler(function (faustInterface) { _this.interfaceSliderCallback(faustInterface); }, function (adress, value) { _this.moduleFaust.fDSP.setParamValue(adress, value); });
         this.moduleControles = moduleFaustInterface.parseFaustJsonUI(JSON.parse(this.moduleFaust.fDSP.json()).ui, this);
     };
     // Create FaustInterfaceControler, set its callback and add its AccelerometerSlider
@@ -2045,12 +2045,12 @@ var ModuleClass = (function () {
     // set DSP value to all FaustInterfaceControlers
     ModuleClass.prototype.setDSPValue = function () {
         for (var i = 0; i < this.moduleControles.length; i++) {
-            this.moduleFaust.fDSP.setValue(this.moduleControles[i].itemParam.address, this.moduleControles[i].value);
+            this.moduleFaust.fDSP.setParamValue(this.moduleControles[i].itemParam.address, this.moduleControles[i].value);
         }
     };
     // set DSP value to specific FaustInterfaceControlers
     ModuleClass.prototype.setDSPValueCallback = function (address, value) {
-        this.moduleFaust.fDSP.setValue(address, value);
+        this.moduleFaust.fDSP.setParamValue(address, value);
     };
     // Updates Faust Code with new accelerometer metadata
     ModuleClass.prototype.updateCodeFaust = function (details) {
@@ -2082,7 +2082,7 @@ var ModuleClass = (function () {
         if (output)
             output.textContent = "" + val + " " + faustControler.unit;
         // 	Search for DSP then update the value of its parameter.
-        this.moduleFaust.fDSP.setValue(text, val);
+        this.moduleFaust.fDSP.setParamValue(text, val);
     };
     ModuleClass.prototype.interfaceButtonCallback = function (faustControler, val) {
         var input = faustControler.faustInterfaceView.button;
@@ -2093,7 +2093,7 @@ var ModuleClass = (function () {
         if (output)
             output.textContent = "" + val + " " + faustControler.unit;
         // 	Search for DSP then update the value of its parameter.
-        this.moduleFaust.fDSP.setValue(text, val.toString());
+        this.moduleFaust.fDSP.setParamValue(text, val.toString());
     };
     // Save graphical parameters of a Faust Node
     ModuleClass.prototype.saveInterfaceParams = function () {
@@ -2106,7 +2106,7 @@ var ModuleClass = (function () {
     };
     ModuleClass.prototype.recallInterfaceParams = function () {
         for (var key in this.fModuleInterfaceParams)
-            this.moduleFaust.fDSP.setValue(key, this.fModuleInterfaceParams[key]);
+            this.moduleFaust.fDSP.setParamValue(key, this.fModuleInterfaceParams[key]);
     };
     ModuleClass.prototype.getInterfaceParams = function () {
         return this.fModuleInterfaceParams;
@@ -3206,7 +3206,7 @@ var Scene = (function () {
                     for (var j = 0; j < params.length; j++) {
                         var jsonSlider = new JsonSliderSave();
                         jsonSlider.path = params[j];
-                        jsonSlider.value = this.fModuleList[i].moduleFaust.getDSP().getValue(params[j]);
+                        jsonSlider.value = this.fModuleList[i].moduleFaust.getDSP().getParamValue(params[j]);
                         jsonParams.sliders.push(jsonSlider);
                     }
                 }
