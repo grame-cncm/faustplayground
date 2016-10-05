@@ -45,14 +45,12 @@ class Scene {
 
 
 
-    constructor(identifiant: string, compileFaust: (compileFaust: CompileFaust) => void, sceneView?: SceneView) {
+    constructor(compileFaust: (compileFaust: CompileFaust) => void, sceneView?: SceneView) {
         this.compileFaust = compileFaust;
         this.sceneView = new SceneView();
-        this.sceneView.initNormalScene(this);
         this.integrateSceneInBody();
         this.integrateOutput();
         document.addEventListener("unstylenode", () => { this.unstyleNode() });
-
     }
 
 
