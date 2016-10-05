@@ -1,8 +1,8 @@
 declare name "C Major Tuned Bars";
 declare author "ER";//From "Tuned Bar" by Romain Michon (rmichon@ccrma.stanford.edu);
 
-import("music.lib");
-import("instrument.lib");
+import("stdfaust.lib");
+instrument = library("instrument.lib");
 
 /* =============== DESCRIPTION ================= :
 
@@ -28,8 +28,8 @@ N = 24;
 
 gain = 0.8;
 gate(n) = position(n) : upfront;
-hand = hslider("[1]Instrument Hand[acc:0 1 -10 0 10]", 12, 0, N, 1):smooth(0.999):min(N):max(0):int:automat(B, 15, 0.0);
-B = hslider("[2]Speed[style:knob][acc:0 1 -10 0 10]", 480, 180, 720, 60): smooth(0.99) : min(720) : max(180) : int;
+hand = hslider("[1]Instrument Hand[acc:0 1 -10 0 10]", 12, 0, N, 1):si.smooth(0.999):min(N):max(0):int:ba.automat(B, 15, 0.0);
+B = hslider("[2]Speed[style:knob][acc:0 1 -10 0 10]", 480, 180, 720, 60): si.smooth(0.99) : min(720) : max(180) : int;
 position(n) = abs(hand - n) < 0.5;
 upfront(x) = x>x';
 
@@ -76,17 +76,17 @@ excitation(2,3,g) = 1*gain*g/nMode(2);
 //the number of modes depends on the preset being used
 nModes = nMode(preset);
 
-delayLengthBase(f) = SR/f;
+delayLengthBase(f) = ma.SR/f;
 
 //delay lengths in number of samples
 delayLength(x,f) = delayLengthBase(f)/modes(preset,x);
 
 //delay lines
-delayLine(x,f) = delay(4096,delayLength(x,f));
+delayLine(x,f) = de.delay(4096,delayLength(x,f));
 
-//Filter bank: bandpass filters (declared in instrument.lib)
-radius = 1 - PI*32/SR;
-bandPassFilter(x,f) = bandPass(f*modes(preset,x),radius);
+//Filter bank: fi.bandpass filters (declared in instrument.lib)
+radius = 1 - ma.PI*32/ma.SR;
+bandPassFilter(x,f) = instrument.bandPass(f*modes(preset,x),radius);
 
 //----------------------- Algorithm implementation ----------------------------
 

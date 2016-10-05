@@ -2,9 +2,8 @@ declare name "Whistles";
 declare author "ER";
 declare version "1.0";
 
-import("music.lib");
-import("filter.lib");
-import("instrument.lib");
+import("stdfaust.lib");
+instrument = library("instrument.lib"); 
 
 /* ============ Description ============== :
 
@@ -25,18 +24,18 @@ whistle(f,n) =  BP(f,n) : EQ(f,n) :  @(10 + (12000*n)) <:Reson(f,0),_*(1.5):>  *
 
 nOise = environment{
 
-// white noise generator:
+// white no.noise generator:
 	random  = +(12345)~*(1103515245);
 	white   = random/2147483647.0;
 
-//pink noise filter:
+//pink no.noise filter:
 	p	= f : (+ ~ g)
 		with {
 		f(x)	= 0.04957526213389*x - 0.06305581334498*x' + 0.01483220320740*x'';
 		g(x)	= 1.80116083982126*x - 0.80257737639225*x';
 		};
 
-//pink noise generator:
+//pink no.noise generator:
 	pink = (white : p);
 	};
 
@@ -44,33 +43,33 @@ nOise = environment{
 
 //gain = 1 - (Q * 0.1);
 
-freq(0) = hslider("[1]Frequency 0[unit:Hz][acc:2 1 -10 0 10]", 110, 50, 220, 0.01):smooth(0.999);
-freq(1) = hslider("[2]Frequency 1[unit:Hz][acc:2 1 -10 0 10]", 400, 220, 660, 0.01):smooth(0.999);
-freq(2) = hslider("[3]Frequency 2[unit:Hz][acc:2 1 -10 0 10]", 820, 660, 1100, 0.01):smooth(0.999);
+freq(0) = hslider("[1]Frequency 0[unit:Hz][acc:2 1 -10 0 10]", 110, 50, 220, 0.01):si.smooth(0.999);
+freq(1) = hslider("[2]Frequency 1[unit:Hz][acc:2 1 -10 0 10]", 400, 220, 660, 0.01):si.smooth(0.999);
+freq(2) = hslider("[3]Frequency 2[unit:Hz][acc:2 1 -10 0 10]", 820, 660, 1100, 0.01):si.smooth(0.999);
 
-gain(n) = hslider("[5]Volume %n[style:knob][acc:%n 0 -10 0 20]", 0.2, 0, 2, 0.001):smooth(0.999);
+gain(n) = hslider("[5]Volume %n[style:knob][acc:%n 0 -10 0 20]", 0.2, 0, 2, 0.001):si.smooth(0.999);
 
 hight(f,n) = freq(f)* (n+1);
 level = 20;
 Lowf(f,n) = hight(f,n) - Q;
 Highf(f,n) = hight(f,n) + Q;
 
-Q = 2 : smooth(0.999);//hslider("Q - Filter Bandwidth[style:knob][unit:Hz][tooltip: Band width = 2 * Frequency]",2.5,1,10,0.0001):smooth(0.999);
+Q = 2 : si.smooth(0.999);//hslider("Q - Filter Bandwidth[style:knob][unit:Hz][tooltip: Band width = 2 * Frequency]",2.5,1,10,0.0001):si.smooth(0.999);
 
-BP(f,n) = bandpass(1, Lowf(f,n), Highf(f,n));
-EQ(f,n) = peak_eq(level,hight(f,n),Q) : lowpass(1, 6000);
-Reson(f,n) = resonbp(hight(f,n),Q,1) : lowpass(1,3000);
+BP(f,n) = fi.bandpass(1, Lowf(f,n), Highf(f,n));
+EQ(f,n) = fi.peak_eq(level,hight(f,n),Q) : fi.lowpass(1, 6000);
+Reson(f,n) = fi.resonbp(hight(f,n),Q,1) : fi.lowpass(1,3000);
 
 //----------------- VIBRATO --------------------//
 
-vibrato = vibratoGain * osc(vibratoFreq) + (1-vibratoGain);
-vibratoGain = 0.17;//hslider("Vibrato Volume[style:knob][acc:1 0 -10 0 10]", 0.1, 0.05, 0.5, 0.01) : smooth(0.999);
-vibratoFreq = vfreq; //hslider("Vibrato Frequency[unit:Hz][acc:0 0 -10 0 12]", 5, 0, 10, 0.001) : smooth(0.999);
+vibrato = vibratoGain * os.osc(vibratoFreq) + (1-vibratoGain);
+vibratoGain = 0.17;//hslider("Vibrato Volume[style:knob][acc:1 0 -10 0 10]", 0.1, 0.05, 0.5, 0.01) : si.smooth(0.999);
+vibratoFreq = vfreq; //hslider("Vibrato Frequency[unit:Hz][acc:0 0 -10 0 12]", 5, 0, 10, 0.001) : si.smooth(0.999);
 
 //--------------------------- Random Frequency ---------------------------
 
-vfreq = pulsawhistle.gate : randfreq : smooth(0.99) : lowpass (1, 3000);
-randfreq(g) = noise : sampleAndhold(sahgate(g))*(10)
+vfreq = pulsawhistle.gate : randfreq : si.smooth(0.99) : fi.lowpass (1, 3000);
+randfreq(g) = no.noise : sampleAndhold(sahgate(g))*(10)
 with{
 sampleAndhold(t) = select2(t) ~_;
 sahgate(g) = g : upfront : counter -(3) <=(0);
@@ -87,16 +86,16 @@ gate = phasor_bin(1) :-(0.001):pulsar;
 ratio_env = (0.5);
 fade = (0.5); // min > 0 pour eviter division par 0
 speed = 0.5;
-proba = 0.9; //hslider ("h:Pulse/Probability[unit:%][style:knob][acc:1 1 -10 0 10]", 88,75,100,1) *(0.01):lowpass(1,1);
+proba = 0.9; //hslider ("h:Pulse/Probability[unit:%][style:knob][acc:1 1 -10 0 10]", 88,75,100,1) *(0.01):fi.lowpass(1,1);
 
-phasor_bin (init) =  (+(float(speed)/float(SR)) : fmod(_,1.0)) ~ *(init);
-pulsar = _<:(((_)<(ratio_env)):@(100))*((proba)>((_),(noise:abs):latch));
+phasor_bin (init) =  (+(float(speed)/float(ma.SR)) : fmod(_,1.0)) ~ *(init);
+pulsar = _<:(((_)<(ratio_env)):@(100))*((proba)>((_),(no.noise:abs):ba.latch));
 
 };
 
 //----------------------- Vibrato Envelope ----------------------------
 
-vibratoEnv(n) = (envVibrato(b,a,s,r,t(n)))
+vibratoEnv(n) = (instrument.envVibrato(b,a,s,r,t(n)))
 	with{
 		b = 0.25;
 		a = 0.1;
@@ -169,8 +168,8 @@ allpasstuningL4 = 225;
 //dampSlider      = hslider("Damp",0.5, 0, 1, 0.025)*scaledamp;
 
 dampSlider 		= 0.7*scaledamp;
-roomsizeSlider  = hslider("[7]Reverberation Room Size (Freeverb)[style:knob][acc:1 1 -10 0 13]", 0.5, 0.1, 0.9, 0.025) : smooth(0.999) : min(0.9) :max(0.1) *scaleroom + offsetroom;
-wetSlider       = hslider("[6]Reverberation Intensity (Freeverb)[style:knob][acc:1 1 -10 0 15]", 0.3333, 0.1, 0.9, 0.025) : smooth(0.999) : min(0.9) :max(0.1);
+roomsizeSlider  = hslider("[7]Reverberation Room Size (Freeverb)[style:knob][acc:1 1 -10 0 13]", 0.5, 0.1, 0.9, 0.025) : si.smooth(0.999) : min(0.9) :max(0.1) *scaleroom + offsetroom;
+wetSlider       = hslider("[6]Reverberation Intensity (Freeverb)[style:knob][acc:1 1 -10 0 15]", 0.3333, 0.1, 0.9, 0.025) : si.smooth(0.999) : min(0.9) :max(0.1);
 combfeed        = roomsizeSlider;
 
 

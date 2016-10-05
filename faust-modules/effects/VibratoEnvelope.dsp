@@ -1,7 +1,6 @@
 declare name "Vibrato Envelope"; //instrument.lib
-import("filter.lib");
-import("effect.lib");
-import("instrument.lib");
+import("stdfaust.lib");
+instrument = library("instrument.lib");
 
 /* =========== DESCRIPTION ============
 
@@ -14,12 +13,12 @@ import("instrument.lib");
 
 process = vgroup("Vibrato",vibrato);
 
-vibrato = _*((vibratoGain*osc(vibratoFreq)+(1-vibratoGain))*vibratoEnv);
+vibrato = _*((vibratoGain*os.osc(vibratoFreq)+(1-vibratoGain))*vibratoEnv);
 
-vibratoGain = hslider("Vibrato Intensity[style:knob][acc:1 0 -10 0 10]", 0.1, 0.05, 0.4, 0.01) : smooth(0.999):min(0.5):max(0.05);
-vibratoFreq = hslider("Vibrato Frequency[unit:Hz][acc:0 1 -10 0 10]", 5, 0, 10, 0.001) : smooth(0.999);
+vibratoGain = hslider("Vibrato Intensity[style:knob][acc:1 0 -10 0 10]", 0.1, 0.05, 0.4, 0.01) : si.smooth(0.999):min(0.5):max(0.05);
+vibratoFreq = hslider("Vibrato Frequency[unit:Hz][acc:0 1 -10 0 10]", 5, 0, 10, 0.001) : si.smooth(0.999);
 
-vibratoEnv =  _ : *(envVibrato(b,a,s,r,t)) : _
+vibratoEnv =  _ : *(instrument.envVibrato(b,a,s,r,t)) : _
 	with{
 		b = 0.25;
 		a = 1;

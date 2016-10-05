@@ -6,8 +6,8 @@ declare version "1.0";
 declare licence "STK-4.3"; // Synthesis Tool Kit 4.3 (MIT style license);
 declare description "This instrument uses banded waveguide. For more information, see Essl, G. and Cook, P. Banded Waveguides: Towards Physical Modelling of Bar Percussion Instruments, Proceedings of the 1999 International Computer Music Conference.";
 
-import("music.lib");
-import("instrument.lib");
+import("stdfaust.lib");
+instrument = library("instrument.lib"); 
 
 /* ============ DESCRIPTION ==============
 
@@ -108,8 +108,8 @@ nlfOrder = 6;
 
 //nonLinearModultor is declared in instrument.lib, it adapts allpassnn from filter.lib
 //for using it with waveguide instruments
-NLFM =  nonLinearModulator((nonLinearity : smooth(0.999)),1,freq,
-typeModulation,(frequencyMod : smooth(0.999)),nlfOrder);
+NLFM =  instrument.nonLinearModulator((nonLinearity : si.smooth(0.999)),1,freq,
+typeModulation,(frequencyMod : si.smooth(0.999)),nlfOrder);
 
 //----------------------- Synthesis parameters computing and functions declaration ----------------------------
 
@@ -120,17 +120,17 @@ nModes = nMode(preset);
 tableOffset = 0;
 tableSlope = 10 - (9*bowPressure);
 
-delayLengthBase = SR/freq;
+delayLengthBase = ma.SR/freq;
 
-//delay lengths in number of samples
+//de.delay lengths in number of samples
 delayLength(x) = delayLengthBase/modes(preset,x);
 
-//delay lines
-delayLine(x) = delay(4096,delayLength(x));
+//de.delay lines
+delayLine(x) = de.delay(4096,delayLength(x));
 
-//Filter bank: bandpass filters (declared in instrument.lib)
-radius = 1 - PI*32/SR;
-bandPassFilter(x) = bandPass(freq*modes(preset,x),radius);
+//Filter bank: fi.bandpass filters (declared in instrument.lib)
+radius = 1 - ma.PI*32/ma.SR;
+bandPassFilter(x) = instrument.bandPass(freq*modes(preset,x),radius);
 
 //Delay lines feedback for bow table lookup control
 baseGainApp = 0.8999999999999999 + (0.1*baseGain);
@@ -139,7 +139,7 @@ velocityInput = velocityInputApp + _*baseGainApp,par(i,(nModes-1),(_*baseGainApp
 
 //Bow velocity is controled by an ADSR envelope
 maxVelocity = 0.03 + 0.1*gain;
-bowVelocity = maxVelocity*adsr(0.02,0.005,90,0.01,gate);
+bowVelocity = maxVelocity*en.adsr(0.02,0.005,90,0.01,gate);
 
 stereoo(periodDuration) = _ <: _,widthdelay : stereopanner
 	   with{
@@ -147,7 +147,7 @@ stereoo(periodDuration) = _ <: _,widthdelay : stereopanner
 		W = 0.5;
 		//A = hslider("v:Spat/pan angle", 0.6, 0, 1, 0.01);
 		A = 0.6;
-		widthdelay = delay(4096,W*periodDuration/2);
+		widthdelay = de.delay(4096,W*periodDuration/2);
 		stereopanner = _,_ : *(1.0-A), *(A);
 	   };
 stereo = stereoo(delayLengthBase);
@@ -160,9 +160,9 @@ resonance(x) = + : + (excitation(preset,x)*select) : delayLine(x) : *(basegains(
 //----------------------- Reverb (ajout accelerometre 05/2015) ----------------
 
 instrReverbAccel = _,_ <: *(reverbGain),*(reverbGain),*(1 - reverbGain),*(1 - reverbGain) :
-zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
+re.zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
        with{
-       reverbGain = hslider("v:[4]Reverb/[1]Reverberation Volume (InstrReverb)[acc:1 1 -10 0 10]",0.2,0.02,1,0.01) : smooth(0.999):min(1):max(0.02);
+       reverbGain = hslider("v:[4]Reverb/[1]Reverberation Volume (InstrReverb)[acc:1 1 -10 0 10]",0.2,0.02,1,0.01) : si.smooth(0.999):min(1):max(0.02);
        roomSize = hslider("v:[4]Reverb/[2]Reverberation Room Size (InstrReverb)[acc:1 1 -10 0 10]", 0.2,0.02,1.3,0.01) : min(1.3) :  max(0.02);
        rdel = 20;
        f1 = 200;

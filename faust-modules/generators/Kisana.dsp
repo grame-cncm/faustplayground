@@ -17,12 +17,12 @@ declare author  "Yann Orlarey";
 
 */
 
-import("music.lib"); 
+import("stdfaust.lib");
 
 KEY = 60;	// basic midi key
 NCY = 15; 	// note cycle length
 CCY = 15;	// control cycle length
-BPS = 360;	// general tempo (beat per sec)
+BPS = 360;	// general tempo (ba.beat per sec)
 
 
 process = kisana;    
@@ -36,8 +36,8 @@ process = kisana;
 kisana = vgroup("Kisana", harpe(C,11,48), harpe(C,11,60), (harpe(C,11,72) : *(1.5), *(1.5)) 
 	:>*(l))
 	with {
-		l = -20 : db2linear;//hslider("[1]Volume",-20, -60, 0, 0.01) : db2linear;
-		C = hslider("[2]Brightness[acc:0 1 -10 0 10]", 0.2, 0, 1, 0.01) : automat(BPS, CCY, 0.0);
+		l = -20 : ba.db2linear;//hslider("[1]Volume",-20, -60, 0, 0.01) : ba.db2linear;
+		C = hslider("[2]Brightness[acc:0 1 -10 0 10]", 0.2, 0, 1, 0.01) : ba.automat(BPS, CCY, 0.0);
 	};
  
 
@@ -56,15 +56,13 @@ harpe(C,N,b) = 	hand(b) <: par(i, N, position(i+1)
 				 	:> _,_
 	with {
 		att  = hslider("[3]Resonance[acc:2 1 -10 0 12]", 4, 0.1, 10, 0.01); 
-		hand(48) = vslider("h:[1]Instrument Hands/1 (Note %b)[unit:pk][acc:1 0 -10 0 14]", 0, 0, N, 1) : int : automat(120, CCY, 0.0);
-		hand(60) = vslider("h:[1]Instrument Hands/2 (Note %b)[unit:pk][acc:1 0 -10 0 14]", 2, 0, N, 1) : int : automat(240, CCY, 0.0);
-		hand(72) = vslider("h:[1]Instrument Hands/3 (Note %b)[unit:pk][acc:1 0 -10 0 10]", 4, 0, N, 1) : int : automat(480, CCY, 0.0);
-		//lvl  = vslider("h:loop/level", 0, 0, 6, 1) : int : automat(BPS, CCY, 0.0) : -(6) : db2linear; 
+		hand(48) = vslider("h:[1]Instrument Hands/1 (Note %b)[unit:pk][acc:1 0 -10 0 14]", 0, 0, N, 1) : int : ba.automat(120, CCY, 0.0);
+		hand(60) = vslider("h:[1]Instrument Hands/2 (Note %b)[unit:pk][acc:1 0 -10 0 14]", 2, 0, N, 1) : int : ba.automat(240, CCY, 0.0);
+		hand(72) = vslider("h:[1]Instrument Hands/3 (Note %b)[unit:pk][acc:1 0 -10 0 10]", 4, 0, N, 1) : int : ba.automat(480, CCY, 0.0);
+		//lvl  = vslider("h:loop/level", 0, 0, 6, 1) : int : ba.automat(BPS, CCY, 0.0) : -(6) : ba.db2linear; 
 		lvl = 1;
 		pan(p) = _ <: *(sqrt(1-p)), *(sqrt(p));
 		position(a,x) = abs(x - a) < 0.5;
-		db2linear(x)	= pow(10, x/20.0);
-
 	};
 
 
@@ -97,7 +95,7 @@ Penta(key) = environment {
 // or	  button("play") : string(440Hz, 4s, 1.0)
 //-----------------------------------------------------------------------
 
-string(coef, freq, t60, level, trig) = noise*level
+string(coef, freq, t60, level, trig) = no.noise*level
 							: *(trig : trigger(freq2samples(freq)))
 							: resonator(freq2samples(freq), att)
 	with {

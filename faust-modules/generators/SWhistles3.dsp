@@ -11,9 +11,8 @@ declare version "1.0";
 
 */
 
-import("music.lib");
-import("filter.lib");
-import("instrument.lib");
+import("stdfaust.lib");
+instrument = library("instrument.lib");
 
 
 //----------------- INSTRUMENT ------------------//
@@ -26,7 +25,7 @@ whistle(n) =  BP(n) : EQ(n) :  @(10 + (12000*n)) <:Reson(0),_*(1.5):> *(Env)*gai
 
 nOise = environment{
 
-// white noise generator:
+// white no.noise generator:
 	random  = +(12345)~*(1103515245);
 	white   = random/2147483647.0;
 	};
@@ -35,22 +34,22 @@ nOise = environment{
 
 
 
-freq = hslider("[2]Frequency[unit:Hz][acc:1 1 -10 0 10]", 820, 660, 1100, 0.01):smooth(0.999);
-gain(n) = hslider("[3]Volume %n[style:knob][acc:%n 0 -10 15 0 0.5]", 0.5, 0, 2, 0.001):smooth(0.999);
+freq = hslider("[2]Frequency[unit:Hz][acc:1 1 -10 0 10]", 820, 660, 1100, 0.01):si.smooth(0.999);
+gain(n) = hslider("[3]Volume %n[style:knob][acc:%n 0 -10 15 0 0.5]", 0.5, 0, 2, 0.001):si.smooth(0.999);
 
 hight(n) = freq * (n+1);
 level = 20;
 Lowf(n) = hight(n) - Q;
 Highf(n) = hight(n) + Q;
 
-Q = 1.5 : smooth(0.999);//hslider("Q - Filter Bandwidth[style:knob][unit:Hz][tooltip: Band width = 2 * Frequency]",2.5,1,10,0.0001):smooth(0.999);
+Q = 1.5 : si.smooth(0.999);//hslider("Q - Filter Bandwidth[style:knob][unit:Hz][tooltip: Band width = 2 * Frequency]",2.5,1,10,0.0001):si.smooth(0.999);
 
-BP(n) = bandpass(1, Lowf(n), Highf(n));
-EQ(n) = peak_eq(level,hight(n),Q) : lowpass(1, 6000);
-Reson(n) = resonbp(hight(n),Q,1) : lowpass(1,3000);
+BP(n) = fi.bandpass(1, Lowf(n), Highf(n));
+EQ(n) = fi.peak_eq(level,hight(n),Q) : fi.lowpass(1, 6000);
+Reson(n) = fi.resonbp(hight(n),Q,1) : fi.lowpass(1,3000);
 
 
-Env = (envVibrato(b,a,s,r,t))
+Env = (instrument.envVibrato(b,a,s,r,t))
 	with{
 		b = 0.25; 
 		a = 0.1;

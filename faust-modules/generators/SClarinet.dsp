@@ -9,8 +9,8 @@ declare reference "https://ccrma.stanford.edu/~jos/pasp/Woodwinds.html";
 
 //Modification Grame July 2015
 
-import("music.lib");
-import("instrument.lib");
+import("stdfaust.lib");
+instrument = library("instrument.lib");
 
 /* =============== DESCRIPTION ================= :
 
@@ -24,7 +24,7 @@ import("instrument.lib");
  ==> Downward = to reach lower frequencies
  ==> Upward = To 'through' the sound in the air = vanishes, comes back when Tilt
 - Rocking = from full sound to breathy sound
-- Shaking in right position = noise impulses
+- Shaking in right position = no.noise impulses
 
 */
 
@@ -46,7 +46,7 @@ process = vgroup("CLARINET",
 //==================== GUI SPECIFICATION ================
 
 
-freq = hslider("h:[2]Instrument/Frequency[unit:Hz][tooltip:Tone frequency][acc:1 1 -14 0 10]", 440,110,1300,0.01):smooth(0.999);
+freq = hslider("h:[2]Instrument/Frequency[unit:Hz][tooltip:Tone frequency][acc:1 1 -14 0 10]", 440,110,1300,0.01):si.smooth(0.999);
 gain = 1;
 gate = hslider("[1]ON/OFF",0,0,1,1);
 
@@ -73,27 +73,27 @@ reedTableOffset = 0.7;
 reedTableSlope = -0.44 + (0.26*reedStiffness);
 
 //the reed function is declared in INSTRUMENT.lib
-reedTable = reed(reedTableOffset,reedTableSlope);
+reedTable = instrument.reed(reedTableOffset,reedTableSlope);
 
 //delay line with a length adapted in function of the order of nonlinear filter
-delayLength = SR/freq*0.5 - 1.5;// - (nlfOrder*nonLinearity)*(typeModulation < 2);
-delayLine = fdelay(4096,delayLength);
+delayLength = ma.SR/freq*0.5 - 1.5;// - (nlfOrder*nonLinearity)*(typeModulation < 2);
+delayLine = de.fdelay(4096,delayLength);
 
 //one zero filter used as a allpass: pole is set to -1
-filter = oneZero0(0.5,0.5);
+filter = instrument.oneZero0(0.5,0.5);
 
 //stereoizer is declared in INSTRUMENT.lib and implement a stereo spacialisation in function of 
 //the frequency period in number of samples 
-//stereo = stereoizerCla(SR/freq);
+//stereo = stereoizerCla(ma.SR/freq);
 
 //----------------------- Algorithm implementation ----------------------------
 
-//Breath pressure + vibrato + breath noise + envelope (Attack / Decay / Sustain / Release)
-envelope = adsr(envelopeAttack,envelopeDecay,100,envelopeRelease,gate)*pressure*0.9;
+//Breath pressure + vibrato + breath no.noise + envelope (Attack / Decay / Sustain / Release)
+envelope = en.adsr(envelopeAttack,envelopeDecay,100,envelopeRelease,gate)*pressure*0.9;
 
-vibrato = osc(vibratoFreq)*vibratoGain*
-	envVibrato(0.1*2*vibratoAttack,0.9*2*vibratoAttack,100,vibratoRelease,gate);
-breath = envelope + envelope*noise*noiseGain;
+vibrato = os.osc(vibratoFreq)*vibratoGain*
+	instrument.envVibrato(0.1*2*vibratoAttack,0.9*2*vibratoAttack,100,vibratoRelease,gate);
+breath = envelope + envelope*no.noise*noiseGain;
 breathPressure = breath + breath*vibrato;
 
 

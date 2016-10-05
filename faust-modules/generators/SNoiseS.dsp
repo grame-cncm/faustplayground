@@ -2,7 +2,7 @@ declare name "Noises";
 declare author "ER";
 declare version "1.0";
 
-import("music.lib");
+import("stdfaust.lib");
 
 /* ============ DESCRIPTION =============:
 
@@ -10,12 +10,12 @@ import("music.lib");
 - Head = silence.
 - Fishing rod = Volume variation.
 - Right = silence.
-- Face = pink noise.
-- Left = white noise.
-- Rocking to switch from one noise to another.
+- Face = pink no.noise.
+- Left = white no.noise.
+- Rocking to switch from one no.noise to another.
 */
 
-// pink noise filter (-3dB per octave), see musicdsp.org
+// pink no.noise filter (-3dB per octave), see musicdsp.org
 
 p	= f : (+ ~ g) with {
 	f(x)	= 0.04957526213389*x - 0.06305581334498*x' +
@@ -23,7 +23,7 @@ p	= f : (+ ~ g) with {
 	g(x)	= 1.80116083982126*x - 0.80257737639225*x';
 };
 
-// white noise generator
+// white no.noise generator
 
 rand  = +(12345)~*(1103515245);
 w   = rand/2147483647.0;
