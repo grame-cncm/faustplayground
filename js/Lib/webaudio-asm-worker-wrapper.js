@@ -273,7 +273,7 @@ faust.createDSPFactoryAux = function (code, argv, max_polyphony, callback) {
     
     // use a Worker to compile the code...
     var factory_name = "mydsp" + faust.factory_number++;
-    var worker = new Worker("create-factory-worker.js");
+    var worker = new Worker("js/Lib/create-factory-worker.js");
     
     worker.onmessage = function(event) {
         if (event.data.factory_code != undefined) {
@@ -301,7 +301,7 @@ faust.createDSPFactoryAux = function (code, argv, max_polyphony, callback) {
 faust.expandDSPFromString = function (code, argv, callback) {
     
     // use a Worker to expand the code...
-    var worker = new Worker("expand-dsp-worker.js");
+    var worker = new Worker("js/Lib/expand-dsp-worker.js");
     
     worker.onmessage = function(event) {
         if (event.data.expand_dsp != undefined) {
