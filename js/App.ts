@@ -86,7 +86,7 @@ class App {
 
     createAllScenes(): void {
         var sceneView: SceneView = new SceneView();
-        this.scene = new Scene("Normal", this.compileFaust, sceneView);
+        this.scene = new Scene(this.compileFaust, sceneView);
         //TODO: remove
         Utilitary.currentScene = this.scene;
         this.setGeneralAppListener();
@@ -181,7 +181,7 @@ class App {
             module.moduleView.fModuleContainer.ondrop = (e) => {
                 e.stopPropagation();
                 this.onDragEnd();
-                this.downloadDropped(module, 0, 0, e)
+                this.onDrop(e, module);
             };
         }
         module.moduleView.fModuleContainer.ondragover = () => {
@@ -238,52 +238,8 @@ class App {
     }
 
 
-    //-- Upload content dropped on the page and allocate the content to the right function
-    downloadDropped(module: Module, x: number, y: number, e: DragEvent) {
-        Utilitary.showFullPageLoading();
-        e.preventDefault();
-
-        if (e.dataTransfer.files.length) {
-			// we are dropping a file
-			for (var i = 0; i < e.dataTransfer.files.length; i = i + 1) {
-				var f = e.dataTransfer.files[i];
-				console.log("FILES DROP : "+ i + " : " + f.name);
-                this.loadFile(f, module, x+10*i, y+10*i);
-			}
-
-		} else if (e.dataTransfer.getData('URL') && e.dataTransfer.getData('URL').split(':').shift() != "file") {
-            // CASE 1 : the dropped object is a url to some faust code
-            var url = e.dataTransfer.getData('URL');
-            console.log("URL DROP : "+ url);
-            this.downloadUrl(module, x, y, url);
-
-        } else if (e.dataTransfer.getData('URL').split(':').shift() != "file") {
-            var dsp_code: string = e.dataTransfer.getData('text');
-            console.log("Text DROP : " + dsp_code);
-            // CASE 2 : the dropped object is some faust code
-            if (dsp_code) {
-                 console.log("DROP: CASE 2 ");
-                this.uploadCodeFaust(module, x, y, dsp_code);
-            } else {
-                // CASE 3 : the dropped object is a file containing some faust code or jfaust/json
-                console.log("DROP: CASE 3 ");
-                try {
-                    this.uploadFileFaust(module, x, y, e);
-                } catch (error) {
-                    new Message(error);
-                    Utilitary.hideFullPageLoading();
-                }
-            }
-
-        } else { // CASE 4 : any other strange thing
-            console.log("DROP: CASE 4 STRANGE ");
-            new Message(_("Content is not compatible with Faust"));
-            Utilitary.hideFullPageLoading();
-        }
-    }
-
     //used for Url pointing at a dsp file
-    downloadUrl(module: Module, x: number, y: number, url: string) {
+    private createModuleFromUrl(module: Module, x: number, y: number, url: string): void {
         var filename: string = url.split('/').pop();
         filename = filename.split('.').shift();
         Utilitary.getXHR(url,
@@ -374,7 +330,7 @@ class App {
     dblTouchUpload(e: CustomEvent) {
         Utilitary.showFullPageLoading();
         var position: PositionModule = this.scene.positionDblTapModule();
-        this.downloadUrl(null, position.x, position.y, e.detail);
+        this.createModuleFromUrl(null, position.x, position.y, e.detail);
 
     }
 
@@ -382,7 +338,7 @@ class App {
     ////////////////////////////// design on drag or drop //////////////////////////////////////
 
     // manage style during a drag and drop event
-    onDragStart(evt: DragEvent) {
+    private onDragStart(evt: DragEvent) {
         var target: HTMLElement = <HTMLElement>evt.target;
         //target.classList.add('dragging');
         var link: HTMLAnchorElement = target.getElementsByTagName('a')[0];
@@ -400,7 +356,7 @@ class App {
         }
     }
 
-    onDragEnd() {
+    private onDragEnd() {
         this.menu.menuView.menuContainer.classList.remove("no_pointer");
         this.menu.menuView.menuContainer.style.opacity = "1";
         this.scene.sceneView.dropElementScene.style.display = "none";
@@ -413,14 +369,65 @@ class App {
         this.menu.closeMenu();
     }
 
-    onDrop(e: DragEvent) {
+    private onDrop(e: DragEvent, module?: Module): void {
+        e.preventDefault();
         this.onDragEnd();
         var x = e.clientX;
         var y = e.clientY;
-        this.downloadDropped(null, x, y, e);
+        var dtfiles: FileList = e.dataTransfer.files;
+        var dturl: string = e.dataTransfer.getData('URL');
+        var dttext: string = e.dataTransfer.getData('text');
+
+
+        Utilitary.showFullPageLoading();
+
+        if (module && dtfiles.length === 1)
+            return this.updateModuleFromFile(dtfiles[0], module);
+
+        else if (dtfiles.length)
+            return this.createModulesFromFiles(dtfiles, x, y);
+
+		else if (dturl)
+            return this.createModuleFromUrl(module, x, y, dturl);
+
+        else if (e.dataTransfer.getData('URL').split(':').shift() != "file") {
+            var dsp_code: string = e.dataTransfer.getData('text');
+            console.log("Text DROP : " + dsp_code);
+            // CASE 2 : the dropped object is some faust code
+            if (dsp_code) {
+                 console.log("DROP: CASE 2 ");
+                this.uploadCodeFaust(module, x, y, dsp_code);
+            } else {
+                // CASE 3 : the dropped object is a file containing some faust code or jfaust/json
+                console.log("DROP: CASE 3 ");
+                try {
+                    this.uploadFileFaust(module, x, y, e);
+                } catch (error) {
+                    new Message(error);
+                    Utilitary.hideFullPageLoading();
+                }
+            }
+
+        } else { // CASE 4 : any other strange thing
+            console.log("DROP: CASE 4 STRANGE ");
+            new Message(_("Content is not compatible with Faust"));
+            Utilitary.hideFullPageLoading();
+        }
     }
 
-    onMouseDown(e: MouseEvent) {
+    private updateModuleFromFile(file: File, module: Module): void {
+        this.loadFile(file, module, 0, 0);
+    }
+
+    private createModulesFromFiles(files: FileList, x: number, y: number): void {
+        for (var i = 0; i < files.length; i++) {
+            var f = files[i];
+            console.log("FILES DROP : "+ i + " : " + f.name);
+            this.loadFile(f, null, x+10*i, y+10*i);
+        }
+    }
+
+    private onMouseDown(e: MouseEvent) {
         var target: HTMLElement = <HTMLElement>e.target;
         while(!target.draggable && target != document.body)
             target = <HTMLElement>target.parentNode;
@@ -428,7 +435,7 @@ class App {
             target.classList.add('dragging');
     }
 
-    onMouseUp(e: MouseEvent) {
+    private onMouseUp(e: MouseEvent) {
         for(let node of [].map.call(document.querySelectorAll('.dragging'), (n: HTMLElement) => n))
             node.classList.remove('dragging');
     }
