@@ -284,7 +284,7 @@ class App {
     }
 
     //Load file dsp or jfaust
-    loadFile(file: File, module: Module, x: number, y: number) {
+    private loadFile(file: File, module: Module, x: number, y: number) {
         var dsp_code: string;
         var reader: FileReader = new FileReader();
 
@@ -340,12 +340,12 @@ class App {
     // manage style during a drag and drop event
     private onDragStart(evt: DragEvent) {
         var target: HTMLElement = <HTMLElement>evt.target;
-        //target.classList.add('dragging');
         var link: HTMLAnchorElement = target.getElementsByTagName('a')[0];
-        //link.classList.add('dragging');
 
         evt.dataTransfer.setData('text', '');
         evt.dataTransfer.setData('URL', link.href);
+        evt.dataTransfer.setData('ddtype', target.getAttribute('data-ddtype'));
+
         this.menu.menuView.menuContainer.style.opacity = "0.5";
         this.menu.menuView.menuContainer.classList.add("no_pointer");
         this.scene.sceneView.dropElementScene.style.display = "block";
@@ -375,9 +375,6 @@ class App {
         var x = e.clientX;
         var y = e.clientY;
         var dtfiles: FileList = e.dataTransfer.files;
-        var dturl: string = e.dataTransfer.getData('URL');
-        var dttext: string = e.dataTransfer.getData('text');
-
 
         Utilitary.showFullPageLoading();
 
@@ -387,32 +384,51 @@ class App {
         else if (dtfiles.length)
             return this.createModulesFromFiles(dtfiles, x, y);
 
-		else if (dturl)
-            return this.createModuleFromUrl(module, x, y, dturl);
+        else {
+            switch (e.dataTransfer.getData('ddtype')) {
+                case 'faustcodeurl' :
+                    return this.createModuleFromUrl(module, x, y, e.dataTransfer.getData('URL'));
 
-        else if (e.dataTransfer.getData('URL').split(':').shift() != "file") {
-            var dsp_code: string = e.dataTransfer.getData('text');
-            console.log("Text DROP : " + dsp_code);
-            // CASE 2 : the dropped object is some faust code
-            if (dsp_code) {
-                 console.log("DROP: CASE 2 ");
-                this.uploadCodeFaust(module, x, y, dsp_code);
-            } else {
-                // CASE 3 : the dropped object is a file containing some faust code or jfaust/json
-                console.log("DROP: CASE 3 ");
-                try {
-                    this.uploadFileFaust(module, x, y, e);
-                } catch (error) {
-                    new Message(error);
+                case 'player' :
                     Utilitary.hideFullPageLoading();
-                }
-            }
+                    //return console.info('player dropped:', e.dataTransfer.getData('URL'));
+                    return this.createPlayerModule(x, y, e.dataTransfer.getData('URL'));
 
-        } else { // CASE 4 : any other strange thing
-            console.log("DROP: CASE 4 STRANGE ");
-            new Message(_("Content is not compatible with Faust"));
-            Utilitary.hideFullPageLoading();
+                default :
+                    var dttext: string = e.dataTransfer.getData('text');
+                    if (dttext)
+                        return this.uploadCodeFaust(module, x, y, dttext);
+                    else {
+                        console.error("DROP: CASE 4 STRANGE ");
+                        new Message(_("Content is not compatible with Faust"));
+                        Utilitary.hideFullPageLoading();
+                    }
+            }
         }
+
+        //else if (e.dataTransfer.getData('URL').split(':').shift() != "file") {
+        //    var dsp_code: string = e.dataTransfer.getData('text');
+        //    console.log("Text DROP : " + dsp_code);
+        //    // CASE 2 : the dropped object is some faust code
+        //    if (dsp_code) {
+        //         console.log("DROP: CASE 2 ");
+        //        this.uploadCodeFaust(module, x, y, dsp_code);
+        //    } else {
+        //        // CASE 3 : the dropped object is a file containing some faust code or jfaust/json
+        //        console.log("DROP: CASE 3 ");
+        //        try {
+        //            this.uploadFileFaust(module, x, y, e);
+        //        } catch (error) {
+        //            new Message(error);
+        //            Utilitary.hideFullPageLoading();
+        //        }
+        //    }
+        //
+        //} else { // CASE 4 : any other strange thing
+        //    console.log("DROP: CASE 4 STRANGE ");
+        //    new Message(_("Content is not compatible with Faust"));
+        //    Utilitary.hideFullPageLoading();
+        //}
     }
 
     private updateModuleFromFile(file: File, module: Module): void {
@@ -425,6 +441,13 @@ class App {
             console.log("FILES DROP : "+ i + " : " + f.name);
             this.loadFile(f, null, x+10*i, y+10*i);
         }
+    }
+
+    private createPlayerModule(x:number, y:number, url:string) {
+        var pm = new PlayerModule(Utilitary.idX++,
+            x, y, url, document.getElementById('modules'),
+            (module) => this.scene.removeModule(module),
+            this.compileFaust);
     }
 
     private onMouseDown(e: MouseEvent) {

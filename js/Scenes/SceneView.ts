@@ -21,7 +21,7 @@ class SceneView{
     fSceneContainer: HTMLDivElement;
 
 
-    initNormalScene(scene: Scene) {
+    constructor() {
         var container = document.createElement("div");
         container.id = "Normal";
 

@@ -81,6 +81,7 @@ class Library{
             var a: HTMLAnchorElement = document.createElement("a");
             li.appendChild(a);
             li.draggable = true;
+            li.setAttribute('data-ddtype', 'faustcodeurl');
             li.classList.add('draggable');
             a.href = options[i];
             a.draggable = false;

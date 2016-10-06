@@ -1,4 +1,5 @@
 /// <reference path="Broadcast.ts"/>
+/// <reference path="Modules/Module.ts"/>
 
 class PlayerMenuItem {
     player: Player;
@@ -8,6 +9,7 @@ class PlayerMenuItem {
         this.player = player;
         this.element = document.createElement('li');
         this.element.draggable = true;
+        this.element.setAttribute('data-ddtype', 'player');
         this.element.classList.add('draggable');
         var a: HTMLAnchorElement = document.createElement('a');
         a.href = player.ident;
@@ -60,4 +62,9 @@ class Players {
             new CustomEvent('RemovePlayer', {detail:player})
         );
     }
+}
+
+
+class PlayerModule extends Module {
+
 }
