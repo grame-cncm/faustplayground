@@ -174,8 +174,8 @@ interface HTMLInterfaceContainer extends HTMLDivElement {
 }
 interface IfDSP {
     json: () => string;
-    getParamValue: (text: string) => string;
-    setParamValue: (text: string, val: string) => void;
+    getParamValue: (text: string) => number;
+    setParamValue: (text: string, val: number) => void;
     getNumInputs: () => number;
     getNumOutputs: () => number;
     controls: () => any;

@@ -318,7 +318,7 @@ class ModuleClass  {
         this.moduleView.fTitle.textContent = this.moduleFaust.fName;
         var moduleFaustInterface = new FaustInterfaceControler(
             (faustInterface) => { this.interfaceSliderCallback(faustInterface) },
-            (adress, value) => { this.moduleFaust.fDSP.setParamValue(adress, value) }
+            (adress, value) => { this.moduleFaust.fDSP.setParamValue(adress, +value) }
             );
         this.moduleControles = moduleFaustInterface.parseFaustJsonUI(JSON.parse(this.moduleFaust.fDSP.json()).ui, this);
     }
@@ -361,13 +361,13 @@ class ModuleClass  {
     // set DSP value to all FaustInterfaceControlers
     setDSPValue() {
         for (var i = 0; i < this.moduleControles.length; i++){
-            this.moduleFaust.fDSP.setParamValue(this.moduleControles[i].itemParam.address, this.moduleControles[i].value)
+            this.moduleFaust.fDSP.setParamValue(this.moduleControles[i].itemParam.address, +this.moduleControles[i].value)
         }
     }
 
     // set DSP value to specific FaustInterfaceControlers
     setDSPValueCallback(address: string, value: string) {
-        this.moduleFaust.fDSP.setParamValue(address, value)
+        this.moduleFaust.fDSP.setParamValue(address, +value)
     }
 
     // Updates Faust Code with new accelerometer metadata
@@ -403,7 +403,7 @@ class ModuleClass  {
 
 
         // 	Search for DSP then update the value of its parameter.
-        this.moduleFaust.fDSP.setParamValue(text, val);
+        this.moduleFaust.fDSP.setParamValue(text, +val);
     }
     interfaceButtonCallback(faustControler: FaustInterfaceControler, val?: number): any {
 
@@ -419,7 +419,7 @@ class ModuleClass  {
 
 
         // 	Search for DSP then update the value of its parameter.
-        this.moduleFaust.fDSP.setParamValue(text, val.toString());
+        this.moduleFaust.fDSP.setParamValue(text, val);
     }
 	
     // Save graphical parameters of a Faust Node
@@ -438,7 +438,7 @@ class ModuleClass  {
     recallInterfaceParams(): void {
 
         for (var key in this.fModuleInterfaceParams)
-            this.moduleFaust.fDSP.setParamValue(key, this.fModuleInterfaceParams[key]);
+            this.moduleFaust.fDSP.setParamValue(key, +this.fModuleInterfaceParams[key]);
     }
     getInterfaceParams(): { [label: string]:string }{
         return this.fModuleInterfaceParams;
