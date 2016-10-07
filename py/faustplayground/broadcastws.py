@@ -29,7 +29,6 @@ class BroadcastServerProtocol(WebSocketServerProtocol):
 
             elif msg.type == 'ICECandidate' :
                 self.icecandidates.append(msg)
-                return
 
             self.factory.broadcast(msg)
 

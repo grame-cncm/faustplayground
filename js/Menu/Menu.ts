@@ -90,10 +90,10 @@ class Menu {
         document.addEventListener("startloaddrive", () => { this.startLoadingDrive() });
         document.addEventListener("finishloaddrive", () => { this.finishLoadingDrive() });
         document.addEventListener("clouderror", (e: CustomEvent) => { Menu.connectionProblem(e) });
-        document.addEventListener('NewPlayer',
+        document.addEventListener('PlayerAdded',
             (e: CustomEvent) => this.addPlayerItem(e.detail)
         );
-        document.addEventListener('RemovePlayer',
+        document.addEventListener('PlayerRemoved',
             (e: CustomEvent) => this.removePlayerItem(e.detail)
         );
 

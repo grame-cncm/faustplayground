@@ -25,40 +25,47 @@ class Player {
     icecandidates: Array<RTCIceCandidate>;
     ident: string;
     pc: RTCPeerConnection;
+    send: (msg: WSMessage) => void
 
-    constructor(ident:string, offer: RTCSessionDescription) {
+    constructor(ident:string, offer: RTCSessionDescription, send: (msg: WSMessage) => void) {
         this.ident = ident;
         this.offer = offer;
+        this.send = send;
         this.icecandidates = new Array<RTCIceCandidate>();
     }
 
     replyToOffer(onstream: (stream: MediaStream) => void) {
         this.pc = new RTCPeerConnection(null, {optional:[]});
-        //this.pc.onicecandidate = (event: RTCIceCandidateEvent) => this.onicecandidate(event);
+        this.pc.onicecandidate = (event: RTCIceCandidateEvent) => this.onicecandidate(event);
         this.pc.onaddstream = (e: RTCMediaStreamEvent) => onstream(e.stream);
 
-        this.pc.setRemoteDescription(this.offer)
-            .then(
-                () => this.pc.createAnswer()
-                .then((desc: RTCSessionDescription) => this.dispatchAnswer(desc))
-        );
+        this.pc.setRemoteDescription(this.offer).then(
+            () => this.pc.createAnswer().then(
+                (answerdesc: RTCSessionDescription) => this.gotAnswerDescription(answerdesc),
+                (e) => console.error('enable to create answer:', e)),
+            (e) => console.error('enable to set remote description:', e));
         for(let i=0 ; i<this.icecandidates.length ; i++) {
             this.pc.addIceCandidate(this.icecandidates[i]).then(
                 () => console.log('ice yeah'),
-                () => console.log('ice merde')
+                () => console.log('ice m****…')
             );
         }
     }
 
-    //private onicecandidate(event: RTCIceCandidateEvent) {
-    //    console.log('receiver candidate:', event.candidate);
-    //}
-
-    private dispatchAnswer(desc: RTCSessionDescription) {
-        document.dispatchEvent(new CustomEvent('Answer',
-                                               {detail: {desc: desc.toJSON(),
-                                                         to: this.ident}}));
+    private onicecandidate(event: RTCIceCandidateEvent) {
+        console.log('receiver candidate:', event.candidate);
     }
+
+    private gotAnswerDescription(answerdesc: RTCSessionDescription) {
+        this.pc.setLocalDescription(answerdesc);
+        this.send(new WSMessage('Answer', undefined, this.ident, answerdesc));
+    }
+
+    //private dispatchAnswer(desc: RTCSessionDescription) {
+    //    document.dispatchEvent(new CustomEvent('Answer',
+    //                                           {detail: {desc: desc.toJSON(),
+    //                                                     to: this.ident}}));
+    //}
 }
 
 interface IPlayerIndex {
@@ -72,33 +79,37 @@ class Players {
     constructor(){
         //this.team = new Array<Player>();
         this.index = {} as IPlayerIndex;
-        document.addEventListener('Offer', (evt) => this.onOffer(<CustomEvent>evt));
-        document.addEventListener('ICECandidate', (evt) => this.onICECandidate(<CustomEvent>evt));
-        document.addEventListener('Byebye', (evt) => this.onByebye(<CustomEvent>evt));
+        //document.addEventListener('Offer', (evt) => this.onOffer(<CustomEvent>evt));
+        //document.addEventListener('ICECandidate', (evt) => this.onICECandidate(<CustomEvent>evt));
+        //document.addEventListener('Byebye', (evt) => this.onByebye(<CustomEvent>evt));
     }
 
-    onOffer(evt: CustomEvent) {
-        var player: Player = new Player(evt.detail.from,
-                                        new RTCSessionDescription(evt.detail.payload));
-        //this.team.push(player);
-        this.index[evt.detail.from] = player;
+    addPlayerFromOffer(msg: WSMessage, send: (msg: WSMessage) => void) {
+        var player: Player = new Player(msg.from,
+                                        new RTCSessionDescription(msg.payload),
+                                        send);
+        this.index[msg.from] = player;
         document.dispatchEvent(
-            new CustomEvent('NewPlayer', {detail:player})
+            new CustomEvent('PlayerAdded', {detail:player})
         );
     }
 
-    onICECandidate(evt: CustomEvent) {
-        var player: Player = this.index[evt.detail.from];
-        player.icecandidates.push(new RTCIceCandidate(evt.detail.icecandidate));
-    }
+    //onICECandidate(evt: CustomEvent) {
+    //    var player: Player = this.index[evt.detail.from];
+    //    player.icecandidates.push(new RTCIceCandidate(evt.detail.icecandidate));
+    //}
 
-    onByebye(evt: CustomEvent) {
-        var indent: string = evt.detail.from;
+    removePlayer(msg: WSMessage) {
+        var indent: string = msg.from;
         var player: Player = this.index[indent];
         delete this.index[indent];
         document.dispatchEvent(
-            new CustomEvent('RemovePlayer', {detail:player})
+            new CustomEvent('PlayerRemoved', {detail:player})
         );
+    }
+
+    getPlayer(id: string): Player {
+        return this.index[id];
     }
 }
 

@@ -3,6 +3,8 @@
 /// <reference path="Modules/Module.ts"/>
 
 class Broadcast {
+    app: App;
+    players: Players;
     pc: RTCPeerConnection;
     ws: WebSocket;
     wspeer: string;
@@ -13,14 +15,17 @@ class Broadcast {
         voiceActivityDetection: false
     };
 
-    constructor(stream: MediaStream,
+    constructor(app: App,
+                stream: MediaStream,
                 server=null,
                 pc_constraints={optional:[]}) {
+        this.app = app;
+        this.players = app.players;
         this.pc = new RTCPeerConnection(server, pc_constraints);
         this.pc.onicecandidate = (event: RTCIceCandidateEvent) => this.iceCallback(event);
         this.pc.addStream(stream);
         this.pc.createOffer(Broadcast.offer_options).then(
-            (desc) => this.announceOffer(desc),
+            (desc: RTCSessionDescription) => this.announceOffer(desc),
             (error) => this.onCreateOfferError(error)
         );
 
@@ -33,11 +38,25 @@ class Broadcast {
         document.addEventListener('Answer', (e:Event) => this.sendAnswer(<CustomEvent>e));
     }
 
-    private send(msg: WSMessage) {
-        console.log('send:', msg);
-        this.ws.send(msg.toJSON());
+    send(msg: WSMessage) {
+        switch (this.ws.readyState) {
+            case WebSocket.CONNECTING :
+                // message will be sent when WebSocket opened.
+                this.ws.addEventListener('open',
+                    () => this.send(msg));
+                break;
+            case WebSocket.OPEN :
+                this.ws.send(msg.toJSON());
+                console.log('sent:', msg);
+                break;
+            default :
+                console.error('Unable to announce offer with a websocket at this status:',
+                    this.ws.readyState,
+                    msg);
+        }
     }
 
+    // me -> others
     private iceCallback(event: RTCIceCandidateEvent) {
         if(event.candidate) {
             this.send(new WSMessage('ICECandidate',
@@ -47,25 +66,11 @@ class Broadcast {
         }
     }
 
-    private announceOffer(desc) {
+    // me -> others
+    private announceOffer(desc: RTCSessionDescription) {
         // Set local descpription and then, send offer via websocket.
         this.pc.setLocalDescription(desc).then(
-            () => {
-                var msg: WSMessage = new WSMessage('Offer', undefined, undefined, desc);
-
-                switch (this.ws.readyState) {
-                    case WebSocket.CONNECTING :
-                        this.ws.addEventListener('open',
-                            () => this.send(msg));
-                        break;
-                    case WebSocket.OPEN :
-                        this.send(msg);
-                        break;
-                    default :
-                        console.error('Unable to announce offer with a websocket at this status:',
-                            this.ws.readyState);
-                }
-            }
+            () => this.send(new WSMessage('Offer', undefined, undefined, desc))
         );
     }
 
@@ -73,8 +78,11 @@ class Broadcast {
         console.error('Offer error:', error);
     }
 
+    // dispatch incomming message to
+    // appropriate method "onXXXX(WSMessage)"
     private onWsMessage(msg) {
         var wsmsg = WSMessage.fromJSON(msg.data);
+        console.log('received:', wsmsg);
         var cb = this['on' + wsmsg.type];
         if (cb)
             cb.apply(this, [wsmsg]);
@@ -85,21 +93,23 @@ class Broadcast {
         //console.info(msg.data);
     }
 
+    // a player is created on offer received
     private onOffer(msg: WSMessage) {
-        document.dispatchEvent(new CustomEvent('Offer', {detail: msg}));
-        //var pcr: RTCPeerConnection = new RTCPeerConnection(null, {optional:[]});
-        //pcr.setRemoteDescription(offer).then(
-        //    () => {
-        //        console.log('setRemoteDescription Ok !');
-        //        pcr.createAnswer();
-        //    },
-        //    (error) => {console.error('merde :', error);}
-        //);
-        //console.info('onOffer', offer)
+        this.players.addPlayerFromOffer(msg, (msg: WSMessage) => this.send(msg));
     }
 
+    // ICE candidates that follow an offer are stored
+    // on the corresponding player instance.
+    // So the player can be used later.
+    private onICECandidate(msg: WSMessage) {
+        var player: Player = this.players.getPlayer(msg.from);
+        player.icecandidates.push(new RTCIceCandidate(msg.payload));
+    }
+
+
+    // a player leaves the session
     private onByebye(msg: WSMessage) {
-        document.dispatchEvent(new CustomEvent('Byebye', {detail: msg}));
+        this.players.removePlayer(msg);
     }
 
     private onWhoami(msg: WSMessage) {
@@ -110,14 +120,8 @@ class Broadcast {
     private onAnswer(msg: WSMessage) {
         this.pc.setRemoteDescription(msg.payload).then(
             () => console.log('youpi !'),
-            () => console.error('hé merde…')
+            () => console.error('hé m****…')
         );
-    }
-
-    private onICECandidate(msg: WSMessage) {
-        document.dispatchEvent(new CustomEvent('ICECandidate',
-                                               {detail: {from: msg.from,
-                                                         icecandidate: msg.payload}}));
     }
 
     private sendAnswer(evt: CustomEvent){

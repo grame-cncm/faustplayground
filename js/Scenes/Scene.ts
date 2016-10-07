@@ -263,7 +263,7 @@ class Scene {
         ctor.connectOutput(sceneOutput, out);
         var stream: MediaStream | void = ctor.getBroadcastStream(sceneOutput, this.app.audioContext);
         if (stream)
-            this.broadcast = new Broadcast(<MediaStream>stream);
+            this.broadcast = new Broadcast(this.app, <MediaStream>stream);
     }
 
 
