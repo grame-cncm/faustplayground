@@ -118,9 +118,8 @@ class FaustInterfaceControler {
                 (adress, value) => { this.setDSPValueCallback(adress,value) }
             );
             controler.name = itemElement.label;
-            controler.itemParam = itemElement
+            controler.itemParam = itemElement;
             controler.value = itemElement.init;
-
 
             this.faustControlers.push(controler)
 
@@ -132,6 +131,7 @@ class FaustInterfaceControler {
                 (adress, value) => { this.setDSPValueCallback(adress, value) }
             );
             controler.itemParam = itemElement;
+            controler.value = "0";
             this.faustControlers.push(controler)
 
         } else if (item.type === "checkbox") {
@@ -141,6 +141,7 @@ class FaustInterfaceControler {
                 (adress, value) => { this.setDSPValueCallback(adress, value) }
             );
             controler.itemParam = itemElement;
+            controler.value = "0";
             this.faustControlers.push(controler)
 
         }
