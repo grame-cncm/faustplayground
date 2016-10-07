@@ -2898,7 +2898,13 @@ var Export = (function () {
         Utilitary.addLoadingLogo("exportResultContainer");
         var equivalentFaust = new EquivalentFaust();
         var faustCode = equivalentFaust.getFaustEquivalent(Utilitary.currentScene, Utilitary.currentScene.sceneName);
-        ExportLib.getSHAKey(document.getElementById("faustweburl").value, Utilitary.currentScene.sceneName, faustCode, expor.exportFaustCode);
+        var args = ["-I", location.origin + "/faustplayground/faustcode/"];
+        faust.expandDSPFromString(faustCode, args, function(expand_dsp, sha_key) {
+                                                            ExportLib.getSHAKey(document.getElementById("faustweburl").value,
+                                                                            Utilitary.currentScene.sceneName,
+                                                                            expand_dsp,
+                                                                            expor.exportFaustCode)
+                                  });
     };
     Export.prototype.removeQRCode = function () {
         var disposableExportDiv = document.getElementById('disposableExportDiv');
