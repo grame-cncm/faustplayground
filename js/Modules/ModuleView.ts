@@ -64,7 +64,8 @@ class ModuleView {
             fModuleContainer.id = "moduleInput";
         } else if (name == "output") {
             fModuleContainer.id = "moduleOutput";
-        } else {
+        } else
+        {
             var textArea: HTMLTextAreaElement = document.createElement("textarea");
             textArea.rows = 15;
             textArea.cols = 60;

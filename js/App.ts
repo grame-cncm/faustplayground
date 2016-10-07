@@ -444,10 +444,11 @@ class App {
     }
 
     private createPlayerModule(x:number, y:number, url:string) {
-        var pm = new PlayerModule(Utilitary.idX++,
-            x, y, url, document.getElementById('modules'),
-            (module) => this.scene.removeModule(module),
-            this.compileFaust);
+        console.info('new player module:', url);
+        new PlayerModule(Utilitary.idX++,
+                         x, y,
+                         document.getElementById('modules'),
+                         this.players.index[url]);
     }
 
     private onMouseDown(e: MouseEvent) {

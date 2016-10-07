@@ -26,11 +26,14 @@ class Broadcast {
             (desc) => this.announceOffer(desc),
             (error) => this.onCreateOfferError(error)
         );
+
         var wsurl: string = ((location.protocol === 'http:') ? 'ws://' : 'wss://') +
                             /https?:\/\/([^#]*)/.exec(location.href)[1] +
                             'websocket';
         this.ws = new WebSocket(wsurl);
         this.ws.addEventListener('message', (msg) => this.onWsMessage(msg));
+
+        document.addEventListener('Answer', (e:Event) => this.sendAnswer(<CustomEvent>e));
     }
 
     private send(msg: WSMessage) {
@@ -47,7 +50,7 @@ class Broadcast {
         // Set local descpription and then, send offer via websocket.
         this.pc.setLocalDescription(desc).then(
             () => {
-                var msg: WSMessage = new WSMessage('Offer', undefined, desc);
+                var msg: WSMessage = new WSMessage('Offer', undefined, undefined, desc);
 
                 switch (this.ws.readyState) {
                     case WebSocket.CONNECTING :
@@ -73,7 +76,7 @@ class Broadcast {
         var wsmsg = WSMessage.fromJSON(msg.data);
         var cb = this['on' + wsmsg.type];
         if (cb)
-            cb(wsmsg);
+            cb.apply(this, [wsmsg]);
         else
             console.warn('"on' + wsmsg.type + '" not implemented.');
         //var msg = JSON.parse(msg.data);
@@ -102,17 +105,33 @@ class Broadcast {
         console.info('I am:', msg.payload);
         this.wspeer = msg.payload;
     }
+
+    private onAnswer(msg: WSMessage) {
+        this.pc.setRemoteDescription(msg.payload).then(
+            () => console.log('youpi !'),
+            () => console.error('hé merde…')
+        );
+    }
+
+    private sendAnswer(evt: CustomEvent){
+        this.send(new WSMessage('Answer',
+                                undefined,
+                                evt.detail.to,
+                                evt.detail.desc));
+    }
 }
 
 
 class WSMessage {
     type: string;
     from: string;
+    to: string;
     payload: any;
 
-    constructor(type: string, from?: string, payload?: any) {
+    constructor(type: string, from?: string, to?:string, payload?: any) {
         this.type = type;
         this.from = from;
+        this.to = to;
         this.payload = payload;
     }
 
@@ -123,12 +142,13 @@ class WSMessage {
         return JSON.stringify({
             type: this.type,
             from: this.from,
+            to: this.to,
             payload: payload
         })
     }
 
     static fromJSON(json: string): WSMessage {
         var msg: any = JSON.parse(json);
-        return new WSMessage(msg.type, msg.from, JSON.parse(msg.payload));
+        return new WSMessage(msg.type, msg.from, msg.to, JSON.parse(msg.payload));
     }
 }

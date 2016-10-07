@@ -1,5 +1,6 @@
 /// <reference path="Broadcast.ts"/>
 /// <reference path="Modules/Module.ts"/>
+/// <reference path="Lib/d3/d3.d.ts"/>
 
 class PlayerMenuItem {
     player: Player;
@@ -22,10 +23,27 @@ class PlayerMenuItem {
 class Player {
     offer: RTCSessionDescription;
     ident: string;
+    pc: RTCPeerConnection;
 
     constructor(ident:string, offer: RTCSessionDescription) {
         this.ident = ident;
         this.offer = offer;
+    }
+
+    replyToOffer(onstream: (stream: MediaStream) => void) {
+        this.pc = new RTCPeerConnection(null, {optional:[]});
+        this.pc.onaddstream = (e: RTCMediaStreamEvent) => onstream(e.stream);
+        this.pc.setRemoteDescription(this.offer)
+            .then(
+                () => this.pc.createAnswer()
+                .then((desc: RTCSessionDescription) => this.dispatchAnswer(desc))
+        );
+    }
+
+    private dispatchAnswer(desc: RTCSessionDescription) {
+        document.dispatchEvent(new CustomEvent('Answer',
+                                               {detail: {desc: desc.toJSON(),
+                                                         to: this.ident}}));
     }
 }
 
@@ -64,7 +82,28 @@ class Players {
     }
 }
 
+interface HTMLMediaElementNG extends HTMLMediaElement {
+    srcObject: MediaStream
+}
 
-class PlayerModule extends Module {
+class PlayerModule {
 
+    constructor(id: number, x: number, y:number, container: HTMLElement, player:Player) {
+        var audio: HTMLMediaElementNG =
+        <HTMLMediaElementNG>(
+        d3.select(container)
+        .append('div')
+        .attr('class', 'moduleFaust')
+        .style('width', '100px')
+        .style('height', '100px')
+        .style('left', x+'px')
+        .style('top', y+'px')
+        .append('audio')
+        .attr('autoplay', '')
+        .attr('controls', '')
+        .node()
+        )
+        ;
+        player.replyToOffer((stream: MediaStream) => audio.srcObject = stream);
+    }
 }
