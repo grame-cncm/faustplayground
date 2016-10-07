@@ -140,7 +140,20 @@ class Export{
         Utilitary.addLoadingLogo("exportResultContainer");
         var equivalentFaust: EquivalentFaust = new EquivalentFaust();
         var faustCode: string = equivalentFaust.getFaustEquivalent(Utilitary.currentScene, Utilitary.currentScene.sceneName);
+        
+        // old version not expanded
         ExportLib.getSHAKey((<HTMLInputElement>document.getElementById("faustweburl")).value, Utilitary.currentScene.sceneName, faustCode, expor.exportFaustCode);
+
+        // new version with expanded code
+        /*
+        var args = ["-I", location.origin + "/faustplayground/faustcode/"];
+        faust.expandDSPFromString(faustCode, args, function(expand_dsp, sha_key) {
+                                                            ExportLib.getSHAKey((<HTMLInputElement>document.getElementById("faustweburl")).value,
+                                                                            Utilitary.currentScene.sceneName,
+                                                                            expand_dsp,
+                                                                            expor.exportFaustCode)
+                                  });
+        */
     }
 
     /******************************************************************** 
