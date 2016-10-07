@@ -7,7 +7,6 @@
 
 
 class Utilitary {
-    static audioContext: AudioContext;
     static currentScene: Scene;
     static idX: number = 0;
     static baseImg: string = "img/";
@@ -109,12 +108,9 @@ class PositionModule implements IPositionModule {
 }
 
 
-interface IHTMLDivElementSrc extends HTMLDivElement {
-    audioNode: MediaStreamAudioSourceNode;
-}
-interface IHTMLDivElementOut extends HTMLDivElement {
-    audioNode: AudioDestinationNode;
-}
+//interface IHTMLDivElementSrc extends HTMLDivElement {
+//    audioNode: MediaStreamAudioSourceNode;
+//}
 interface Factory {
     name: string;
     sha_key: string;

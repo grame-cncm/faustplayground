@@ -53,8 +53,6 @@ class App {
         //create div which will contain all Messages and Confirm
         App.createDialogue();
         this.audioContext = new AudioContext();
-        //TODO: remove
-        Utilitary.audioContext = this.audioContext;
 
         Utilitary.addFullPageLoading();
 
@@ -86,7 +84,7 @@ class App {
 
     createAllScenes(): void {
         var sceneView: SceneView = new SceneView();
-        this.scene = new Scene(this.compileFaust, sceneView);
+        this.scene = new Scene(this, sceneView);
         //TODO: remove
         Utilitary.currentScene = this.scene;
         this.setGeneralAppListener();
@@ -169,7 +167,8 @@ class App {
                                         this.tempModuleName,
                                         document.getElementById("modules"),
                                         (module) => { this.scene.removeModule(module) },
-                                        this.compileFaust);
+                                        this.compileFaust,
+                                        this.audioContext);
         module.moduleFaust.setSource(this.tempModuleSourceCode);
         module.createDSP(factory);
         module.setFaustInterfaceControles();

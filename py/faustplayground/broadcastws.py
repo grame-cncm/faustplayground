@@ -13,6 +13,7 @@ class BroadcastServerProtocol(WebSocketServerProtocol):
         WebSocketServerProtocol.__init__(self)
         self.nickname = ''
         self.offer = None
+        self.icecandidates = []
 
     def onOpen(self):
         self.nickname = self.peer # fallback nickname
@@ -22,10 +23,15 @@ class BroadcastServerProtocol(WebSocketServerProtocol):
         if not isBinary:
             msg = WSMessage.fromJSON(payload.decode('utf-8'))
             msg.setFrom(self)
+            print msg
             if msg.type == 'Offer' :
                 self.offer = msg
 
-            self.factory.broadcast(self, msg)
+            elif msg.type == 'ICECandidate' :
+                self.icecandidates.append(msg)
+                return
+
+            self.factory.broadcast(msg)
 
     def connectionLost(self, reason):
         WebSocketServerProtocol.connectionLost(self, reason)
@@ -51,10 +57,11 @@ class BroadcastServerFactory(WebSocketServerFactory) :
             whoiam = WSMessage('Whoami', 'server', client.peer, client.peer)
             self.broadcast(whoiam)
 
-            self.broadcast(c.offer)
-            # # send to the new client previous offers from other clients
-            # for c in self.otherClients(client.peer) :
-            #     client.sendMessage(c.offer.toJSON())
+            # send to the new client previous offers from other clients
+            for c in self.otherClients(client.peer) :
+                client.sendMessage(c.offer.toJSON())
+                for icecandidate in c.icecandidates :
+                    client.sendMessage(icecandidate.toJSON())
 
 
     def unregister(self, client):
@@ -103,3 +110,10 @@ class WSMessage(object) :
         msg = loads(json)
         msg['payload'] = loads(msg.get('payload'), 'null')
         return WSMessage(msg.get('type'), msg.get('from'), msg.get('to'), msg['payload'])
+
+    def __str__(self) :
+        return'\n'.join(('Message type: %s' % self.type,
+                         'From: %s' % self.from_,
+                         'To: %s' % self.to,
+                         'Payload:\n%s' % self.payload)
+                        )

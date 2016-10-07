@@ -4,7 +4,6 @@
 
 class Broadcast {
     pc: RTCPeerConnection;
-    icecandidates: Array<RTCIceCandidate>;
     ws: WebSocket;
     wspeer: string;
 
@@ -18,9 +17,7 @@ class Broadcast {
                 server=null,
                 pc_constraints={optional:[]}) {
         this.pc = new RTCPeerConnection(server, pc_constraints);
-        this.icecandidates = new Array<RTCIceCandidate>();
-
-        this.pc.onicecandidate = (event) => this.iceCallback(event);
+        this.pc.onicecandidate = (event: RTCIceCandidateEvent) => this.iceCallback(event);
         this.pc.addStream(stream);
         this.pc.createOffer(Broadcast.offer_options).then(
             (desc) => this.announceOffer(desc),
@@ -42,8 +39,12 @@ class Broadcast {
     }
 
     private iceCallback(event: RTCIceCandidateEvent) {
-        if(event.candidate)
-            this.icecandidates.push(event.candidate);
+        if(event.candidate) {
+            this.send(new WSMessage('ICECandidate',
+                                    undefined,
+                                    undefined,
+                                    event.candidate));
+        }
     }
 
     private announceOffer(desc) {
@@ -111,6 +112,12 @@ class Broadcast {
             () => console.log('youpi !'),
             () => console.error('hé merde…')
         );
+    }
+
+    private onICECandidate(msg: WSMessage) {
+        document.dispatchEvent(new CustomEvent('ICECandidate',
+                                               {detail: {from: msg.from,
+                                                         icecandidate: msg.payload}}));
     }
 
     private sendAnswer(evt: CustomEvent){

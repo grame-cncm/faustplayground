@@ -41,9 +41,7 @@ class Module  {
     eventOpenEditHandler: () => void;
     eventCloseEditHandler: (event: Event) => void;
     compileFaust: (conpileFaust: CompileFaust) => void;
-
-
-
+    audioContext: AudioContext;
 
 
     constructor(id: number,
@@ -52,11 +50,13 @@ class Module  {
                 name: string,
                 htmlElementModuleContainer: HTMLElement,
                 removeModuleCallBack: (m: Module) => void,
-                compileFaust: (compileFaust: CompileFaust) => void) {
+                compileFaust: (compileFaust: CompileFaust) => void,
+                audioContext: AudioContext) {
         this.eventConnectorHandler = (event: MouseEvent) => { this.dragCnxCallback(event, this) };
         this.eventCloseEditHandler = (event: MouseEvent) => { this.recompileSource(event, this) };
         this.eventOpenEditHandler = () => { this.edit() };
         this.compileFaust = compileFaust;
+        this.audioContext = audioContext;
 
         this.deleteCallback = removeModuleCallBack;
         this.eventDraggingHandler = (event)=>{ this.dragCallback(event, this) };
@@ -203,7 +203,7 @@ class Module  {
         this.moduleFaust.factory = factory;
         try {
             if (factory != null) {
-                this.moduleFaust.fDSP = faust.createDSPInstance(factory, Utilitary.audioContext, 1024);
+                this.moduleFaust.fDSP = faust.createDSPInstance(factory, this.audioContext, 1024);
             } else {
                 throw new Error("create DSP Error factory null")
             }

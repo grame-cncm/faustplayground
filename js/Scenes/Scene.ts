@@ -14,6 +14,7 @@
 
 class Scene {
     //temporary arrays used to recall a scene from a jfaust file
+    app: App;
     arrayRecalScene: JsonSaveModule[] = [];
     arrayRecalledModule: Module[] = [];
 
@@ -45,8 +46,9 @@ class Scene {
 
 
 
-    constructor(compileFaust: (compileFaust: CompileFaust) => void, sceneView?: SceneView) {
-        this.compileFaust = compileFaust;
+    constructor(app: App, sceneView: SceneView) {
+        this.app = app;
+        this.compileFaust = this.app.compileFaust; // shortcut
         this.sceneView = new SceneView();
         this.integrateSceneInBody();
         this.integrateOutput();
@@ -61,14 +63,10 @@ class Scene {
 
     /*********************** MUTE/UNMUTE SCENE ***************************/
     muteScene(): void {
-        var out: IHTMLDivElementOut = <IHTMLDivElementOut>document.getElementById("audioOutput");
-
-        if (out != null) {
-            if (out.audioNode.context.suspend != undefined) {//because of Edge not supporting audioContext.suspend() yet
-                out.audioNode.context.suspend();
+        if (this.app.audioContext.suspend) { //because of Edge not supporting audioContext.suspend() yet
+            this.app.audioContext.suspend();
                 this.isMute = true;
                 this.getAudioOutput().moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-speaker-mute.png)"
-            }
         }
     }
 
@@ -77,15 +75,10 @@ class Scene {
     }
 
     delayedUnmuteScene() {//because of probable Firefox bug with audioContext.resume() when resume to close from suspend
-        var out: IHTMLDivElementOut = <IHTMLDivElementOut>document.getElementById("audioOutput");
-
-        if (out != null) {
-            if (out.audioNode.context.resume != undefined) {//because of Edge not supporting audioContext.resume() yet
-                out.audioNode.context.resume();
-                this.isMute = false;
-                this.getAudioOutput().moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-speaker.png)"
-
-            }
+        if (this.app.audioContext.resume) { //because of Edge not supporting audioContext.resume() yet
+            this.app.audioContext.resume();
+            this.isMute = false;
+            this.getAudioOutput().moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-speaker.png)"
         }
     }
 
@@ -150,7 +143,8 @@ class Scene {
                                       "input",
                                       this.sceneView.inputOutputModuleContainer,
                                       (module) => { this.removeModule(module) },
-                                      this.compileFaust);
+                                      this.compileFaust,
+                                      this.app.audioContext);
         this.fAudioInput.patchID = "input";
         this.compileFaust({ name:"input",
                             sourceCode:"process=_,_;",
@@ -168,7 +162,8 @@ class Scene {
                                        "output",
                                        this.sceneView.inputOutputModuleContainer,
                                        (module) => { this.removeModule(module) },
-                                       this.compileFaust);
+                                       this.compileFaust,
+                                       this.app.audioContext);
         this.fAudioOutput.patchID = "output";
         this.addMuteOutputListner(this.fAudioOutput);
         this.compileFaust({ name: "output",
@@ -232,7 +227,7 @@ class Scene {
         if (navigator.getUserMedia) {
 
             navigator.getUserMedia({ audio: true },
-                                      (mediaStream) => { this.getDevice(mediaStream) },
+                                      (mediaStream) => { this.connectInputStream(mediaStream) },
                                       (e) => {
                                           console.error(e.name, e.message);
                                           this.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)";
@@ -246,12 +241,10 @@ class Scene {
         }
     }
 
-    private getDevice(device: MediaStream): void {
+    private connectInputStream(stream: MediaStream): void {
 
         // Create an AudioNode from the stream.
-        var src = <IHTMLDivElementSrc>document.getElementById("input");
-        src.audioNode = Utilitary.audioContext.createMediaStreamSource(device);
-        document.body.appendChild(src);
+        var src: MediaStreamAudioSourceNode =  this.app.audioContext.createMediaStreamSource(stream);
         var connect: Connector = new Connector();
         connect.connectInput(this.fAudioInput, src);
     }
@@ -259,13 +252,16 @@ class Scene {
 
     activateAudioOutput(sceneOutput: Module): void {
 
-        var out = <IHTMLDivElementOut>document.createElement("div");
-        out.id = "audioOutput";
-        out.audioNode = Utilitary.audioContext.destination;
-        document.body.appendChild(out);
+        //var out = <IHTMLDivElementOut>document.createElement("div");
+        //out.id = "audioOutput";
+        //out.audioNode = Utilitary.audioContext.destination;
+        //document.body.appendChild(out);
+
+        var out: AudioDestinationNode = this.app.audioContext.destination;
+
         var ctor: Connector = new Connector();
         ctor.connectOutput(sceneOutput, out);
-        var stream: MediaStream | void = ctor.getBroadcastStream(sceneOutput, Utilitary.audioContext);
+        var stream: MediaStream | void = ctor.getBroadcastStream(sceneOutput, this.app.audioContext);
         if (stream)
             this.broadcast = new Broadcast(<MediaStream>stream);
     }
@@ -457,7 +453,8 @@ class Scene {
                                             this.tempModuleName,
                                             document.getElementById("modules"),
                                             (module) => {this.removeModule(module) },
-                                            this.compileFaust);
+                                            this.compileFaust,
+                                            this.app.audioContext);
             module.moduleFaust.setSource(this.tempModuleSourceCode);
             module.createDSP(factory);
             module.patchID = this.tempPatchId;

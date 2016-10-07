@@ -30,13 +30,13 @@ class Connector {
     destination: Module;
 
     // connect input node to device input
-    connectInput(inputModule: Module, divSrc: IHTMLDivElementSrc): void {
-        divSrc.audioNode.connect(inputModule.moduleFaust.getDSP().getProcessor());
+    connectInput(inputModule: Module, srcnode: MediaStreamAudioSourceNode): void {
+        srcnode.connect(inputModule.moduleFaust.getDSP().getProcessor());
     }
 
     //connect output to device output
-    connectOutput(outputModule: Module, divOut: IHTMLDivElementOut): void {
-        outputModule.moduleFaust.getDSP().getProcessor().connect(divOut.audioNode);
+    connectOutput(outputModule: Module, destnode: AudioDestinationNode): void {
+        outputModule.moduleFaust.getDSP().getProcessor().connect(destnode);
     }
 
     getBroadcastStream(outputModule: Module, ctx: AudioContext): MediaStream | void {

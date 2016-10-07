@@ -22,23 +22,37 @@ class PlayerMenuItem {
 
 class Player {
     offer: RTCSessionDescription;
+    icecandidates: Array<RTCIceCandidate>;
     ident: string;
     pc: RTCPeerConnection;
 
     constructor(ident:string, offer: RTCSessionDescription) {
         this.ident = ident;
         this.offer = offer;
+        this.icecandidates = new Array<RTCIceCandidate>();
     }
 
     replyToOffer(onstream: (stream: MediaStream) => void) {
         this.pc = new RTCPeerConnection(null, {optional:[]});
+        //this.pc.onicecandidate = (event: RTCIceCandidateEvent) => this.onicecandidate(event);
         this.pc.onaddstream = (e: RTCMediaStreamEvent) => onstream(e.stream);
+
         this.pc.setRemoteDescription(this.offer)
             .then(
                 () => this.pc.createAnswer()
                 .then((desc: RTCSessionDescription) => this.dispatchAnswer(desc))
         );
+        for(let i=0 ; i<this.icecandidates.length ; i++) {
+            this.pc.addIceCandidate(this.icecandidates[i]).then(
+                () => console.log('ice yeah'),
+                () => console.log('ice merde')
+            );
+        }
     }
+
+    //private onicecandidate(event: RTCIceCandidateEvent) {
+    //    console.log('receiver candidate:', event.candidate);
+    //}
 
     private dispatchAnswer(desc: RTCSessionDescription) {
         document.dispatchEvent(new CustomEvent('Answer',
@@ -59,6 +73,7 @@ class Players {
         //this.team = new Array<Player>();
         this.index = {} as IPlayerIndex;
         document.addEventListener('Offer', (evt) => this.onOffer(<CustomEvent>evt));
+        document.addEventListener('ICECandidate', (evt) => this.onICECandidate(<CustomEvent>evt));
         document.addEventListener('Byebye', (evt) => this.onByebye(<CustomEvent>evt));
     }
 
@@ -70,6 +85,11 @@ class Players {
         document.dispatchEvent(
             new CustomEvent('NewPlayer', {detail:player})
         );
+    }
+
+    onICECandidate(evt: CustomEvent) {
+        var player: Player = this.index[evt.detail.from];
+        player.icecandidates.push(new RTCIceCandidate(evt.detail.icecandidate));
     }
 
     onByebye(evt: CustomEvent) {
