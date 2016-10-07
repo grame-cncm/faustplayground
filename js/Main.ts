@@ -23,7 +23,7 @@ i18next
         }
     },
     () => {
-        var app: App = new App()
+        var app: App = new App();
         //event listener to activate web audio on IOS devices, touchstart for iOS 8
         //touchend for iOS 9
 
