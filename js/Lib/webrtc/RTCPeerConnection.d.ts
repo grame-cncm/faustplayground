@@ -106,6 +106,7 @@ interface RTCSessionDescriptionInit {
 interface RTCSessionDescription {
   type?: string;  // RTCSdpType; See TODO(1)
   sdp?: string;
+  toJSON(): string;
 }
 declare var RTCSessionDescription: {
   prototype: RTCSessionDescription;
