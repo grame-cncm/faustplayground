@@ -61,14 +61,18 @@ class Module  {
         this.deleteCallback = removeModuleCallBack;
         this.eventDraggingHandler = (event)=>{ this.dragCallback(event, this) };
 
-        this.moduleView = new ModuleView(id, x, y, name, htmlElementModuleContainer);
+        this.drawInterface(id, x, y, name, htmlElementModuleContainer);
         this.moduleFaust = new ModuleFaust(name);
         this.addEvents();
 
     }
 
+    drawInterface(id: number, x:number, y:number, name:string, container: HTMLElement) {
+        this.moduleView = new ModuleView(id, x, y, name, container);
+    }
+
     //add all event listener to the moduleView
-    addEvents() {
+    private addEvents() {
         this.moduleView.getModuleContainer().addEventListener("mousedown", this.eventDraggingHandler, false);
         this.moduleView.getModuleContainer().addEventListener("touchstart", this.eventDraggingHandler, false);
         this.moduleView.getModuleContainer().addEventListener("touchmove", this.eventDraggingHandler, false);

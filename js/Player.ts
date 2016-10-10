@@ -25,7 +25,7 @@ class Player {
     icecandidates: Array<RTCIceCandidate>;
     ident: string;
     pc: RTCPeerConnection;
-    send: (msg: WSMessage) => void
+    send: (msg: WSMessage) => void;
 
     constructor(ident:string, offer: RTCSessionDescription, send: (msg: WSMessage) => void) {
         this.ident = ident;
@@ -117,24 +117,42 @@ interface HTMLMediaElementNG extends HTMLMediaElement {
     srcObject: MediaStream
 }
 
-class PlayerModule {
+class PlayerModule extends Module {
 
-    constructor(id: number, x: number, y:number, container: HTMLElement, player:Player) {
-        var audio: HTMLMediaElementNG =
-        <HTMLMediaElementNG>(
-        d3.select(container)
-        .append('div')
-        .attr('class', 'moduleFaust')
-        .style('width', '100px')
-        .style('height', '100px')
-        .style('left', x+'px')
-        .style('top', y+'px')
-        .append('audio')
-        .attr('autoplay', '')
-        .attr('controls', '')
-        .node()
-        )
-        ;
-        player.replyToOffer((stream: MediaStream) => audio.srcObject = stream);
+    constructor(id: number,
+                x: number,
+                y: number,
+                name: string,
+                container: HTMLElement,
+                removeModuleCallBack: (m: Module) => void,
+                compileFaust: (compileFaust: CompileFaust) => void,
+                audioContext: AudioContext,
+                player: Player) {
+        super(id, x, y, 'player', container, removeModuleCallBack, compileFaust, audioContext);
+        player.replyToOffer((stream: MediaStream) => this.connectStream(stream));
+    }
+
+    drawInterface(id: number, x:number, y:number, name:string, container: HTMLElement) {
+        this.moduleView = new PlayerModuleView(id, x, y, name, container);
+    }
+
+    private connectStream(stream: MediaStream) {
+        var msasn: MediaStreamAudioSourceNode = this.audioContext.createMediaStreamSource(stream);
+        var ctor: Connector = new Connector();
+        ctor.connectInput(this, msasn);
+        //msasn.connect(this.audioContext.destination);
+        //var haudio: HTMLMediaElementNG = <HTMLMediaElementNG>(d3.select(this.moduleView.fModuleContainer)
+        //.append('audio')
+        //.attr('autoplay', '')
+        //.attr('control', '')
+        //.node());
+        //haudio.srcObject = stream;
+    }
+}
+
+class PlayerModuleView extends ModuleView {
+
+    constructExtras(ID: number, name:string, fModuleContainer: HTMLElement) {
+
     }
 }

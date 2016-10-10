@@ -59,7 +59,22 @@ class ModuleView {
         fInterfaceContainer.className = "content";
         fModuleContainer.appendChild(fInterfaceContainer);
         this.fInterfaceContainer = fInterfaceContainer;
-        //if modules are input or output scene module, no need for interface
+
+        this.constructExtras(ID, name, fModuleContainer);
+
+        htmlParent.appendChild(fModuleContainer);
+
+
+        this.fName = name;
+        this.fModuleContainer = fModuleContainer;
+        this.fInterfaceContainer = fInterfaceContainer;
+        //this.fEditImg = fEditImg;
+        this.fTitle = fTitle;
+        this.x = x;
+        this.y = y;
+    }
+
+    constructExtras(ID: number, name:string, fModuleContainer: HTMLElement) {
         if (name == "input") {
             fModuleContainer.id = "moduleInput";
         } else if (name == "output") {
@@ -69,7 +84,7 @@ class ModuleView {
             var textArea: HTMLTextAreaElement = document.createElement("textarea");
             textArea.rows = 15;
             textArea.cols = 60;
-            textArea.className="textArea"
+            textArea.className="textArea";
             textArea.value = "";
             textArea.style.display = "none";
             textArea.contentEditable = "true";
@@ -107,21 +122,10 @@ class ModuleView {
             fFooter.appendChild(fEditImg);
             fModuleContainer.appendChild(fFooter);
 
-
-
+            this.fEditImg = fEditImg;
         }
-
-        htmlParent.appendChild(fModuleContainer);
-
-
-        this.fName = name;
-        this.fModuleContainer = fModuleContainer;
-        this.fInterfaceContainer = fInterfaceContainer;
-        this.fEditImg = fEditImg;
-        this.fTitle = fTitle;
-        this.x = x;
-        this.y = y;
     }
+
     // ------ Returns Graphical input and output Node
     getOutputNode(): HTMLElement { return this.fOutputNode; }
     getInputNode(): HTMLElement { return this.fInputNode; }

@@ -390,7 +390,6 @@ class App {
 
                 case 'player' :
                     Utilitary.hideFullPageLoading();
-                    //return console.info('player dropped:', e.dataTransfer.getData('URL'));
                     return this.createPlayerModule(x, y, e.dataTransfer.getData('URL'));
 
                 default :
@@ -443,11 +442,30 @@ class App {
     }
 
     private createPlayerModule(x:number, y:number, url:string) {
-        console.info('new player module:', url);
-        new PlayerModule(Utilitary.idX++,
-                         x, y,
-                         document.getElementById('modules'),
-                         this.players.index[url]);
+        var pm: PlayerModule = new PlayerModule(Utilitary.idX++,
+                                                x,
+                                                y,
+                                                'player',
+                                                document.getElementById('modules'),
+                                                (module) => { this.scene.removeModule(module) },
+                                                this.compileFaust,
+                                                this.audioContext,
+                                                this.players.index[url]);
+        pm.patchID = 'player' + url;
+        pm.compileFaust({name: pm.patchID,
+                         sourceCode: 'process=_,_;',
+                         x: x,
+                         y: y,
+                         callback:(factory) => {
+                             pm.moduleFaust.setSource('process=_,_;');
+                             pm.createDSP(factory);
+                             pm.moduleView.setOutputNode();
+                             pm.moduleView.fOutputNode.addEventListener("mousedown", pm.eventConnectorHandler);
+                             pm.moduleView.fOutputNode.addEventListener("touchstart", pm.eventConnectorHandler);
+                             pm.moduleView.fOutputNode.addEventListener("touchmove", pm.eventConnectorHandler);
+                             pm.moduleView.fOutputNode.addEventListener("touchend", pm.eventConnectorHandler);
+                         }
+        });
     }
 
     private onMouseDown(e: MouseEvent) {
