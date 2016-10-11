@@ -68,6 +68,10 @@ class Broadcast {
                     evt.stopPropagation();
                     localStorage.setItem('nickname',
                         (<HTMLInputElement>((<HTMLFormElement>(evt.target)).elements.namedItem('nickname'))).value);
+                    this.send(new WSMessage('SetNickname',
+                                            undefined,
+                                            undefined,
+                                            localStorage.getItem('nickname')));
                     modal_wrapper.transition()
                         .style('opacity', '0')
                         .remove();
@@ -98,7 +102,7 @@ class Broadcast {
                 console.log('sent:', msg);
                 break;
             default :
-                console.error('Unable to announce offer with a websocket at this status:',
+                console.error('Unable to send message with a websocket at this status:',
                     this.ws.readyState,
                     msg);
         }

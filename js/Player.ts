@@ -9,15 +9,16 @@ class PlayerMenuItem {
     constructor(player: Player, container: HTMLElement){
         this.player = player;
 
-        d3.select(container)
-        .append('li')
-        .attr('draggable', true)
-        .attr('data-ddtype', 'player')
-        .attr('class', 'draggable')
-        .append('a')
-        .attr('href', player.ident)
-        .attr('draggable', false)
-        .text(player.nickname);
+        this.element = <HTMLElement>(d3.select(container)
+            .append('li').node());
+        d3.select(this.element)
+            .attr('draggable', true)
+            .attr('data-ddtype', 'player')
+            .attr('class', 'draggable')
+            .append('a')
+            .attr('href', player.ident)
+            .attr('draggable', false)
+            .text(player.nickname);
     }
 }
 

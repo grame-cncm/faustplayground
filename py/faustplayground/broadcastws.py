@@ -23,7 +23,6 @@ class BroadcastServerProtocol(WebSocketServerProtocol):
         if not isBinary:
             msg = WSMessage.fromJSON(payload.decode('utf-8'))
             msg.setFrom(self)
-            print msg
             if msg.type == 'Offer' :
                 self.offer = msg
 
