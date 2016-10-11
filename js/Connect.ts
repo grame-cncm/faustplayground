@@ -158,8 +158,8 @@ class Connector {
 
     static redrawInputConnections(module: Module, drag: Drag) {
         var offset: HTMLElement = module.moduleView.getInputNode();
-        var x = module.moduleView.inputOutputNodeDimension / 2// + window.scrollX ;
-        var y = module.moduleView.inputOutputNodeDimension / 2// + window.scrollY;
+        var x = module.moduleView.inputOutputNodeDimension / 2;
+        var y = module.moduleView.inputOutputNodeDimension / 2;
 
         while (offset) {
 
@@ -182,8 +182,8 @@ class Connector {
     }
     static redrawOutputConnections(module: Module, drag: Drag) {
         var offset: HTMLElement = module.moduleView.getOutputNode();
-        var x = module.moduleView.inputOutputNodeDimension / 2// + window.scrollX ;
-        var y = module.moduleView.inputOutputNodeDimension / 2// + window.scrollY;
+        var x = module.moduleView.inputOutputNodeDimension / 2;
+        var y = module.moduleView.inputOutputNodeDimension / 2;
 
         while (offset) {
 
@@ -200,7 +200,7 @@ class Connector {
                     var y1 = currentConnectorShape.y1;
                     var x2 = x;
                     var y2 = y;
-                    var d = drag.setCurvePath(x1, y1, x2, y2, drag.calculBezier(x1, x2), drag.calculBezier(x1, x2))
+                    var d = drag.setCurvePath(x1, y1, x2, y2, drag.calculBezier(x1, x2), drag.calculBezier(x1, x2));
 
                     currentConnectorShape.setAttributeNS(null, "d", d);
                     drag.updateConnectorShapePath(currentConnectorShape,x1, x2, y1, y2);

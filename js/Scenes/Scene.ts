@@ -46,7 +46,7 @@ class Scene {
 
 
 
-    constructor(app: App, sceneView: SceneView) {
+    constructor(app: App) {
         this.app = app;
         this.compileFaust = this.app.compileFaust; // shortcut
         this.sceneView = new SceneView();
@@ -172,24 +172,6 @@ class Scene {
                             y: positionOutput.y,
                             callback: (factory) => { this.integrateAudioOutput(factory) }
                            });
-        //var dummy: Module = new RemoteModule(Utilitary.idX++,
-        //                               positionOutput.x-300,
-        //                               positionOutput.y + 200,
-        //                               'dummy',
-        //                               this.sceneView.inputOutputModuleContainer,
-        //                               (module) => {this.removeModule(module)},
-        //                               this.compileFaust
-        //                               );
-        //dummy.moduleFaust.setSource('process=+;');
-        //this.compileFaust({name: 'dummy',
-        //                   sourceCode: 'process=_,_;',
-        //                   x: 0,
-        //                   y: 0,
-        //                   callback: function(factory: Factory){
-        //                       console.warn('prout');
-        //                   }
-        //                   });
-        ////dummy.createDSP();
     }
 
     private integrateAudioOutput(factory: Factory): void {

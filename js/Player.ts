@@ -60,12 +60,6 @@ class Player {
         this.pc.setLocalDescription(answerdesc);
         this.send(new WSMessage('Answer', undefined, this.ident, answerdesc));
     }
-
-    //private dispatchAnswer(desc: RTCSessionDescription) {
-    //    document.dispatchEvent(new CustomEvent('Answer',
-    //                                           {detail: {desc: desc.toJSON(),
-    //                                                     to: this.ident}}));
-    //}
 }
 
 interface IPlayerIndex {
@@ -77,11 +71,7 @@ class Players {
     index: IPlayerIndex;
 
     constructor(){
-        //this.team = new Array<Player>();
         this.index = {} as IPlayerIndex;
-        //document.addEventListener('Offer', (evt) => this.onOffer(<CustomEvent>evt));
-        //document.addEventListener('ICECandidate', (evt) => this.onICECandidate(<CustomEvent>evt));
-        //document.addEventListener('Byebye', (evt) => this.onByebye(<CustomEvent>evt));
     }
 
     addPlayerFromOffer(msg: WSMessage, send: (msg: WSMessage) => void) {
@@ -93,11 +83,6 @@ class Players {
             new CustomEvent('PlayerAdded', {detail:player})
         );
     }
-
-    //onICECandidate(evt: CustomEvent) {
-    //    var player: Player = this.index[evt.detail.from];
-    //    player.icecandidates.push(new RTCIceCandidate(evt.detail.icecandidate));
-    //}
 
     removePlayer(msg: WSMessage) {
         var indent: string = msg.from;

@@ -83,8 +83,7 @@ class App {
     }
 
     createAllScenes(): void {
-        var sceneView: SceneView = new SceneView();
-        this.scene = new Scene(this, sceneView);
+        this.scene = new Scene(this);
         //TODO: remove
         Utilitary.currentScene = this.scene;
         this.setGeneralAppListener();
