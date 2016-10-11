@@ -2,3 +2,4 @@ ssl
 *.pid
 js/faustplayground.js
 js/faustplayground.js.map
+js/locales/fr/translation_old.json
