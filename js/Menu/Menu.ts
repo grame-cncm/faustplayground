@@ -569,9 +569,10 @@ class Menu {
     }
 
     private addPlayerItem(player: Player) {
-        var item: PlayerMenuItem = new PlayerMenuItem(player);
-        this.playersindex[player.ident] = item;
-        this.menuView.playersContent.appendChild(item.element);
+        var item: PlayerMenuItem = new PlayerMenuItem(player,
+                                                      this.menuView.playersContent);
+        //this.playersindex[player.ident] = item;
+        //this.menuView.playersContent.appendChild(item.element);
     }
 
     private removePlayerItem(player: Player) {

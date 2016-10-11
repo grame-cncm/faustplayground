@@ -6,17 +6,18 @@ class PlayerMenuItem {
     player: Player;
     element: HTMLElement;
 
-    constructor(player: Player){
+    constructor(player: Player, container: HTMLElement){
         this.player = player;
-        this.element = document.createElement('li');
-        this.element.draggable = true;
-        this.element.setAttribute('data-ddtype', 'player');
-        this.element.classList.add('draggable');
-        var a: HTMLAnchorElement = document.createElement('a');
-        a.href = player.ident;
-        a.draggable = false;
-        a.innerText = player.ident;
-        this.element.appendChild(a);
+
+        d3.select(container)
+        .append('li')
+        .attr('draggable', true)
+        .attr('data-ddtype', 'player')
+        .attr('class', 'draggable')
+        .append('a')
+        .attr('href', player.ident)
+        .attr('draggable', false)
+        .text(player.nickname);
     }
 }
 
@@ -24,11 +25,13 @@ class Player {
     offer: RTCSessionDescription;
     icecandidates: Array<RTCIceCandidate>;
     ident: string;
+    nickname: string;
     pc: RTCPeerConnection;
     send: (msg: WSMessage) => void;
 
     constructor(ident:string, offer: RTCSessionDescription, send: (msg: WSMessage) => void) {
         this.ident = ident;
+        this.nickname = ident;
         this.offer = offer;
         this.send = send;
         this.icecandidates = new Array<RTCIceCandidate>();

@@ -7,7 +7,8 @@ class Broadcast {
     players: Players;
     pc: RTCPeerConnection;
     ws: WebSocket;
-    wspeer: string;
+    ident: string;
+    nickname: string;
 
     static offer_options = {
         offerToReceiveAudio: 1,
@@ -36,6 +37,53 @@ class Broadcast {
         this.ws.addEventListener('message', (msg) => this.onWsMessage(msg));
 
         document.addEventListener('Answer', (e:Event) => this.sendAnswer(<CustomEvent>e));
+
+        if (!localStorage.getItem('nickname'))
+            this.askNickname();
+    }
+
+    askNickname() {
+        var modal_wrapper = d3.select(document.body)
+            .append('div')
+            .attr('class', 'modal-wrapper');
+
+        var modal_box = modal_wrapper
+            .append('div')
+            .attr('class', 'modal-box');
+
+        var content = modal_box
+            .append('div')
+            .attr('class', 'content');
+
+        content.append('h1')
+            .text(_('Your nickname'));
+
+        var form = content.append('form')
+            .attr('action', '#')
+            .attr('autocomplete', 'off')
+            .on('submit',
+                () => {
+                    var evt: Event = <Event>d3.event;
+                    evt.preventDefault();
+                    evt.stopPropagation();
+                    localStorage.setItem('nickname',
+                        (<HTMLInputElement>((<HTMLFormElement>(evt.target)).elements.namedItem('nickname'))).value);
+                    modal_wrapper.transition()
+                        .style('opacity', '0')
+                        .remove();
+                });
+
+        form.append('input')
+            .attr('type', 'text')
+            .attr('name', 'nickname')
+            .attr('autofocus', 'autofocus');
+
+        content.append('dl')
+            .append('dd')
+            .text(_('Please enter your nickname that other players will see.'));
+
+        modal_box.transition()
+            .style('opacity', '1');
     }
 
     send(msg: WSMessage) {
@@ -114,7 +162,7 @@ class Broadcast {
 
     private onWhoami(msg: WSMessage) {
         console.info('I am:', msg.payload);
-        this.wspeer = msg.payload;
+        this.ident = msg.payload;
     }
 
     private onAnswer(msg: WSMessage) {
