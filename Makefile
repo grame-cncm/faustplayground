@@ -9,6 +9,7 @@ clean:
 
 i18n:
 	i18next js -r -f _ --fileFilter '*.ts' -o js/locales --ignore-variables --namespace-separator=":::" --key-separator="::"
+	rm -rf js/locales/en
 
 sslcert:
 	rm -rf ssl
