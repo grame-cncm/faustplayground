@@ -56,7 +56,7 @@ class App {
 
         Utilitary.addFullPageLoading();
 
-        this.players = new Players();
+        this.players = new Players(this);
         this.createAllScenes();
         this.createMenu();
 
@@ -449,7 +449,7 @@ class App {
                                                 (module) => { this.scene.removeModule(module) },
                                                 this.compileFaust,
                                                 this.audioContext,
-                                                this.players.index[url]);
+                                                this.players.getPlayer(url));
         pm.patchID = 'player' + url;
         pm.compileFaust({name: pm.patchID,
                          sourceCode: 'process=_,_;',

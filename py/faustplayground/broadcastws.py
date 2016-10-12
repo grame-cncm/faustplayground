@@ -25,6 +25,8 @@ class BroadcastServerProtocol(WebSocketServerProtocol):
             msg.setFrom(self)
             if msg.type == 'Offer' :
                 self.offer = msg
+            elif msg.type == 'SetNickname' :
+                self.nickname = msg.payload
 
             elif msg.type == 'ICECandidate' :
                 self.icecandidates.append(msg)
@@ -56,10 +58,14 @@ class BroadcastServerFactory(WebSocketServerFactory) :
             self.broadcast(whoiam)
 
             # send to the new client previous offers from other clients
-            for c in self.otherClients(client.peer) :
-                client.sendMessage(c.offer.toJSON())
-                for icecandidate in c.icecandidates :
+            for other_client in self.otherClients(client.peer) :
+                client.sendMessage(other_client.offer.toJSON())
+                for icecandidate in other_client.icecandidates :
                     client.sendMessage(icecandidate.toJSON())
+                client.sendMessage(WSMessage('SetNickname',
+                                             other_client.peer,
+                                             client.peer,
+                                             other_client.nickname).toJSON())
 
 
     def unregister(self, client):

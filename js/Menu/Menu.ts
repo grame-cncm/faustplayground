@@ -24,11 +24,6 @@ interface HTMLElement {
 
 enum MenuChoices { library, export, help, kids, edit, save, load, null, players }
 
-interface IPlayerItemIndex {
-    [index: string]: PlayerMenuItem;
-}
-
-
 class Menu {
     isMenuDriveLoading: boolean = false;
     sceneCurrent: Scene;
@@ -45,11 +40,9 @@ class Menu {
     isAccelerometer: boolean = Utilitary.isAccelerometerOn;
     drive: DriveAPI;
     private app: App;
-    private playersindex: IPlayerItemIndex;
 
     constructor(htmlContainer: HTMLElement, app: App) {
         this.app = app;
-        this.playersindex = {} as IPlayerItemIndex;
         //create and init menu view wich gone create and init all sub menus views
         this.menuView = new MenuView(htmlContainer);
 
@@ -90,12 +83,6 @@ class Menu {
         document.addEventListener("startloaddrive", () => { this.startLoadingDrive() });
         document.addEventListener("finishloaddrive", () => { this.finishLoadingDrive() });
         document.addEventListener("clouderror", (e: CustomEvent) => { Menu.connectionProblem(e) });
-        document.addEventListener('PlayerAdded',
-            (e: CustomEvent) => this.addPlayerItem(e.detail)
-        );
-        document.addEventListener('PlayerRemoved',
-            (e: CustomEvent) => this.removePlayerItem(e.detail)
-        );
 
         //create and init all menus objects
         this.library = new Library();
@@ -566,20 +553,6 @@ class Menu {
     //display Drive Connection error
     static connectionProblem(event: CustomEvent) {
         new Message(_("Unable to connect to Google Drive") + " : " + event.detail)
-    }
-
-    private addPlayerItem(player: Player) {
-        var item: PlayerMenuItem = new PlayerMenuItem(player,
-                                                      this.menuView.playersContent);
-        this.playersindex[player.ident] = item;
-        //this.menuView.playersContent.appendChild(item.element);
-    }
-
-    private removePlayerItem(player: Player) {
-        var ident: string = player.ident;
-        var item: PlayerMenuItem = this.playersindex[ident];
-        delete this.playersindex[ident];
-        this.menuView.playersContent.removeChild(item.element);
     }
 
     fillSelectCloud(optionEvent: CustomEvent) {

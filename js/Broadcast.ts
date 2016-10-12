@@ -22,6 +22,7 @@ class Broadcast {
                 pc_constraints={optional:[]}) {
         this.app = app;
         this.players = app.players;
+        this.players.setSendFunc((msg: WSMessage) => this.send(msg));
         this.pc = new RTCPeerConnection(server, pc_constraints);
         this.pc.onicecandidate = (event: RTCIceCandidateEvent) => this.iceCallback(event);
         this.pc.addStream(stream);
@@ -38,8 +39,11 @@ class Broadcast {
 
         document.addEventListener('Answer', (e:Event) => this.sendAnswer(<CustomEvent>e));
 
-        if (!localStorage.getItem('nickname'))
+        var nickname: string = localStorage.getItem('nickname');
+        if (!nickname)
             this.askNickname();
+        else
+            this.sendNickname();
     }
 
     askNickname() {
@@ -68,10 +72,7 @@ class Broadcast {
                     evt.stopPropagation();
                     localStorage.setItem('nickname',
                         (<HTMLInputElement>((<HTMLFormElement>(evt.target)).elements.namedItem('nickname'))).value);
-                    this.send(new WSMessage('SetNickname',
-                                            undefined,
-                                            undefined,
-                                            localStorage.getItem('nickname')));
+                    this.sendNickname();
                     modal_wrapper.transition()
                         .style('opacity', '0')
                         .remove();
@@ -147,7 +148,7 @@ class Broadcast {
 
     // a player is created on offer received
     private onOffer(msg: WSMessage) {
-        this.players.addPlayerFromOffer(msg, (msg: WSMessage) => this.send(msg));
+        this.players.updatePlayerOffer(msg);
     }
 
     // ICE candidates that follow an offer are stored
@@ -176,11 +177,22 @@ class Broadcast {
         );
     }
 
+    private onSetNickname(msg: WSMessage) {
+        this.players.updatePlayerNickname(msg);
+    }
+
     private sendAnswer(evt: CustomEvent){
         this.send(new WSMessage('Answer',
                                 undefined,
                                 evt.detail.to,
                                 evt.detail.desc));
+    }
+
+    private sendNickname() {
+        this.send(new WSMessage('SetNickname',
+                                undefined,
+                                undefined,
+                                localStorage.getItem('nickname')));
     }
 }
 

@@ -20,6 +20,12 @@ class PlayerMenuItem {
             .attr('draggable', false)
             .text(player.nickname);
     }
+
+    refresh() {
+        d3.select(this.element)
+            .select('a')
+            .text(this.player.nickname);
+    }
 }
 
 class Player {
@@ -29,11 +35,12 @@ class Player {
     nickname: string;
     pc: RTCPeerConnection;
     send: (msg: WSMessage) => void;
+    menuitem: PlayerMenuItem;
+    module: PlayerModule;
 
-    constructor(ident:string, offer: RTCSessionDescription, send: (msg: WSMessage) => void) {
+    constructor(ident:string, send: (msg: WSMessage) => void) {
         this.ident = ident;
         this.nickname = ident;
-        this.offer = offer;
         this.send = send;
         this.icecandidates = new Array<RTCIceCandidate>();
     }
@@ -64,6 +71,15 @@ class Player {
         this.pc.setLocalDescription(answerdesc);
         this.send(new WSMessage('Answer', undefined, this.ident, answerdesc));
     }
+
+    updateOffer(offer: RTCSessionDescription) {
+        this.offer = offer;
+    }
+
+    updateNickname(nickname: string) {
+        this.nickname = nickname;
+        this.menuitem.refresh();
+    }
 }
 
 interface IPlayerIndex {
@@ -71,34 +87,49 @@ interface IPlayerIndex {
 }
 
 class Players {
-    team: Array<Player>;
-    index: IPlayerIndex;
+    private app: App;
+    private index: IPlayerIndex;
+    private send: (msg: WSMessage) => void;
 
-    constructor(){
+    constructor(app: App){
+        this.app = app;
         this.index = {} as IPlayerIndex;
     }
 
-    addPlayerFromOffer(msg: WSMessage, send: (msg: WSMessage) => void) {
-        var player: Player = new Player(msg.from,
-                                        new RTCSessionDescription(msg.payload),
-                                        send);
-        this.index[msg.from] = player;
-        document.dispatchEvent(
-            new CustomEvent('PlayerAdded', {detail:player})
-        );
+    setSendFunc(send: (msg: WSMessage) => void) {
+        this.send = send;
+    }
+
+    updatePlayerOffer(msg: WSMessage) {
+        var player: Player = this.getOrCreatePlayer(msg.from);
+        player.updateOffer(new RTCSessionDescription(msg.payload));
     }
 
     removePlayer(msg: WSMessage) {
         var indent: string = msg.from;
         var player: Player = this.index[indent];
         delete this.index[indent];
-        document.dispatchEvent(
-            new CustomEvent('PlayerRemoved', {detail:player})
-        );
+        this.app.menu.menuView.playersContent.removeChild(player.menuitem.element);
     }
 
-    getPlayer(id: string): Player {
-        return this.index[id];
+    private getOrCreatePlayer(ident: string): Player {
+        if (this.index[ident])
+            return this.index[ident];
+
+        var player: Player = new Player(ident, this.send);
+        this.index[ident] = player;
+        player.menuitem = new PlayerMenuItem(player,
+                                             this.app.menu.menuView.playersContent);
+        return player;
+    }
+
+    getPlayer(ident: string): Player {
+        return this.index[ident];
+    }
+
+    updatePlayerNickname(msg: WSMessage) {
+        var player: Player = this.getOrCreatePlayer(msg.from);
+        player.updateNickname(msg.payload);
     }
 }
 
