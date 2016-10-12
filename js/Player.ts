@@ -29,14 +29,14 @@ class PlayerMenuItem {
 }
 
 class Player {
-    offer: RTCSessionDescription;
-    icecandidates: Array<RTCIceCandidate>;
+    private offer: RTCSessionDescription;
+    private icecandidates: Array<RTCIceCandidate>;
     ident: string;
     nickname: string;
-    pc: RTCPeerConnection;
-    send: (msg: WSMessage) => void;
-    menuitem: PlayerMenuItem;
-    module: PlayerModule;
+    private pc: RTCPeerConnection;
+    private send: (msg: WSMessage) => void;
+    private menuitem: PlayerMenuItem;
+    private module: PlayerModule;
 
     constructor(ident:string, send: (msg: WSMessage) => void) {
         this.ident = ident;
@@ -72,13 +72,42 @@ class Player {
         this.send(new WSMessage('Answer', undefined, this.ident, answerdesc));
     }
 
+    addICECandidate(candidate: RTCIceCandidate) {
+        this.icecandidates.push(candidate);
+    }
+
+    setMenuItem(menuitem: PlayerMenuItem) {
+        this.menuitem = menuitem;
+    }
+
+    getMenuItem(): PlayerMenuItem {
+        return this.menuitem;
+    }
+
+    setModule(module: PlayerModule) {
+        this.module = module;
+        d3.select(this.menuitem.element).remove();
+        this.menuitem = undefined;
+    }
+
     updateOffer(offer: RTCSessionDescription) {
         this.offer = offer;
     }
 
     updateNickname(nickname: string) {
         this.nickname = nickname;
-        this.menuitem.refresh();
+        if (this.menuitem)
+            this.menuitem.refresh();
+        if (this.module)
+            (<PlayerModuleView>this.module.moduleView).refresh();
+    }
+
+    notifyDisconnected() {
+        this.ident = undefined;
+        if (this.menuitem)
+            d3.select(this.menuitem.element).remove();
+        if (this.module)
+            this.updateNickname(_('[disconnected]'));
     }
 }
 
@@ -105,11 +134,13 @@ class Players {
         player.updateOffer(new RTCSessionDescription(msg.payload));
     }
 
-    removePlayer(msg: WSMessage) {
+    onPlayerDisconnected(msg: WSMessage) {
         var indent: string = msg.from;
         var player: Player = this.index[indent];
         delete this.index[indent];
-        this.app.menu.menuView.playersContent.removeChild(player.menuitem.element);
+        player.notifyDisconnected();
+        //this.app.menu.menuView.playersContent.removeChild(
+        //    player.getMenuItem().element);
     }
 
     private getOrCreatePlayer(ident: string): Player {
@@ -118,8 +149,8 @@ class Players {
 
         var player: Player = new Player(ident, this.send);
         this.index[ident] = player;
-        player.menuitem = new PlayerMenuItem(player,
-                                             this.app.menu.menuView.playersContent);
+        player.setMenuItem(new PlayerMenuItem(player,
+                                              this.app.menu.menuView.playersContent));
         return player;
     }
 
@@ -151,6 +182,7 @@ class PlayerModule extends Module {
                 player: Player) {
         super(id, x, y, 'player', container, removeModuleCallBack, compileFaust, audioContext);
         this.player = player;
+        this.player.setModule(this);
         player.replyToOffer((stream: MediaStream) => this.connectStream(stream));
 
         this.moduleView = new PlayerModuleView(id, x, y, name, container, this.player);
@@ -192,4 +224,10 @@ class PlayerModuleView extends ModuleView {
     }
 
     constructExtras(ID: number, name:string, container: HTMLElement) {}
+
+    refresh() {
+        d3.select(this.fModuleContainer)
+            .select('div.content')
+            .text(this.player.nickname);
+    }
 }

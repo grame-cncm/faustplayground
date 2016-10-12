@@ -73,8 +73,8 @@ class BroadcastServerFactory(WebSocketServerFactory) :
             self.clients.pop(client.peer)
             log.info("unregistered client {}".format(client.peer))
 
-            # for otherclient in self.otherClients(client) :
-            byebye = WSMessage('Byebye', client.peer, None, None)
+            byebye = WSMessage('Disconnected', client.peer, None, None)
+            # notify other clients that this client is disconnected
             self.broadcast(byebye)
 
         except KeyError :

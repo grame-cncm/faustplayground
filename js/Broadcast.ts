@@ -156,13 +156,13 @@ class Broadcast {
     // So the player can be used later.
     private onICECandidate(msg: WSMessage) {
         var player: Player = this.players.getPlayer(msg.from);
-        player.icecandidates.push(new RTCIceCandidate(msg.payload));
+        player.addICECandidate(new RTCIceCandidate(msg.payload));
     }
 
 
     // a player leaves the session
-    private onByebye(msg: WSMessage) {
-        this.players.removePlayer(msg);
+    private onDisconnected(msg: WSMessage) {
+        this.players.onPlayerDisconnected(msg);
     }
 
     private onWhoami(msg: WSMessage) {
