@@ -138,6 +138,7 @@ interface HTMLMediaElementNG extends HTMLMediaElement {
 }
 
 class PlayerModule extends Module {
+    private player: Player;
 
     constructor(id: number,
                 x: number,
@@ -149,12 +150,14 @@ class PlayerModule extends Module {
                 audioContext: AudioContext,
                 player: Player) {
         super(id, x, y, 'player', container, removeModuleCallBack, compileFaust, audioContext);
+        this.player = player;
         player.replyToOffer((stream: MediaStream) => this.connectStream(stream));
+
+        this.moduleView = new PlayerModuleView(id, x, y, name, container, this.player);
+        this.addEvents();
     }
 
-    drawInterface(id: number, x:number, y:number, name:string, container: HTMLElement) {
-        this.moduleView = new PlayerModuleView(id, x, y, name, container);
-    }
+    drawInterface(id: number, x:number, y:number, name:string, container: HTMLElement){}
 
     private connectStream(stream: MediaStream) {
         var msasn: MediaStreamAudioSourceNode = this.audioContext.createMediaStreamSource(stream);
@@ -171,8 +174,22 @@ class PlayerModule extends Module {
 }
 
 class PlayerModuleView extends ModuleView {
+    private player: Player;
 
-    constructExtras(ID: number, name:string, fModuleContainer: HTMLElement) {
+    constructor(ID: number, x: number, y: number, name: string, parent: HTMLElement, player: Player) {
+        super(ID, x, y, name, parent);
+        this.player = player;
+        d3.select(this.fModuleContainer).select('h6.module-title').remove();
+        d3.select(this.fModuleContainer)
+            .select('div.content')
+            .text(this.player.nickname);
 
+        this.closeButton = <HTMLDivElement>(d3.select(this.fModuleContainer)
+            .append('div')
+            .attr('class', 'close')
+            .attr('draggable', false)
+            .node());
     }
+
+    constructExtras(ID: number, name:string, container: HTMLElement) {}
 }

@@ -63,16 +63,16 @@ class Module  {
 
         this.drawInterface(id, x, y, name, htmlElementModuleContainer);
         this.moduleFaust = new ModuleFaust(name);
-        this.addEvents();
 
     }
 
     drawInterface(id: number, x:number, y:number, name:string, container: HTMLElement) {
         this.moduleView = new ModuleView(id, x, y, name, container);
+        this.addEvents();
     }
 
     //add all event listener to the moduleView
-    private addEvents() {
+    addEvents() {
         this.moduleView.getModuleContainer().addEventListener("mousedown", this.eventDraggingHandler, false);
         this.moduleView.getModuleContainer().addEventListener("touchstart", this.eventDraggingHandler, false);
         this.moduleView.getModuleContainer().addEventListener("touchmove", this.eventDraggingHandler, false);

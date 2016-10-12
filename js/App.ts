@@ -465,6 +465,7 @@ class App {
                              pm.moduleView.fOutputNode.addEventListener("touchend", pm.eventConnectorHandler);
                          }
         });
+        this.scene.addModule(pm);
     }
 
     private onMouseDown(e: MouseEvent) {
