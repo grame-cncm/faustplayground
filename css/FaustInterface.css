@@ -22,7 +22,7 @@
     height:50px;
     padding-top: 0.6em;
     padding-bottom: 0.6em;
-    
+
 
 
 }
@@ -44,7 +44,7 @@
 #moduleOutput {
     height:88px;
 }
-    
+
 
 /* Modules */
 .moduleFaust {
@@ -58,6 +58,11 @@
 	margin-right:auto;
 	/*z-index:5;*/
     cursor:move;
+}
+
+.moduleFaust.dragover {
+  opacity: 1;
+  box-shadow: 0 0 40px #ff0016;
 }
 
 .moduleFaust .content {
@@ -157,7 +162,7 @@
 	background-image: linear-gradient(top, rgb(255, 255, 255), rgb(219, 219, 219));*/
 	border-radius: 0 0 5px 5px;
 	overflow: hidden;
-	padding: 0em .4em .1em;	
+	padding: 0em .4em .1em;
 }
 .moduleFaust footer select {
 	background: url('../img/ico-arrow.png') 100% 50% no-repeat;
@@ -402,7 +407,7 @@ footer>img {
 	background-image: linear-gradient(top, rgb(255, 255, 255), rgb(219, 219, 219));
 	border-radius: 0 0 5px 5px;
 	overflow: hidden;
-	padding: 0em .4em .1em;	
+	padding: 0em .4em .1em;
 }
 .module footer select {
 	background: url('../img/ico-arrow.png') 100% 50% no-repeat;

@@ -39,7 +39,7 @@ class Broadcast {
 
         document.addEventListener('Answer', (e:Event) => this.sendAnswer(<CustomEvent>e));
 
-        var nickname: string = localStorage.getItem('nickname');
+        var nickname: string = sessionStorage.getItem('nickname');
         if (!nickname)
             this.askNickname();
         else
@@ -70,7 +70,7 @@ class Broadcast {
                     var evt: Event = <Event>d3.event;
                     evt.preventDefault();
                     evt.stopPropagation();
-                    localStorage.setItem('nickname',
+                    sessionStorage.setItem('nickname',
                         (<HTMLInputElement>((<HTMLFormElement>(evt.target)).elements.namedItem('nickname'))).value);
                     this.sendNickname();
                     modal_wrapper.transition()
@@ -192,7 +192,7 @@ class Broadcast {
         this.send(new WSMessage('SetNickname',
                                 undefined,
                                 undefined,
-                                localStorage.getItem('nickname')));
+                                sessionStorage.getItem('nickname')));
     }
 }
 

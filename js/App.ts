@@ -48,6 +48,7 @@ class App {
     tempModuleY: number;
     audioContext: AudioContext;
     players: Players;
+    private data_transfer: DataTransfer;
 
     constructor() {
         //create div which will contain all Messages and Confirm
@@ -176,25 +177,39 @@ class App {
 
         //set listener to recompile when dropping faust code on the module
         if (this.tempModuleName != "input" && this.tempModuleName != "output") {
-            module.moduleView.fModuleContainer.ondrop = (e) => {
-                e.stopPropagation();
-                this.onDragEnd();
-                this.onDrop(e, module);
-            };
+            module.moduleView.fModuleContainer.ondrop =
+                (e) => this.onDrop(e, module);
         }
         module.moduleView.fModuleContainer.ondragover = () => {
-            module.moduleView.fModuleContainer.style.opacity = "1";
-            module.moduleView.fModuleContainer.style.boxShadow = "0 0 40px rgb(255, 0, 0)";
+            this.highlightPossibleTarget(module, 'Module', true);
         };
         module.moduleView.fModuleContainer.ondragleave = () => {
-            module.moduleView.fModuleContainer.style.opacity = "0.5";
-            module.moduleView.fModuleContainer.style.boxShadow = "0 5px 10px rgba(0, 0, 0, 0.4)";
+            this.highlightPossibleTarget(module, 'Module', false)
         };
         // the current scene add the module and hide the loading page
         this.scene.addModule(module);
         if (!this.scene.isInitLoading)
             Utilitary.hideFullPageLoading();
 
+    }
+
+    private highlightPossibleTarget(module: Module, module_type: string, over: boolean) {
+        if(!over)
+            return module.moduleView.fModuleContainer.classList.remove('dragover');
+
+        var highlight: boolean = false;
+        switch (this.data_transfer.getData('ddtype')) {
+            case 'faustcodeurl' :
+                if (module_type === 'Module')
+                    highlight = true;
+                break;
+            case 'player' :
+                if (module_type === 'Player')
+                    highlight = true;
+                break;
+        }
+        if(highlight)
+            module.moduleView.fModuleContainer.classList.add('dragover');
     }
 
     /********************************************************************
@@ -339,7 +354,11 @@ class App {
     private onDragStart(evt: DragEvent) {
         var target: HTMLElement = <HTMLElement>evt.target;
         var link: HTMLAnchorElement = target.getElementsByTagName('a')[0];
-
+        /* keep reference of dataTransfer because we need to access it
+           during the drag operation and dataTransfer is not reachable
+           on dragover / draleave events.
+         */
+        this.data_transfer = evt.dataTransfer;
         evt.dataTransfer.setData('text', '');
         evt.dataTransfer.setData('URL', link.href);
         evt.dataTransfer.setData('ddtype', target.getAttribute('data-ddtype'));
@@ -349,26 +368,26 @@ class App {
         this.scene.sceneView.dropElementScene.style.display = "block";
         this.scene.getSceneContainer().style.boxShadow = "0 0 200px #00f inset";
         var modules: Module[] = this.scene.getModules();
-        for (var i = 0; i < modules.length; i++) {
-            modules[i].moduleView.fModuleContainer.style.opacity="0.5"
-        }
+        //for (var i = 0; i < modules.length; i++) {
+        //    modules[i].moduleView.fModuleContainer.style.opacity="0.5"
+        //}
     }
 
     private onDragEnd() {
+        this.data_transfer = null;
         this.menu.menuView.menuContainer.classList.remove("no_pointer");
         this.menu.menuView.menuContainer.style.opacity = "1";
         this.scene.sceneView.dropElementScene.style.display = "none";
         this.scene.getSceneContainer().style.boxShadow = "none";
         var modules: Module[] = this.scene.getModules();
-        for (var i = 0; i < modules.length; i++) {
-            modules[i].moduleView.fModuleContainer.style.opacity = "1";
-            modules[i].moduleView.fModuleContainer.style.boxShadow ="0 5px 10px rgba(0, 0, 0, 0.4)"
-        }
+        for(var module of this.scene.getModules())
+            (<Module>module).moduleView.fModuleContainer.classList.remove('dragover');
         this.menu.closeMenu();
     }
 
     private onDrop(e: DragEvent, module?: Module): void {
         e.preventDefault();
+        e.stopPropagation();
         this.onDragEnd();
         var x = e.clientX;
         var y = e.clientY;
@@ -389,7 +408,12 @@ class App {
 
                 case 'player' :
                     Utilitary.hideFullPageLoading();
-                    return this.createPlayerModule(x, y, e.dataTransfer.getData('URL'));
+                    if (!module)
+                        return this.createPlayerModule(x, y, e.dataTransfer.getData('URL'));
+                    else
+                        return (<PlayerModule>module).rtcConnectPlayer(
+                            this.players.getPlayer(
+                                e.dataTransfer.getData('URL')));
 
                 default :
                     var dttext: string = e.dataTransfer.getData('text');
@@ -465,6 +489,15 @@ class App {
                              pm.moduleView.fOutputNode.addEventListener("touchend", pm.eventConnectorHandler);
                          }
         });
+
+        pm.moduleView.fModuleContainer.ondrop =
+            (e:DragEvent) => this.onDrop(e, pm);
+
+        pm.moduleView.fModuleContainer.ondragover =
+            () => this.highlightPossibleTarget(pm, 'Player', true);
+        pm.moduleView.fModuleContainer.ondragleave =
+            () => this.highlightPossibleTarget(pm, 'Player', false);
+
         this.scene.addModule(pm);
     }
 

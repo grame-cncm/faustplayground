@@ -170,6 +170,8 @@ interface HTMLMediaElementNG extends HTMLMediaElement {
 
 class PlayerModule extends Module {
     private player: Player;
+    private msasn: MediaStreamAudioSourceNode;
+    private ctor: Connector;
 
     constructor(id: number,
                 x: number,
@@ -181,27 +183,26 @@ class PlayerModule extends Module {
                 audioContext: AudioContext,
                 player: Player) {
         super(id, x, y, 'player', container, removeModuleCallBack, compileFaust, audioContext);
-        this.player = player;
-        this.player.setModule(this);
-        player.replyToOffer((stream: MediaStream) => this.connectStream(stream));
-
-        this.moduleView = new PlayerModuleView(id, x, y, name, container, this.player);
+        this.ctor = new Connector();
+        this.moduleView = new PlayerModuleView(id, x, y, name, container, player);
+        this.rtcConnectPlayer(player);
         this.addEvents();
     }
 
     drawInterface(id: number, x:number, y:number, name:string, container: HTMLElement){}
 
     private connectStream(stream: MediaStream) {
-        var msasn: MediaStreamAudioSourceNode = this.audioContext.createMediaStreamSource(stream);
-        var ctor: Connector = new Connector();
-        ctor.connectInput(this, msasn);
-        //msasn.connect(this.audioContext.destination);
-        //var haudio: HTMLMediaElementNG = <HTMLMediaElementNG>(d3.select(this.moduleView.fModuleContainer)
-        //.append('audio')
-        //.attr('autoplay', '')
-        //.attr('control', '')
-        //.node());
-        //haudio.srcObject = stream;
+        if (this.msasn)
+            this.msasn.disconnect();
+        this.msasn = this.audioContext.createMediaStreamSource(stream);
+        this.ctor.connectInput(this, this.msasn);
+    }
+
+    rtcConnectPlayer(player: Player) {
+        this.player = player;
+        this.player.setModule(this);
+        player.replyToOffer((stream: MediaStream) => this.connectStream(stream));
+        (<PlayerModuleView>this.moduleView).refresh(player);
     }
 }
 
@@ -225,7 +226,9 @@ class PlayerModuleView extends ModuleView {
 
     constructExtras(ID: number, name:string, container: HTMLElement) {}
 
-    refresh() {
+    refresh(player?:Player) {
+        if (player)
+            this.player = player;
         d3.select(this.fModuleContainer)
             .select('div.content')
             .text(this.player.nickname);
