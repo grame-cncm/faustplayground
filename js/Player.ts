@@ -80,14 +80,22 @@ class Player {
         this.menuitem = menuitem;
     }
 
+    removeMenuItem() {
+        d3.select(this.menuitem.element).remove();
+        this.menuitem = undefined;
+    }
+
     getMenuItem(): PlayerMenuItem {
         return this.menuitem;
     }
 
     setModule(module: PlayerModule) {
         this.module = module;
-        d3.select(this.menuitem.element).remove();
-        this.menuitem = undefined;
+        this.removeMenuItem();
+        this.send(new WSMessage('PlayerGetOnStage',
+                                undefined,
+                                undefined,
+                                this.ident));
     }
 
     updateOffer(offer: RTCSessionDescription) {
@@ -105,7 +113,7 @@ class Player {
     notifyDisconnected() {
         this.ident = undefined;
         if (this.menuitem)
-            d3.select(this.menuitem.element).remove();
+            this.removeMenuItem();
         if (this.module)
             this.updateNickname(_('[disconnected]'));
     }

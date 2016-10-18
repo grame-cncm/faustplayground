@@ -197,6 +197,11 @@ class Broadcast {
         this.createOffer();
     }
 
+    private onPlayerGetOnStage(msg: WSMessage) {
+        var player = this.players.getPlayer(msg.payload);
+        player.removeMenuItem();
+    }
+
     private sendAnswer(evt: CustomEvent){
         this.send(new WSMessage('Answer',
                                 undefined,
