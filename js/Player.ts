@@ -109,6 +109,10 @@ class Player {
         if (this.module)
             this.updateNickname(_('[disconnected]'));
     }
+
+    isPeerConnected() {
+        return this.ident;
+    }
 }
 
 interface IPlayerIndex {
@@ -144,8 +148,13 @@ class Players {
     }
 
     private getOrCreatePlayer(ident: string): Player {
-        if (this.index[ident])
-            return this.index[ident];
+        if (this.index[ident]) {
+            var player: Player = this.index[ident];
+            if(!player.getMenuItem())
+                player.setMenuItem(new PlayerMenuItem(player,
+                                                      this.app.menu.menuView.playersContent));
+            return player;
+        }
 
         var player: Player = new Player(ident, this.send);
         this.index[ident] = player;
@@ -162,6 +171,15 @@ class Players {
         var player: Player = this.getOrCreatePlayer(msg.from);
         player.updateNickname(msg.payload);
     }
+
+    onModulePlayerRemoved(player: Player) {
+        if (player.isPeerConnected())
+            this.send(new WSMessage('RequestNewOffer',
+                                    undefined,
+                                    player.ident,
+                                    null));
+    }
+
 }
 
 interface HTMLMediaElementNG extends HTMLMediaElement {
@@ -178,7 +196,7 @@ class PlayerModule extends Module {
                 y: number,
                 name: string,
                 container: HTMLElement,
-                removeModuleCallBack: (m: Module) => void,
+                removeModuleCallBack: () => void,
                 compileFaust: (compileFaust: CompileFaust) => void,
                 audioContext: AudioContext,
                 player: Player) {
@@ -203,6 +221,11 @@ class PlayerModule extends Module {
         this.player.setModule(this);
         player.replyToOffer((stream: MediaStream) => this.connectStream(stream));
         (<PlayerModuleView>this.moduleView).refresh(player);
+    }
+
+    onremove(app: App) {
+        this.msasn.disconnect();
+        app.players.onModulePlayerRemoved(this.player);
     }
 }
 

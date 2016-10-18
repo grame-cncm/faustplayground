@@ -3,12 +3,15 @@
 /// <reference path="Modules/Module.ts"/>
 
 class Broadcast {
-    app: App;
-    players: Players;
-    pc: RTCPeerConnection;
-    ws: WebSocket;
-    ident: string;
-    nickname: string;
+    private app: App;
+    private stream: MediaStream;
+    private players: Players;
+    private pc: RTCPeerConnection;
+    private ws: WebSocket;
+    private ident: string;
+    private nickname: string;
+    private pc_constraints: any;
+    private server: any;
 
     static offer_options = {
         offerToReceiveAudio: 1,
@@ -22,14 +25,11 @@ class Broadcast {
                 pc_constraints={optional:[]}) {
         this.app = app;
         this.players = app.players;
+        this.stream = stream;
+        this.server = server;
+        this.pc_constraints = pc_constraints;
         this.players.setSendFunc((msg: WSMessage) => this.send(msg));
-        this.pc = new RTCPeerConnection(server, pc_constraints);
-        this.pc.onicecandidate = (event: RTCIceCandidateEvent) => this.iceCallback(event);
-        this.pc.addStream(stream);
-        this.pc.createOffer(Broadcast.offer_options).then(
-            (desc: RTCSessionDescription) => this.announceOffer(desc),
-            (error) => this.onCreateOfferError(error)
-        );
+
 
         var wsurl: string = ((location.protocol === 'http:') ? 'ws://' : 'wss://') +
                             /https?:\/\/([^#]*)/.exec(location.href)[1] +
@@ -39,11 +39,23 @@ class Broadcast {
 
         document.addEventListener('Answer', (e:Event) => this.sendAnswer(<CustomEvent>e));
 
+        this.createOffer();
+
         var nickname: string = sessionStorage.getItem('nickname');
         if (!nickname)
             this.askNickname();
         else
             this.sendNickname();
+    }
+
+    private createOffer() {
+        this.pc = new RTCPeerConnection(this.server, this.pc_constraints);
+        this.pc.onicecandidate = (event: RTCIceCandidateEvent) => this.iceCallback(event);
+        this.pc.addStream(this.stream);
+        this.pc.createOffer(Broadcast.offer_options).then(
+            (desc: RTCSessionDescription) => this.announceOffer(desc),
+            (error) => this.onCreateOfferError(error)
+        );
     }
 
     askNickname() {
@@ -181,6 +193,10 @@ class Broadcast {
         this.players.updatePlayerNickname(msg);
     }
 
+    private onRequestNewOffer(msg: WSMessage) {
+        this.createOffer();
+    }
+
     private sendAnswer(evt: CustomEvent){
         this.send(new WSMessage('Answer',
                                 undefined,
@@ -211,7 +227,7 @@ class WSMessage {
     }
 
     toJSON(): string {
-        var payload = (this.payload.hasOwnProperty('toJSON')) ?
+        var payload = (payload && this.payload.hasOwnProperty('toJSON')) ?
                        this.payload.toJSON() :
                        JSON.stringify(this.payload);
         return JSON.stringify({

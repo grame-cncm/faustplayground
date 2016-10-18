@@ -470,7 +470,10 @@ class App {
                                                 y,
                                                 'player',
                                                 document.getElementById('modules'),
-                                                (module) => { this.scene.removeModule(module) },
+                                                () => {
+                                                    pm.onremove(this);
+                                                    this.scene.removeModule(pm);
+                                                },
                                                 this.compileFaust,
                                                 this.audioContext,
                                                 this.players.getPlayer(url));
