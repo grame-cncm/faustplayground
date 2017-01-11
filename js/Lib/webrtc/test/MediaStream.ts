@@ -1,4 +1,3 @@
-﻿///<reference path="MediaStream.d.ts" />
 var mediaStreamConstraints: MediaStreamConstraints = { audio: true, video: true };
 
 var mediaTrackConstraintSet: MediaTrackConstraintSet = {};
