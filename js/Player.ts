@@ -46,9 +46,9 @@ class Player {
     }
 
     replyToOffer(onstream: (stream: MediaStream) => void) {
-        this.pc = new RTCPeerConnection(null, {optional:[]});
-        this.pc.onicecandidate = (event: RTCIceCandidateEvent) => this.onicecandidate(event);
-        this.pc.onaddstream = (e: RTCMediaStreamEvent) => onstream(e.stream);
+        this.pc = new RTCPeerConnection();
+        this.pc.onicecandidate = (event: RTCPeerConnectionIceEvent) => this.onicecandidate(event);
+        this.pc.onaddstream = (e: MediaStreamEvent) => onstream(e.stream);
 
         this.pc.setRemoteDescription(this.offer).then(
             () => this.pc.createAnswer().then(
@@ -63,7 +63,7 @@ class Player {
         }
     }
 
-    private onicecandidate(event: RTCIceCandidateEvent) {
+    private onicecandidate(event: RTCPeerConnectionIceEvent) {
         console.log('receiver candidate:', event.candidate);
     }
 

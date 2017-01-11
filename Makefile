@@ -1,7 +1,7 @@
 default: compile
 
 compile:
-	tsc -outFile js/faustplayground.js --sourceMap js/Main.ts
+	tsc -outFile js/faustplayground.js --sourceMap js/Main.ts --target es6
 
 clean:
 	rm -f js/faustplayground.js

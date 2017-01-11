@@ -49,8 +49,8 @@ class Broadcast {
     }
 
     private createOffer() {
-        this.pc = new RTCPeerConnection(this.server, this.pc_constraints);
-        this.pc.onicecandidate = (event: RTCIceCandidateEvent) => this.iceCallback(event);
+        this.pc = new RTCPeerConnection();
+        this.pc.onicecandidate = (event: RTCPeerConnectionIceEvent) => this.iceCallback(event);
         this.pc.addStream(this.stream);
         this.pc.createOffer(Broadcast.offer_options).then(
             (desc: RTCSessionDescription) => this.announceOffer(desc),
@@ -122,7 +122,7 @@ class Broadcast {
     }
 
     // me -> others
-    private iceCallback(event: RTCIceCandidateEvent) {
+    private iceCallback(event: RTCPeerConnectionIceEvent) {
         if(event.candidate) {
             this.send(new WSMessage('ICECandidate',
                                     undefined,
