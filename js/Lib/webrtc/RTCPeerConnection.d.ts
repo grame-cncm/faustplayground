@@ -391,6 +391,11 @@ interface RTCPeerConnectionIceErrorEvent extends Event {
     readonly errorText: string;
 }
 
+// TODO: remove after refacotring
+interface MediaStreamEvent extends Event {
+    readonly stream: MediaStream;
+}
+
 // https://www.w3.org/TR/webrtc/#h-rtcdatachannelevent
 interface RTCDataChannelEvent {
     readonly channel: RTCDataChannel;
@@ -442,12 +447,16 @@ interface RTCPeerConnection extends EventTarget {
     oniceconnectionstatechange: EventHandler;
     onicegatheringstatechange: EventHandler;
     onconnectionstatechange: EventHandler;
+    // TODO: deprecated. To be removed.
+    onaddstream: (event: MediaStreamEvent) => void;
 
     // Extension: https://www.w3.org/TR/webrtc/#h-rtcpeerconnection-interface-extensions
     getSenders(): RTCRtpSender[];
     getReceivers(): RTCRtpReceiver[];
     getTransceivers(): RTCRtpTransceiver[];
     addTrack(track: MediaStreamTrack, ...streams: MediaStream[]): RTCRtpSender;
+    // TODO: remove addStream (deprecated method) after refactoring
+    addStream(stream: MediaStream): void;
     removeTrack(sender: RTCRtpSender): void;
     addTransceiver(trackOrKind: MediaStreamTrack | string, init?: RTCRtpTransceiverInit): RTCRtpTransceiver;
     ontrack: (event: RTCTrackEvent) => void;
