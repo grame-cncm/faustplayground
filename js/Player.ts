@@ -18,7 +18,8 @@ class PlayerMenuItem {
             .append('a')
             .attr('href', player.ident)
             .attr('draggable', false)
-            .text(player.nickname);
+            .text(player.nickname)
+            .on('dblclick', () => (<Event>(d3.event)).preventDefault());
     }
 
     refresh() {
