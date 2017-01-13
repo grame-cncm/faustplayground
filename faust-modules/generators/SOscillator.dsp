@@ -19,7 +19,6 @@ declare copyright 	"(c)GRAME 2009";
 
 import("stdfaust.lib");
 
-
 freq 			= hslider("Frequency [unit:Hz] [acc:0 1 -10 0 10]", 300, 70, 2400, 0.01):si.smooth(0.999);
 process 		= vgroup("Oscillator", os.osc(freq));
 

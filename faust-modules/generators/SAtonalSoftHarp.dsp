@@ -1,7 +1,6 @@
 declare name "Atonal Soft Harp";
 declare author "ER"; //Adapted from NLFeks by Julius Smith and Romain Michon;
 
-
 /* =============== DESCRIPTION ======================== :
 
 - Soft Atonal Harp
@@ -10,7 +9,6 @@ declare author "ER"; //Adapted from NLFeks by Julius Smith and Romain Michon;
 - Right = Fast rhythm/ High frequencies
 - Back = Short and dry notes
 - Front = Long and bright notes
-
 
 */
 
@@ -50,7 +48,6 @@ freq(4) = 260;
 freq(5) = 275;
 
 freq(d)	 = freq(d-6)*(2);	
-	
 
 //==================== SIGNAL PROCESSING ================
 
@@ -65,7 +62,6 @@ with{
 	position(d) = abs(hand - d) < 0.5;
 	trigger(d,n) = position(d) : upfront : release(n) : > (0.0);
 };
-
 
 P(f) = ma.SR/f ; // fundamental period in samples
 Pmax = 4096; // maximum P (for delay-line allocation)

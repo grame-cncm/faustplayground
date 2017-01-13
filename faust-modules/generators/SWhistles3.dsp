@@ -12,8 +12,7 @@ declare version "1.0";
 */
 
 import("stdfaust.lib");
-instrument = library("instrument.lib");
-
+instrument = library("instruments.lib");
 
 //----------------- INSTRUMENT ------------------//
 
@@ -23,16 +22,14 @@ whistle(n) =  BP(n) : EQ(n) :  @(10 + (12000*n)) <:Reson(0),_*(1.5):> *(Env)*gai
 
 //----------------- NOISES ----------------------//
 
-nOise = environment{
+nOise = environment {
 
 // white no.noise generator:
 	random  = +(12345)~*(1103515245);
 	white   = random/2147483647.0;
-	};
+};
 	
 //----------------- FILTERS -------------------//
-
-
 
 freq = hslider("[2]Frequency[unit:Hz][acc:1 1 -10 0 10]", 820, 660, 1100, 0.01):si.smooth(0.999);
 gain(n) = hslider("[3]Volume %n[style:knob][acc:%n 0 -10 15 0 0.5]", 0.5, 0, 2, 0.001):si.smooth(0.999);
@@ -50,11 +47,11 @@ Reson(n) = fi.resonbp(hight(n),Q,1) : fi.lowpass(1,3000);
 
 
 Env = (instrument.envVibrato(b,a,s,r,t))
-	with{
+	with {
 		b = 0.25; 
 		a = 0.1;
 		s = 100;
 		r = 0.8;
 		t = hslider("[1]ON/OFF (Vibrato Envelope)[acc:1 0 -12 0 2]", 1, 0, 1, 1);
-		};
+    };
 		

@@ -2,7 +2,7 @@ declare name "Atonal Soft Harp";
 declare author "ER"; //Adapted from NLFeks by Julius Smith and Romain Michon;
 
 import("stdfaust.lib");
-instrument = library("instrument.lib"); 
+instrument = library("instruments.lib"); 
 
 /* =============== DESCRIPTION ======================== :
 
@@ -52,7 +52,6 @@ freq(4) = 260;
 freq(5) = 275;
 
 freq(d)	 = freq(d-6)*(2);	
-	
 
 //==================== SIGNAL PROCESSING ================
 
@@ -60,13 +59,13 @@ freq(d)	 = freq(d-6)*(2);
 // White no.noise burst (adapted from Faust's karplus.dsp example)
 // Requires music.lib (for no.noise)
 noiseburst(d,e) = no.noise : *(trigger(d,e))
-with{
-upfront(x) = (x-x') > 0;
-decay(n,x) = x - (x>0)/n;
-release(n) = + ~ decay(n);
-position(d) = abs(hand - d) < 0.5;
-trigger(d,n) = position(d) : upfront : release(n) : > (0.0);
-};
+    with {
+        upfront(x) = (x-x') > 0;
+        decay(n,x) = x - (x>0)/n;
+        release(n) = + ~ decay(n);
+        position(d) = abs(hand - d) < 0.5;
+        trigger(d,n) = position(d) : upfront : release(n) : > (0.0);
+    };
 
 
 P(f) = ma.SR/f ; // fundamental period in samples
@@ -98,7 +97,7 @@ stringloop(f) = (+ : de.fdelay4(Pmax, P(f)-2)) ~ (loopfilter(f));
 
 instrReverbHarp = _,_ <: *(reverbGain),*(reverbGain),*(1 - reverbGain),*(1 - reverbGain) : 
 re.zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
-       with{
+    with {
        reverbGain = hslider("h:[2]Reverberation/Reverberation Volume (InstrReverb)[style:knob][acc:1 1 -30 0 12]", 0.1,0.05,1,0.01) : si.smooth(0.999):min(1):max(0.05);
        roomSize = hslider("h:[2]Reverberation/ Reverberation Room Size (InstrReverb)[style:knob][acc:1 1 -30 0 12]", 0.2,0.05,1.7,0.01) : min(1.7):max(0.05);
        rdel = 20;
@@ -107,4 +106,4 @@ re.zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
        t60dc = roomSize*3;
        t60m = roomSize*2;
        fsmax = 48000;
-       };
+    };

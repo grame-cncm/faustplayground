@@ -20,10 +20,10 @@ process = noiseburst *(0.1);
 
 noiseburst = no.noise : *(gate : trigger(P))
 	with { 
-	upfront(x) = (x-x') > 0; 
-	decay(n,x) = x - (x>0)/n; 
-	release(n) = + ~ decay(n); 
-	trigger(n) = upfront : release(n) : > (0.0);
+        upfront(x) = (x-x') > 0; 
+        decay(n,x) = x - (x>0)/n; 
+        release(n) = + ~ decay(n); 
+        trigger(n) = upfront : release(n) : > (0.0);
 	};
 	
 P = freq; // fundamental period in samples 

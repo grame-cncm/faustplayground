@@ -41,11 +41,9 @@ phaser2Demo = phaser2_stereo_demo with {
    frqmin = 100;
    frqmax = 800;
    fratio = 1.5;
-
-
 };
 
-drywet(x,y) 	= (1-c)*x + c*y
-				with {
-					c = hslider("[2]Phaser Intensity[style:knob][unit:%][acc:1 0 -10 0 10]", 10,0,100,0.01)*(0.01):si.smooth(0.999);
-					};
+drywet(x,y) = (1-c)*x + c*y
+            with {
+                c = hslider("[2]Phaser Intensity[style:knob][unit:%][acc:1 0 -10 0 10]", 10,0,100,0.01)*(0.01):si.smooth(0.999);
+                };

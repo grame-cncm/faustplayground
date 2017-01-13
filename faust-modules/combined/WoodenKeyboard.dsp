@@ -2,8 +2,7 @@ declare name "Wooden Keyboard";
 declare author "ER";
 
 import("stdfaust.lib");
-instrument = library("instrument.lib"); 
-
+instrument = library("instruments.lib"); 
 
 //d'apres les enveloppes de John Chowning utilisees dans Turenas
 
@@ -47,7 +46,6 @@ position(a,x) = abs(x - a) < 0.5;
 trigger(p) = position(p) : upfront : counter; 	
 
 //------------------------------------ ECHO ------------------------------------
-
 
 echo = +~(@(echoDelay)*(feedback));
 echoDelay = 8096;

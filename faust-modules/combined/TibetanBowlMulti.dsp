@@ -7,7 +7,7 @@ declare licence "STK-4.3"; // Synthesis Tool Kit 4.3 (MIT style license);
 declare description "This instrument uses banded waveguide. For more information, see Essl, G. and Cook, P. Banded Waveguides: Towards Physical Modelling of Bar Percussion Instruments, Proceedings of the 1999 International Computer Music Conference.";
 
 import("stdfaust.lib");
-instrument = library("instrument.lib"); 
+instrument = library("instruments.lib"); 
 
 /* ============ DESCRIPTION ==============
 
@@ -161,7 +161,7 @@ resonance(x) = + : + (excitation(preset,x)*select) : delayLine(x) : *(basegains(
 
 instrReverbAccel = _,_ <: *(reverbGain),*(reverbGain),*(1 - reverbGain),*(1 - reverbGain) :
 re.zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
-       with{
+    with {
        reverbGain = hslider("v:[4]Reverb/[1]Reverberation Volume (InstrReverb)[acc:1 1 -10 0 10]",0.2,0.02,1,0.01) : si.smooth(0.999):min(1):max(0.02);
        roomSize = hslider("v:[4]Reverb/[2]Reverberation Room Size (InstrReverb)[acc:1 1 -10 0 10]", 0.2,0.02,1.3,0.01) : min(1.3) :  max(0.02);
        rdel = 20;
@@ -170,4 +170,4 @@ re.zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
        t60dc = roomSize*3;
        t60m = roomSize*2;
        fsmax = 48000;
-       };
+    };

@@ -3,7 +3,7 @@ declare author "ER";
 declare version "1.0";
 
 import("stdfaust.lib");
-instrument = library("instrument.lib"); 
+instrument = library("instruments.lib"); 
 
 /* ============ Description ============== :
 
@@ -70,12 +70,12 @@ vibratoFreq = vfreq; //hslider("Vibrato Frequency[unit:Hz][acc:0 0 -10 0 12]", 5
 
 vfreq = pulsawhistle.gate : randfreq : si.smooth(0.99) : fi.lowpass (1, 3000);
 randfreq(g) = no.noise : sampleAndhold(sahgate(g))*(10)
-with{
-sampleAndhold(t) = select2(t) ~_;
-sahgate(g) = g : upfront : counter -(3) <=(0);
-upfront(x) = abs(x-x')>0.5;
-counter(g) = (+(1):*(1-g))~_;
-};
+    with {
+        sampleAndhold(t) = select2(t) ~_;
+        sahgate(g) = g : upfront : counter -(3) <=(0);
+        upfront(x) = abs(x-x')>0.5;
+        counter(g) = (+(1):*(1-g))~_;
+    };
 
 //----------------------- Pulsar --------------------------------------
 
@@ -96,13 +96,13 @@ pulsar = _<:(((_)<(ratio_env)):@(100))*((proba)>((_),(no.noise:abs):ba.latch));
 //----------------------- Vibrato Envelope ----------------------------
 
 vibratoEnv(n) = (instrument.envVibrato(b,a,s,r,t(n)))
-	with{
+	with {
 		b = 0.25;
 		a = 0.1;
 		s = 100;
 		r = 0.8;
 		t(n) = hslider("[4]Envelope ON/OFF %n[acc:%n 0 -12 0 2]", 1, 0, 1, 1);
-		};
+    };
 
 //------------------------ Freeverb ------------------------------------
 
@@ -172,14 +172,12 @@ roomsizeSlider  = hslider("[7]Reverberation Room Size (Freeverb)[style:knob][acc
 wetSlider       = hslider("[6]Reverberation Intensity (Freeverb)[style:knob][acc:1 1 -10 0 15]", 0.3333, 0.1, 0.9, 0.025) : si.smooth(0.999) : min(0.9) :max(0.1);
 combfeed        = roomsizeSlider;
 
-
 // Comb and Allpass filters
 //-------------------------
 
 allpass(dt,fb) = (_,_ <: (*(fb),_:+:@(dt)), -) ~ _ : (!,_);
 
 comb(dt, fb, damp) = (+:@(dt)) ~ (*(1-damp) : (+ ~ *(damp)) : *(fb));
-
 
 // Reverb components
 //------------------

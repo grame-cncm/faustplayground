@@ -2,7 +2,7 @@ declare name "Stalactite Harp";
 declare author "ER"; //From Non-linear EKS by Julius Smith and Romain Michon;
 
 import("stdfaust.lib");
-instrument = library("instrument.lib"); 
+instrument = library("instruments.lib"); 
 
 /* =============== DESCRIPTION ================= :
 
@@ -42,10 +42,7 @@ freq(2) = 1479.97;
 freq(3) = 1661.21;
 freq(4) = 1864.65;
 
-
 freq(d)	 = freq(d-5)*2;
-
-	
 
 //==================== SIGNAL PROCESSING ================
 
@@ -54,13 +51,13 @@ freq(d)	 = freq(d-5)*2;
 // Requires music.lib (for no.noise)
 
 noiseburst(d,e) = no.noise : *(trigger(d,e))
-with{
-upfront(x) = (x-x') > 0;
-decay(n,x) = x - (x>0)/n;
-release(n) = + ~ decay(n);
-position(d) = abs(hand - d) < 0.5;
-trigger(d,n) = select2(position(d),0,pulsaxo.gate) : upfront : release(n) : > (0.0);
-};
+    with {
+        upfront(x) = (x-x') > 0;
+        decay(n,x) = x - (x>0)/n;
+        release(n) = + ~ decay(n);
+        position(d) = abs(hand - d) < 0.5;
+        trigger(d,n) = select2(position(d),0,pulsaxo.gate) : upfront : release(n) : > (0.0);
+    };
 
 pulsaxo = environment{
 
@@ -102,7 +99,7 @@ stringloop(f) = (+ : de.fdelay4(Pmax, P(f)-2)) ~ (loopfilter(f));// : NLFM(f));
 
 instrReverbHarp = _,_ <: *(reverbGain),*(reverbGain),*(1 - reverbGain),*(1 - reverbGain) : 
 re.zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
-       with{
+    with {
        reverbGain = hslider("h:[3]Reverb/[2]Reverberation Volume (InstrReverb)[style:knob][acc:1 1 -30 0 13]", 0.2,0.05,1,0.01) : si.smooth(0.999):min(1):max(0.05);
        roomSize = hslider("h:[3]Reverb/[3]Reverberation Room Size (InstrReverb)[style:knob][acc:1 1 -30 0 13]", 0.72,0.05,1.7,0.01):min(1.7):max(0.05);
        rdel = 20;
@@ -111,5 +108,5 @@ re.zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
        t60dc = roomSize*3;
        t60m = roomSize*2;
        fsmax = 48000;
-       };
+    };
 

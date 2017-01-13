@@ -22,7 +22,7 @@ declare description "A simple flute based on Smith algorythm: https://ccrma.stan
 */
 
 import("stdfaust.lib");
-instrument = library("instrument.lib");
+instrument = library("instruments.lib");
 
 //==================== INSTRUMENT =======================
 
@@ -40,8 +40,6 @@ gate = hslider("[0]ON/OFF (ASR Envelope)",0,0,1,1);
 vibratoFreq = hslider("[4]Vibrato Freq (Vibrato Envelope)[style:knob][unit:Hz][acc:0 1 -10 0 10]", 4,0.5,8,0.1);
 env1Attack = 0.1;//hslider("h:Parameters/Press_Env_Attack[unit:s][style:knob][acc:1 0 -10 0 10][tooltip:Pressure envelope attack duration]",0.05,0.05,0.2,0.01);
 
-
-
 //-------------------- Non-Variable Parameters -----------
 
 gain = 1;
@@ -58,7 +56,6 @@ env1Decay = 0.2;
 env2Attack = 0.1;
 env2Release = 0.1;
 env1Release = 0.5;
-
 
 //==================== SIGNAL PROCESSING ================
 
@@ -93,7 +90,6 @@ poly = _ <: _ - _*_*_;
 
 //jet filter is a lowwpass filter (declared in filter.lib)
 reflexionFilter = fi.lowpass(1,2000);
-
 
 //----------------------- Algorithm implementation ----------------------------
 

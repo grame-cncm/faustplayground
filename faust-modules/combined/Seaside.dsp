@@ -11,18 +11,18 @@ declare autho "ER";
 */
 
 import("stdfaust.lib");
-instrument = library("instrument.lib"); 
+instrument = library("instruments.lib"); 
 
 process = Pink : fi.bandpass(1, Lowf, Highf) <: instrReverbSea :> _
 
 // ----------------------- Band Pass Filter --------------------------
 
-with{
-	freq = 200;
-	Lowf = freq - Q;
-	Highf = freq + Q;
-	Q = hslider("[1]Q - Filter Bandwidth (Bandpass)[style:knob][unit:Hz][acc:0 1 -10 0 10]", 30,10,150,0.0001):si.smooth(0.999);
-	};
+    with {
+        freq = 200;
+        Lowf = freq - Q;
+        Highf = freq + Q;
+        Q = hslider("[1]Q - Filter Bandwidth (Bandpass)[style:knob][unit:Hz][acc:0 1 -10 0 10]", 30,10,150,0.0001):si.smooth(0.999);
+    };
 
 // ----------------------- Pink Noise --------------------------------
 
@@ -45,7 +45,7 @@ w   = rand/2147483647.0;
 
 instrReverbSea = _,_ <: *(reverbGain),*(reverbGain),*(1 - reverbGain),*(1 - reverbGain) :
 re.zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
-       with{
+    with {
        reverbGain = hslider("[2]Reverberation Volume (InstrReverb)[acc:1 1 -10 0 10]",0.1,0.05,1,0.01) : si.smooth(0.999) : min(1) : max(0.05);
        roomSize = hslider("[3]Reverberation Room Size (InstrReverb)[acc:1 1 -10 0 10]", 0.1,0.05,2,0.01) : min(2) : max(0.05);
        rdel = 20;
@@ -54,4 +54,4 @@ re.zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
        t60dc = roomSize*3;
        t60m = roomSize*2;
        fsmax = 48000;
-       };
+    };

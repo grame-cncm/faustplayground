@@ -3,7 +3,7 @@ declare description "WaveGuide Brass instrument from STK";
 declare author "ER"; //Adapted from Brass by Romain Michon (rmichon@ccrma.stanford.edu);
 
 import("stdfaust.lib");
-instrument=library("instrument.lib");
+instrument=library("instruments.lib");
 
 /* ========= DESCRITPION ===========
 
@@ -48,7 +48,6 @@ vibratoGain = 0.05;
 vibratoBegin = 0.05;
 vibratoAttack = 0.5;
 vibratoRelease = 0.1;
-
 
 envelopeAttack = 0.01;
 envelopeDecay = 0.001;

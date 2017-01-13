@@ -17,26 +17,26 @@ import("stdfaust.lib");
 process =_<:zita_rev3:>_;
 
 zita_rev3(x,y) = zita_rev1_stereo4(rdel,f1,f2,t60dc,t60m,fsmax,x,y) : out_eq
-with {
-	//Reverb parameters:
-	t60dc = hslider("[2] Low Frequencies Decay Time[acc:1 1 -10 0 10][unit:s][style:knob][tooltip: T60 = time (in seconds) to decay 60dB in low-frequency band]", 1.5, 0.5, 6, 0.01):si.smooth(0.999):min(6):max(0.5);
-	t60m = hslider("[3] Mid Frequencies Decay Time[acc:1 1 -10 0 10][unit:s][style:knob][tooltip: T60 = time (in seconds) to decay 60dB in middle band]", 1.5, 0.5, 6, 0.01):si.smooth(0.999):min(6):max(0.5);
-  	fsmax = 48000.0;  // highest sampling rate that will be used
-	rdel =50;
-	f1 =500;
-	f2 = 8000;
+    with {
+        //Reverb parameters:
+        t60dc = hslider("[2] Low Frequencies Decay Time[acc:1 1 -10 0 10][unit:s][style:knob][tooltip: T60 = time (in seconds) to decay 60dB in low-frequency band]", 1.5, 0.5, 6, 0.01):si.smooth(0.999):min(6):max(0.5);
+        t60m = hslider("[3] Mid Frequencies Decay Time[acc:1 1 -10 0 10][unit:s][style:knob][tooltip: T60 = time (in seconds) to decay 60dB in middle band]", 1.5, 0.5, 6, 0.01):si.smooth(0.999):min(6):max(0.5);
+        fsmax = 48000.0;  // highest sampling rate that will be used
+        rdel =50;
+        f1 =500;
+        f2 = 8000;
 
-	out_eq = pareq_stereo(eq1f,eq1l,eq1q) : pareq_stereo(eq2f,eq2l,eq2q)
-	with{
-		pareq_stereo (eqf,eql,Q) = fi.peak_eq_cq (eql,eqf,Q) , fi.peak_eq_cq (eql,eqf,Q) ;
-		eq1f =315;
-		eq1l =0;
-		eq1q =3;
-		eq2f =3000;
-		eq2l =0;
-		eq2q =3;
-		};
-};
+        out_eq = pareq_stereo(eq1f,eq1l,eq1q) : pareq_stereo(eq2f,eq2l,eq2q)
+        with {
+            pareq_stereo (eqf,eql,Q) = fi.peak_eq_cq (eql,eqf,Q) , fi.peak_eq_cq (eql,eqf,Q) ;
+            eq1f =315;
+            eq1l =0;
+            eq1q =3;
+            eq2f =3000;
+            eq2l =0;
+            eq2q =3;
+        };
+    };
 
 //---------------------------------------- Zita_Rev1_Stereo4 -------------------------------------
 
@@ -94,12 +94,11 @@ with {
   };
 };
 
-
 zita_rev1_stereo4(rdel,f1,f2,t60dc,t60m,fsmax) = re.zita_in_delay(rdel) : re.zita_distrib2(N) : zita_rev_fdn4(f1,f2,t60dc,t60m,fsmax) : output2(N)
-with {
- N = 4;
- output2(N) = outmix(N) : *(t1),*(t1);
- t1 = 0.37; // zita-rev1 linearly ramps from 0 to t1 over one buffer
- outmix(4) = !,ro.butterfly(2),!; // probably the result of some experimenting!
- outmix(N) = outmix(N/2),par(i,N/2,!);
-};
+    with {
+         N = 4;
+         output2(N) = outmix(N) : *(t1),*(t1);
+         t1 = 0.37; // zita-rev1 linearly ramps from 0 to t1 over one buffer
+         outmix(4) = !,ro.butterfly(2),!; // probably the result of some experimenting!
+         outmix(N) = outmix(N/2),par(i,N/2,!);
+    };

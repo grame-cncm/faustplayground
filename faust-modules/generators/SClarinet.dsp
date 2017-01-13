@@ -10,7 +10,7 @@ declare reference "https://ccrma.stanford.edu/~jos/pasp/Woodwinds.html";
 //Modification Grame July 2015
 
 import("stdfaust.lib");
-instrument = library("instrument.lib");
+instrument = library("instruments.lib");
 
 /* =============== DESCRIPTION ================= :
 
@@ -64,7 +64,6 @@ envelopeDecay = 0.05;
 envelopeRelease = 0.1;
 
 //==================== SIGNAL PROCESSING ======================
-
 
 //----------------------- Synthesis PARAMETERS computing and functions declaration ----------------------------
 

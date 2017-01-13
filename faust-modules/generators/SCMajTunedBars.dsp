@@ -2,7 +2,7 @@ declare name "C Major Tuned Bars";
 declare author "ER";//From "Tuned Bar" by Romain Michon (rmichon@ccrma.stanford.edu);
 
 import("stdfaust.lib");
-instrument = library("instrument.lib");
+instrument = library("instruments.lib");
 
 /* =============== DESCRIPTION ================= :
 
@@ -89,7 +89,6 @@ radius = 1 - ma.PI*32/ma.SR;
 bandPassFilter(x,f) = instrument.bandPass(f*modes(preset,x),radius);
 
 //----------------------- Algorithm implementation ----------------------------
-
 
 //One resonance
 resonance(x,f,g) = + : + (excitation(preset,x,g)*select) : delayLine(x,f) : *(basegains(preset,x)) : bandPassFilter(x,f);

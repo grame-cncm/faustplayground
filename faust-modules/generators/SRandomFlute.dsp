@@ -2,7 +2,7 @@ declare name "Random Flute";
 declare author "ER";//Adapted from "Nonlinear WaveGuide Flute" by Romain Michon (rmichon@ccrma.stanford.edu);
 
 import("stdfaust.lib");
-instrument = library("instrument.lib");
+instrument = library("instruments.lib");
 
 
 /* ============== DESCRIPTION ================
@@ -31,17 +31,16 @@ env1Attack = 0.05;
 
 freq = gate : randfreq : si.smooth(0.99) : fi.lowpass (1, 3000); 
 randfreq(g) = no.noise : sampleAndhold(sahgate(g))*(1500)+(100)
-with{
-sampleAndhold(t) = select2(t) ~_;
-sahgate(g) = g : upfront : counter -(3) <=(0);
-upfront(x) = abs(x-x')>0.5;
-counter(g) = (+(1):*(1-g))~_;
-};
+    with {
+        sampleAndhold(t) = select2(t) ~_;
+        sahgate(g) = g : upfront : counter -(3) <=(0);
+        upfront(x) = abs(x-x')>0.5;
+        counter(g) = (+(1):*(1-g))~_;
+    };
 
 //----------------------- Pulsar --------------------------------------
 
-
-pulsaflute = environment{
+pulsaflute = environment {
 
 gate = phasor_bin(1) :-(0.001):pulsar;
 ratio_env = (0.5);
@@ -71,7 +70,6 @@ env1Decay = 0.2;
 env2Attack = 0.1;
 env2Release = 0.1;
 env1Release = 0.5;
-
 
 //==================== SIGNAL PROCESSING ================
 

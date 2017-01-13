@@ -20,7 +20,7 @@ declare description "This instrument uses banded waveguide. For more information
 */
 
 import("stdfaust.lib");
-instrument = library("instrument.lib");
+instrument = library("instruments.lib");
 
 //==================== INSTRUMENT =======================
 

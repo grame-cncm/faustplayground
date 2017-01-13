@@ -20,7 +20,7 @@ declare reference "https://ccrma.stanford.edu/~jos/pasp/Brasses.html";
 */
 
 import("stdfaust.lib");
-instrument=library("instrument.lib");
+instrument=library("instruments.lib");
 
 //==================== INSTRUMENT =======================
 

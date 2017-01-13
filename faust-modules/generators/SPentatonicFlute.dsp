@@ -14,10 +14,9 @@ declare author "ER";// Adapted from "Flute" by Romain Michon (rmichon@ccrma.stan
 */
 
 import("stdfaust.lib");
-instrument = library("instrument.lib");
+instrument = library("instruments.lib");
 
 //==================== INSTRUMENT =======================
-
 
 flute(n) = (_ <: (flow(trigger(n)) + *(feedBack1) : embouchureDelay(freq(n)): poly) + *(feedBack2) : reflexionFilter)~(boreDelay(freq(n))) : *(env2(trigger(n)))*gain:_;
 
@@ -92,21 +91,20 @@ breath(t) = no.noise*env1(t);
 
 flow(t) = env1(t) + breath(t)*breathAmp + vibrato(t);
 
-
 //------------------------- Enveloppe Trigger --------------------------------------------
 
 trigger(n) = position(n): trig
-	with{
-	upfront(x) 	= (x-x') > 0;
-	decay(n,x)	= x - (x>0.0)/n;
-	release(n)	= + ~ decay(n);
-	noteDuration = hslider("[3]Note Duration[unit:s][style:knob][acc:2 1 -10 0 10]", 0.166, 0.1, 0.25, 0.01)*44100 : min(11025) : max(4410):int;
-	trig = upfront : release(noteDuration) : >(0.0);
+	with {
+        upfront(x) 	= (x-x') > 0;
+        decay(n,x)	= x - (x>0.0)/n;
+        release(n)	= + ~ decay(n);
+        noteDuration = hslider("[3]Note Duration[unit:s][style:knob][acc:2 1 -10 0 10]", 0.166, 0.1, 0.25, 0.01)*44100 : min(11025) : max(4410):int;
+        trig = upfront : release(noteDuration) : >(0.0);
 	};
 
 position(n) = abs(hand - n) < 0.5;
 hand = hslider("[1]Instrument Hand[acc:0 1 -10 0 10]", 7, 0, N, 1):int: ba.automat(bps, 15, 0.0)// => gate
-		with{
-		bps = hslider("[2]Speed[style:knob][acc:0 1 -10 0 10]", 480, 180, 720, 1):si.smooth(0.999) : min(720) : max(180) : int;
+		with {
+            bps = hslider("[2]Speed[style:knob][acc:0 1 -10 0 10]", 480, 180, 720, 1):si.smooth(0.999) : min(720) : max(180) : int;
 		};
 

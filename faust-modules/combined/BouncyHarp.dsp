@@ -65,13 +65,13 @@ octave(d) = freq(d) * hslider("[2]Hight[acc:0 0 -10 0 10]", 3, 1, 6, 0.1) : si.s
 // White no.noise burst (adapted from Faust's karplus.dsp example)
 // Requires music.lib (for no.noise)
 noiseburst(d,e) = no.noise : *(trigger(d,e))
-with{
-upfront(x) = (x-x') > 0;
-decay(n,x) = x - (x>0)/n;
-release(n) = + ~ decay(n);
-position(d) = abs(hand - d) < 0.5;
-trigger(d,n) = position(d) : upfront : release(n) : > (0.0);
-};
+    with {
+        upfront(x) = (x-x') > 0;
+        decay(n,x) = x - (x>0)/n;
+        release(n) = + ~ decay(n);
+        position(d) = abs(hand - d) < 0.5;
+        trigger(d,n) = position(d) : upfront : release(n) : > (0.0);
+    };
 
 P(f) = ma.SR/f ; // fundamental period in samples
 Pmax = 4096; // maximum P (for de.delay-line allocation)
@@ -96,12 +96,11 @@ loopfilter(f) = dampingfilter2(f); // or dampingfilter1
 filtered_excitation(d,e,f) = excitation(d,e) : si.smooth(pickangle) 
 		    : pickposfilter(f) : fi.levelfilter(L,f); // see filter.lib
 
-
 stringloop(f) = (+ : de.fdelay4(Pmax, P(f)-2)) ~ (loopfilter(f));
 
 instrReverbHarp = _,_ <: *(reverbGain),*(reverbGain),*(1 - reverbGain),*(1 - reverbGain) : 
 re.zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
-       with{
+    with {
        reverbGain = hslider("v:[8]Reverb/ Reverberation Volume (InstrReverb)[acc:1 1 -10 20 0 0.5] ",0.5,0.1,1,0.01) : si.smooth(0.999);
        roomSize = hslider("v:[8]Reverb/ÒReverberation Room Size (InstrReverb)[acc:1 1 -10 0 25]", 0.72,0.01,2,0.01);
        rdel = 20;
@@ -110,5 +109,5 @@ re.zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
        t60dc = roomSize*3;
        t60m = roomSize*2;
        fsmax = 48000;
-       };
+    };
 

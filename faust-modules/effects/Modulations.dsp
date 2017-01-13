@@ -18,16 +18,15 @@ declare name "Modulations";
 */
 
 import("stdfaust.lib");
-instrument=library("instrument.lib");
+instrument=library("instruments.lib");
 
 NLFM = _ : instrument.nonLinearModulator(nonlinearity,env,freq,typeMod,freqMod,order) : _;
 process = NLFM;
 
 gate = hslider("[1]ON/OFF (ASR Envelope)[acc:2 0 -10 0 10]", 1,0,1,1);
 
-
 ASR =(en.asr(a,s,r,t))
-	with{
+	with {
 		a = 1;
 		s = 100;
 		r = 1;

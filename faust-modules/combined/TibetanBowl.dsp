@@ -9,7 +9,7 @@ declare description "This instrument uses banded waveguide. For more information
 //Modification GRAME July 2015
 
 import("stdfaust.lib");
-instrument = library("instrument.lib"); 
+instrument = library("instruments.lib"); 
 
 /* ============ DESCRIPTION =============
 
@@ -21,7 +21,6 @@ instrument = library("instrument.lib");
 - Head = Reverb
 
 */
-
 
 //==================== INSTRUMENT =======================
 
@@ -130,12 +129,12 @@ radius = 1 - ma.PI*32/ma.SR;
 bandPassFilter(x) = instrument.bandPass(freq*modes(preset,x),radius);
 
 stereoo(periodDuration) = _ <: _,widthdelay : stereopanner
-	   with{
+    with {
 		W = 0.5;
 		A = 0.6;
 		widthdelay = de.delay(4096,W*periodDuration/2);
 		stereopanner = _,_ : *(1.0-A), *(A);
-	   };
+    };
 stereo = stereoo(delayLengthBase);
 
 //----------------------- Algorithm implementation ----------------------------
@@ -146,7 +145,7 @@ resonance(x) = + : + (excitation(preset,x)*select) : delayLine(x) : *(basegains(
 
 instrReverbAccel = _,_ <: *(reverbGain),*(reverbGain),*(1 - reverbGain),*(1 - reverbGain) :
 re.zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
-       with{
+    with {
        reverbGain = hslider("v:[4]Reverb/[1]Reverberation Volume (InstrReverb) [acc:1 1 -10 0 10]",0.2,0.02,1,0.01) : si.smooth(0.999) :min(1):max(0.02);
        roomSize = hslider("v:[4]Reverb/[2]Reverberation Room Size (InstrReverb)[acc:1 1 -10 0 10]", 0.2,0.02,2,0.01):min(2):max(0.02);
        rdel = 20;
@@ -155,4 +154,4 @@ re.zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
        t60dc = roomSize*3;
        t60m = roomSize*2;
        fsmax = 48000;
-       };
+    };

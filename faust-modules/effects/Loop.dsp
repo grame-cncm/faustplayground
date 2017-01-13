@@ -25,9 +25,8 @@ D = (+(I):*(R))~_;		// Compute capture duration while button is pressed: 0..NNNN
 
 capture = *(B) : (+ : de.delay(1048576, D-1)) ~ *(1.0-B) ;
 
-
-level		= hslider("Volume [unit:dB]", 0, -96, 4, 0.1) : ba.db2linear : si.smooth(0.999);
+level = hslider("Volume [unit:dB]", 0, -96, 4, 0.1) : ba.db2linear : si.smooth(0.999);
 captONOFF = hslider("Loop Mode ON/OFF",0,0,1,1);
 
-process 	= vgroup( "LOOP", _<:_,(_<:capture,_ : select2(B)): select2(captONOFF) *(level) ) ;
+process = vgroup( "LOOP", _<:_,(_<:capture,_ : select2(B)): select2(captONOFF) *(level) ) ;
 

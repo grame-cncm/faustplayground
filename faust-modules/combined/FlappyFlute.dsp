@@ -2,7 +2,7 @@ declare name "Flappy Flute";
 declare author "ER";// Adapted from "Nonlinear WaveGuide Flute" by Romain Michon (rmichon@ccrma.stanford.edu)
 
 import("stdfaust.lib");
-instrument = library("instrument.lib"); 
+instrument = library("instruments.lib"); 
 
 /* =============== DESCRIPTION ======================== :
 
@@ -73,8 +73,6 @@ env2Attack = 0.05;
 env2Release = 0.05;
 env1Release = 0.05;
 
-
-
 //==================== SIGNAL PROCESSING ================
 
 //----------------------- Nonlinear filter ----------------------------
@@ -127,7 +125,7 @@ breath = no.noise*env1;
 flow = env1 + breath*breathAmp + vibrato;
 
 instrReverbFlute = re.zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
-       with{
+    with {
        roomSize = hslider("h:[4]Reverberation/Reverberation Room Size (InstrReverb)[style:knob][acc:1 1 -30 0 16]", 0.72,0.05,2,0.01):min(2):max(0.05);
        rdel = 20;
        f1 = 200;
@@ -135,4 +133,4 @@ instrReverbFlute = re.zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_
        t60dc = roomSize*3;
        t60m = roomSize*2;
        fsmax = 48000;
-       };
+    };

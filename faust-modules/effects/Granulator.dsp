@@ -14,7 +14,6 @@ declare author "Adapted from sfIter by Christophe Lebreton";
 
 import("stdfaust.lib");
 
-
 process = hgroup("Granulator", *(excitation : ampf));
 
 excitation = noiseburst(gate,P) * (gain);

@@ -3,7 +3,7 @@ declare author "ER";//Adapted from "Nonlinear EKS" by Julius Smith and Romain Mi
 
 
 import("stdfaust.lib");
-instrument = library("instrument.lib"); 
+instrument = library("instruments.lib"); 
 
 /* =============== DESCRIPTION ================= 
 
@@ -50,8 +50,6 @@ freq(4) = 311.12;
 
 freq(d)	 = freq(d-5)*2;
 
-	
-
 //==================== SIGNAL PROCESSING ================
 
 //----------------------- noiseburst -------------------------
@@ -96,7 +94,7 @@ stringloop(f) = (+ : de.fdelay4(Pmax, P(f)-2)) ~ (loopfilter(f));
 
 instrReverbHarp = _,_ <: *(reverbGain),*(reverbGain),*(1 - reverbGain),*(1 - reverbGain) : 
 re.zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
-       with{
+    with {
        reverbGain = hslider("h:[3]Reverb/[1]Reverberation Volume(InstrReverb)[style:knob][acc:1 1 -10 0 10]", 0.2,0.05,1,0.01):si.smooth(0.999):min(1):max(0.05);
        roomSize = hslider("h:[3]Reverb/[2]Reverberation Room Size (InstrReverb)[style:knob][acc:1 1 -10 0 10]", 0.2,0.05,1.7,0.01):min(1.3):max(0.05);
        rdel = 20;
@@ -105,5 +103,5 @@ re.zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
        t60dc = roomSize*3;
        t60m = roomSize*2;
        fsmax = 48000;
-       };
+    };
 

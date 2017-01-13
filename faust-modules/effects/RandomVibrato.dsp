@@ -36,8 +36,7 @@ counter(g) = (+(1):*(1-g))~_;
 
 //----------------------- Pulsar --------------------------------------
 
-
-pulsawhistle = environment{
+pulsawhistle = environment {
 
 gate = phasor_bin(1) :-(0.001):pulsar;
 ratio_env = (0.5);

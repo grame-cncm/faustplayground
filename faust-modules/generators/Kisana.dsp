@@ -24,9 +24,7 @@ NCY = 15; 	// note cycle length
 CCY = 15;	// control cycle length
 BPS = 360;	// general tempo (ba.beat per sec)
 
-
 process = kisana;    
-
 
 //-------------------------------kisana----------------------------------
 // USAGE:  kisana : _,_;
@@ -39,8 +37,6 @@ kisana = vgroup("Kisana", harpe(C,11,48), harpe(C,11,60), (harpe(C,11,72) : *(1.
 		l = -20 : ba.db2linear;//hslider("[1]Volume",-20, -60, 0, 0.01) : ba.db2linear;
 		C = hslider("[2]Brightness[acc:0 1 -10 0 10]", 0.2, 0, 1, 0.01) : ba.automat(BPS, CCY, 0.0);
 	};
- 
-
 
 //----------------------------------Harpe--------------------------------
 // USAGE:  harpe(C,10,60) : _,_;
@@ -65,7 +61,6 @@ harpe(C,N,b) = 	hand(b) <: par(i, N, position(i+1)
 		position(a,x) = abs(x - a) < 0.5;
 	};
 
-
 //----------------------------------Penta-------------------------------
 // Pentatonic scale with degree to midi and degree to Hz conversion
 // USAGE: Penta(60).degree2midi(3) ==> 67 midikey
@@ -87,7 +82,6 @@ Penta(key) = environment {
 
 }; 
  
-
 //----------------------------------String-------------------------------
 // A karplus-strong string.
 //

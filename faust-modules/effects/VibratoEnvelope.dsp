@@ -1,6 +1,6 @@
 declare name "Vibrato Envelope"; //instrument.lib
 import("stdfaust.lib");
-instrument = library("instrument.lib");
+instrument = library("instruments.lib");
 
 /* =========== DESCRIPTION ============
 
@@ -19,13 +19,13 @@ vibratoGain = hslider("Vibrato Intensity[style:knob][acc:1 0 -10 0 10]", 0.1, 0.
 vibratoFreq = hslider("Vibrato Frequency[unit:Hz][acc:0 1 -10 0 10]", 5, 0, 10, 0.001) : si.smooth(0.999);
 
 vibratoEnv =  _ : *(instrument.envVibrato(b,a,s,r,t)) : _
-	with{
+	with {
 		b = 0.25;
 		a = 1;
 		s = 100;
 		r = 2;
 		t = hslider("h:/ON/OFF Slider[acc:1 0 -10 0 10]", 0, 0, 1, 1);
-		};
+    };
 
 
 

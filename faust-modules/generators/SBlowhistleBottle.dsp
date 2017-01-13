@@ -16,7 +16,7 @@ declare description "This object implements a helmholtz resonator (biquad filter
 */
 
 import("stdfaust.lib");
-instrument = library("instrument.lib");
+instrument = library("instruments.lib");
 
 //==================== INSTRUMENT =======================
 
@@ -49,7 +49,6 @@ hand = hslider("v:[1]Instrument/Instrument Hand[acc:0 1 -10 0 10]", 5, 0, N, 1):
 envelopeAttack = 0.01;
 vibratoFreq = 5;
 vibratoGain = 0.1;
-
 
 //--------------------- Non-variable Parameters -------------
 
@@ -101,11 +100,11 @@ randPressure(t) = noiseGain*no.noise*breathPressure(t) ;
 //------------------------- Enveloppe Trigger --------------------------------------------
 
 trigger(n) = position(n): trig
-	with{
-	upfront(x) 	= (x-x') > 0;
-	decay(n,x)	= x - (x>0.0)/n;
-	release(n)	= + ~ decay(n);
-	trig = upfront : release(8820) : >(0.0);
+	with {
+        upfront(x) 	= (x-x') > 0;
+        decay(n,x)	= x - (x>0.0)/n;
+        release(n)	= + ~ decay(n);
+        trig = upfront : release(8820) : >(0.0);
 	};
 
 

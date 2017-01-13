@@ -2,7 +2,7 @@ declare name "Tuned Bars";
 declare author "ER";//From "Tuned Bar" by Romain Michon (rmichon@ccrma.stanford.edu);
 
 import("stdfaust.lib");
-instrument = library("instrument.lib"); 
+instrument = library("instruments.lib"); 
 
 /* =============== DESCRIPTION ================= :
 
@@ -115,7 +115,7 @@ drywet(x,y) 	= (1-c)*x + c*y
 					
 //instrReverb from instrument.lib
 instrReverbChime = re.zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+       
-	with{
+    with {
        roomSize = hslider("h:[5]Reverb/Reverberation Room Size (InstrReverb)[style:knob][acc:1 1 -10 0 12]", 0.2,0.1,1.7,0.01):min(1.7):max(0.1);
        rdel = 20;
        f1 = 200;
@@ -123,6 +123,6 @@ instrReverbChime = re.zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_
        t60dc = roomSize*3;
        t60m = roomSize*2;
        fsmax = 48000;
-       };
+    };
 
 

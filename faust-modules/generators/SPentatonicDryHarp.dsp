@@ -14,7 +14,6 @@ declare author  "ER";//Adapted from Harpe by Yann Orlarey;
 
 */
 
-
 //-----------------------------------------------
 // 		Harpe : simple string instrument
 //		(based on Karplus-Strong)
@@ -22,17 +21,12 @@ declare author  "ER";//Adapted from Harpe by Yann Orlarey;
 //-----------------------------------------------
 
 import("stdfaust.lib");
-instrument = library("instrument.lib");
-
-
+instrument = library("instruments.lib");
 
 KEY = 60;	// basic midi key
 NCY = 15; 	// note cycle length
 CCY = 15;	// control cycle length
 BPS = 360;	// general tempo (ba.beat per sec)
-
-   
-
 
 //-------------------------------Harpe----------------------------------
 // Harpe is a simple string instrument. Move the "hand" to play the 
@@ -44,14 +38,12 @@ process = hgroup("harp", h : harpe(C,N,K) :> *(l),*(l))
 		N = 21; // number of strings
 		K = 48; // Midi key of first string
 		h = hslider("[1]Instrument Hand[acc:0 1 -10 0 10]", 11, 0, N, 1) : int: ba.automat(bps, 15, 0.0)
-			with{
-			bps = hslider("h:[2]Parameters/[1]Speed[style:knob][acc:0 1 -12 0 10]", 480, 180, 720, 1):si.smooth(0.999) : min(720) : max(180) : int;
+			with {
+                bps = hslider("h:[2]Parameters/[1]Speed[style:knob][acc:0 1 -12 0 10]", 480, 180, 720, 1):si.smooth(0.999) : min(720) : max(180) : int;
 			};
 		l = 0.9;
 		C = 0.5;	
-		};
- 
-
+    };
 
 //----------------------------------Harpe--------------------------------
 // USAGE:  hand : harpe(C,10,60) : _,_;
@@ -73,7 +65,6 @@ harpe(C,N,b) = 	_ <: par(i, N, position(i+1)
 
 	};
 
-
 //----------------------------------Penta-------------------------------
 // Pentatonic scale with degree to midi and degree to Hz conversion
 // USAGE: Penta(60).degree2midi(3) ==> 67 midikey
@@ -94,7 +85,6 @@ Penta(key) = environment {
 	degree2Hz(d) = A4Hz*semiton(degree2midi(d)-69) with { semiton(n) = 2.0^(n/12.0); };
 
 };   
-
 
 //----------------------------------String-------------------------------
 // A karplus-strong string.

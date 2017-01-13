@@ -5,7 +5,7 @@ declare licence "STK-4.3"; // Synthesis Tool Kit 4.3 (MIT style license);
 declare description "This object implements a helmholtz resonator (biquad filter) with a polynomial jet excitation (a la Cook).";
 
 import("stdfaust.lib");
-instrument = library("instrument.lib"); 
+instrument = library("instruments.lib"); 
 
 /* =============== DESCRIPTION ================= :
 
@@ -51,7 +51,6 @@ hand = hslider("v:[1]Instrument/Instrument Hand[acc:0 1 -10 0 10]", 5, 0, N, 1):
 envelopeAttack = 0.01;
 vibratoFreq = 5;
 vibratoGain = 0.1;
-
 
 //--------------------- Non-variable Parameters -------------
 
@@ -115,7 +114,7 @@ trigger(n) = position(n): trig
 
 instrReverblow = _,_ <: *(reverbGain),*(reverbGain),*(1 - reverbGain),*(1 - reverbGain) : 
 re.zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
-       with{
+    with {
        reverbGain = hslider("h:[3]Reverb/ Reverberation Volume (InstrReverb)[style:knob][acc:1 1 -10 0 10]", 0.237,0.137,1,0.01) : si.smooth(0.999);
        roomSize = hslider("h:[3]Reverb/Reverberation Room Size (InstrReverb)[style:knob][acc:1 1 -10 0 10]", 0.72,0.4,2,0.01);
        rdel = 20;
@@ -124,7 +123,7 @@ re.zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
        t60dc = roomSize*3;
        t60m = roomSize*2;
        fsmax = 48000;
-       };
+    };
 
 
 

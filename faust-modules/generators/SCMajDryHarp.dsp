@@ -27,8 +27,6 @@ NCY = 15; 	// note cycle length
 CCY = 15;	// control cycle length
 BPS = 360;	// general tempo (ba.beat per sec)
 
-   
-
 
 //-------------------------------Harpe----------------------------------
 // Harpe is a simple string instrument. Move the "hand" to play the 
@@ -47,7 +45,6 @@ process = vgroup("harpe", h : harpe(C,N,K) :> *(l),*(l))
 		l = -10 : ba.db2linear;
 		C = 0.5;
 	};
- 
 
 //----------------------------------Harpe--------------------------------
 // USAGE:  hand : harpe(C,10,60) : _,_;
@@ -103,7 +100,6 @@ Major(key) = environment {
 
 };   
 
-
 //----------------------------------String-------------------------------
 // A karplus-strong string.
 //
@@ -114,8 +110,7 @@ Major(key) = environment {
 string(coef, freq, t60, level, trig) = no.noise*level
 							: *(trig : trigger(freq2samples(freq)))
 							: resonator(freq2samples(freq), att)
-							
-			
+										
 	with {
 		resonator(d,a)	= (+ : @(d-1)) ~ (average : *(a));
 		average(x)		= (x*(1+coef)+x'*(1-coef))/2;

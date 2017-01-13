@@ -13,11 +13,10 @@ declare author "ER"; //From Saxophone by Romain Michon;
 */
 
 import("stdfaust.lib");
-instrument = library("instrument.lib");
+instrument = library("instruments.lib");
 
 //==================== INSTRUMENT =======================
-      
-       
+
 process = vgroup("PULSAXO",
 	(bodyFilter,breathPressure : instrumentBody) ~ 
 	(delay1 : NLFM) : !,_);
@@ -47,7 +46,6 @@ envelopeRelease = 0.1;
 //==================== SIGNAL PROCESSING ================
 
 //----------------------- Pulsar --------------------------------------
-
 
 pulsaxo = environment{
 
@@ -103,7 +101,7 @@ breathPressure = breath + breath*vibratoGain*os.osc(vibratoFreq);
 
 //Body filter is a one zero filter (declared in instrument.lib)
 bodyFilter = *(gain) : instrument.oneZero1(b0,b1)
-	with{
+	with {
 		gain = -0.95;
 		b0 = 0.5;
 		b1 = 0.5;	

@@ -18,7 +18,6 @@ import("stdfaust.lib");
 process = par(i, N, NLFeks(i)):>_;
 
 NLFeks(n) = filtered_excitation(n,P(octave(n)),octave(n)) : stringloop(octave(n));
- 												
 
 //==================== GUI SPECIFICATION ================
 
@@ -44,7 +43,6 @@ freq(4) = 175;
 
 freq(d)	 = freq(d-5)*(2);
 octave(d) = freq(d) * hslider("Hight[acc:2 1 -10 0 10]", 3, 1, 6, 0.1) : si.smooth(0.999);	
-	
 
 //==================== SIGNAL PROCESSING ================
 
@@ -52,13 +50,13 @@ octave(d) = freq(d) * hslider("Hight[acc:2 1 -10 0 10]", 3, 1, 6, 0.1) : si.smoo
 // White no.noise burst (adapted from Faust's karplus.dsp example)
 // Requires music.lib (for no.noise)
 noiseburst(d,e) = no.noise : *(trigger(d,e))
-with{
-upfront(x) = (x-x') > 0;
-decay(n,x) = x - (x>0)/n;
-release(n) = + ~ decay(n);
-position(d) = abs(hand - d) < 0.5;
-trigger(d,n) = position(d) : upfront : release(n) : > (0.0);
-};
+    with {
+        upfront(x) = (x-x') > 0;
+        decay(n,x) = x - (x>0)/n;
+        release(n) = + ~ decay(n);
+        position(d) = abs(hand - d) < 0.5;
+        trigger(d,n) = position(d) : upfront : release(n) : > (0.0);
+    };
 
 
 P(f) = ma.SR/f ; // fundamental period in samples
@@ -83,7 +81,6 @@ loopfilter(f) = dampingfilter2(f); // or dampingfilter1
 
 filtered_excitation(d,e,f) = excitation(d,e) : si.smooth(pickangle) 
 		    : pickposfilter(f) : fi.levelfilter(L,f); // see filter.lib
-
 
 stringloop(f) = (+ : de.fdelay4(Pmax, P(f)-2)) ~ (loopfilter(f));// : NLFM(f));
 

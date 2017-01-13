@@ -3,7 +3,7 @@ declare author "ER";//Adapted from Nonlinear EKS by Julius Smith and Romain Mich
 declare reference "http://ccrma.stanford.edu/~jos/pasp/vegf.html";
 
 import("stdfaust.lib");
-instrument = library("instrument.lib"); 
+instrument = library("instruments.lib"); 
 
 /* =============== DESCRIPTION ================= :
 
@@ -50,9 +50,7 @@ freq(4) = 195.99;
 freq(5) = 220.00;
 freq(6) = 246.94;
 
-
 freq(d)	 = freq(d-7)*(2);	
-	
 
 //==================== SIGNAL PROCESSING ================
 
@@ -60,13 +58,13 @@ freq(d)	 = freq(d-7)*(2);
 // White no.noise burst (adapted from Faust's karplus.dsp example)
 // Requires music.lib (for no.noise)
 noiseburst(d,e) = no.noise : *(trigger(d,e))
-with{
-upfront(x) = (x-x') > 0;
-decay(n,x) = x - (x>0)/n;
-release(n) = + ~ decay(n);
-position(d) = abs(hand - d) < 0.5;
-trigger(d,n) = position(d) : upfront : release(n) : > (0.0);
-};
+    with {
+        upfront(x) = (x-x') > 0;
+        decay(n,x) = x - (x>0)/n;
+        release(n) = + ~ decay(n);
+        position(d) = abs(hand - d) < 0.5;
+        trigger(d,n) = position(d) : upfront : release(n) : > (0.0);
+    };
 
 P(f) = ma.SR/f ; // fundamental period in samples
 Pmax = 4096; // maximum P (for de.delay-line allocation)
@@ -97,7 +95,7 @@ stringloop(f) = (+ : de.fdelay4(Pmax, P(f)-2)) ~ (loopfilter(f));
 
 instrReverbHarp = _,_ <: *(reverbGain),*(reverbGain),*(1 - reverbGain),*(1 - reverbGain) : 
 re.zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
-       with{
+    with {
        reverbGain = hslider("h:[2]Reverb/ Reverberation Volume (InstrReverb)[style:knob][acc:1 1 -30 0 17]", 0.2,0.05,1,0.01):si.smooth(0.999):min(1):max(0.05);
        roomSize = hslider("h:[2]Reverb/Reverberation Room Size (InstrReverb)[style:knob][acc:1 1 -30 0 16]", 0.72,0.05,2,0.01):min(2):max(0.05);
 	   rdel = 20;
@@ -106,5 +104,5 @@ re.zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
        t60dc = roomSize*3;
        t60m = roomSize*2;
        fsmax = 48000;
-       };
+    };
 

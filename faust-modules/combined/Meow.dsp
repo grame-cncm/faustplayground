@@ -3,7 +3,7 @@ declare description "WaveGuide Brass instrument from STK";
 declare author "ER"; //From Brass by Romain Michon (rmichon@ccrma.stanford.edu);
 
 import("stdfaust.lib");
-instrument = library("instrument.lib"); 
+instrument = library("instruments.lib"); 
 
 /* =============== DESCRIPTION ================= :
 
@@ -37,7 +37,6 @@ gain(0) = hslider("h:Instrument/v:Gain/Volume 1 [style:knob][acc:1 1 -12 0 12][t
 gain(1) = hslider("h:Instrument/v:Gain/Volume 2 [style:knob][acc:0 1 -12 0 12][tooltip:Gain (value between 0 and 1)]",0.5,0,1,0.01);
 gain(2) = hslider("h:Instrument/v:Gain/Volume 3 [style:knob][acc:2 0 -12 0 10][tooltip:Gain (value between 0 and 1)]",0.5,0,0.5,0.01);
 
-
 pressure(0) = 0.37;
 pressure(1) = 0.68;
 pressure(2) = 1.0;
@@ -52,7 +51,6 @@ vibratoBegin = 0.05;
 vibratoAttack = 0.5;
 vibratoRelease = 0.1;
 
-
 envelopeAttack = 0.01;
 envelopeDecay = 0.001;
 envelopeRelease = 2;
@@ -61,7 +59,6 @@ envelopeRelease = 2;
 crybb = ve.crybaby(wah) with {
    wah = hslider("Wah Wah[acc:0 0 -15 10 0]", 0.5,0,1,0.01) : ba.automat(360, 15, 0.0);
 };
-
 
 //--------- Synthesis parameters computing and functions declaration -----------
 

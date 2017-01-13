@@ -31,7 +31,6 @@ autoTrig = ba.beat(t) * (abs(no.noise) <= p) : trigger(48)
 			};
 		};
 
-
 // BIRD TRIGGER
 
 noteTrig = autoTrig;
@@ -46,7 +45,6 @@ modOsc(freq) = os.triangleN(3,freq);
 mainOsc(freq,trig) = freq <: +(*(harmRatio <: +(*(envWrapper(trig,harmEnv,harm_xp(1700))))) : modOsc : *(modIndex <: +(*(envWrapper(trig,modIndexEnv,modIndex_xp(550)))))) <: +(*(envWrapper(trig,freqEnv,freq_xp(943)))) : carrierOsc;
 
 envWrapper(trig,env,sus) = trig : mstosamps(rdm(100,3000)), sus : hitLength : env;
-
 
 // FIXED PARAMETERS - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 

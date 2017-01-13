@@ -2,7 +2,7 @@ declare name "C Major Flute";
 declare author "ER";// Adapted from  "Nonlinear WaveGuide Flute" by Romain Michon (rmichon@ccrma.stanford.edu)";
 
 import("stdfaust.lib");
-instrument=library("instrument.lib");
+instrument=library("instruments.lib");
 
 /* =============== DESCRIPTION ================= :
 
@@ -54,7 +54,6 @@ freq(d)	 = freq(d-7)*2;
 
 //==================== SIGNAL PROCESSING ================
 
-
 //----------------------- Synthesis parameters computing and functions declaration ----------------------------
 
 //Loops feedbacks gains
@@ -89,7 +88,6 @@ vibrato(t) = os.osc(vibratoFreq)*vibratoEnvelope(t);
 breath(t) = no.noise*env1(t);
 
 flow(t) = env1(t) + breath(t)*breathAmp + vibrato(t);
-
 
 //------------------------- Enveloppe Trigger --------------------------------------------
 

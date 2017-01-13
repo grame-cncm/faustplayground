@@ -14,7 +14,7 @@ declare description "This instrument uses banded waveguide. For more information
 */
 
 import("stdfaust.lib");
-instrument = library("instrument.lib");
+instrument = library("instruments.lib");
 
 //==================== INSTRUMENT =======================
 
@@ -103,7 +103,6 @@ delayLine(x) = de.delay(4096,delayLength(x));
 //Filter bank: fi.bandpass filters (declared in instrument.lib)
 radius = 1 - ma.PI*32/ma.SR;
 bandPassFilter(x) = instrument.bandPass(freq*modes(preset,x),radius);
-
 
 //----------------------- Algorithm implementation ----------------------------
 

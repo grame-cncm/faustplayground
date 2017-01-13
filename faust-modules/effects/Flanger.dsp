@@ -14,7 +14,6 @@ import("stdfaust.lib");
 
 process = _<:_,(_<:FlangerDemo:>*(0.1)):drywet;
 
-
 FlangerDemo = flanger_stereo_demo with {
    flanger_group(x) =
     vgroup("FLANGER [tooltip: Reference: https://ccrma.stanford.edu/~jos/pasp/Flanging.html]", x);
@@ -36,7 +35,7 @@ FlangerDemo = flanger_stereo_demo with {
    curdel2 = odflange+dflange*(1 + lfor(freq))/2;
 };
 
-drywet(x,y) 	= (1-c)*x + c*y
-				with {
-					c = hslider("[3] Flanger Intensity [unit:%][acc:1 0 -10 0 10]", 10,0,100,0.01)*(0.01):si.smooth(0.999);
-					};
+drywet(x,y) = (1-c)*x + c*y
+            with {
+                c = hslider("[3] Flanger Intensity [unit:%][acc:1 0 -10 0 10]", 10,0,100,0.01)*(0.01):si.smooth(0.999);
+                };

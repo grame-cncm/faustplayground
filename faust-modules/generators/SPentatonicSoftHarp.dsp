@@ -3,7 +3,7 @@ declare author "ER";//Adapted from "Nonlinear EKS" by Julius Smith and Romain Mi
 
 
 import("stdfaust.lib");
-instrument = library("instrument.lib");
+instrument = library("instruments.lib");
 
 /* =============== DESCRIPTION ================= 
 
@@ -24,7 +24,6 @@ process = par(i, N, NFLeks(i)):>_;
 NFLeks(n) = filtered_excitation(n,P(freq(n)),freq(n)) : stringloop(freq(n));
  
 //==================== GUI SPECIFICATION ================
-
 
 N = 20;
 hand = hslider("[1]Instrument Hand[acc:0 1 -10 0 10]", 10, 0, N, 1) : ba.automat(bps, 15, 0.0)// => gate
@@ -49,8 +48,6 @@ freq(3) = 277.18;
 freq(4) = 311.12;
 
 freq(d)	 = freq(d-5)*2;
-
-	
 
 //==================== SIGNAL PROCESSING ================
 
@@ -88,8 +85,6 @@ loopfilter(f) = dampingfilter2(f); // or dampingfilter1
 
 filtered_excitation(d,e,f) = excitation(d,e) : si.smooth(pickangle) 
 		    : pickposfilter(f) : fi.levelfilter(L,f); // see filter.lib
-
-
 
 stringloop(f) = (+ : de.fdelay4(Pmax, P(f)-2)) ~ (loopfilter(f));// : NLFM(f));
 

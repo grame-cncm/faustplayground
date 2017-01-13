@@ -2,7 +2,7 @@ declare name "Random Flute";
 declare author "ER";//Adapted from "Nonlinear WaveGuide Flute" by Romain Michon (rmichon@ccrma.stanford.edu);
 
 import("stdfaust.lib");
-instrument = library("instrument.lib"); 
+instrument = library("instruments.lib"); 
 
 
 /* ============== DESCRIPTION ================
@@ -49,8 +49,7 @@ feedback = hslider("h:Parameters/Echo Intensity[style:knob][acc:2 0 -10 0 10]", 
 
 //----------------------- Pulsar --------------------------------------
 
-
-pulsaflute = environment{
+pulsaflute = environment {
 
 gate = phasor_bin(1) :-(0.001):pulsar;
 ratio_env = (0.5);
@@ -135,7 +134,7 @@ flow = env1 + breath*breathAmp + vibrato;
 
 
 instrReverbFlute = re.zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
-       with{
+    with {
        roomSize = hslider("h:Reverb/Reverberation Room Size [style:knob][acc:1 1 -10 0 10]", 0.2,0.01,1.7,0.01);
        rdel = 20;
        f1 = 200;
@@ -143,4 +142,4 @@ instrReverbFlute = re.zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_
        t60dc = roomSize*3;
        t60m = roomSize*2;
        fsmax = 48000;
-       };
+    };

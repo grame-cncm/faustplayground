@@ -2,7 +2,7 @@ declare name "Tuned Bars";
 declare author "ER";//From "Tuned Bar" by Romain Michon (rmichon@ccrma.stanford.edu);
 
 import("stdfaust.lib");
-instrument = library("instrument.lib");
+instrument = library("instruments.lib");
 
 /* =============== DESCRIPTION ================= :
 
@@ -38,7 +38,6 @@ upfront(x) = abs(x-x') > 0;
 
 select = 1;
 //----------------------- Frequency Table --------------------
-
 
 freq(0) = 130.81;
 freq(1) = 146.83;

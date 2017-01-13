@@ -3,7 +3,7 @@ declare author "ER";//Adapted from Nonlinear EKS by Julius Smith and Romain Mich
 declare reference "http://ccrma.stanford.edu/~jos/pasp/vegf.html";
 
 import("stdfaust.lib");
-instrument = library("instrument.lib"); 
+instrument = library("instruments.lib"); 
 
 /* =============== DESCRIPTION ================= 
 
@@ -57,9 +57,7 @@ freq(9) = 220.00;
 freq(10) = 233.08;
 freq(11) = 246.94;
 
-
-freq(d)	 = freq(d-12)*(2);	
-	
+freq(d)	 = freq(d-12)*(2);
 
 //==================== SIGNAL PROCESSING ================
 
@@ -105,7 +103,7 @@ stringloop(f) = (+ : de.fdelay4(Pmax, P(f)-2)) ~ (loopfilter(f));
 
 instrReverbHarp = _,_ <: *(reverbGain),*(reverbGain),*(1 - reverbGain),*(1 - reverbGain) : 
 re.zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
-       with{
+    with {
        reverbGain = hslider("h:[2]Reverb/[2]Reverberation Volume (InstrReverb)[style:knob][acc:1 1 -30 0 17]", 0.2,0.05,1,0.01):si.smooth(0.999):min(1):max(0.05);
        roomSize = hslider("h:[2]Reverb/[3]Reverberation Room Size (InstrReverb)[style:knob][acc:1 1 -30 0 16]", 0.72,0.05,2,0.01):min(2):max(0.05);
        rdel = 20;
@@ -114,6 +112,6 @@ re.zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
        t60dc = roomSize*3;
        t60m = roomSize*2;
        fsmax = 48000;
-       };
+    };
 
 

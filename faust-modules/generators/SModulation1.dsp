@@ -2,7 +2,7 @@ declare name "Modulation 1";
 declare author "ER";
 
 import("stdfaust.lib");
-instrument = library("instrument.lib");
+instrument = library("instruments.lib");
 
 /* =========== DESCRIPTION ==============
 

@@ -15,7 +15,7 @@ declare author "ER";// Adapted from "Flute" by Romain Michon (rmichon@ccrma.stan
 */
 
 import("stdfaust.lib");
-instrument = library("instrument.lib"); 
+instrument = library("instruments.lib"); 
 
 //==================== INSTRUMENT =======================
 
@@ -45,7 +45,6 @@ env2Attack = 0.1;
 env2Release = 0.1;
 
 //----------------------- Frequency Table --------------------
-
 
 freq(0) = 184.99;
 freq(1) = 207.65;
@@ -95,12 +94,12 @@ flow(t) = env1(t) + breath(t)*breathAmp + vibrato(t);
 //------------------------- Enveloppe Trigger --------------------------------------------
 
 trigger(n) = position(n): trig
-	with{
-	upfront(x) 	= (x-x') > 0;
-	decay(n,x)	= x - (x>0.0)/n;
-	release(n)	= + ~ decay(n);
-	noteDuration = hslider("[3]Note Duration[unit:s][style:knob][acc:2 1 -10 0 10]", 0.166, 0.1, 0.25, 0.01)*44100 : min(11025) : max(4410):int;
-	trig = upfront : release(noteDuration) : >(0.0);
+	with {
+        upfront(x) 	= (x-x') > 0;
+        decay(n,x)	= x - (x>0.0)/n;
+        release(n)	= + ~ decay(n);
+        noteDuration = hslider("[3]Note Duration[unit:s][style:knob][acc:2 1 -10 0 10]", 0.166, 0.1, 0.25, 0.01)*44100 : min(11025) : max(4410):int;
+        trig = upfront : release(noteDuration) : >(0.0);
 	};
 
 position(n) = abs(hand - n) < 0.5;
@@ -117,7 +116,7 @@ hand = hslider("[1]Instrument Hand[acc:0 1 -10 0 10]", 7, 0, N, 1):int: ba.autom
 
 instrReverbFlute = _,_ <: *(reverbGain),*(reverbGain),*(1 - reverbGain),*(1 - reverbGain) : 
 re.zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
-       with{
+    with {
        reverbGain = hslider("h:[4]Reverb/[1]Reverberation Volume (InstrReverb)[style:knob][acc:1 1 -10 0 10]", 0.2,0.05,1,0.01):si.smooth(0.999):min(1):max(0.05);
        roomSize = hslider("h:[4]Reverb/[2]Reverberation Room Size (InstrReverb)[style:knob][acc:1 1 -10 0 10]", 0.5,0.05,2,0.01):min(2):max(0.05);
        rdel = 20;
@@ -126,6 +125,5 @@ re.zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
        t60dc = roomSize*3;
        t60m = roomSize*2;
        fsmax = 48000;
-       };
-
+    };
 

@@ -53,7 +53,6 @@ freq(10) = 233.08;
 freq(11) = 246.94;
 
 freq(d)	 = freq(d-12)*(2);	
-	
 
 //==================== SIGNAL PROCESSING ================
 
@@ -61,13 +60,13 @@ freq(d)	 = freq(d-12)*(2);
 // White no.noise burst (adapted from Faust's karplus.dsp example)
 // Requires music.lib (for no.noise)
 noiseburst(d,e) = no.noise : *(trigger(d,e))
-with{
-upfront(x) = (x-x') > 0;
-decay(n,x) = x - (x>0)/n;
-release(n) = + ~ decay(n);
-position(d) = abs(hand - d) < 0.5;
-trigger(d,n) = position(d) : upfront : release(n) : > (0.0);
-};
+    with {
+        upfront(x) = (x-x') > 0;
+        decay(n,x) = x - (x>0)/n;
+        release(n) = + ~ decay(n);
+        position(d) = abs(hand - d) < 0.5;
+        trigger(d,n) = position(d) : upfront : release(n) : > (0.0);
+    };
 
 //nlfOrder = 6;
 P(f) = ma.SR/f ; // fundamental period in samples
@@ -92,7 +91,6 @@ loopfilter(f) = dampingfilter2(f); // or dampingfilter1
 
 filtered_excitation(d,e,f) = excitation(d,e) : si.smooth(pickangle) 
 		    : pickposfilter(f) : fi.levelfilter(L,f); // see filter.lib
-
 
 stringloop(f) = (+ : de.fdelay4(Pmax, P(f)-2)) ~ (loopfilter(f));
 

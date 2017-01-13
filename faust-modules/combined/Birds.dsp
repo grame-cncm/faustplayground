@@ -15,7 +15,6 @@ import("stdfaust.lib");
 
 */
 
-
 // PROCESS - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
 process = hgroup("Birds", mainOsc(noteTrig : rdm(72,94) : mtof , noteTrig) * envWrapper(noteTrig, ampEnv, amp_xp(2510)) : fi.lowpass(1, 2000) *(0.8) <: _,_, (rdmPanner : panSte) : panConnect : *,* : reverb);
@@ -53,13 +52,11 @@ mainOsc(freq,trig) = freq <: +(*(harmRatio <: +(*(envWrapper(trig,harmEnv,harm_x
 
 envWrapper(trig,env,sus) = trig : mstosamps(rdm(100,3000)), sus : hitLength : env;
 
-
 // FIXED PARAMETERS - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
 /* fm */
 harmRatio = 0.063;
 modIndex = 3.24;
-
 
 // TIME FUNCTIONS - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
@@ -69,12 +66,10 @@ rdmInc = _ <: @(1), @(2) : + : *(2994.2313) : int : +(38125);
 rdm(rdmin,rdmax) = _,(fmod(_,rdmax - rdmin : int) ~ rdmInc : +(rdmin)) : gater : -(1) : abs;
 gater = (_,_,_ <: !,_,!,_,!,!,!,!,_ : select2) ~_;
 
-
 // MIDI RELATED - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
 /* midi pitch */ 
 mtof(midinote) = pow(2,(midinote - 69) / 12) * 440;
-
 
 // ENVELOPPES - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
@@ -147,16 +142,13 @@ modIndexEnv = modIndexEnvbpf : si.smooth(0.999) : fi.lowpass(1, 3000);
 modIndex_xp(x) = x * ma.SR / 1000. * modIndexEnv_speed;
 modIndexEnv_speed = noteTrig : rdm(0,2000) : /(1000);
 
-
 // PANNER STEREO - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
 
 panSte = _ <: -(1,_),_ : sqrt,sqrt;
 rdmPanner = noteTrig : rdm(0,1000) : /(1000);
 
 /* cable crosser = 1,3 & 2,4 */
 panConnect = _,_,_,_ <: _,!,!,!,!,!,_,!,!,_,!,!,!,!,!,_;
-
 
 // REVERB BASED OF ZITA - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -165,17 +157,11 @@ reverb(x,y) = re.zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax,x,y)
 with {
 
   fsmax = 48000.0;  // highest sampling rate that will be used
-
   rdel = 60;
-
   f1 = 200;
-
   t60dc = 3;
-
   t60m = 2;
-
   f2 = 6000;
-
   out_eq = pareq_stereo(eq1f,eq1l,eq1q) : pareq_stereo(eq2f,eq2l,eq2q);
 
   pareq_stereo(eqf,eql,Q) = fi.peak_eq_rm(eql,eqf,tpbt), fi.peak_eq_rm(eql,eqf,tpbt)
@@ -185,17 +171,11 @@ with {
     g = ba.db2linear(eql); // peak gain
   };
 
-
   eq1f = 315;
-
   eq1l = 0;
-
   eq1q = 3;
-
   eq2f = 1500;
-
-  eq2l = 0.0; 
-
+  eq2l = 0.0;
   eq2q = 3.0; 
 
   //out_group(x)  = x; //fdn_group(hgroup("[5] Output", x));
@@ -208,7 +188,6 @@ with {
   presence = hslider("[3]Proximity (InstrReverb)[style:knob][acc:1 0 -15 0 10]", 0.5, 0, 1, 0.01) : si.smooth(0.999);
 
   drywet = 1 - 2*presence;
-
   out_level = *(gain),*(gain);
 
   //gain = vslider("[5]Reverberation Volume[unit:dB][style:knob]", -20, -70, 20, 0.1)

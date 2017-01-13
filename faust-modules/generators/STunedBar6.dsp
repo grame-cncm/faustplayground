@@ -15,7 +15,7 @@ declare author "ER";//From "Tuned Bar" by Romain Michon (rmichon@ccrma.stanford.
 */
  
 import("stdfaust.lib");
-instrument = library("instrument.lib");
+instrument = library("instruments.lib");
 
 //==================== INSTRUMENT =======================
 
@@ -31,7 +31,6 @@ tunedBar(h,n,e) =
 		*(4);
 
 //==================== GUI SPECIFICATION ================
-
 
 gain = 0.8;
 gate(h,n) = position(h,n) : upfront;
@@ -49,9 +48,7 @@ select = 1;
 integrationConstant = 0;
 baseGain = 1;
 
-
 //----------------------- Frequency Table --------------------
-
 
 freq(0) = 92.49;
 freq(1) = 103.82;
@@ -96,8 +93,6 @@ nlfOrder = 6;
 //the number of modes depends on the preset being used
 nModes = nMode(preset);
 
-
-
 delayLengthBase(f) = ma.SR/f;
 
 //delay lengths in number of samples
@@ -110,9 +105,7 @@ delayLine(x,f) = de.delay(4096,delayLength(x,f));
 radius = 1 - ma.PI*32/ma.SR;
 bandPassFilter(x,f) = instrument.bandPass(f*modes(preset,x),radius);
 
-
 //----------------------- Algorithm implementation ----------------------------
-
 
 //One resonance
 resonance(x,f,g) = + : + (excitation(preset,x,g)*select) : delayLine(x,f) : *(basegains(preset,x)) : bandPassFilter(x,f);

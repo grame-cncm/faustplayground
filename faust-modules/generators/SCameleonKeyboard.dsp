@@ -44,7 +44,6 @@ position(a,x) = abs(x - a) < 0.5;
 
 trigger(p) = position(p) : upfront : counter;
 
-
 //----------------------------------- ENVELOPPES ------------------------------
 
 /* envelope */
@@ -54,7 +53,6 @@ typeEnv = vslider("[4]Envelope Type (BPF Envelope)[style:radio{'f9':0;'f11':1;'f
 envelope =  _<:sum(i, 4, tabchowning.env(i) * (abs(typeEnv - (i)) < 0.5));
 
 /* Tables Chowning */
-
 
 tabchowning = environment
 
