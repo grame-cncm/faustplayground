@@ -465,6 +465,7 @@ class App {
     }
 
     private createPlayerModule(x:number, y:number, url:string) {
+        var player: Player = this.players.getPlayer(url);
         var pm: PlayerModule = new PlayerModule(Utilitary.idX++,
                                                 x,
                                                 y,
@@ -476,7 +477,8 @@ class App {
                                                 },
                                                 this.compileFaust,
                                                 this.audioContext,
-                                                this.players.getPlayer(url));
+                                                player);
+        this.players.startRTCWith(player);
         pm.patchID = 'player' + url;
         pm.compileFaust({name: pm.patchID,
                          sourceCode: 'process=_,_;',
@@ -537,6 +539,24 @@ class App {
             document.getElementsByTagName("html")[0].style.height = "100%";
             document.getElementById("svgCanvas").style.height = "100%";
         }
+    }
+
+
+    public getRTCConfiguration() : RTCConfiguration {
+        var stun_server: RTCIceServer = {
+            urls : 'stun:playground.feever.fr:3478'
+        };
+        var turn_server: RTCIceServer = {
+            urls : 'turn:playground.feever.fr:3478?transport=udp',
+            username : 'yeah',
+            credential : 'yeah'
+        };
+        var conf: RTCConfiguration = {
+            iceServers : [stun_server, turn_server]
+        };
+
+        return conf;
+        // return null;
     }
 }
 

@@ -46,35 +46,61 @@ class Player {
         this.icecandidates = new Array<RTCIceCandidate>();
     }
 
-    replyToOffer(onstream: (stream: MediaStream) => void) {
-        this.pc = new RTCPeerConnection();
-        this.pc.onicecandidate = (event: RTCPeerConnectionIceEvent) => this.onicecandidate(event);
-        this.pc.onaddstream = (e: MediaStreamEvent) => onstream(e.stream);
 
-        this.pc.setRemoteDescription(this.offer).then(
-            () => this.pc.createAnswer().then(
-                (answerdesc: RTCSessionDescription) => this.gotAnswerDescription(answerdesc),
-                (e) => console.error('enable to create answer:', e)),
-            (e) => console.error('enable to set remote description:', e));
-        for(let i=0 ; i<this.icecandidates.length ; i++) {
-            this.pc.addIceCandidate(this.icecandidates[i]).then(
-                () => console.log('ice yeah'),
-                () => console.log('ice m****…')
-            );
-        }
+    createOfferFor(player:Player, stream: MediaStream, conf: RTCConfiguration, ) {
+        this.pc = new RTCPeerConnection(conf);
+        this.pc.onicecandidate = (e: RTCPeerConnectionIceEvent) => {
+            if (e.candidate) {
+                console.log('createOfferFor ICE EVENT:', e);
+                this.send(new WSMessage('ICECandidate', undefined, player.ident, e.candidate));
+            }
+        };
+        this.pc.addStream(stream);
+        this.pc.createOffer({voiceActivityDetection: false}).then(
+            (desc: RTCSessionDescriptionInit) => {
+                this.pc.setLocalDescription(desc).then(
+                    () => this.send(new WSMessage('Offer', undefined, player.ident, desc))
+                );
+            }
+        );
     }
 
-    private onicecandidate(event: RTCPeerConnectionIceEvent) {
-        console.log('receiver candidate:', event.candidate);
+    createAnswer(msg: WSMessage, conf: RTCConfiguration) {
+        console.log('Je vais répondre à cette offre:', msg);
+        this.pc = new RTCPeerConnection(conf);
+        this.pc.onicecandidate = (e: RTCPeerConnectionIceEvent) => {
+            if (e.candidate) {
+                console.log('createAnswer ICE EVENT:', e);
+                this.send(new WSMessage('ICECandidate', undefined, msg.from, e.candidate));
+            }
+        };
+        this.pc.setRemoteDescription(msg.payload).then(
+            () => {
+                console.log('setRemoteDescription ok');
+                this.pc.createAnswer({voiceActivityDetection: false}).then(
+                    (desc: RTCSessionDescriptionInit) => {
+                        this.pc.setLocalDescription(desc).then(
+                            () => this.send(new WSMessage('Answer', undefined, msg.from, desc))
+                        )
+                    }
+                );
+            },
+            () => console.error('setRemoteDescription a échoué'),
+        );
     }
 
-    private gotAnswerDescription(answerdesc: RTCSessionDescription) {
-        this.pc.setLocalDescription(answerdesc);
-        this.send(new WSMessage('Answer', undefined, this.ident, answerdesc));
+    applyAnswer(msg: WSMessage) {
+        this.pc.setRemoteDescription(msg.payload).then(
+            () => console.log('Réponse reçu et prise en compte'),
+            () => console.error("La réponse n'a pu être acceptée", msg)
+        );
     }
 
-    addICECandidate(candidate: RTCIceCandidate) {
-        this.icecandidates.push(candidate);
+    addICECandidate(msg: WSMessage) {
+        this.pc.addIceCandidate(new RTCIceCandidate(msg.payload)).then(
+            () => console.info('ICE candidate correctement ajouté'),
+            () => console.error("ICE candidate n'a pas pu être ajouté", msg.payload)
+        );
     }
 
     setMenuItem(menuitem: PlayerMenuItem) {
@@ -132,6 +158,8 @@ class Players {
     private app: App;
     private index: IPlayerIndex;
     private send: (msg: WSMessage) => void;
+    private stream: MediaStream;
+    me:Player;
 
     constructor(app: App){
         this.app = app;
@@ -142,10 +170,14 @@ class Players {
         this.send = send;
     }
 
-    updatePlayerOffer(msg: WSMessage) {
-        var player: Player = this.getOrCreatePlayer(msg.from);
-        player.updateOffer(new RTCSessionDescription(msg.payload));
+    setOutputStream(stream: MediaStream) {
+        this.stream = stream;
     }
+
+    // updatePlayerOffer(msg: WSMessage) {
+    //     var player: Player = this.getOrCreatePlayer(msg.from);
+    //     player.updateOffer(new RTCSessionDescription(msg.payload));
+    // }
 
     onPlayerDisconnected(msg: WSMessage) {
         var indent: string = msg.from;
@@ -156,7 +188,7 @@ class Players {
         //    player.getMenuItem().element);
     }
 
-    private getOrCreatePlayer(ident: string): Player {
+    private getOrCreatePlayer(ident: string, no_ui:boolean=false): Player {
         if (this.index[ident]) {
             var player: Player = this.index[ident];
             if(!player.getMenuItem())
@@ -167,10 +199,77 @@ class Players {
 
         var player: Player = new Player(ident, this.send);
         this.index[ident] = player;
-        player.setMenuItem(new PlayerMenuItem(player,
-                                              this.app.menu.menuView.playersContent));
+        if(!no_ui)
+            player.setMenuItem(new PlayerMenuItem(player,
+                                                  this.app.menu.menuView.playersContent));
         return player;
     }
+
+    createMePlayer(msg: WSMessage) {
+        console.log('createMePlayer');
+        this.getNickname().then(
+            (nickname:string)=> {
+                this.me = this.getOrCreatePlayer(<string>msg.payload, true);
+                this.send(new WSMessage('SetNickname', undefined, undefined, nickname));
+                console.log('createMePlayer done.');
+            }
+        );
+    }
+
+    private getNickname(): Promise<string> {
+        var nickname: string = sessionStorage.getItem('nickname');
+        if (nickname)
+            return Promise.resolve(nickname);
+
+        var modal_wrapper = d3.select(document.body)
+            .append('div')
+            .attr('class', 'modal-wrapper');
+
+        var modal_box = modal_wrapper
+            .append('div')
+            .attr('class', 'modal-box');
+
+        var content = modal_box
+            .append('div')
+            .attr('class', 'content');
+
+        content.append('h1')
+            .text(_('Your nickname'));
+
+
+        return new Promise<string>(
+            (resolve, reject) => {
+                var form = content.append('form')
+                    .attr('action', '#')
+                    .attr('autocomplete', 'off')
+                    .on('submit',
+                        () => {
+                            var evt: Event = <Event>d3.event;
+                            evt.preventDefault();
+                            evt.stopPropagation();
+                            sessionStorage.setItem('nickname',
+                                (<HTMLInputElement>((<HTMLFormElement>(evt.target)).elements.namedItem('nickname'))).value);
+                            resolve(sessionStorage.getItem('nickname'));
+                            modal_wrapper.transition()
+                                .style('opacity', '0')
+                                .remove();
+                        });
+
+                form.append('input')
+                    .attr('type', 'text')
+                    .attr('name', 'nickname')
+                    .attr('autofocus', 'autofocus');
+
+                content.append('dl')
+                    .append('dd')
+                    .text(_('Please enter your nickname that other players will see.'));
+
+                modal_box.transition()
+                    .style('opacity', '1');
+            }
+        );
+    }
+
 
     getPlayer(ident: string): Player {
         return this.index[ident];
@@ -182,13 +281,16 @@ class Players {
     }
 
     onModulePlayerRemoved(player: Player) {
-        if (player.isPeerConnected())
-            this.send(new WSMessage('RequestNewOffer',
-                                    undefined,
-                                    player.ident,
-                                    null));
+        // if (player.isPeerConnected())
+        //     this.send(new WSMessage('RequestNewOffer',
+        //                             undefined,
+        //                             player.ident,
+        //                             null));
     }
 
+    startRTCWith(player:Player) {
+        this.me.createOfferFor(player, this.stream, this.app.getRTCConfiguration());
+    }
 }
 
 interface HTMLMediaElementNG extends HTMLMediaElement {
@@ -212,7 +314,8 @@ class PlayerModule extends Module {
         super(id, x, y, 'player', container, removeModuleCallBack, compileFaust, audioContext);
         this.ctor = new Connector();
         this.moduleView = new PlayerModuleView(id, x, y, name, container, player);
-        this.rtcConnectPlayer(player);
+        // this.rtcConnectPlayer(player);
+        this.player = player;
         this.addEvents();
     }
 
@@ -228,13 +331,13 @@ class PlayerModule extends Module {
     rtcConnectPlayer(player: Player) {
         this.player = player;
         this.player.setModule(this);
-        player.replyToOffer((stream: MediaStream) => this.connectStream(stream));
+        // player.replyToOffer((stream: MediaStream) => this.connectStream(stream));
         (<PlayerModuleView>this.moduleView).refresh(player);
     }
 
     onremove(app: App) {
-        this.msasn.disconnect();
-        app.players.onModulePlayerRemoved(this.player);
+        // this.msasn.disconnect();
+        // app.players.onModulePlayerRemoved(this.player);
     }
 }
 
