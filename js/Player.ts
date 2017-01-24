@@ -46,8 +46,13 @@ class Player {
         this.icecandidates = new Array<RTCIceCandidate>();
     }
 
+    requestOfferFrom(player:Player) {
+        console.log('Je sollicite une offre auprès de :', player.nickname);
+        this.send(new WSMessage('RequestOffer', undefined, player.ident, null));
+    }
 
     createOfferFor(player:Player, stream: MediaStream, conf: RTCConfiguration, ) {
+        console.log('Je créé une offre pour :', player.nickname);
         this.pc = new RTCPeerConnection(conf);
         this.pc.onicecandidate = (e: RTCPeerConnectionIceEvent) => {
             if (e.candidate) {
@@ -65,9 +70,13 @@ class Player {
         );
     }
 
-    createAnswer(msg: WSMessage, conf: RTCConfiguration) {
+    createAnswer(msg: WSMessage, dest_player:Player, conf: RTCConfiguration) {
         console.log('Je vais répondre à cette offre:', msg);
         this.pc = new RTCPeerConnection(conf);
+        this.pc.onaddstream = (mse: MediaStreamEvent) => {
+            console.log("J'ai reçu cette stream :", mse);
+            dest_player.module.connectStream(mse.stream);
+        };
         this.pc.onicecandidate = (e: RTCPeerConnectionIceEvent) => {
             if (e.candidate) {
                 console.log('createAnswer ICE EVENT:', e);
@@ -91,7 +100,7 @@ class Player {
 
     applyAnswer(msg: WSMessage) {
         this.pc.setRemoteDescription(msg.payload).then(
-            () => console.log('Réponse reçu et prise en compte'),
+            () => console.log('Réponse reçue et prise en compte'),
             () => console.error("La réponse n'a pu être acceptée", msg)
         );
     }
@@ -119,10 +128,10 @@ class Player {
     setModule(module: PlayerModule) {
         this.module = module;
         this.removeMenuItem();
-        this.send(new WSMessage('PlayerGetOnStage',
-                                undefined,
-                                undefined,
-                                this.ident));
+        // this.send(new WSMessage('PlayerGetOnStage',
+        //                         undefined,
+        //                         undefined,
+        //                         this.ident));
     }
 
     updateOffer(offer: RTCSessionDescription) {
@@ -174,10 +183,9 @@ class Players {
         this.stream = stream;
     }
 
-    // updatePlayerOffer(msg: WSMessage) {
-    //     var player: Player = this.getOrCreatePlayer(msg.from);
-    //     player.updateOffer(new RTCSessionDescription(msg.payload));
-    // }
+    getOutputStream(): MediaStream {
+        return this.stream;
+    }
 
     onPlayerDisconnected(msg: WSMessage) {
         var indent: string = msg.from;
@@ -289,7 +297,8 @@ class Players {
     }
 
     startRTCWith(player:Player) {
-        this.me.createOfferFor(player, this.stream, this.app.getRTCConfiguration());
+        // this.me.createOfferFor(player, this.stream, this.app.getRTCConfiguration());
+        this.me.requestOfferFrom(player);
     }
 }
 
@@ -315,25 +324,26 @@ class PlayerModule extends Module {
         this.ctor = new Connector();
         this.moduleView = new PlayerModuleView(id, x, y, name, container, player);
         // this.rtcConnectPlayer(player);
-        this.player = player;
+        // this.player = player;
+        player.setModule(this);
         this.addEvents();
     }
 
     drawInterface(id: number, x:number, y:number, name:string, container: HTMLElement){}
 
-    private connectStream(stream: MediaStream) {
+    connectStream(stream: MediaStream) {
         if (this.msasn)
             this.msasn.disconnect();
         this.msasn = this.audioContext.createMediaStreamSource(stream);
         this.ctor.connectInput(this, this.msasn);
     }
 
-    rtcConnectPlayer(player: Player) {
-        this.player = player;
-        this.player.setModule(this);
-        // player.replyToOffer((stream: MediaStream) => this.connectStream(stream));
-        (<PlayerModuleView>this.moduleView).refresh(player);
-    }
+    // rtcConnectPlayer(player: Player) {
+    //     this.player = player;
+    //     this.player.setModule(this);
+    //     // player.replyToOffer((stream: MediaStream) => this.connectStream(stream));
+    //     (<PlayerModuleView>this.moduleView).refresh(player);
+    // }
 
     onremove(app: App) {
         // this.msasn.disconnect();

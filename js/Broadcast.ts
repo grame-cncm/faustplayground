@@ -51,19 +51,13 @@ class Broadcast {
             console.warn('"on' + wsmsg.type + '" not implemented.');
     }
 
-    // a player is created on offer received
     private onOffer(msg: WSMessage) {
-        // this.players.updatePlayerOffer(msg);
-        this.players.me.createAnswer(msg, this.app.getRTCConfiguration());
+        var player = this.players.getPlayer(msg.from);
+        this.players.me.createAnswer(msg, player, this.app.getRTCConfiguration());
     }
 
-    // ICE candidates that follow an offer are stored
-    // on the corresponding player instance.
-    // So the player can be used later.
     private onICECandidate(msg: WSMessage) {
         this.players.me.addICECandidate(msg);
-        // var player: Player = this.players.getPlayer(msg.from);
-        // player.addICECandidate(new RTCIceCandidate(msg.payload));
     }
 
 
@@ -79,38 +73,36 @@ class Broadcast {
 
     private onAnswer(msg: WSMessage) {
         this.players.me.applyAnswer(msg);
-        // this.pc.setRemoteDescription(msg.payload).then(
-        //     () => console.log('youpi !'),
-        //     () => console.error('hé m****…')
-        // );
     }
 
     private onSetNickname(msg: WSMessage) {
         this.players.updatePlayerNickname(msg);
     }
 
-    private onRequestNewOffer(msg: WSMessage) {
-        // this.createOffer();
+    private onRequestOffer(msg: WSMessage) {
+        this.players.me.createOfferFor(this.players.getPlayer(msg.from),
+                                       this.players.getOutputStream(),
+                                       this.app.getRTCConfiguration());
     }
 
-    private onPlayerGetOnStage(msg: WSMessage) {
-        var player = this.players.getPlayer(msg.payload);
-        player.removeMenuItem();
-    }
+    // private onPlayerGetOnStage(msg: WSMessage) {
+    //     var player = this.players.getPlayer(msg.payload);
+    //     player.removeMenuItem();
+    // }
 
-    private sendAnswer(evt: CustomEvent){
-        this.send(new WSMessage('Answer',
-                                undefined,
-                                evt.detail.to,
-                                evt.detail.desc));
-    }
+    // private sendAnswer(evt: CustomEvent){
+    //     this.send(new WSMessage('Answer',
+    //                             undefined,
+    //                             evt.detail.to,
+    //                             evt.detail.desc));
+    // }
 
-    private sendNickname() {
-        this.send(new WSMessage('SetNickname',
-                                undefined,
-                                undefined,
-                                sessionStorage.getItem('nickname')));
-    }
+    // private sendNickname() {
+    //     this.send(new WSMessage('SetNickname',
+    //                             undefined,
+    //                             undefined,
+    //                             sessionStorage.getItem('nickname')));
+    // }
 }
 
 

@@ -411,9 +411,10 @@ class App {
                     if (!module)
                         return this.createPlayerModule(x, y, e.dataTransfer.getData('URL'));
                     else
-                        return (<PlayerModule>module).rtcConnectPlayer(
-                            this.players.getPlayer(
-                                e.dataTransfer.getData('URL')));
+                        // return (<PlayerModule>module).rtcConnectPlayer(
+                        //     this.players.getPlayer(
+                        //         e.dataTransfer.getData('URL')));
+                        break;
 
                 default :
                     var dttext: string = e.dataTransfer.getData('text');
