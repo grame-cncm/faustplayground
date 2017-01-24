@@ -125,10 +125,6 @@ class Player {
     setModule(module: PlayerModule) {
         this.module = module;
         this.removeMenuItem();
-        // this.send(new WSMessage('PlayerGetOnStage',
-        //                         undefined,
-        //                         undefined,
-        //                         this.ident));
     }
 
     updateNickname(nickname: string) {
@@ -287,7 +283,6 @@ class Players {
     }
 
     startRTCWith(player:Player) {
-        // this.me.createOfferFor(player, this.stream, this.app.getRTCConfiguration());
         this.me.requestOfferFrom(player);
     }
 }
