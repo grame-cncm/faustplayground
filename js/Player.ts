@@ -30,8 +30,6 @@ class PlayerMenuItem {
 }
 
 class Player {
-    private offer: RTCSessionDescription;
-    private icecandidates: Array<RTCIceCandidate>;
     ident: string;
     nickname: string;
     private pc: RTCPeerConnection;
@@ -43,7 +41,6 @@ class Player {
         this.ident = ident;
         this.nickname = ident;
         this.send = send;
-        this.icecandidates = new Array<RTCIceCandidate>();
     }
 
     requestOfferFrom(player:Player) {
@@ -134,10 +131,6 @@ class Player {
         //                         this.ident));
     }
 
-    updateOffer(offer: RTCSessionDescription) {
-        this.offer = offer;
-    }
-
     updateNickname(nickname: string) {
         this.nickname = nickname;
         if (this.menuitem)
@@ -192,8 +185,6 @@ class Players {
         var player: Player = this.index[indent];
         delete this.index[indent];
         player.notifyDisconnected();
-        //this.app.menu.menuView.playersContent.removeChild(
-        //    player.getMenuItem().element);
     }
 
     private getOrCreatePlayer(ident: string, no_ui:boolean=false): Player {
@@ -289,11 +280,10 @@ class Players {
     }
 
     onModulePlayerRemoved(player: Player) {
-        // if (player.isPeerConnected())
-        //     this.send(new WSMessage('RequestNewOffer',
-        //                             undefined,
-        //                             player.ident,
-        //                             null));
+        // if player is still connected, it is
+        // replaced in players' menu.
+        if (player.isPeerConnected())
+            this.getOrCreatePlayer(player.ident).updateNickname(player.nickname);
     }
 
     startRTCWith(player:Player) {
@@ -323,8 +313,7 @@ class PlayerModule extends Module {
         super(id, x, y, 'player', container, removeModuleCallBack, compileFaust, audioContext);
         this.ctor = new Connector();
         this.moduleView = new PlayerModuleView(id, x, y, name, container, player);
-        // this.rtcConnectPlayer(player);
-        // this.player = player;
+        this.player = player;
         player.setModule(this);
         this.addEvents();
     }
@@ -338,16 +327,9 @@ class PlayerModule extends Module {
         this.ctor.connectInput(this, this.msasn);
     }
 
-    // rtcConnectPlayer(player: Player) {
-    //     this.player = player;
-    //     this.player.setModule(this);
-    //     // player.replyToOffer((stream: MediaStream) => this.connectStream(stream));
-    //     (<PlayerModuleView>this.moduleView).refresh(player);
-    // }
-
     onremove(app: App) {
-        // this.msasn.disconnect();
-        // app.players.onModulePlayerRemoved(this.player);
+        this.msasn.disconnect();
+        app.players.onModulePlayerRemoved(this.player);
     }
 }
 

@@ -84,25 +84,6 @@ class Broadcast {
                                        this.players.getOutputStream(),
                                        this.app.getRTCConfiguration());
     }
-
-    // private onPlayerGetOnStage(msg: WSMessage) {
-    //     var player = this.players.getPlayer(msg.payload);
-    //     player.removeMenuItem();
-    // }
-
-    // private sendAnswer(evt: CustomEvent){
-    //     this.send(new WSMessage('Answer',
-    //                             undefined,
-    //                             evt.detail.to,
-    //                             evt.detail.desc));
-    // }
-
-    // private sendNickname() {
-    //     this.send(new WSMessage('SetNickname',
-    //                             undefined,
-    //                             undefined,
-    //                             sessionStorage.getItem('nickname')));
-    // }
 }
 
 

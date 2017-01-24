@@ -12,8 +12,6 @@ class BroadcastServerProtocol(WebSocketServerProtocol):
     def __init__(self):
         WebSocketServerProtocol.__init__(self)
         self.nickname = ''
-        # self.offer = None
-        # self.icecandidates = []
 
     def onOpen(self):
         self.nickname = self.peer # fallback nickname
@@ -23,13 +21,8 @@ class BroadcastServerProtocol(WebSocketServerProtocol):
         if not isBinary:
             msg = WSMessage.fromJSON(payload.decode('utf-8'))
             msg.setFrom(self)
-            # if msg.type == 'Offer' :
-            #     self.offer = msg
             if msg.type == 'SetNickname' :
                 self.nickname = msg.payload
-
-            # elif msg.type == 'ICECandidate' :
-            #     self.icecandidates.append(msg)
 
             self.factory.broadcast(msg)
 
@@ -57,11 +50,8 @@ class BroadcastServerFactory(WebSocketServerFactory) :
             whoiam = WSMessage('Whoami', 'server', client.peer, client.peer)
             self.broadcast(whoiam)
 
-            # send to the new client previous offers from other clients
+            # send to the new client other clients identity
             for other_client in self.otherClients(client.peer) :
-                # client.sendMessage(other_client.offer.toJSON())
-                # for icecandidate in other_client.icecandidates :
-                #     client.sendMessage(icecandidate.toJSON())
                 client.sendMessage(WSMessage('SetNickname',
                                              other_client.peer,
                                              client.peer,
