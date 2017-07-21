@@ -16,7 +16,7 @@ setup(
     description='Play Faust on your browser',
     long_description=long_description,
 
-    author='Ève Ribodie & All Tou gay Zeur',
+    author='GRAME, ARMINES',
 
     packages=find_packages('py'),
     package_dir={'': 'py'},
