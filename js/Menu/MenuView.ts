@@ -101,7 +101,15 @@ class MenuView {
         this.playersButton = document.createElement('div');
         this.playersButton.id = 'playersButton';
         this.playersButton.className = 'buttonsMenu';
-        this.playersButton.innerText = _("Players");
+
+        var caption: HTMLSpanElement = document.createElement('span');
+        caption.innerText = _("Players") + " ";
+        this.playersButton.appendChild(caption);
+
+        var cb: HTMLInputElement = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.title = _("Enable multiplayer mode");
+        this.playersButton.appendChild(cb);
 
         if (!Utilitary.isAccelerometerOn) {
             accButton.style.opacity = "0.2";

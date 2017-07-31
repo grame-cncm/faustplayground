@@ -52,6 +52,10 @@ class Menu {
         this.menuView.playersButton.addEventListener('click',
             () => this.menuHandler(this.newMenuChoices = MenuChoices.players)
         );
+        this.menuView.playersButton.querySelector('input[type=checkbox]').addEventListener(
+            'click',
+            (e:Event) => this.enableBroadcast(e)
+        );
         this.menuView.exportButtonMenu.onclick =
             () => { this.menuHandler(this.newMenuChoices = MenuChoices.export) };
         this.menuView.helpButtonMenu.onclick =
@@ -195,6 +199,15 @@ class Menu {
                 this.currentMenuChoices = MenuChoices.players;
                 break;
         }
+    }
+
+    enableBroadcast(e: Event): void {
+        e.stopPropagation();
+        var cb: HTMLInputElement = <HTMLInputElement>e.target;
+        if (cb.checked)
+            this.app.scene.activateBroadcast(this.app.scene.fAudioOutput);
+        else
+            e.preventDefault();
     }
 
     //manage the load display

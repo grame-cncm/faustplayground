@@ -243,13 +243,16 @@ class Scene {
 
         var ctor: Connector = new Connector();
         ctor.connectOutput(sceneOutput, out);
+    }
+
+    activateBroadcast(sceneOutput: Module): void {
+        var ctor: Connector = new Connector();
         var stream: MediaStream | void = ctor.getBroadcastStream(sceneOutput, this.app.audioContext);
         if (stream) {
             this.broadcast = new Broadcast(this.app);
             this.app.players.setOutputStream(stream);
         }
     }
-
 
     /*********************** SAVE/RECALL SCENE ***************************/
 
