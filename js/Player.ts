@@ -19,7 +19,14 @@ class PlayerMenuItem {
             .attr('href', player.ident)
             .attr('draggable', false)
             .text(player.nickname)
-            .on('dblclick', () => (<Event>(d3.event)).preventDefault());
+            .on('click', () => {
+                (<Event>(d3.event)).preventDefault();
+                (<Event>(d3.event)).stopPropagation();
+            })
+            .on('dblclick', () => {
+                (<Event>(d3.event)).preventDefault();
+                (<Event>(d3.event)).stopPropagation();
+            });
     }
 
     refresh() {
