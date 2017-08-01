@@ -21,6 +21,7 @@ interface RTCOfferAnswerOptions {
 // https://www.w3.org/TR/webrtc/#idl-def-rtcofferoptions
 interface RTCOfferOptions extends RTCOfferAnswerOptions {
     iceRestart?: boolean; // default = false
+    mandatory?:any;
 }
 
 // https://www.w3.org/TR/webrtc/#idl-def-rtcansweroptions

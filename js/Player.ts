@@ -66,7 +66,7 @@ class Player {
             }
         };
         this.pc.addStream(stream);
-        this.pc.createOffer({voiceActivityDetection: false}).then(
+        this.pc.createOffer({ mandatory: { OfferToReceiveAudio: true, OfferToReceiveVideo: false } }).then(
             (desc: RTCSessionDescriptionInit) => {
                 this.pc.setLocalDescription(desc).then(
                     () => this.send(new WSMessage('Offer', undefined, player.ident, desc))
@@ -91,7 +91,7 @@ class Player {
         this.pc.setRemoteDescription(msg.payload).then(
             () => {
                 console.log('setRemoteDescription ok');
-                this.pc.createAnswer({voiceActivityDetection: false}).then(
+                this.pc.createAnswer().then(
                     (desc: RTCSessionDescriptionInit) => {
                         this.pc.setLocalDescription(desc).then(
                             () => this.send(new WSMessage('Answer', undefined, msg.from, desc))
@@ -324,6 +324,16 @@ class PlayerModule extends Module {
     drawInterface(id: number, x:number, y:number, name:string, container: HTMLElement){}
 
     connectStream(stream: MediaStream) {
+        /* workarround for Chrome :
+           the remote MediaStream is not played when passed directly to
+           audioContext.createMediaStreamSource.
+           But, if the stream is previously bind to a audio.srcObject
+           the sound is played! Strange story…
+          */
+        if(/.*\bchrome\b/i.test(navigator.userAgent)) {
+            var audio: HTMLAudioElement = document.createElement('audio');
+            stream = audio.srcObject = stream;
+        }
         if (this.msasn)
             this.msasn.disconnect();
         this.msasn = this.audioContext.createMediaStreamSource(stream);
