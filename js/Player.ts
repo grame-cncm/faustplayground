@@ -24,9 +24,10 @@ class PlayerMenuItem {
                 (<Event>(d3.event)).stopPropagation();
             })
             .on('dblclick', () => {
-                (<Event>(d3.event)).preventDefault();
-                (<Event>(d3.event)).stopPropagation();
-            });
+                document.dispatchEvent(new CustomEvent('dbltouchplayer',
+                                                       {'detail' : this}));
+            })
+        ;
     }
 
     refresh() {

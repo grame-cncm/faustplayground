@@ -248,6 +248,10 @@ class App {
 
         //custom double touch from library menu to load an effect or an intrument.
         document.addEventListener("dbltouchlib", (e: CustomEvent) => { this.dblTouchUpload(e) });
+        document.addEventListener("dbltouchplayer", (e: CustomEvent) => {
+            var pos: PositionModule = this.scene.positionDblTapModule();
+            this.createPlayerModule(pos.x, pos.y, (<PlayerMenuItem>(e.detail)).player.ident);
+            });
     }
 
 
@@ -428,29 +432,6 @@ class App {
             }
         }
 
-        //else if (e.dataTransfer.getData('URL').split(':').shift() != "file") {
-        //    var dsp_code: string = e.dataTransfer.getData('text');
-        //    console.log("Text DROP : " + dsp_code);
-        //    // CASE 2 : the dropped object is some faust code
-        //    if (dsp_code) {
-        //         console.log("DROP: CASE 2 ");
-        //        this.uploadCodeFaust(module, x, y, dsp_code);
-        //    } else {
-        //        // CASE 3 : the dropped object is a file containing some faust code or jfaust/json
-        //        console.log("DROP: CASE 3 ");
-        //        try {
-        //            this.uploadFileFaust(module, x, y, e);
-        //        } catch (error) {
-        //            new Message(error);
-        //            Utilitary.hideFullPageLoading();
-        //        }
-        //    }
-        //
-        //} else { // CASE 4 : any other strange thing
-        //    console.log("DROP: CASE 4 STRANGE ");
-        //    new Message(_("Content is not compatible with Faust"));
-        //    Utilitary.hideFullPageLoading();
-        //}
     }
 
     private updateModuleFromFile(file: File, module: Module): void {
