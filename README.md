@@ -141,3 +141,55 @@ Keep in mind that SSL cipher will be done by the frontend server. So, pay attent
 
 ```
 
+#### STUN and TURN servers
+
+Multiplayer functionalities will work out of the box into browsers that suppport WebRTC API, as long as all clients are connected into the same local network (LAN). Otherwise, for clients that access internet thru differents NAT routers, it will be necessary to run STUN and TURN servers.
+
+For more detailed  informations about WebRTC network issues, you can start with this article: [WebRTC in the real world](https://www.html5rocks.com/en/tutorials/webrtc/infrastructure/)
+
+In short, on Linux Debian, the *coturn* package will do the job.
+
+After install, the configuration file would be placed at `/etc/turnserver.conf`.
+
+If installed on a server that is behing a NAT router, you will must, at least, configure: `external-ip=publicip/localip`.
+
+You will also need to configure a minimal authentication settings. Faustplayground does not (yet) ask user for credentials before using TURN. So, this minimal authentication is to enable the `no-auth` option.
+
+When *coturn* installed and configured, you are ready to edit `App.ts` file to use STUN and TURN server: at the end of the file, search for `getRTCConfiguration` method, uncomment code and put urls that belongs to your servers.
+
+```typescript
+    public getRTCConfiguration() : RTCConfiguration {
+
+        var stun_server: RTCIceServer = {
+            urls : 'stun:your.stun.server.com:3478'
+        };
+        var turn_server: RTCIceServer = {
+            urls : 'turn:your.turn.server.com:3478?transport=udp',
+            username : 'username',
+            credential : 'password'
+        };
+        var conf: RTCConfiguration = {
+            iceServers : [stun_server, turn_server]
+        };
+        return conf;
+    }
+
+```
+
+When done, recompile Typescript stuff with `make`.
+
+
+## Get involved
+
+A few things to know in order to develop Faustplayground:
+
+npm reguirements:
+```
+npm install -g typescript@2.1.5
+npm install -g i18next-parser
+```
+
+To compile Typescript file, just do `make`.
+
+Localisation is provided by i18next. The workflow mimics GNU Gettext, eg.: when coding, put your i18n strings like `_("A string"")`. Then, extract localisable strings with `make i18n`. Resulting files will be placed / updated in `js/locales` folder.
+

@@ -525,20 +525,22 @@ class App {
 
 
     public getRTCConfiguration() : RTCConfiguration {
-        var stun_server: RTCIceServer = {
-            urls : 'stun:playground.feever.fr:3478'
-        };
-        var turn_server: RTCIceServer = {
-            urls : 'turn:playground.feever.fr:3478?transport=udp',
-            username : 'yeah',
-            credential : 'yeah'
-        };
-        var conf: RTCConfiguration = {
-            iceServers : [stun_server, turn_server]
-        };
 
-        return conf;
-        // return null;
+        /* uncomment and edit the following lines to activate STUN and TURN servers */
+        // var stun_server: RTCIceServer = {
+        //     urls : 'stun:your.stun.server.com:3478'
+        // };
+        // var turn_server: RTCIceServer = {
+        //     urls : 'turn:your.turn.server.com:3478?transport=udp',
+        //     username : 'username',
+        //     credential : 'password'
+        // };
+        // var conf: RTCConfiguration = {
+        //     iceServers : [stun_server, turn_server]
+        // };
+        //
+        // return conf;
+        return null;
     }
 }
 
