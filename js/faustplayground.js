@@ -5946,15 +5946,16 @@ var App = (function () {
 /// <reference path="Messages.ts"/>
 "use strict";
 //listner on load of all element to init the app
-// steph 09/08/17
+// Steph : 09/08/17
 //window.addEventListener('load', init, false);
 
 //initialization af the app, create app and ressource to get text with correct localization
 //then resumeInit on callback when text is loaded
 function init() {
-    var app = new App();
-    var ressource = new Ressources;
-    ressource.getRessources(app);
+	console.log("init");
+	var app = new App();
+	var ressource = new Ressources;
+	ressource.getRessources(app);
 }
 //callback when text is loaded. resume the initialization
 function resumeInit(app) {
