@@ -201,7 +201,6 @@ function mydspMixer(global, foreign, buffer) {
 
     var max = global.Math.max;
     var abs = global.Math.abs;
-    var sqrt = global.Math.sqrt;
 
     function clearOutput(count, channels, outputs) {
         count = count | 0;
@@ -216,23 +215,20 @@ function mydspMixer(global, foreign, buffer) {
         }
     }
 
-    function mixVoice(count, channels, inputs, outputs, polyphony) {
+    function mixVoice(count, channels, inputs, outputs) {
         count = count | 0;
         channels = channels | 0;
         inputs = inputs | 0;
         outputs = outputs | 0;
-        polyphony = +polyphony;
         var i = 0;
         var j = 0;
         var level = 0.;
-        var gain_level = 0.;
-        gain_level = 1. / +sqrt(polyphony);
         for (i = 0; ((i | 0) < (channels | 0) | 0); i = ((i | 0) + 1 | 0)) {
             for (j = 0; ((j | 0) < (count | 0) | 0); j = ((j | 0) + 1 | 0)) {
                 level = max(+level, +(abs(+(HEAPF32[(HEAP32[inputs + ((i | 0) << 2) >> 2] | 0) + ((j | 0) << 2) >> 2]))));
                 HEAPF32[(HEAP32[outputs + ((i | 0) << 2) >> 2] | 0) + ((j | 0) << 2) >> 2] 
                     = +(HEAPF32[(HEAP32[outputs + ((i | 0) << 2) >> 2] | 0) + ((j | 0) << 2) >> 2]) + 
-                      +(HEAPF32[(HEAP32[inputs + ((i | 0) << 2) >> 2] | 0) + ((j | 0) << 2) >> 2]) * +gain_level;
+                      +(HEAPF32[(HEAP32[inputs + ((i | 0) << 2) >> 2] | 0) + ((j | 0) << 2) >> 2]);
             }
         }
         return +level;
@@ -254,9 +250,9 @@ faust.max_buffer_size = 8192;
 faust.getErrorMessage = function() { return faust.error_msg; };
 
 faust.pow2limit = function (x) {
-    var n = 2;
+    var n = 65536; // Minimum = 64 kB
     while (n < x) { n = 2 * n; }
-    return (n < 65536) ? 65536 : n; // Minimum = 64 kB
+    return n;
 }
 
 faust.createDSPFactoryAux = function (code, argv, max_polyphony, callback) {
@@ -276,11 +272,10 @@ faust.createDSPFactoryAux = function (code, argv, max_polyphony, callback) {
     
     // use a Worker to compile the code...
     var factory_name = "mydsp" + faust.factory_number++;
-
+    //var worker = new Worker("create-factory-worker.js");
     var worker = new Worker("js/Lib/create-factory-worker.js");
-
-    worker.addEventListener("message", function (event) {
-        //alert(event.data);
+    
+    worker.onmessage = function(event) {
         if (event.data.factory_code != undefined) {
             var factory_code = event.data.factory_code;
             var factory = null;
@@ -290,18 +285,42 @@ faust.createDSPFactoryAux = function (code, argv, max_polyphony, callback) {
             }
             if (callback) {
                 callback(factory);
-
             }
-            worker.terminate();
-
         }
-    }, false)
+        worker.terminate();
+    };
+    
     worker.onerror = function (event) {
         event.preventDefault();
-        throw new Error("workerError");
+        throw new Error("createDSPFactory : worker error");
     };
-    worker.postMessage({ code: code, argv: argv, factory_name: factory_name });
+    
+    worker.postMessage({code: code, argv: argv, factory_name: factory_name});
+};
 
+faust.expandDSPFromString = function (code, argv, callback) {
+    
+    // use a Worker to expand the code...
+    var worker = new Worker("expand-dsp-worker.js");
+    
+    worker.onmessage = function(event) {
+        if (event.data.expand_dsp != undefined) {
+            var expand_dsp = event.data.expand_dsp;
+            var sha_key = event.data.sha_key;
+            faust.error_msg = event.data.error_msg;
+            if (callback) {
+                callback(expand_dsp, sha_key);
+            }
+        }
+        worker.terminate();
+    };
+    
+    worker.onerror = function (event) {
+        event.preventDefault();
+        throw new Error("expandDSPFromString : worker error");
+    };
+    
+    worker.postMessage({code: code, argv: argv});
 };
 
 // Mono
@@ -330,6 +349,7 @@ faust.readDSPFactoryFromMachine = function (machine, max_polyphony)
 
 faust.readDSPFactoryFromMachineAux = function (factory_name, factory_code, sha_key, max_polyphony) {
     
+    console.log(factory_code);
 
     // 'libfaustworker.js' asm.js backend generates the ASM module + UI method, then we compile the code
     eval(factory_code);
@@ -366,7 +386,7 @@ faust.readDSPFactoryFromMachineAux = function (factory_name, factory_code, sha_k
     }
   
     // Compile the ASM module itself : 'buffer' is the emscripten global memory context
-    var factory = eval(factory_name + "Module(window, null, HEAP)");
+    var factory = eval(factory_name + "Module(window, window.Math, HEAP)");
     
     factory.dsp_memory_size = dsp_memory_size;
     factory.HEAP = HEAP;
@@ -433,55 +453,57 @@ faust.createDSPInstance = function (factory, context, buffer_size) {
         console.log("Maximum of DSP instances reached!");
         return null;
     }
-
+    
     var handler = null;
     var ins, outs;
     var numIn, numOut;
-
-    var scriptProcessor;
-
+    
+    var scriptProcessor; 
+    
     var dspInChannnels = [];
     var dspOutChannnels = [];
 
     // bargraph
     var ouputs_timer = 5;
     var ouputs_items = [];
-
+     
     // input items
     var inputs_items = [];
-
+    
     // Start of HEAP index
     var audio_heap_ptr = factory.dsp_memory_size * dsp_num;
-
+     
     // Setup pointers offset
-    var audio_heap_ptr_inputs = audio_heap_ptr;
+    var audio_heap_ptr_inputs = audio_heap_ptr; 
     var audio_heap_ptr_outputs = audio_heap_ptr_inputs + (factory.getNumInputs() * faust.ptr_size);
-
+     
     // Setup buffer offset
     var audio_heap_inputs = audio_heap_ptr_outputs + (factory.getNumOutputs() * faust.ptr_size);
     var audio_heap_outputs = audio_heap_inputs + (factory.getNumInputs() * buffer_size * faust.sample_size);
-
+     
     // Setup DSP offset
     var dsp_start = audio_heap_outputs + (factory.getNumOutputs() * buffer_size * faust.sample_size);
-
+     
     // Start of DSP memory
     var dsp = dsp_start;
-
-    // Allocate table for 'setValue'
+    
+    // Allocate table for 'setParamValue'
     var value_table = [];
-
-    function update_outputs() {
+    
+    function update_outputs () 
+    {
         if (ouputs_items.length > 0 && handler && ouputs_timer-- === 0) {
             ouputs_timer = 5;
             for (var i = 0; i < ouputs_items.length; i++) {
-                handler(ouputs_items[i], factory.getValue(dsp, factory.pathTable[ouputs_items[i]]));
+                handler(ouputs_items[i], factory.getParamValue(dsp, factory.pathTable[ouputs_items[i]]));
             }
         }
     }
-
-    function compute(e) {
+ 
+    function compute (e) 
+    {
         var i, j;
-
+         
         // Read inputs
         for (i = 0; i < numIn; i++) {
             var input = e.inputBuffer.getChannelData(i);
@@ -490,20 +512,18 @@ faust.createDSPInstance = function (factory, context, buffer_size) {
                 dspInput[j] = input[j];
             }
         }
-
+        
         // Update control state
         for (i = 0; i < inputs_items.length; i++) {
             var path = inputs_items[i];
             var values = value_table[path];
-            factory.setValue(dsp, factory.pathTable[path], values[0]);
+            factory.setParamValue(dsp, factory.pathTable[path], values[0]);
             values[0] = values[1];
         }
 
         // Compute
-
-            factory.compute(dsp, buffer_size, ins, outs);
-
-
+        factory.compute(dsp, buffer_size, ins, outs);
+       
         // Update bargraph
         update_outputs();
 
@@ -516,27 +536,31 @@ faust.createDSPInstance = function (factory, context, buffer_size) {
             }
         }
     }
-
+     
     // JSON parsing
-    function parse_ui(ui) {
+    function parse_ui (ui) 
+    {
         for (var i = 0; i < ui.length; i++) {
             parse_group(ui[i]);
         }
     }
-
-    function parse_group(group) {
+    
+    function parse_group (group) 
+    {
         if (group.items) {
             parse_items(group.items);
         }
     }
-
-    function parse_items(items) {
+    
+    function parse_items (items) 
+    {
         for (var i = 0; i < items.length; i++) {
             parse_item(items[i]);
         }
     }
-
-    function parse_item(item) {
+    
+    function parse_item (item) 
+    {
         if (item.type === "vgroup" || item.type === "hgroup" || item.type === "tgroup") {
             parse_items(item.items);
         } else if (item.type === "hbargraph" || item.type === "vbargraph") {
@@ -547,74 +571,103 @@ faust.createDSPInstance = function (factory, context, buffer_size) {
             inputs_items.push(item.address);
         }
     }
-
-    function init() {
+      
+    function init ()
+    {
         // Setup web audio context
         var i;
-
+         
         // Get input / output counts
         numIn = factory.getNumInputs(dsp);
         numOut = factory.getNumOutputs(dsp);
-
+               
         // Setup web audio context
         console.log("buffer_size %d", buffer_size);
         scriptProcessor = context.createScriptProcessor(buffer_size, numIn, numOut);
         scriptProcessor.onaudioprocess = compute;
-
+        
         if (numIn > 0) {
-            ins = audio_heap_ptr_inputs;
-            for (i = 0; i < numIn; i++) {
+            ins = audio_heap_ptr_inputs; 
+            for (i = 0; i < numIn; i++) { 
                 factory.HEAP32[(ins >> 2) + i] = audio_heap_inputs + ((buffer_size * faust.sample_size) * i);
             }
-
+     
             var dspInChans = factory.HEAP32.subarray(ins >> 2, (ins + numIn * faust.ptr_size) >> 2);
             for (i = 0; i < numIn; i++) {
                 dspInChannnels[i] = factory.HEAPF32.subarray(dspInChans[i] >> 2, (dspInChans[i] + buffer_size * faust.sample_size) >> 2);
             }
         }
-
+        
         if (numOut > 0) {
-            outs = audio_heap_ptr_outputs;
-            for (i = 0; i < numOut; i++) {
+            outs = audio_heap_ptr_outputs; 
+            for (i = 0; i < numOut; i++) { 
                 factory.HEAP32[(outs >> 2) + i] = audio_heap_outputs + ((buffer_size * faust.sample_size) * i);
             }
-
+          
             var dspOutChans = factory.HEAP32.subarray(outs >> 2, (outs + numOut * faust.ptr_size) >> 2);
             for (i = 0; i < numOut; i++) {
                 dspOutChannnels[i] = factory.HEAPF32.subarray(dspOutChans[i] >> 2, (dspOutChans[i] + buffer_size * faust.sample_size) >> 2);
             }
         }
-
+                                   
         // bargraph
         parse_ui(JSON.parse(factory.getJSON()).ui);
 
         // Init DSP
         factory.init(dsp, context.sampleRate);
-
-        // Init 'value' table
+        
+         // Init 'value' table
         for (var i = 0; i < inputs_items.length; i++) {
             var path = inputs_items[i];
             var values = new Float32Array(2);
-            values[0] = values[1] = factory.getValue(dsp, factory.pathTable[path]);
+            values[0] = values[1] = factory.getParamValue(dsp, factory.pathTable[path]);
             value_table[path] = values;
         }
     }
-
+   
     init();
-
+    
     // External API
     return {
-
-        getNumInputs: function () {
+    
+        getNumInputs : function () 
+        {
             return factory.getNumInputs(dsp);
         },
-
-        getNumOutputs: function () {
+        
+        getNumOutputs : function () 
+        {
             return factory.getNumOutputs(dsp);
         },
-
+        
+        init : function (sample_rate) 
+        {
+            factory.init(dsp, sample_rate);
+        },
+        
+        instanceInit : function (sample_rate) 
+        {
+            factory.instanceInit(dsp, sample_rate);
+        },
+        
+        instanceConstants : function (sample_rate) 
+        {
+            factory.instanceConstants(dsp, sample_rate);
+        },
+        
+        instanceResetUserInterface : function () 
+        {
+            factory.instanceResetUserInterface(dsp);
+        },
+        
+        instanceClear : function () 
+        {
+            factory.instanceClear(dsp);
+        },
+        
         // Connect/disconnect to another node
-        connect: function (node) {
+        connect : function (node) 
+        {
             if (node.getProcessor !== undefined) {
                 scriptProcessor.connect(node.getProcessor());
             } else {
@@ -622,7 +675,8 @@ faust.createDSPInstance = function (factory, context, buffer_size) {
             }
         },
 
-        disconnect: function (node) {
+        disconnect : function (node) 
+        {
             if (node.getProcessor !== undefined) {
                 scriptProcessor.disconnect(node.getProcessor());
             } else {
@@ -630,45 +684,54 @@ faust.createDSPInstance = function (factory, context, buffer_size) {
             }
         },
 
-        setHandler: function (hd) {
+        setHandler : function (hd)
+        {
             handler = hd;
         },
-
-        start: function () {
+        
+        start : function () 
+        {
             scriptProcessor.connect(context.destination);
         },
 
-        stop: function () {
+        stop : function () 
+        {
             scriptProcessor.disconnect(context.destination);
         },
-
-        setValue: function (path, val) {
+        
+        setParamValue : function (path, val) 
+        {
             var values = value_table[path];
             if (values) {
-                if (factory.getValue(dsp, factory.pathTable[path]) == values[0]) {
+                if (factory.getParamValue(dsp, factory.pathTable[path]) == values[0]) {
                     values[0] = val;
-                }
+                } 
                 values[1] = val;
             }
         },
-
-        getValue: function (path) {
-            return factory.getValue(dsp, factory.pathTable[path]);
+        
+        getParamValue : function (path) 
+        {
+            return factory.getParamValue(dsp, factory.pathTable[path]);
         },
-
-        controls: function () {
+        
+        controls : function ()
+        {
             return inputs_items;
         },
-
-        json: function () {
+        
+        json : function ()
+        {
             return factory.getJSON();
         },
-
-        getProcessor: function () {
+        
+        getProcessor : function ()
+        {
             return scriptProcessor;
         },
-
-        destroy: function () {
+        
+        destroy : function ()
+        {
             factory.destroyInstance(dsp_num);
         }
     }
@@ -732,6 +795,7 @@ faust.createPolyDSPInstance = function (factory, context, buffer_size, callback)
     var dsp_voices_date = [];
     var dsp_voices_trigger = [];
     
+    var kActiveVoice = 0;
     var kFreeVoice = -1;
     var kReleaseVoice = -2;
     var kNoVoice = -3;
@@ -744,6 +808,14 @@ faust.createPolyDSPInstance = function (factory, context, buffer_size, callback)
         dsp_voices_trigger[i] = false;
     }
     
+    // Always returns a voice
+    function newVoiceAux()
+    {
+        var voice = getVoice(kFreeVoice, true);
+        dsp_voices_state[voice] = kActiveVoice;
+        return voice;
+    }
+    
     function getVoice (note, steal)
     {
         for (var i = 0; i < max_polyphony; i++) {
@@ -754,26 +826,41 @@ faust.createPolyDSPInstance = function (factory, context, buffer_size, callback)
         }
         
         if (steal) {
-            var voice = kNoVoice;
-            var date = Number.MAX_VALUE;
-            // Steal lowest level note
+            var voice_release = kNoVoice;
+            var voice_playing = kNoVoice;
+            var oldest_date_release = Number.MAX_VALUE;
+            var oldest_date_playing = Number.MAX_VALUE;
+            
+            // Scan all voices
             for (var i = 0; i < max_polyphony; i++) {
                 // Try to steal a voice in kReleaseVoice mode...
                 if (dsp_voices_state[i] === kReleaseVoice) {
-                    console.log("Steal release voice : voice_date = %d cur_date = %d voice = %d\n",  dsp_voices_date[i], fDate, i);
-                    dsp_voices_date[i] = fDate++;
-                    dsp_voices_trigger[i] = true;
-                    return i;
-                // Otherwise steal oldest voice...
-                } else if (dsp_voices_date[i] < date) {
-                    date = dsp_voices_date[i];
-                    voice = i;
+                    // Keeps oldest release voice
+                    if (dsp_voices_date[i] < oldest_date_release) {
+                        oldest_date_release = dsp_voices_date[i];
+                        voice_release = i;
+                    }
+                } else {
+                    if (dsp_voices_date[i] < oldest_date_playing) {
+                        oldest_date_playing = dsp_voices_date[i];
+                        voice_playing = i;
+                    }
                 }
             }
-            console.log("Steal playing voice : voice_date = %d cur_date = %d voice = %d\n", dsp_voices_date[voice], fDate, voice);
-            dsp_voices_date[voice] = fDate++;
-            dsp_voices_trigger[voice] = true;
-            return voice;
+            
+            // Then decide which one to steal
+            if (oldest_date_release != Number.MAX_VALUE) {
+                console.log("Steal release voice : voice_date = %d cur_date = %d voice = %d\n", dsp_voices_date[voice_release], fDate, voice_release);
+                dsp_voices_date[voice_release] = fDate++;
+                dsp_voices_trigger[voice_release] = true;
+                return voice_release;
+            } else {
+                console.log("Steal playing voice : voice_date = %d cur_date = %d voice = %d\n", dsp_voices_date[voice_playing], fDate, voice_playing);
+                dsp_voices_date[voice_playing] = fDate++;
+                dsp_voices_trigger[voice_playing] = true;
+                return voice_playing;
+            }
+            
         } else {
             return kNoVoice;
         }
@@ -784,7 +871,7 @@ faust.createPolyDSPInstance = function (factory, context, buffer_size, callback)
         if (ouputs_items.length > 0 && handler && ouputs_timer-- === 0) {
             ouputs_timer = 5;
             for (var i = 0; i < ouputs_items.length; i++) {
-                handler(ouputs_items[i], factory.getValue(dsp_voices[0], factory.pathTable[ouputs_items[i]]));
+                handler(ouputs_items[i], factory.getParamValue(dsp_voices[0], factory.pathTable[ouputs_items[i]]));
             }
         }
     }
@@ -815,18 +902,18 @@ faust.createPolyDSPInstance = function (factory, context, buffer_size, callback)
         for (i = 0; i < max_polyphony; i++) {
             if (dsp_voices_state[i] != kFreeVoice) {
                 if (dsp_voices_trigger[i]) {
+                	dsp_voices_trigger[i] = false;
                     // FIXME : properly cut the buffer in 2 slices...
-                    factory.setValue(dsp_voices[i], fGateLabel, 0.0);
+                    factory.setParamValue(dsp_voices[i], fGateLabel, 0.0);
                     factory.compute(dsp_voices[i], 1, ins, mixing);
-                    factory.setValue(dsp_voices[i], fGateLabel, 1.0);
+                    factory.setParamValue(dsp_voices[i], fGateLabel, 1.0);
                     factory.compute(dsp_voices[i], buffer_size, ins, mixing);
-                    dsp_voices_trigger[i] = false;
                 } else {
                     // Compute regular voice
                     factory.compute(dsp_voices[i], buffer_size, ins, mixing);
                 }
                 // Mix it in result
-                dsp_voices_level[i] = mixer.mixVoice(buffer_size, numOut, mixing, outs, max_polyphony);
+                dsp_voices_level[i] = mixer.mixVoice(buffer_size, numOut, mixing, outs);
                 // Check the level to possibly set the voice in kFreeVoice again
                 if ((dsp_voices_level[i] < 0.001) && (dsp_voices_state[i] == kReleaseVoice)) {
                     dsp_voices_state[i] = kFreeVoice;
@@ -966,6 +1053,41 @@ faust.createPolyDSPInstance = function (factory, context, buffer_size, callback)
         {
             return factory.getNumOutputs(dsp_voices[0]);
         },
+        
+        init : function (sample_rate)
+        {
+            for (var i = 0; i < max_polyphony; i++) {
+                factory.init(dsp_voices[i], sample_rate);
+            }
+        },
+
+        instanceInit : function (sample_rate) 
+        {
+            for (var i = 0; i < max_polyphony; i++) {
+                factory.instanceInit(dsp_voices[i], sample_rate);
+            }
+        },
+
+        instanceConstants : function (sample_rate) 
+        {
+            for (var i = 0; i < max_polyphony; i++) {
+                factory.instanceConstants(dsp_voices[i], sample_rate);
+            }
+        },
+        
+        instanceResetUserInterface : function () 
+        {
+            for (var i = 0; i < max_polyphony; i++) {
+                factory.instanceResetUserInterface(dsp_voices[i]);
+            }
+        },
+
+        instanceClear : function () 
+        {
+            for (var i = 0; i < max_polyphony; i++) {
+                factory.instanceClear(dsp_voices[i]);
+            }
+        },
 
         // Connect/disconnect to another node
         connect : function (node) 
@@ -993,34 +1115,32 @@ faust.createPolyDSPInstance = function (factory, context, buffer_size, callback)
         
         keyOn : function (channel, pitch, velocity)
         {
-            var voice = getVoice(kFreeVoice, true);
-            if (voice >= 0) {
-                //console.log("keyOn voice %d", voice);
-                factory.setValue(dsp_voices[voice], fFreqLabel, midiToFreq(pitch));
-                factory.setValue(dsp_voices[voice], fGainLabel, velocity/127.);
-                factory.setValue(dsp_voices[voice], fGateLabel, 1.0);
-                dsp_voices_state[voice] = pitch;
-            } else {
-                console.log("No more free voice...\n");
-            }
+            var voice = newVoiceAux();
+            //console.log("keyOn voice %d", voice);
+            factory.setParamValue(dsp_voices[voice], fFreqLabel, midiToFreq(pitch));
+            factory.setParamValue(dsp_voices[voice], fGainLabel, velocity/127.);
+            dsp_voices_state[voice] = pitch;
+            dsp_voices_trigger[voice] = true; // so that envelop is always re-initialized
         },
         
         keyOff : function (channel, pitch, velocity)
         {
             var voice = getVoice(pitch, false);
-            if (voice >= 0) {
+            if (voice !== kNoVoice) {
                 //console.log("keyOff voice %d", voice);
-                factory.setValue(dsp_voices[voice], fGateLabel, 0.0);
+                // No use of velocity for now...
+                factory.setParamValue(dsp_voices[voice], fGateLabel, 0.0);
+                // Release voice
                 dsp_voices_state[voice] = kReleaseVoice;
             } else {
                 console.log("Playing voice not found...\n");
             }
         },
-        
+            
         allNotesOff : function ()
         {
             for (var i = 0; i < max_polyphony; i++) {
-                factory.setValue(dsp_voices[i], fGateLabel, 0.0);
+                factory.setParamValue(dsp_voices[i], fGateLabel, 0.0);
                 dsp_voices_state[i] = kReleaseVoice;
             }
         },
@@ -1029,7 +1149,7 @@ faust.createPolyDSPInstance = function (factory, context, buffer_size, callback)
         {
             if (ctrl === 123 || ctrl === 120) {
                 for (var i = 0; i < max_polyphony; i++) {
-                    factory.setValue(dsp_voices[i], fGateLabel, 0.0);
+                    factory.setParamValue(dsp_voices[i], fGateLabel, 0.0);
                     dsp_voices_state[i] = kReleaseVoice;
                 }
             }
@@ -1037,17 +1157,7 @@ faust.createPolyDSPInstance = function (factory, context, buffer_size, callback)
                  
         pitchWheel : function (channel, wheel)
         {},
-        
-        pitchBend : function (channel, pitch, tuned_pitch)
-        {
-            var voice = getVoice(pitch, false);
-            if (voice >= 0) {
-                factory.setValue(dsp_voices[voice], fFreqLabel, midiToFreq(tuned_pitch));
-            } else {
-                console.log("Playing voice not found...\n");
-            }
-        },
-      
+         
         start : function () 
         {
             scriptProcessor.connect(context.destination);
@@ -1058,16 +1168,16 @@ faust.createPolyDSPInstance = function (factory, context, buffer_size, callback)
             scriptProcessor.disconnect(context.destination);
         },
         
-        setValue : function (path, val) 
+        setParamValue : function (path, val) 
         {
             for (var i = 0; i < factory.max_polyphony; i++) {
-                factory.setValue(dsp_voices[i], factory.pathTable[path], val);
+                factory.setParamValue(dsp_voices[i], factory.pathTable[path], val);
             }
         },
         
-        getValue : function (path) 
+        getParamValue : function (path) 
         {
-            return factory.getValue(dsp_voices[0], factory.pathTable[path]);
+            return factory.getParamValue(dsp_voices[0], factory.pathTable[path]);
         },
         
         controls : function()
