@@ -3149,7 +3149,7 @@ var Scene = (function () {
             navigatorLoc.getUserMedia = navigatorLoc.webkitGetUserMedia || navigatorLoc.mozGetUserMedia;
         }
         if (navigatorLoc.getUserMedia) {
-            navigatorLoc.getUserMedia({ audio: true }, function (mediaStream) { _this.getDevice(mediaStream); }, function (e) {
+             navigatorLoc.getUserMedia({audio: { echoCancellation: false }}, function (mediaStream) { _this.getDevice(mediaStream); }, function (e) {
                 _this.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)";
                 _this.fAudioInput.moduleView.fInterfaceContainer.title = Utilitary.messageRessource.errorGettingAudioInput;
                 new Message(Utilitary.messageRessource.errorGettingAudioInput);
@@ -5664,8 +5664,8 @@ var App = (function () {
         }
         ;
         //locate libraries used in libfaust compiler
-        var args = ["-I", location.origin + "/faustplayground/faustcode/"];
-        //try to create the asm.js code/factory with the faust code given. Then callback to function passing the factory.
+        var args = ["-ftz", "2", "-I", location.origin + "/faustplayground/faustcode/"];
+        //try to create the asm.js code/factory with the Faust code given. Then callback to function passing the factory.
         try {
         	// Steph : 09/08/17
           	//this.factory = faust.createDSPFactory(compileFaust.sourceCode, args, function (factory) { compileFaust.callback(factory); });
