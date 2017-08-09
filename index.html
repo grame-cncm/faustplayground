@@ -23,7 +23,6 @@
     <link rel="stylesheet" href="css/perfect-scrollbar.min.css" />
 <!-- JAVASCRIPT FUNCTIONS -->
 
-
 	<script>
 	if (window != window.top)
 		document.write("<style>header {display:none}</style>")
@@ -35,15 +34,19 @@
     </div>
 </body>
 
-
 <!-- JAVASCRIPT LIBRARIES USED -->
 <script src="js/Lib/AudioContextMonkeyPatch.js"></script>
 <script src="js/Lib/qrcode.js"></script>
 <script src="js/Lib/perfectScrollBar/js/perfect-scrollbar.min.js"></script>
-<script src="js/Lib/webaudio-asm-worker-wrapper.js"></script>
+<script src="js/Lib/libfaust-wasm.js"></script>
+<script src="js/Lib/webaudio-wasm-wrapper.js"></script>
 <script src="js/Lib/FileSaver.min.js"></script>
 <script src="https://apis.google.com/js/client.js?onload=checkAuth"></script>
 
 <script src="js/faustplayground.js"></script>
+
+<script>
+FaustModule()['onRuntimeInitialized'] = init;
+</script>
 
 </html>

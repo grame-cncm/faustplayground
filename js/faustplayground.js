@@ -1587,6 +1587,7 @@ var ModuleFaust = (function () {
         this.recallOutputsDestination = [];
         this.recallInputsSource = [];
         this.fName = name;
+        this.fDSP = null;
     }
     /*************** ACTIONS ON IN/OUTPUT MODULES ***************************/
     // ------ Returns Connection Array OR null if there are none
@@ -1910,13 +1911,15 @@ var ModuleClass = (function () {
         Connector.redrawOutputConnections(this, this.drag);
     };
     //--- Create and Update are called once a source code is compiled and the factory exists
-    ModuleClass.prototype.createDSP = function (factory) {
+    ModuleClass.prototype.createDSP = function (factory, callback) {
         this.moduleFaust.factory = factory;
         try {
             if (factory != null) {
-                this.moduleFaust.fDSP = faust.createDSPInstance(factory, Utilitary.audioContext, 1024);
-            }
-            else {
+                // Steph : 09/08/17
+                //this.moduleFaust.fDSP = faust.createDSPInstance(factory, Utilitary.audioContext, 1024);
+                var moduleFaust = this.moduleFaust;
+                faust.createDSPInstance(factory, Utilitary.audioContext, 1024, function(dsp) { moduleFaust.fDSP = dsp; callback(); });
+            } else {
                 throw new Error("create DSP Error factory null");
             }
         }
@@ -1937,27 +1940,29 @@ var ModuleClass = (function () {
         module.deleteFaustInterface();
         module.moduleView.deleteInputOutputNodes();
         // Create new one
-        module.createDSP(factory);
-        module.moduleFaust.fName = module.moduleFaust.fTempName;
-        module.moduleFaust.fSource = module.moduleFaust.fTempSource;
-        module.setFaustInterfaceControles();
-        module.createFaustInterface();
-        module.addInputOutputNodes();
-        module.deleteDSP(toDelete);
-        // Recall Cnx
-        if (saveOutCnx && module.moduleView.getOutputNode()) {
-            for (var i = 0; i < saveOutCnx.length; i++) {
-                if (saveOutCnx[i])
-                    connector.createConnection(module, module.moduleView.getOutputNode(), saveOutCnx[i].destination, saveOutCnx[i].destination.moduleView.getInputNode());
+        // Steph : 09/08/17
+        module.createDSP(factory, function() {
+            module.moduleFaust.fName = module.moduleFaust.fTempName;
+            module.moduleFaust.fSource = module.moduleFaust.fTempSource;
+            module.setFaustInterfaceControles();
+            module.createFaustInterface();
+            module.addInputOutputNodes();
+            module.deleteDSP(toDelete);
+            // Recall Cnx
+            if (saveOutCnx && module.moduleView.getOutputNode()) {
+                for (var i = 0; i < saveOutCnx.length; i++) {
+                    if (saveOutCnx[i])
+                        connector.createConnection(module, module.moduleView.getOutputNode(), saveOutCnx[i].destination, saveOutCnx[i].destination.moduleView.getInputNode());
+                }
             }
-        }
-        if (saveInCnx && module.moduleView.getInputNode()) {
-            for (var i = 0; i < saveInCnx.length; i++) {
-                if (saveInCnx[i])
-                    connector.createConnection(saveInCnx[i].source, saveInCnx[i].source.moduleView.getOutputNode(), module, module.moduleView.getInputNode());
+            if (saveInCnx && module.moduleView.getInputNode()) {
+                for (var i = 0; i < saveInCnx.length; i++) {
+                    if (saveInCnx[i])
+                        connector.createConnection(saveInCnx[i].source, saveInCnx[i].source.moduleView.getOutputNode(), module, module.moduleView.getInputNode());
+                }
             }
-        }
-        Utilitary.hideFullPageLoading();
+            Utilitary.hideFullPageLoading();
+        });
     };
     ModuleClass.prototype.deleteDSP = function (todelete) {
         // 	TO DO SAFELY --> FOR NOW CRASHES SOMETIMES
@@ -2168,11 +2173,11 @@ var Connector = (function () {
     }
     // connect input node to device input
     Connector.prototype.connectInput = function (inputModule, divSrc) {
-        divSrc.audioNode.connect(inputModule.moduleFaust.getDSP().getProcessor());
+        divSrc.audioNode.connect(inputModule.moduleFaust.getDSP());
     };
     //connect output to device output
     Connector.prototype.connectOutput = function (outputModule, divOut) {
-        outputModule.moduleFaust.getDSP().getProcessor().connect(divOut.audioNode);
+        outputModule.moduleFaust.getDSP().connect(divOut.audioNode);
     };
     // Connect Nodes in Web Audio Graph
     Connector.prototype.connectModules = function (source, destination) {
@@ -2184,9 +2189,7 @@ var Connector = (function () {
         if (source.moduleFaust.getDSP) {
             sourceDSP = source.moduleFaust.getDSP();
         }
-        if (sourceDSP.getProcessor && destinationDSP.getProcessor()) {
-            sourceDSP.getProcessor().connect(destinationDSP.getProcessor());
-        }
+        sourceDSP.connect(destinationDSP);
         source.setDSPValue();
         destination.setDSPValue();
     };
@@ -2198,7 +2201,7 @@ var Connector = (function () {
         // Searching for src/dst DSP if existing
         if (sourceCopy != undefined && sourceCopy.moduleFaust.getDSP) {
             sourceCopyDSP = sourceCopy.moduleFaust.getDSP();
-            sourceCopyDSP.getProcessor().disconnect();
+            sourceCopyDSP.disconnect();
         }
         // Reconnect all disconnected connections (because disconnect API cannot break a single connection)
         if (source != undefined && source.moduleFaust.getOutputConnections()) {
@@ -3106,22 +3109,33 @@ var Scene = (function () {
     };
     Scene.prototype.integrateAudioOutput = function (factory) {
         if (this.fAudioOutput) {
-            this.fAudioOutput.moduleFaust.setSource("process=_,_;");
-            this.fAudioOutput.createDSP(factory);
-            this.activateAudioOutput(this.fAudioOutput);
+             this.fAudioOutput.moduleFaust.setSource("process=_,_;");
+             var moduleFaust = this;
+             this.fAudioOutput.createDSP(factory, function() {
+                                        moduleFaust.activateAudioOutput(moduleFaust.fAudioOutput);
+                                        moduleFaust.fAudioOutput.addInputOutputNodes();
+                                        moduleFaust.integrateInput();
+                                        });
         }
-        this.fAudioOutput.addInputOutputNodes();
-        this.integrateInput();
+        // Steph : 09/08/17
+        //this.fAudioOutput.addInputOutputNodes();
+        //this.integrateInput();
     };
     Scene.prototype.integrateAudioInput = function (factory) {
         if (this.fAudioInput) {
-            this.fAudioInput.moduleFaust.setSource("process=_,_;");
-            this.fAudioInput.createDSP(factory);
-            this.activateAudioInput();
+             this.fAudioInput.moduleFaust.setSource("process=_,_;");
+             var moduleFaust = this;
+             this.fAudioInput.createDSP(factory, function() {
+                                       moduleFaust.activateAudioInput();
+                                       moduleFaust.fAudioInput.addInputOutputNodes();
+                                       Utilitary.hideFullPageLoading();
+                                       moduleFaust.isInitLoading = false;
+                                       });
         }
-        this.fAudioInput.addInputOutputNodes();
-        Utilitary.hideFullPageLoading();
-        this.isInitLoading = false;
+        // Steph : 09/08/17
+        //this.fAudioInput.addInputOutputNodes();
+        //Utilitary.hideFullPageLoading();
+        //this.isInitLoading = false;
     };
     Scene.prototype.getAudioOutput = function () { return this.fAudioOutput; };
     Scene.prototype.getAudioInput = function () { return this.fAudioInput; };
@@ -3325,27 +3339,28 @@ var Scene = (function () {
             }
             var module = new ModuleClass(Utilitary.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), function (module) { _this.removeModule(module); }, this.compileFaust);
             module.moduleFaust.setSource(this.tempModuleSourceCode);
-            module.createDSP(factory);
-            module.patchID = this.tempPatchId;
-            if (this.tempParams) {
-                for (var i = 0; i < this.tempParams.sliders.length; i++) {
-                    var slider = this.tempParams.sliders[i];
-                    module.addInterfaceParam(slider.path, parseFloat(slider.value));
+            // Steph : 09/08/17
+            module.createDSP(factory, function () {
+                module.patchID = this.tempPatchId;
+                if (this.tempParams) {
+                    for (var i = 0; i < this.tempParams.sliders.length; i++) {
+                        var slider = this.tempParams.sliders[i];
+                        module.addInterfaceParam(slider.path, parseFloat(slider.value));
+                    }
                 }
-            }
-            module.moduleFaust.recallInputsSource = this.arrayRecalScene[0].inputs.source;
-            module.moduleFaust.recallOutputsDestination = this.arrayRecalScene[0].outputs.destination;
-            this.arrayRecalledModule.push(module);
-            module.recallInterfaceParams();
-            module.setFaustInterfaceControles();
-            module.createFaustInterface();
-            module.addInputOutputNodes();
-            this.addModule(module);
-            this.recallAccValues(this.arrayRecalScene[0].acc, module);
-            this.arrayRecalScene.shift();
-            this.lunchModuleCreation();
-        }
-        catch (e) {
+                module.moduleFaust.recallInputsSource = this.arrayRecalScene[0].inputs.source;
+                module.moduleFaust.recallOutputsDestination = this.arrayRecalScene[0].outputs.destination;
+                this.arrayRecalledModule.push(module);
+                module.recallInterfaceParams();
+                module.setFaustInterfaceControles();
+                module.createFaustInterface();
+                module.addInputOutputNodes();
+                this.addModule(module);
+                this.recallAccValues(this.arrayRecalScene[0].acc, module);
+                this.arrayRecalScene.shift();
+                this.lunchModuleCreation();
+            });
+        } catch (e) {
             new Message(Utilitary.messageRessource.errorCreateModuleRecall);
             this.arrayRecalScene.shift();
             this.lunchModuleCreation();
@@ -3711,7 +3726,7 @@ var Library = (function () {
             subMenu.appendChild(li);
         }
     };
-    //custom doube touch event handler
+    //custom double touch event handler
     Library.prototype.dbleTouchMenu = function (touchEvent) {
         var _this = this;
         var anchor = touchEvent.target;
@@ -5652,7 +5667,9 @@ var App = (function () {
         var args = ["-I", location.origin + "/faustplayground/faustcode/"];
         //try to create the asm.js code/factory with the faust code given. Then callback to function passing the factory.
         try {
-            this.factory = faust.createDSPFactory(compileFaust.sourceCode, args, function (factory) { compileFaust.callback(factory); });
+        	// Steph : 09/08/17
+          	//this.factory = faust.createDSPFactory(compileFaust.sourceCode, args, function (factory) { compileFaust.callback(factory); });
+          	faust.createDSPFactory(compileFaust.sourceCode, args, function (factory) { this.factory = factory; compileFaust.callback(factory); });
         }
         catch (error) {
             new Message(error);
@@ -5673,31 +5690,33 @@ var App = (function () {
         }
         var module = new ModuleClass(Utilitary.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), function (module) { Utilitary.currentScene.removeModule(module); }, this.compileFaust);
         module.moduleFaust.setSource(this.tempModuleSourceCode);
-        module.createDSP(factory);
-        module.setFaustInterfaceControles();
-        module.createFaustInterface();
-        module.addInputOutputNodes();
-        //set listener to recompile when dropping faust code on the module
-        if (this.tempModuleName != "input" && this.tempModuleName != "output") {
-            module.moduleView.fModuleContainer.ondrop = function (e) {
-                e.stopPropagation();
-                _this.styleOnDragEnd();
-                _this.uploadOn(_this, module, 0, 0, e);
+        // Steph : 09/08/17
+        module.createDSP(factory, function() {
+            module.setFaustInterfaceControles();
+            module.createFaustInterface();
+            module.addInputOutputNodes();
+            //set listener to recompile when dropping faust code on the module
+            if (this.tempModuleName != "input" && this.tempModuleName != "output") {
+                module.moduleView.fModuleContainer.ondrop = function (e) {
+                    e.stopPropagation();
+                    _this.styleOnDragEnd();
+                    _this.uploadOn(_this, module, 0, 0, e);
+                };
+            }
+            module.moduleView.fModuleContainer.ondragover = function () {
+                module.moduleView.fModuleContainer.style.opacity = "1";
+                module.moduleView.fModuleContainer.style.boxShadow = "0 0 40px rgb(255, 0, 0)";
             };
-        }
-        module.moduleView.fModuleContainer.ondragover = function () {
-            module.moduleView.fModuleContainer.style.opacity = "1";
-            module.moduleView.fModuleContainer.style.boxShadow = "0 0 40px rgb(255, 0, 0)";
-        };
-        module.moduleView.fModuleContainer.ondragleave = function () {
-            module.moduleView.fModuleContainer.style.opacity = "0.5";
-            module.moduleView.fModuleContainer.style.boxShadow = "0 5px 10px rgba(0, 0, 0, 0.4)";
-        };
-        // the current scene add the module and hide the loading page 
-        Utilitary.currentScene.addModule(module);
-        if (!Utilitary.currentScene.isInitLoading) {
-            Utilitary.hideFullPageLoading();
-        }
+            module.moduleView.fModuleContainer.ondragleave = function () {
+                module.moduleView.fModuleContainer.style.opacity = "0.5";
+                module.moduleView.fModuleContainer.style.boxShadow = "0 5px 10px rgba(0, 0, 0, 0.4)";
+            };
+            // the current scene add the module and hide the loading page 
+            Utilitary.currentScene.addModule(module);
+            if (!Utilitary.currentScene.isInitLoading) {
+                Utilitary.hideFullPageLoading();
+            }
+        });
     };
     /********************************************************************
     ***********************  HANDLE DRAG AND DROP ***********************
@@ -5927,7 +5946,9 @@ var App = (function () {
 /// <reference path="Messages.ts"/>
 "use strict";
 //listner on load of all element to init the app
-window.addEventListener('load', init, false);
+// steph 09/08/17
+//window.addEventListener('load', init, false);
+
 //initialization af the app, create app and ressource to get text with correct localization
 //then resumeInit on callback when text is loaded
 function init() {
