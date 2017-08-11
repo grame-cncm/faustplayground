@@ -2016,7 +2016,7 @@ var ModuleClass = (function () {
         var _this = this;
         this.moduleView.fTitle.textContent = this.moduleFaust.fName;
         var moduleFaustInterface = new FaustInterfaceControler(function (faustInterface) { _this.interfaceSliderCallback(faustInterface); }, function (adress, value) { _this.moduleFaust.fDSP.setParamValue(adress, value); });
-        this.moduleControles = moduleFaustInterface.parseFaustJsonUI(JSON.parse(this.moduleFaust.fDSP.json()).ui, this);
+        this.moduleControles = moduleFaustInterface.parseFaustJsonUI(JSON.parse(this.moduleFaust.fDSP.getJSON()).ui, this);
     };
     // Create FaustInterfaceControler, set its callback and add its AccelerometerSlider
     ModuleClass.prototype.createFaustInterface = function () {
@@ -3215,7 +3215,7 @@ var Scene = (function () {
                         jsonOutputs.destination.push(outputs[j].destination.patchID.toString());
                     }
                 }
-                var params = this.fModuleList[i].moduleFaust.getDSP().controls();
+                var params = this.fModuleList[i].moduleFaust.getDSP().getParams();
                 var jsonParams = new JsonParamsSave();
                 jsonParams.sliders = [];
                 if (params) {
