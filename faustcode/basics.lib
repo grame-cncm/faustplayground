@@ -1,33 +1,25 @@
-//################################## basics.lib ###########################################
-// A library of basic elements for Faust organized in 5 sections: 
+//#################################### basics.lib ########################################
+// A library of basic elements. Its official prefix is `ba`.
+//########################################################################################
+// A library of basic elements for Faust organized in 5 sections:
 //
 // * Conversion Tools
 // * Counters and Time/Tempo Tools
 // * Array Processing/Pattern Matching
 // * Selectors (Conditions)
 // * Other Tools (Misc)
-//
-// It should be used using the `ba` environment:
-//
-// ```
-// ba = library("basics.lib");
-// process = ba.functionCall;
-// ```
-//
-// Another option is to import `stdfaust.lib` which already contains the `ba`
-// environment:
-//
-// ```
-// import("stdfaust.lib");
-// process = ba.functionCall;
-// ```
+
 //########################################################################################
 
 /************************************************************************
 ************************************************************************
-FAUST library file
-Copyright (C) 2003-2016 GRAME, Centre National de Creation Musicale
+FAUST library file, GRAME section
+
+Except where noted otherwise, Copyright (C) 2003-2017 by GRAME,
+Centre National de Creation Musicale.
 ----------------------------------------------------------------------
+GRAME LICENSE
+
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
 published by the Free Software Foundation; either version 2.1 of the
@@ -57,6 +49,7 @@ closed source license or any other license if you decide so.
 
 ma = library("maths.lib");
 ro = library("routes.lib");
+ba = library("basics.lib"); // so functions here can be copy/pasted out
 
 declare name "Faust Basic Element Library";
 declare version "0.0";
@@ -65,10 +58,10 @@ declare version "0.0";
 //========================================================================================
 
 
-//-------`samp2sec`----------
+//-------`(ba.)samp2sec`----------
 // Converts a number of samples to a duration in seconds.
 // `samp2sec` is a standard Faust function.
-// 
+//
 // #### Usage
 //
 // ```
@@ -82,7 +75,7 @@ declare version "0.0";
 samp2sec = /(ma.SR);
 
 
-//-------`sec2samp`----------
+//-------`(ba.)sec2samp`----------
 // Converts a duration in seconds to a number of samples.
 // `samp2sec` is a standard Faust function.
 //
@@ -99,7 +92,7 @@ samp2sec = /(ma.SR);
 sec2samp = *(ma.SR);
 
 
-//-------`db2linear`----------
+//-------`(ba.)db2linear`----------
 // Converts a loudness in dB to a linear gain (0-1).
 // `db2linear` is a standard Faust function.
 //
@@ -116,7 +109,7 @@ sec2samp = *(ma.SR);
 db2linear(n) = pow(10, n/20.0);
 
 
-//-------`linear2db`----------
+//-------`(ba.)linear2db`----------
 // Converts a linear gain (0-1) to a loudness in dB.
 // `linear2db` is a standard Faust function.
 //
@@ -133,7 +126,7 @@ db2linear(n) = pow(10, n/20.0);
 linear2db(n) = 20*log10(n);
 
 
-//----------`lin2LogGain`------------------
+//----------`(ba.)lin2LogGain`------------------
 // Converts a linear gain (0-1) to a log gain (0-1).
 //
 // #### Usage
@@ -145,7 +138,7 @@ linear2db(n) = 20*log10(n);
 lin2LogGain = _ <: _*_;
 
 
-//----------`log2LinGain`------------------
+//----------`(ba.)log2LinGain`------------------
 // Converts a log gain (0-1) to a linear gain (0-1).
 //
 // #### Usage
@@ -156,7 +149,23 @@ lin2LogGain = _ <: _*_;
 //---------------------------------------------
 log2LinGain = sqrt;
 
-//-------`tau2pole`----------
+// end GRAME section
+//########################################################################################
+/************************************************************************
+FAUST library file, jos section
+
+Except where noted otherwise, The Faust functions below in this
+section are Copyright (C) 2003-2017 by Julius O. Smith III <jos@ccrma.stanford.edu>
+([jos](http://ccrma.stanford.edu/~jos/)), and released under the
+(MIT-style) [STK-4.3](#stk-4.3-license) license.
+
+The MarkDown comments in this section are Copyright 2016-2017 by Romain
+Michon and Julius O. Smith III, and are released under the
+[CCA4I](https://creativecommons.org/licenses/by/4.0/) license (TODO: if/when Romain agrees)
+
+************************************************************************/
+
+//-------`(ba.)tau2pole`----------
 // Returns a real pole giving exponential decay.
 // Note that t60 (time to decay 60 dB) is ~6.91 time constants.
 // `tau2pole` is a standard Faust function.
@@ -171,12 +180,11 @@ log2LinGain = sqrt;
 //
 // * `tau`: time-constant in seconds
 //-----------------------------
-// TODO: author JOS, revised by RM
-tau2pole(tau) = exp(-1.0/(tau*ma.SR));
+  tau2pole(tau) = exp(-1.0/(tau*ma.SR));
 
 
-//-------`pole2tau`----------
-// Returns the time-constant, in seconds, corresponding to the given real, 
+//-------`(ba.)pole2tau`----------
+// Returns the time-constant, in seconds, corresponding to the given real,
 // positive pole in (0,1).
 // `pole2tau` is a standard Faust function.
 //
@@ -190,11 +198,10 @@ tau2pole(tau) = exp(-1.0/(tau*ma.SR));
 //
 // * `pole`: the pole
 //-----------------------------
-// TODO: author JOS, revised by RM
-pole2tau(pole) = -1.0/(log(pole)*ma.SR);
+  pole2tau(pole) = -1.0/(log(pole)*ma.SR);
 
 
-//-------`midikey2hz`----------
+//-------`(ba.)midikey2hz`----------
 // Converts a MIDI key number to a frequency in Hz (MIDI key 69 = A440).
 // `midikey2hz` is a standard Faust function.
 //
@@ -208,10 +215,27 @@ pole2tau(pole) = -1.0/(log(pole)*ma.SR);
 //
 // * `mk`: the MIDI key number
 //-----------------------------
-midikey2hz(mk)  = 440.0*pow(2.0, (mk-69.0)/12);
+  midikey2hz(mk)  = 440.0*pow(2.0, (mk-69.0)/12);
 
 
-//-------`pianokey2hz`----------
+//-------`(ba.)hz2midikey`----------
+// Converts a frequency in Hz to a MIDI key number (MIDI key 69 = A440).
+// `hz2midikey` is a standard Faust function.
+//
+// #### Usage
+//
+// ```
+// hz2midikey(f) : _
+// ```
+//
+// Where:
+//
+// * `f`: frequency in Hz
+//-----------------------------
+  hz2midikey(f) = 12*ma.log2(f/440.0) + 69.0;
+
+
+//-------`(ba.)pianokey2hz`----------
 // Converts a piano key number to a frequency in Hz (piano key 49 = A440).
 //
 // #### Usage
@@ -224,10 +248,10 @@ midikey2hz(mk)  = 440.0*pow(2.0, (mk-69.0)/12);
 //
 // * `pk`: the piano key number
 //-----------------------------
-pianokey2hz(pk) = 440.0*pow(2.0, (pk-49.0)/12);
+  pianokey2hz(pk) = 440.0*pow(2.0, (pk-49.0)/12);
 
 
-//-------`hz2pianokey`----------
+//-------`(ba.)hz2pianokey`----------
 // Converts a frequency in Hz to a piano key number (piano key 49 = A440).
 //
 // #### Usage
@@ -240,13 +264,18 @@ pianokey2hz(pk) = 440.0*pow(2.0, (pk-49.0)/12);
 //
 // * `f`: frequency in Hz
 //-----------------------------
-hz2pianokey(f)  = 12*ma.log2(f/440.0) + 49.0;
+  hz2pianokey(f)  = 12*ma.log2(f/440.0) + 49.0;
 
+// end jos section
+//########################################################################################
+/************************************************************************
+FAUST library file, GRAME section 2
+************************************************************************/
 
 //==============================Counters and Time/Tempo Tools=============================
 //========================================================================================
 
-//----------------------------`countdown`------------------------------
+//----------------------------`(ba.)countdown`------------------------------
 // Starts counting down from n included to 0. While trig is 1 the output is n.
 // The countdown starts with the transition of trig from 1 to 0. At the end
 // of the countdown the output value will remain at 0 until the next trig.
@@ -266,7 +295,7 @@ hz2pianokey(f)  = 12*ma.log2(f/440.0) + 49.0;
 countdown(count, trig)	= \(c).(if(trig>0, count, max(0, c-1))) ~_;
 
 
-//----------------------------`countup`--------------------------------
+//----------------------------`(ba.)countup`--------------------------------
 // Starts counting up from 0 to n included. While trig is 1 the output is 0.
 // The countup starts with the transition of trig from 1 to 0. At the end
 // of the countup the output value will remain at n until the next trig.
@@ -280,13 +309,13 @@ countdown(count, trig)	= \(c).(if(trig>0, count, max(0, c-1))) ~_;
 //
 // Where:
 //
-// * `count`: the starting point of the countup
+// * `count`: the maximum count value
 // * `trig`: the trigger signal (1: start at 0; 0: increase until `n`)
 //-----------------------------------------------------------------------------
 countup(count, trig)	= \(c).(if(trig>0, 0, min(count, c+1))) ~_;
 
 
-//--------------------`sweep`--------------------------
+//--------------------`(ba.)sweep`--------------------------
 // Counts from 0 to `period` samples repeatedly, while `run` is 1.
 // Outsputs zero while `run` is 0.
 //
@@ -296,11 +325,11 @@ countup(count, trig)	= \(c).(if(trig>0, 0, min(count, c+1))) ~_;
 // sweep(period,run) : _
 // ```
 //-----------------------------------------------------------------
-// TODO: author Jonatan Liljedahl, revised by RM
+// Author: Jonatan Liljedahl, markdown by RM
 sweep = %(int(*:max(1)))~+(1);
 
 
-//-------`time`----------
+//-------`(ba.)time`----------
 // A simple timer that counts every samples from the beginning of the process.
 // `time` is a standard Faust function.
 //
@@ -310,10 +339,10 @@ sweep = %(int(*:max(1)))~+(1);
 // time : _
 // ```
 //------------------------
-time = (+(1)~_ ) - 1; 
+time = (+(1)~_ ) - 1;
 
 
-//-------`tempo`----------
+//-------`(ba.)tempo`----------
 // Converts a tempo in BPM into a number of samples.
 //
 // #### Usage
@@ -329,7 +358,7 @@ time = (+(1)~_ ) - 1;
 tempo(t) = (60*ma.SR)/t;
 
 
-//-------`period`----------
+//-------`(ba.)period`----------
 // Basic sawtooth wave of period `p`.
 //
 // #### Usage
@@ -343,10 +372,10 @@ tempo(t) = (60*ma.SR)/t;
 // * `p`: period as a number of samples
 //------------------------
 // NOTE: may be this should go in oscillators.lib
-period(p) = %(int(p))~+(1);
+period(p) = %(int(p))~+(1');
 
 
-//-------`pulse`----------
+//-------`(ba.)pulse`----------
 // Pulses (10000) generated at period `p`.
 //
 // #### Usage
@@ -359,11 +388,11 @@ period(p) = %(int(p))~+(1);
 //
 // * `p`: period as a number of samples
 //------------------------
-// NOTE: may be this should go in oscillators.lib 
+// NOTE: may be this should go in oscillators.lib
 pulse(p) = period(p)==0;
 
 
-//-------`pulsen`----------
+//-------`(ba.)pulsen`----------
 // Pulses (11110000) of length `n` generated at period `p`.
 //
 // #### Usage
@@ -381,7 +410,24 @@ pulse(p) = period(p)==0;
 pulsen(n,p) = period(p)<n;
 
 
-//-------`beat`----------
+//-----------------------`(ba.)cycle`---------------------------
+// Split nonzero input values into `n` cycles.
+//
+// #### Usage
+//
+// ```
+// _ : cycle(n) <:
+// ```
+//
+// Where:
+//
+// * `n`: the number of cycles/output signals
+//---------------------------------------------------------
+// Author: Mike Olsen
+cycle(n) = _ <: par(i,n,resetCtr(n,(i+1)));
+
+
+//-------`(ba.)beat`----------
 // Pulses at tempo `t`.
 // `beat` is a standard Faust function.
 //
@@ -398,7 +444,7 @@ pulsen(n,p) = period(p)<n;
 beat(t) = pulse(tempo(t));
 
 
-//----------------------------`pulse_countup`-----------------------------------
+//----------------------------`(ba.)pulse_countup`-----------------------------------
 // Starts counting up pulses. While trig is 1 the output is
 // counting up, while trig is 0 the counter is reset to 0.
 //
@@ -416,7 +462,7 @@ beat(t) = pulse(tempo(t));
 pulse_countup(t) =  + ~ _ * t ;
 
 
-//----------------------------`pulse_countdown`---------------------------------
+//----------------------------`(ba.)pulse_countdown`---------------------------------
 // Starts counting down pulses. While trig is 1 the output is
 // counting down, while trig is 0 the counter is reset to 0.
 //
@@ -434,7 +480,7 @@ pulse_countup(t) =  + ~ _ * t ;
 pulse_countdown(t) =  - ~ _ * t ;
 
 
-//----------------------------`pulse_countup_loop`------------------------------
+//----------------------------`(ba.)pulse_countup_loop`------------------------------
 // Starts counting up pulses from 0 to n included. While trig is 1 the output is
 // counting up, while trig is 0 the counter is reset to 0. At the end
 // of the countup (n) the output value will be reset to 0.
@@ -452,12 +498,31 @@ pulse_countdown(t) =  - ~ _ * t ;
 //------------------------------------------------------------------------------
 //TODO: author "Vince"
 pulse_countup_loop(n, t) =  + ~ cond(n)*t
-  with {
-    cond(n) =  _ <: _ * (_ <= n) ;
-  };
+with {
+  cond(n) =  _ <: _ * (_ <= n) ;
+};
 
 
-//----------------------------`pulse_countdown_loop`----------------------------
+//-----------------------`(ba.)resetCtr`------------------------
+// Function that lets through the mth impulse out of
+// each consecutive group of `n` impulses.
+//
+// #### Usage
+//
+// ```
+// _ : resetCtr(n,m) : _
+// ```
+//
+// Where:
+//
+// * `n`: the total number of impulses being split
+// * `m`: index of impulse to allow to be output
+//---------------------------------------------------------
+// Author: Mike Olsen
+resetCtr(n,m) = _ <: (_,pulse_countup_loop(n-1,1)) : (_,(_==m)) : *;
+
+
+//----------------------------`(ba.)pulse_countdown_loop`----------------------------
 // Starts counting down pulses from 0 to n included. While trig is 1 the output
 // is counting down, while trig is 0 the counter is reset to 0. At the end
 // of the countdown (n) the output value will be reset to 0.
@@ -475,16 +540,16 @@ pulse_countup_loop(n, t) =  + ~ cond(n)*t
 //------------------------------------------------------------------------------
 //TODO: author "Vince:
 pulse_countdown_loop(n, t) =  - ~ cond(n)*t
-  with {
-    cond(n) =  _ <: _ * (_ >= n) ;
-  };
+with {
+  cond(n) =  _ <: _ * (_ >= n) ;
+};
 
 
 
 //===============================Array Processing/Pattern Matching========================
 //========================================================================================
 
-//---------------------------------`count`---------------------------------
+//---------------------------------`(ba.)count`---------------------------------
 // Count the number of elements of list l.
 // `count` is a standard Faust function.
 //
@@ -503,12 +568,12 @@ count ((xs, xxs)) = 1 + count(xxs);
 count (xx) = 1;
 
 
-//-------------------------------`take`-----------------------------------
+//-------------------------------`(ba.)take`-----------------------------------
 // Take an element from a list.
 // `take` is a standard Faust function.
 //
 // #### Usage
-// 
+//
 // ```
 // take(e,l)
 // take(3,(10,20,30,40)) -> 30
@@ -524,7 +589,7 @@ take (1, xs) 			= xs;
 take (nn, (xs, xxs)) 	= take (nn-1, xxs);
 
 
-//----------------------------`subseq`--------------------------------
+//----------------------------`(ba.)subseq`--------------------------------
 // Extract a part of a list.
 //
 // #### Usage
@@ -555,7 +620,7 @@ subseq(head, 0, n)              = head;
 //============================Selectors (Conditions)======================================
 //========================================================================================
 
-//-----------------------------`if`-----------------------------------
+//-----------------------------`(ba.)if`-----------------------------------
 // if-then-else implemented with a select2.
 //
 // #### Usage
@@ -571,7 +636,7 @@ subseq(head, 0, n)              = head;
 if(cond,thn,els) = select2(cond,els,thn);
 // TODO: perhaps it would make more sense to have an if(a,b) and an ifelse(a,b,c)?
 
-//-----------------------------`selector`---------------------------------
+//-----------------------------`(ba.)selector`---------------------------------
 // Selects the ith input among n at compile time.
 //
 // #### Usage
@@ -586,11 +651,14 @@ if(cond,thn,els) = select2(cond,els,thn);
 // * `i`: input to select (`int`, numbered from 0, known at compile time)
 // * `n`: number of inputs (`int`, known at compile time, `n > i`)
 //
+// There is also cselector for selecting among complex input signals of the form (real,imag).
+//
 //-----------------------------------------------------------------------------
 selector(i,n) = par(j, n, S(i, j))    with { S(i,i) = _; S(i,j) = !; };
+cselector(i,n) = par(j, n, S(i, j))    with { S(i,i) = (_,_); S(i,j) = (!,!); }; // for complex numbers
 
 
-//-----------------------------`selectn`---------------------------------
+//-----------------------------`(ba.)selectn`---------------------------------
 // Selects the ith input among N at run time.
 //
 // #### Usage
@@ -608,7 +676,7 @@ selector(i,n) = par(j, n, S(i, j))    with { S(i,i) = _; S(i,j) = !; };
 // #### Example test program
 //
 // ```
-// N=64; 
+// N=64;
 // process = par(n,N, (par(i,N,i) : selectn(N,n)));
 // ```
 //-----------------------------------------------------------------------------
@@ -623,7 +691,7 @@ selectn(N,i) = S(N,0)
     };
 
 
-//--------------------`select2stereo`--------------------
+//--------------------`(ba.)select2stereo`--------------------
 // Select between 2 stereo signals.
 //
 // #### Usage
@@ -633,17 +701,14 @@ selectn(N,i) = S(N,0)
 // ```
 //
 // Where:
-// 
+//
 // * `bpc`: the selector switch (0/1)
 //------------------------------------------------------------
-// TODO: author JOS, revised by RM    
-select2stereo(bpc) = ro.cross2 : select2(bpc), select2(bpc) : _,_;
-
-
+  select2stereo(bpc) = ro.cross2 : select2(bpc), select2(bpc) : _,_;
 //=====================================Other==============================================
 //========================================================================================
 
-//----------------------------`latch`--------------------------------
+//----------------------------`(ba.)latch`--------------------------------
 // Latch input on positive-going transition of "clock" ("sample-and-hold").
 //
 // #### Usage
@@ -651,18 +716,15 @@ select2stereo(bpc) = ro.cross2 : select2(bpc), select2(bpc) : _,_;
 // ```
 // _ : latch(clocksig) : _
 // ```
-// 
+//
 // Where:
 //
 // * `clocksig`: hold trigger (0 for hold, 1 for bypass)
 //------------------------------------------------------------
-// TODO: author JOS, revised by RM
-// TODO: not sure how this function works: doesn't seem to work the way
-// it described which is why sAndH was implemented below.
-latch(c,x) = x * s : + ~ *(1-s) with { s = ((c'<=0)&(c>0)); };
+  latch(c,x) = x * s : + ~ *(1-s) with { s = ((c'<=0)&(c>0)); };
 
 
-//--------------------------`sAndH`-------------------------------
+//--------------------------`(ba.)sAndH`-------------------------------
 // Sample And Hold.
 // `sAndH` is a standard Faust function.
 //
@@ -670,18 +732,40 @@ latch(c,x) = x * s : + ~ *(1-s) with { s = ((c'<=0)&(c>0)); };
 //
 // ```
 // _ : sAndH(t) : _
-// ``` 
+// ```
 //
 // Where:
 //
 // * `t`: hold trigger (0 for hold, 1 for bypass)
 //----------------------------------------------------------------
-// TODO: author RM
-sAndH(t) = *(t) : +~*(1-t);
+// Author: RM
+sAndH(t) = select2(t,_,_)~_;
 
 
-//------------------`peakhold`---------------------------
-// Outputs current max value above zero. 
+//--------------------------`(ba.)downSample`-------------------------------
+// Down sample a signal. WARNING: this function doesn't change the
+// rate of a signal, it just holds samples...
+// `downSample` is a standard Faust function.
+//
+// #### Usage
+//
+// ```
+// _ : downSample(freq) : _
+// ```
+//
+// Where:
+//
+// * `freq`: new rate in Hz
+//----------------------------------------------------------------
+// Author: RM
+downSample(freq) = sAndH(hold)
+with{
+  hold = time%int(ma.SR/freq) == 0;
+};
+
+
+//------------------`(ba.)peakhold`---------------------------
+// Outputs current max value above zero.
 //
 // #### Usage
 //
@@ -698,10 +782,10 @@ sAndH(t) = *(t) : +~*(1-t);
 peakhold = (*,_:max) ~ _;
 
 
-//------------------`peakholder`---------------------------
+//------------------`(ba.)peakholder`---------------------------
 // Tracks abs peak and holds peak for 'holdtime' samples.
 //
-// #### Usage 
+// #### Usage
 //
 // ```
 // _ : peakholder(holdtime) : _;
@@ -715,7 +799,7 @@ peakholder(holdtime) = peakhold2 ~ reset : (!,_) with {
 };
 
 
-//--------------------------`impulsify`---------------------------
+//--------------------------`(ba.)impulsify`---------------------------
 // Turns the signal from a button into an impulse (1,0,0,... when
 // button turns on).
 // `impulsify` is a standard Faust function.
@@ -729,11 +813,11 @@ peakholder(holdtime) = peakhold2 ~ reset : (!,_) with {
 impulsify = _ <: _,mem : - : >(0);
 
 
-//-----------------------`automat`------------------------------
+//-----------------------`(ba.)automat`------------------------------
 // Record and replay to the values the input signal in a loop.
 //
 // #### Usage
-// 
+//
 // ```
 // hslider(...) : automat(bps, size, init) : _
 // ```
@@ -743,15 +827,15 @@ with {
 	clock 	= beat(bps);
 	rindex 	= int(clock) : (+ : %(size)) ~ _;		// each clock read the next entry of the table
 	windex 	= if (timeToRenew, rindex, size);		// we ignore input unless it is time to renew
-	timeToRenew 	= int(clock) & (inputHasMoved | (input <= init));	
+	timeToRenew 	= int(clock) & (inputHasMoved | (input <= init));
 	inputHasMoved 	= abs(input-input') : countfrom(int(clock)') : >(0);
 	countfrom(reset) = (+ : if(reset, 0, _)) ~ _;
 };
 
 
-//-----------------`bpf`-------------------
-// bpf is an environment (a group of related definitions) that can be used to 
-// create break-point functions. It contains three functions : 
+//-----------------`(ba.)bpf`-------------------
+// bpf is an environment (a group of related definitions) that can be used to
+// create break-point functions. It contains three functions :
 //
 // * `start(x,y)` to start a break-point function
 // * `end(x,y)` to end a break-point function
@@ -763,7 +847,7 @@ with {
 // f = bpf.start(x0,y0) : bpf.end(x1,y1);
 // ```
 //
-// A more involved break-point function can contains any number of intermediate 
+// A more involved break-point function can contains any number of intermediate
 // points:
 //
 // ```
@@ -781,12 +865,12 @@ with {
 //
 // * `f(x) = y_{0}` when `x < x_{0}`
 // * `f(x) = y_{n}` when `x > x_{n}`
-// * `f(x) = y_{i} + (y_{i+1}-y_{i})*(x-x_{i})/(x_{i+1}-x_{i})` when `x_{i} <= x` 
+// * `f(x) = y_{i} + (y_{i+1}-y_{i})*(x-x_{i})/(x_{i+1}-x_{i})` when `x_{i} <= x`
 // and `x < x_{i+1}`
 //
 // `bpf` is a standard Faust function.
 //--------------------------------------------------------
-bpf = environment 
+bpf = environment
 {
   // Start a break-point function
   start(x0,y0) = \(x).(x0,y0,x,y0);
@@ -797,7 +881,30 @@ bpf = environment
 };
 
 
-//-------------------`bypass1`-------------------------
+//-------------------`(ba.)listInterp`-------------------------
+// Linearly interpolates between the elements of a list.
+//
+// #### Usage
+//
+// ```
+// foo = listInterp((800,400,350,450,325),index);
+// i = 1.69; // range is 0-4
+// process = foo(i);
+// ```
+//
+// Where:
+//
+// * `index`: the index (float) to interpolate between the different values.
+// The range of `index` depends on the size of the list.
+//------------------------------------------------------------
+// Author: RM
+listInterp(v) =
+  bpf.start(0,take(1,v)) :
+  seq(i,count(v)-2,bpf.point(i+1,take(i+2,v))) :
+  bpf.end(count(v)-1,take(count(v),v));
+
+
+//-------------------`(ba.)bypass1`-------------------------
 // Takes a mono input signal, route it to `e` and bypass it if `bpc = 1`.
 // `bypass1` is a standard Faust function.
 //
@@ -812,11 +919,14 @@ bpf = environment
 // * `bpc`: bypass switch (0/1)
 // * `e`: a mono effect
 //------------------------------------------------------------
-// TODO: author JOS, revised by RM
+// Author: JOS
+// License: STK-4.3
 bypass1(bpc,e) = _ <: select2(bpc,(inswitch:e),_)
-                 with {inswitch = select2(bpc,_,0);};
+  with {
+    inswitch = select2(bpc,_,0);
+  };
 
-//-------------------`bypass2`-------------------------
+//-------------------`(ba.)bypass2`-------------------------
 // Takes a stereo input signal, route it to `e` and bypass it if `bpc = 1`.
 // `bypass2` is a standard Faust function.
 //
@@ -831,13 +941,37 @@ bypass1(bpc,e) = _ <: select2(bpc,(inswitch:e),_)
 // * `bpc`: bypass switch (0/1)
 // * `e`: a stereo effect
 //------------------------------------------------------------
-// TODO: author JOS, revised by RM 
-bypass2(bpc,e) = _,_ <: ((inswitch:e),_,_) : select2stereo(bpc) with {
-  inswitch = _,_ : (select2(bpc,_,0), select2(bpc,_,0)) : _,_;
-};
+// Author: JOS
+// License: STK-4.3
+bypass2(bpc,e) = _,_ <: ((inswitch:e),_,_) : select2stereo(bpc)
+  with {
+    inswitch = _,_ : (select2(bpc,_,0), select2(bpc,_,0)) : _,_;
+  };
 
+//-------------------`(ba.)bypass1to2`-------------------------
+// Bypass switch for effect `e` having mono input signal and stereo output.
+// Effect `e` is bypassed if `bpc = 1`.
+// `bypass1to2` is a standard Faust function.
+//
+// #### Usage
+//
+// ```
+// _ : bypass1(bpc,e) : _,_
+// ```
+//
+// Where:
+//
+// * `bpc`: bypass switch (0/1)
+// * `e`: a mono-to-stereo effect
+//------------------------------------------------------------
+// Author: JOS
+// License: STK-4.3
+bypass1to2(bpc,e) = _ <: ((inswitch:e),_,_) : ba.select2stereo(bpc)
+  with {
+    inswitch = select2(bpc,_,0);
+  };
 
-//----------------------------`toggle`------------------------------------------
+//----------------------------`(ba.)toggle`------------------------------------------
 // Triggered by the change of 0 to 1, it toggles the output value
 // between 0 and 1.
 //
@@ -859,10 +993,10 @@ toggle = trig : loop
   with {
     trig(x) = (x-x') == 1;
     loop = (_ != _) ~ _ ;
-  } ;
+  };
 
 
-//----------------------------`on_and_off`------------------------------------------
+//----------------------------`(ba.)on_and_off`------------------------------------------
 // The first channel set the output to 1, the second channel to 0.
 //
 // #### Usage
@@ -886,7 +1020,7 @@ with {
 };
 
 
-//-----------------------------`selectoutn`---------------------------------
+//-----------------------------`(ba.)selectoutn`---------------------------------
 // Route input to the output among N at run time.
 //
 // #### Usage
