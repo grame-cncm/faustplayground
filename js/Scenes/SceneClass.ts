@@ -39,8 +39,8 @@ class Scene {
 
     //callback function to compile faust code from App
     compileFaust: (compile: CompileFaust) => void
-    
-    
+
+
 
 
     constructor(identifiant: string, compileFaust: (compileFaust: CompileFaust) => void, sceneView?: SceneView) {
@@ -62,7 +62,7 @@ class Scene {
     /*********************** MUTE/UNMUTE SCENE ***************************/
     muteScene(): void {
         var out: IHTMLDivElementOut = <IHTMLDivElementOut>document.getElementById("audioOutput");
-        
+
         if (out != null) {
             if (out.audioNode.context.suspend != undefined) {//because of Edge not supporting audioContext.suspend() yet
                 out.audioNode.context.suspend();
@@ -122,7 +122,7 @@ class Scene {
         this.fModuleList.splice(this.fModuleList.indexOf(module), 1);
 
     }
-	
+
     private cleanModules():void {
         for (var i = this.fModuleList.length - 1; i >= 0; i--) {
             this.fModuleList[i].deleteModule();
@@ -130,7 +130,7 @@ class Scene {
         }
     }
     /*******************************  PUBLIC METHODS  **********************************/
-    
+
     integrateSceneInBody(): void {
         document.body.appendChild(this.sceneView.fSceneContainer);
     }
@@ -142,7 +142,7 @@ class Scene {
         this.fAudioInput.patchID = "input";
         var scene: Scene = this;
         this.compileFaust({ name:"input", sourceCode:"process=_,_;", x:positionInput.x, y:positionInput.y, callback:(factory)=>{ scene.integrateAudioInput(factory) }});
-        
+
     }
     integrateOutput() {
         var positionOutput: PositionModule = this.positionOutputModule();
@@ -154,7 +154,7 @@ class Scene {
     }
 
     private integrateAudioOutput(factory: Factory): void {
-        
+
         if (this.fAudioOutput) {
             this.fAudioOutput.moduleFaust.setSource("process=_,_;");
             this.fAudioOutput.createDSP(factory);
@@ -184,9 +184,6 @@ class Scene {
     activateAudioInput(): void {
 
         var navigatorLoc: Navigator = navigator;
-        if (!navigatorLoc.getUserMedia) {
-            navigatorLoc.getUserMedia = navigatorLoc.webkitGetUserMedia || navigatorLoc.mozGetUserMedia;
-        }
 
         if (navigatorLoc.getUserMedia) {
 
@@ -345,7 +342,7 @@ class Scene {
     // recall module at rank 0 of arrayRecalScene
     // direct use of the asm.js code if exist
     // or compile the faust code
-    // 
+    //
     // When arrayRecalScene empty, connect the modules in the scene
 
     lunchModuleCreation() {
@@ -527,7 +524,7 @@ class Scene {
         newName =Utilitary.replaceAll(newName, "'", "_");
         return newName;
     }
-    //check if string start only with letter (no accent) 
+    //check if string start only with letter (no accent)
     //and contains only letter (no accent) underscore and number for a lenght between 1 and 50 char
     static isNameValid(newName: string): boolean {
         var pattern: RegExp = new RegExp("^[a-zA-Z_][a-zA-Z_0-9]{1,50}$");
