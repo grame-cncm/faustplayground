@@ -1,7 +1,20 @@
+/*				DRAGGING.JS
+    Handles Graphical Drag of Modules and Connections
+    This is a historical file from Chris Wilson, modified for Faust ModuleClass needs.
+    
+    --> Things could probably be easier...
+    
+
+        
+*/
+/// <reference path="Connect.ts"/>
+/// <reference path="Modules/ModuleClass.ts"/>
+/// <reference path="Utilitary.ts"/>
+"use strict";
 /// <reference path="App.ts"/>
 /// <reference path="Utilitary.ts"/>
 //contains all the key of resources json files in folders ressources
-var Ressources = (function () {
+var Ressources = /** @class */ (function () {
     function Ressources() {
     }
     //get ressource depending on the location, default is french
@@ -23,7 +36,7 @@ var Ressources = (function () {
     return Ressources;
 }());
 //Contain Message, MessageView, Confirm, Confirm view class
-var Message = (function () {
+var Message = /** @class */ (function () {
     //Message show up and set a time out, if nothing happen, it remove it self
     //if one click, it stays, if double click it's removed (also the close button works)
     //fadeOutType can be eather null or "messageTransitionOutFast", to have new animation create new rules css
@@ -107,7 +120,7 @@ var Message = (function () {
     };
     return Message;
 }());
-var MessageView = (function () {
+var MessageView = /** @class */ (function () {
     function MessageView() {
     }
     MessageView.prototype.init = function () {
@@ -127,7 +140,7 @@ var MessageView = (function () {
 }());
 // take message text and callback as parmater
 //if validate, the callback is used, other with the confirm is removed
-var Confirm = (function () {
+var Confirm = /** @class */ (function () {
     function Confirm(message, callback) {
         var _this = this;
         this.confirmView = new ConfirmView();
@@ -154,7 +167,7 @@ var Confirm = (function () {
     };
     return Confirm;
 }());
-var ConfirmView = (function () {
+var ConfirmView = /** @class */ (function () {
     function ConfirmView() {
     }
     ConfirmView.prototype.init = function () {
@@ -185,7 +198,7 @@ var ConfirmView = (function () {
 // using the v2 version
 /// <reference path="Messages.ts"/>
 /// <reference path="Utilitary.ts"/>
-var DriveAPI = (function () {
+var DriveAPI = /** @class */ (function () {
     function DriveAPI() {
         this.CLIENT_ID = '937268536763-j0tfilisap0274toolo0hehndnhgsrva.apps.googleusercontent.com';
         this.SCOPES = ['https://www.googleapis.com/auth/drive'];
@@ -426,7 +439,7 @@ var DriveAPI = (function () {
 /// <reference path="Ressources.ts"/>
 /// <reference path="DriveAPI.ts"/>
 /// <reference path="Main.ts"/>
-var Utilitary = (function () {
+var Utilitary = /** @class */ (function () {
     function Utilitary() {
     }
     Utilitary.errorCallBack = function (message) {
@@ -507,28 +520,15 @@ var Utilitary = (function () {
     Utilitary.isAccelerometerEditOn = false;
     return Utilitary;
 }());
-var PositionModule = (function () {
+var PositionModule = /** @class */ (function () {
     function PositionModule() {
     }
     return PositionModule;
 }());
-/*				DRAGGING.JS
-    Handles Graphical Drag of Modules and Connections
-    This is a historical file from Chris Wilson, modified for Faust ModuleClass needs.
-    
-    --> Things could probably be easier...
-    
-
-        
-*/
-/// <reference path="Connect.ts"/>
-/// <reference path="Modules/ModuleClass.ts"/>
-/// <reference path="Utilitary.ts"/>
-"use strict";
 /***********************************************************************************/
 /****** Node Dragging - these are used for dragging the audio modules interface*****/
 /***********************************************************************************/
-var Drag = (function () {
+var Drag = /** @class */ (function () {
     function Drag() {
         this.zIndex = 0;
         this.connector = new Connector();
@@ -881,7 +881,7 @@ var Drag = (function () {
 // Update the acc metadata associated to <name> in <faustcode>. Returns the updated faust code
 //==============================================================================================
 // Iterate into faust code to find next path-string.
-var PathIterator = (function () {
+var PathIterator = /** @class */ (function () {
     function PathIterator(faustCode) {
         this.fFaustCode = faustCode;
         this.fStart = 0;
@@ -1021,13 +1021,13 @@ var Curve;
 })(Curve || (Curve = {}));
 ;
 //object describing value off accelerometer metadata values. 
-var AccMeta = (function () {
+var AccMeta = /** @class */ (function () {
     function AccMeta() {
     }
     return AccMeta;
 }());
 //Contains the info regarding the mapping of the FaustInterfaceControler and the accelerometer
-var AccelerometerSlider = (function () {
+var AccelerometerSlider = /** @class */ (function () {
     function AccelerometerSlider(accParams) {
         if (accParams != null) {
             this.isEnabled = accParams.isEnabled;
@@ -1061,7 +1061,7 @@ var AccelerometerSlider = (function () {
     return AccelerometerSlider;
 }());
 //object responsible of storing all accelerometerSlider and propagate to them the accelerometer infos. 
-var AccelerometerHandler = (function () {
+var AccelerometerHandler = /** @class */ (function () {
     function AccelerometerHandler() {
     }
     // get Accelerometer value
@@ -1155,7 +1155,7 @@ var AccelerometerHandler = (function () {
 /***************************************************************************************
 ********************  Converter objects use to map acc and faust value *****************
 ****************************************************************************************/
-var MinMaxClip = (function () {
+var MinMaxClip = /** @class */ (function () {
     function MinMaxClip(x, y) {
         this.fLo = Math.min(x, y);
         this.fHi = Math.max(x, y);
@@ -1173,7 +1173,7 @@ var MinMaxClip = (function () {
     };
     return MinMaxClip;
 }());
-var Interpolator = (function () {
+var Interpolator = /** @class */ (function () {
     function Interpolator(lo, hi, v1, v2) {
         this.range = new MinMaxClip(lo, hi);
         if (hi != lo) {
@@ -1195,7 +1195,7 @@ var Interpolator = (function () {
     };
     return Interpolator;
 }());
-var Interpolator3pt = (function () {
+var Interpolator3pt = /** @class */ (function () {
     function Interpolator3pt(lo, mid, hi, v1, vMid, v2) {
         this.fSegment1 = new Interpolator(lo, mid, v1, vMid);
         this.fSegment2 = new Interpolator(mid, hi, vMid, v2);
@@ -1211,7 +1211,7 @@ var Interpolator3pt = (function () {
     };
     return Interpolator3pt;
 }());
-var AccUpConverter = (function () {
+var AccUpConverter = /** @class */ (function () {
     function AccUpConverter(amin, amid, amax, fmin, fmid, fmax) {
         this.fActive = true;
         this.accToFaust = new Interpolator3pt(amin, amid, amax, fmin, fmid, fmax);
@@ -1235,7 +1235,7 @@ var AccUpConverter = (function () {
     ;
     return AccUpConverter;
 }());
-var AccDownConverter = (function () {
+var AccDownConverter = /** @class */ (function () {
     function AccDownConverter(amin, amid, amax, fmin, fmid, fmax) {
         this.fActive = true;
         this.accToFaust = new Interpolator3pt(amin, amid, amax, fmax, fmid, fmin);
@@ -1259,7 +1259,7 @@ var AccDownConverter = (function () {
     ;
     return AccDownConverter;
 }());
-var AccUpDownConverter = (function () {
+var AccUpDownConverter = /** @class */ (function () {
     function AccUpDownConverter(amin, amid, amax, fmin, fmid, fmax) {
         this.fActive = true;
         this.accToFaust = new Interpolator3pt(amin, amid, amax, fmin, fmax, fmin);
@@ -1283,7 +1283,7 @@ var AccUpDownConverter = (function () {
     ;
     return AccUpDownConverter;
 }());
-var AccDownUpConverter = (function () {
+var AccDownUpConverter = /** @class */ (function () {
     function AccDownUpConverter(amin, amid, amax, fmin, fmid, fmax) {
         this.fActive = true;
         this.accToFaust = new Interpolator3pt(amin, amid, amax, fmax, fmin, fmax);
@@ -1307,17 +1307,7 @@ var AccDownUpConverter = (function () {
     ;
     return AccDownUpConverter;
 }());
-/// <reference path="../Accelerometer.ts"/>
-/// <reference path="../Utilitary.ts"/>
-/*				FAUSTINTERFACE.JS
-
-    HELPER FUNCTIONS TO CREATE FAUST INTERFACES
-    
-    FIRST PART --> DECODE JSON ENCODED INTERFACE
-    SECOND PART --> ADD GRAPHICAL OBJECTS TO INTERFACE
-*/
-"use strict";
-var FaustInterfaceControler = (function () {
+var FaustInterfaceControler = /** @class */ (function () {
     function FaustInterfaceControler(interfaceCallback, setDSPValueCallback) {
         this.accDefault = "0 0 -10 0 10";
         this.interfaceCallback = interfaceCallback;
@@ -1515,7 +1505,7 @@ var FaustInterfaceControler = (function () {
 /********************************************************************
  ********************* ADD GRAPHICAL ELEMENTS ***********************
  ********************************************************************/
-var FaustInterfaceView = (function () {
+var FaustInterfaceView = /** @class */ (function () {
     function FaustInterfaceView(type) {
         this.type = type;
     }
@@ -1580,7 +1570,7 @@ var FaustInterfaceView = (function () {
 /// <reference path="../Connect.ts"/>
 /*MODULEFAUST.JS
 HAND - MADE JAVASCRIPT CLASS CONTAINING A FAUST MODULE */
-var ModuleFaust = (function () {
+var ModuleFaust = /** @class */ (function () {
     function ModuleFaust(name) {
         this.fOutputConnections = [];
         this.fInputConnections = [];
@@ -1632,7 +1622,7 @@ var ModuleFaust = (function () {
     IMG --> fEditImg
     ===================*/
 /// <reference path="../Utilitary.ts"/>
-var ModuleView = (function () {
+var ModuleView = /** @class */ (function () {
     function ModuleView() {
         this.inputOutputNodeDimension = 32;
     }
@@ -1760,21 +1750,7 @@ var ModuleView = (function () {
     };
     return ModuleView;
 }());
-/*				MODULECLASS.JS
-    HAND-MADE JAVASCRIPT CLASS CONTAINING A FAUST MODULE AND ITS INTERFACE
-    
-
-        
-*/
-/// <reference path="../Dragging.ts"/>
-/// <reference path="../CodeFaustParser.ts"/>
-/// <reference path="../Connect.ts"/>
-/// <reference path="../Modules/FaustInterface.ts"/>
-/// <reference path="../Messages.ts"/>
-/// <reference path="ModuleFaust.ts"/>
-/// <reference path="ModuleView.ts"/>
-"use strict";
-var ModuleClass = (function () {
+var ModuleClass = /** @class */ (function () {
     function ModuleClass(id, x, y, name, htmlElementModuleContainer, removeModuleCallBack, compileFaust) {
         var _this = this;
         //drag object to handle dragging of module and connection
@@ -2154,16 +2130,7 @@ var ModuleClass = (function () {
     ModuleClass.isNodesModuleUnstyle = true;
     return ModuleClass;
 }());
-/*				CONNECT.JS
-    Handles Audio/Graphical Connection/Deconnection of modules
-    This is a historical file from Chris Wilson, modified for Faust ModuleClass needs.
-        
-*/
-/// <reference path="Modules/ModuleClass.ts"/>
-/// <reference path="Utilitary.ts"/>
-/// <reference path="Dragging.ts"/>
-"use strict";
-var Connector = (function () {
+var Connector = /** @class */ (function () {
     function Connector() {
     }
     // connect input node to device input
@@ -2302,12 +2269,10 @@ var Connector = (function () {
     Connector.connectorId = 0;
     return Connector;
 }());
-/// <reference path="Lib/qrcode.d.ts"/>
-"use strict";
 /************************************************************
 ***************** Interface to FaustWeb *********************
 ************************************************************/
-var ExportLib = (function () {
+var ExportLib = /** @class */ (function () {
     function ExportLib() {
     }
     //--- Send asynchronous POST request to FaustWeb to compile a faust DSP
@@ -2390,23 +2355,12 @@ var ExportLib = (function () {
     };
     return ExportLib;
 }());
-/*				EQUIVALENTFAUST.JS
-
-    HELPER FUNCTIONS TO CREATE FAUST EQUIVALENT EXPRESSION FROM A PATCH
-    
-    FIRST PART --> DERECURSIVIZE THE PATCH
-    SECOND PART --> CREATE THE FAUST EQUIVALENT FROM THE "DERECURSIVIZED" PATCH
-*/
-/// <reference path="Scenes/SceneClass.ts"/>
-/// <reference path="Modules/ModuleClass.ts"/>
-/// <reference path="Connect.ts"/>
-"use strict";
-var ModuleTree = (function () {
+var ModuleTree = /** @class */ (function () {
     function ModuleTree() {
     }
     return ModuleTree;
 }());
-var EquivalentFaust = (function () {
+var EquivalentFaust = /** @class */ (function () {
     function EquivalentFaust() {
     }
     EquivalentFaust.prototype.isModuleRecursiveExisting = function (moduleTree) {
@@ -2563,51 +2517,9 @@ var EquivalentFaust = (function () {
     };
     return EquivalentFaust;
 }());
-//--------Plus Utilisé ---------------Create Faust Equivalent Module of the Scene
-//    // To avoid sharing instances of a same factory in the resulting Faust Equivalent
-//    wrapSourceCodesInGroups(){
-//	    var modules = getElementsByClassName("div", "moduleFaust");
-//	    for (var i = 0; i < modules.length; i++)
-//		    modules[i].Source = "process = vgroup(\"component"+ i.toString() + "\",environment{" + modules[i].Source + "}.process);";
-//    }
-//    function createFaustEquivalent(scene, patchName, parent){
-//    // Save All Params	
-//	    var modules = scene.getModules();
-//	    for (var i = 0; i < modules.length; i++){	
-//		    if(modules[i])
-//			    modules[i].saveParams();
-//	    }
-//    // Concatenate All Params
-//	    var fullParams = new Array();
-//	    for (var i = 0; i < modules.length; i++) {
-//		    if(modules[i]){
-//			    var arrayParams = modules[i].getParams;
-//    //   BIDOUILLE!!!!! Adding component wrapping to avoid merging of 2 instances of same factory
-//			    for(key in arrayParams){
-//				    var newKey = "/" + patchName /*+ "/component" + i.toString()*/ + key;
-//				    fullParams[newKey] = arrayParams[key];
-//			    }
-//		    }
-//	    }
-//    // THIS SHOULD BE DONE BUT FOR NOW IT CAUSED A PROBLEM, I CAN'T REMEMBER WHICH... 
-//    // 	wrapSourceCodesInGroups();
-//	    var faustResult = getFaustEquivalent(scene, patchName);
-//	    if(faustResult){
-//    // Save concatenated params in new DIV
-//		    var DSP = createDSP(faustResult);
-//		    if(DSP){
-//			    var faustModule = createModule(idX++, document.body.scrollWidth/3, document.body.scrollHeight/3, patchName, parent, window.scenes[2].removeModule);
-// 			    faustModule.createDSP(faustResult);
-// 			    faustModule.setParams(fullParams);
-// 			    return faustModule;
-//		    }
-//	    }
-//	    return null;
-//    }
-//}
 //ExportView
 /// <reference path="../Utilitary.ts"/>
-var ExportView = (function () {
+var ExportView = /** @class */ (function () {
     function ExportView() {
     }
     ExportView.prototype.initExportView = function () {
@@ -2732,20 +2644,10 @@ var ExportView = (function () {
     };
     return ExportView;
 }());
-/*				EXPORT.JS
-    Handles Graphical elements for the Export Feature of the normal Playground
-        
-*/
-/// <reference path="../ExportLib.ts"/>
-/// <reference path="../EquivalentFaust.ts"/>
-/// <reference path="../Messages.ts"/>
-/// <reference path="ExportView.ts"/>
-/// <reference path="../Utilitary.ts"/>
-"use strict";
 /********************************************************************
 *********************  HANDLE FAUST WEB TARGETS *********************
 ********************************************************************/
-var Export = (function () {
+var Export = /** @class */ (function () {
     function Export() {
         var _this = this;
         //------ Update Architectures with Plateform change
@@ -2915,16 +2817,7 @@ var Export = (function () {
     Export.targetsUrl = "http://faustservice.grame.fr/targets";
     return Export;
 }());
-/*				PLAYGROUND.JS
-    Init Normal Scene with all its graphical elements
-
-    This is the unique scene of the Normal Playground
-        
-*/
-/// <reference path="../Scenes/SceneClass.ts"/>
-/// <reference path="../Menu/Export.ts"/>
-"use strict";
-var SceneView = (function () {
+var SceneView = /** @class */ (function () {
     function SceneView() {
     }
     SceneView.prototype.initNormalScene = function (scene) {
@@ -2986,17 +2879,7 @@ var SceneView = (function () {
     };
     return SceneView;
 }());
-/*				SCENECLASS.JS
-    HAND-MADE JAVASCRIPT CLASS CONTAINING THE API OF A GENERIC SCENE
-*/
-/// <reference path="../Connect.ts"/>
-/// <reference path="../Modules/ModuleClass.ts"/>
-/// <reference path="../Lib/webaudio-asm-worker-wrapper.d.ts"/>
-/// <reference path="../Utilitary.ts"/>
-/// <reference path="../Messages.ts"/>
-/// <reference path="SceneView.ts"/>
-"use strict";
-var Scene = (function () {
+var Scene = /** @class */ (function () {
     function Scene(identifiant, compileFaust, sceneView) {
         var _this = this;
         //temporary arrays used to recall a scene from a jfaust file
@@ -3131,9 +3014,6 @@ var Scene = (function () {
     Scene.prototype.activateAudioInput = function () {
         var _this = this;
         var navigatorLoc = navigator;
-        if (!navigatorLoc.getUserMedia) {
-            navigatorLoc.getUserMedia = navigatorLoc.webkitGetUserMedia || navigatorLoc.mozGetUserMedia;
-        }
         if (navigatorLoc.getUserMedia) {
             navigatorLoc.getUserMedia({ audio: true }, function (mediaStream) { _this.getDevice(mediaStream); }, function (e) {
                 _this.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)";
@@ -3267,7 +3147,7 @@ var Scene = (function () {
     // recall module at rank 0 of arrayRecalScene
     // direct use of the asm.js code if exist
     // or compile the faust code
-    // 
+    //
     // When arrayRecalScene empty, connect the modules in the scene
     Scene.prototype.lunchModuleCreation = function () {
         var _this = this;
@@ -3448,7 +3328,7 @@ var Scene = (function () {
         newName = Utilitary.replaceAll(newName, "'", "_");
         return newName;
     };
-    //check if string start only with letter (no accent) 
+    //check if string start only with letter (no accent)
     //and contains only letter (no accent) underscore and number for a lenght between 1 and 50 char
     Scene.isNameValid = function (newName) {
         var pattern = new RegExp("^[a-zA-Z_][a-zA-Z_0-9]{1,50}$");
@@ -3522,54 +3402,54 @@ var Scene = (function () {
     };
     return Scene;
 }());
-var JsonSaveCollection = (function () {
+var JsonSaveCollection = /** @class */ (function () {
     function JsonSaveCollection() {
     }
     return JsonSaveCollection;
 }());
-var JsonSaveModule = (function () {
+var JsonSaveModule = /** @class */ (function () {
     function JsonSaveModule() {
     }
     return JsonSaveModule;
 }());
-var JsonOutputsSave = (function () {
+var JsonOutputsSave = /** @class */ (function () {
     function JsonOutputsSave() {
     }
     return JsonOutputsSave;
 }());
-var JsonInputsSave = (function () {
+var JsonInputsSave = /** @class */ (function () {
     function JsonInputsSave() {
     }
     return JsonInputsSave;
 }());
-var JsonParamsSave = (function () {
+var JsonParamsSave = /** @class */ (function () {
     function JsonParamsSave() {
     }
     return JsonParamsSave;
 }());
-var JsonAccSaves = (function () {
+var JsonAccSaves = /** @class */ (function () {
     function JsonAccSaves() {
     }
     return JsonAccSaves;
 }());
-var JsonAccSave = (function () {
+var JsonAccSave = /** @class */ (function () {
     function JsonAccSave() {
     }
     return JsonAccSave;
 }());
-var JsonSliderSave = (function () {
+var JsonSliderSave = /** @class */ (function () {
     function JsonSliderSave() {
     }
     return JsonSliderSave;
 }());
-var JsonFactorySave = (function () {
+var JsonFactorySave = /** @class */ (function () {
     function JsonFactorySave() {
     }
     return JsonFactorySave;
 }());
 /// <reference path="Messages.ts"/>
 //class ErrorFaust
-var ErrorFaust = (function () {
+var ErrorFaust = /** @class */ (function () {
     function ErrorFaust() {
     }
     ErrorFaust.errorCallBack = function (errorMessage) {
@@ -3580,7 +3460,7 @@ var ErrorFaust = (function () {
 //LibraryView.ts : LibraryView Class which contains all the graphical parts of the library
 /// <reference path="../Utilitary.ts"/>
 /// <reference path="../Lib/perfectScrollBar/js/perfect-ScrollBar.min.d.ts"/>
-var LibraryView = (function () {
+var LibraryView = /** @class */ (function () {
     function LibraryView() {
     }
     LibraryView.prototype.initLibraryView = function () {
@@ -3668,7 +3548,7 @@ var LibraryView = (function () {
 */
 /// <reference path="../Utilitary.ts"/>
 /// <reference path="LibraryView.ts"/>
-var Library = (function () {
+var Library = /** @class */ (function () {
     function Library() {
         this.isSmaller = false;
         this.isDblTouch = false;
@@ -3747,7 +3627,7 @@ var Library = (function () {
     return Library;
 }());
 //HelpView.ts: HelpView class contains the graphical structure of the help menu.
-var HelpView = (function () {
+var HelpView = /** @class */ (function () {
     function HelpView() {
     }
     HelpView.prototype.initHelpView = function () {
@@ -3775,7 +3655,7 @@ var HelpView = (function () {
 }());
 //Help.ts : Help class, that controle behaviour of the help panel.
 /// <reference path="HelpView.ts"/>
-var Help = (function () {
+var Help = /** @class */ (function () {
     function Help() {
     }
     Help.prototype.stopVideo = function () {
@@ -3784,7 +3664,7 @@ var Help = (function () {
     return Help;
 }());
 /// <reference path="../Utilitary.ts"/>
-var LoadView = (function () {
+var LoadView = /** @class */ (function () {
     function LoadView() {
     }
     LoadView.prototype.initLoadView = function () {
@@ -3914,7 +3794,7 @@ var LoadView = (function () {
 }());
 /// <reference path="../DriveAPI.ts"/>   
 /// <reference path="LoadView.ts"/>   
-var Load = (function () {
+var Load = /** @class */ (function () {
     function Load() {
     }
     //Set event listener
@@ -3983,7 +3863,7 @@ var Load = (function () {
     return Load;
 }());
 /// <reference path="../Utilitary.ts"/>
-var SaveView = (function () {
+var SaveView = /** @class */ (function () {
     function SaveView() {
     }
     SaveView.prototype.initSaveView = function () {
@@ -4143,7 +4023,7 @@ var SaveView = (function () {
 /// <reference path="../Utilitary.ts"/>
 /// <reference path="../DriveAPI.ts"/>
 /// <reference path="SaveView.ts"/>
-var Save = (function () {
+var Save = /** @class */ (function () {
     function Save() {
     }
     Save.prototype.setEventListeners = function () {
@@ -4313,7 +4193,7 @@ var Save = (function () {
     return Save;
 }());
 /// <reference path="../Utilitary.ts"/>
-var AccelerometerEditView = (function () {
+var AccelerometerEditView = /** @class */ (function () {
     function AccelerometerEditView() {
     }
     AccelerometerEditView.prototype.initAccelerometerEdit = function () {
@@ -4507,11 +4387,7 @@ var AccelerometerEditView = (function () {
     };
     return AccelerometerEditView;
 }());
-//AccelerometerEdit
-/// <reference path="../Accelerometer.ts"/>
-/// <reference path="AccelerometerEditView.ts"/>
-"use strict";
-var AccelerometerEdit = (function () {
+var AccelerometerEdit = /** @class */ (function () {
     function AccelerometerEdit(accelerometerEditView) {
         var _this = this;
         this.isOn = false;
@@ -4973,11 +4849,11 @@ var MenuChoices;
     MenuChoices[MenuChoices["load"] = 6] = "load";
     MenuChoices[MenuChoices["null"] = 7] = "null";
 })(MenuChoices || (MenuChoices = {}));
-var Menu = (function () {
+var Menu = /** @class */ (function () {
     function Menu(htmlContainer) {
         var _this = this;
         this.isMenuDriveLoading = false;
-        this.currentMenuChoices = MenuChoices.null;
+        this.currentMenuChoices = MenuChoices["null"];
         this.isFullScreen = false;
         this.isAccelerometer = Utilitary.isAccelerometerOn;
         //create and init menu view wich gone create and init all sub menus views
@@ -4985,10 +4861,10 @@ var Menu = (function () {
         this.menuView.init(htmlContainer);
         //add Event Listeners
         this.menuView.libraryButtonMenu.onclick = function () { _this.menuHandler(_this.newMenuChoices = MenuChoices.library); };
-        this.menuView.exportButtonMenu.onclick = function () { _this.menuHandler(_this.newMenuChoices = MenuChoices.export); };
+        this.menuView.exportButtonMenu.onclick = function () { _this.menuHandler(_this.newMenuChoices = MenuChoices["export"]); };
         this.menuView.helpButtonMenu.onclick = function () { _this.menuHandler(_this.newMenuChoices = MenuChoices.help); };
         this.menuView.editButtonMenu.addEventListener("click", function () { _this.menuHandler(_this.newMenuChoices = MenuChoices.edit); });
-        this.menuView.closeButton.onclick = function () { _this.menuHandler(_this.newMenuChoices = MenuChoices.null); };
+        this.menuView.closeButton.onclick = function () { _this.menuHandler(_this.newMenuChoices = MenuChoices["null"]); };
         this.menuView.saveButton.addEventListener("click", function () { _this.menuHandler(_this.newMenuChoices = MenuChoices.save); });
         this.menuView.loadButton.addEventListener("click", function () { _this.menuHandler(_this.newMenuChoices = MenuChoices.load); });
         this.menuView.fullScreenButton.addEventListener("click", function () { _this.fullScreen(); });
@@ -5034,7 +4910,7 @@ var Menu = (function () {
             case MenuChoices.library:
                 this.libraryMenu();
                 break;
-            case MenuChoices.export:
+            case MenuChoices["export"]:
                 this.exportMenu();
                 break;
             case MenuChoices.help:
@@ -5049,7 +4925,7 @@ var Menu = (function () {
             case MenuChoices.load:
                 this.loadMenu();
                 break;
-            case MenuChoices.null:
+            case MenuChoices["null"]:
                 this.cleanMenu();
                 this.closeMenu();
                 break;
@@ -5058,7 +4934,7 @@ var Menu = (function () {
     //manage the library display
     Menu.prototype.libraryMenu = function () {
         switch (this.currentMenuChoices) {
-            case MenuChoices.null:
+            case MenuChoices["null"]:// case MenuChoices.edit:
                 this.menuView.contentsMenu.style.display = "block";
                 this.menuView.libraryContent.style.display = "block";
                 this.currentMenuChoices = MenuChoices.library;
@@ -5069,7 +4945,7 @@ var Menu = (function () {
             case MenuChoices.library:
                 this.menuView.contentsMenu.style.display = "none";
                 this.menuView.libraryContent.style.display = "none";
-                this.currentMenuChoices = MenuChoices.null;
+                this.currentMenuChoices = MenuChoices["null"];
                 this.menuView.libraryButtonMenu.style.backgroundColor = this.menuView.menuColorDefault;
                 this.menuView.libraryButtonMenu.style.zIndex = "0";
                 break;
@@ -5085,7 +4961,7 @@ var Menu = (function () {
     //manage the load display
     Menu.prototype.loadMenu = function () {
         switch (this.currentMenuChoices) {
-            case MenuChoices.null:
+            case MenuChoices["null"]:// case MenuChoices.edit:
                 this.menuView.contentsMenu.style.display = "block";
                 this.menuView.loadContent.style.display = "inline-table";
                 this.currentMenuChoices = MenuChoices.load;
@@ -5095,7 +4971,7 @@ var Menu = (function () {
             case MenuChoices.load:
                 this.menuView.contentsMenu.style.display = "none";
                 this.menuView.loadContent.style.display = "none";
-                this.currentMenuChoices = MenuChoices.null;
+                this.currentMenuChoices = MenuChoices["null"];
                 this.menuView.loadButton.style.backgroundColor = this.menuView.menuColorDefault;
                 this.menuView.loadButton.style.zIndex = "0";
                 break;
@@ -5111,17 +4987,17 @@ var Menu = (function () {
     //manage the export display
     Menu.prototype.exportMenu = function () {
         switch (this.currentMenuChoices) {
-            case MenuChoices.null:
+            case MenuChoices["null"]:// case MenuChoices.edit:
                 this.menuView.contentsMenu.style.display = "block";
                 this.menuView.exportContent.style.display = "inline-table";
-                this.currentMenuChoices = MenuChoices.export;
+                this.currentMenuChoices = MenuChoices["export"];
                 this.menuView.exportButtonMenu.style.backgroundColor = this.menuView.menuColorSelected;
                 this.menuView.exportButtonMenu.style.zIndex = "1";
                 break;
-            case MenuChoices.export:
+            case MenuChoices["export"]:
                 this.menuView.contentsMenu.style.display = "none";
                 this.menuView.exportContent.style.display = "none";
-                this.currentMenuChoices = MenuChoices.null;
+                this.currentMenuChoices = MenuChoices["null"];
                 this.menuView.exportButtonMenu.style.backgroundColor = this.menuView.menuColorDefault;
                 this.menuView.exportButtonMenu.style.zIndex = "0";
                 break;
@@ -5130,14 +5006,14 @@ var Menu = (function () {
                 this.menuView.exportButtonMenu.style.backgroundColor = this.menuView.menuColorSelected;
                 this.menuView.exportButtonMenu.style.zIndex = "1";
                 this.menuView.exportContent.style.display = "inline-table";
-                this.currentMenuChoices = MenuChoices.export;
+                this.currentMenuChoices = MenuChoices["export"];
                 break;
         }
     };
     //manage the save display
     Menu.prototype.saveMenu = function () {
         switch (this.currentMenuChoices) {
-            case MenuChoices.null:
+            case MenuChoices["null"]:// case MenuChoices.edit:
                 this.menuView.contentsMenu.style.display = "block";
                 this.menuView.saveContent.style.display = "inline-table";
                 this.currentMenuChoices = MenuChoices.save;
@@ -5147,7 +5023,7 @@ var Menu = (function () {
             case MenuChoices.save:
                 this.menuView.contentsMenu.style.display = "none";
                 this.menuView.saveContent.style.display = "none";
-                this.currentMenuChoices = MenuChoices.null;
+                this.currentMenuChoices = MenuChoices["null"];
                 this.menuView.saveButton.style.backgroundColor = this.menuView.menuColorDefault;
                 this.menuView.saveButton.style.zIndex = "0";
                 break;
@@ -5163,7 +5039,7 @@ var Menu = (function () {
     //manage the help display
     Menu.prototype.helpMenu = function () {
         switch (this.currentMenuChoices) {
-            case MenuChoices.null:
+            case MenuChoices["null"]://case MenuChoices.edit:
                 this.menuView.contentsMenu.style.display = "block";
                 this.menuView.helpContent.style.display = "block";
                 this.menuView.helpButtonMenu.style.backgroundColor = this.menuView.menuColorSelected;
@@ -5173,7 +5049,7 @@ var Menu = (function () {
             case MenuChoices.help:
                 this.menuView.contentsMenu.style.display = "none";
                 this.menuView.helpContent.style.display = "none";
-                this.currentMenuChoices = MenuChoices.null;
+                this.currentMenuChoices = MenuChoices["null"];
                 this.menuView.helpButtonMenu.style.backgroundColor = this.menuView.menuColorDefault;
                 this.menuView.helpButtonMenu.style.zIndex = "0";
                 break;
@@ -5189,7 +5065,7 @@ var Menu = (function () {
     //manage the accelerometerEdit mode and display
     Menu.prototype.editMenu = function () {
         switch (this.currentMenuChoices) {
-            case MenuChoices.null:
+            case MenuChoices["null"]:
                 this.menuView.editButtonMenu.style.backgroundColor = "#00C50D";
                 this.menuView.editButtonMenu.style.boxShadow = "yellow 0px 0px 51px inset";
                 this.accEdit.editAction();
@@ -5200,7 +5076,7 @@ var Menu = (function () {
                 this.menuView.editButtonMenu.style.backgroundColor = this.menuView.menuColorDefault;
                 this.menuView.editButtonMenu.style.boxShadow = "none";
                 this.menuView.contentsMenu.style.display = "none";
-                this.currentMenuChoices = MenuChoices.null;
+                this.currentMenuChoices = MenuChoices["null"];
                 break;
             default:
                 this.cleanMenu();
@@ -5218,7 +5094,7 @@ var Menu = (function () {
             this.menuView.HTMLElementsMenu[i].style.display = "none";
         }
         this.menuView.contentsMenu.style.display = "none";
-        this.currentMenuChoices = MenuChoices.null;
+        this.currentMenuChoices = MenuChoices["null"];
     };
     //hide all elements currently displayed in the menu
     Menu.prototype.cleanMenu = function () {
@@ -5330,7 +5206,7 @@ var Menu = (function () {
     //close menu when editing a module's Faust code
     //the idea here is to disable the accelerometerEdit mode if enabled
     Menu.prototype.customeCodeEditEvent = function () {
-        this.menuHandler(MenuChoices.null);
+        this.menuHandler(MenuChoices["null"]);
     };
     //refresh the select boxes of localstorage when adding or removing a saved scene
     Menu.prototype.updateSelectLocalEvent = function () {
@@ -5433,7 +5309,7 @@ var Menu = (function () {
 /// <reference path="AccelerometerEditView.ts"/>
 /// <reference path="LoadView.ts"/>
 /// <reference path="SaveView.ts"/>
-var MenuView = (function () {
+var MenuView = /** @class */ (function () {
     function MenuView() {
         this.HTMLElementsMenu = [];
         this.HTMLButtonsMenu = [];
@@ -5600,7 +5476,7 @@ Create Factories and Modules
 /// <reference path="Messages.ts"/>
 /// <reference path="Lib/perfectScrollBar/js/perfect-ScrollBar.min.d.ts"/>
 //object containg info necessary to compile faust code
-var App = (function () {
+var App = /** @class */ (function () {
     function App() {
     }
     App.prototype.createAllScenes = function () {
@@ -5617,13 +5493,13 @@ var App = (function () {
         //add eventlistener on the scene to hide menu when clicked or touched
         Utilitary.currentScene.getSceneContainer().addEventListener("mousedown", function () {
             if (!_this.menu.accEdit.isOn) {
-                _this.menu.newMenuChoices = MenuChoices.null;
+                _this.menu.newMenuChoices = MenuChoices["null"];
                 _this.menu.menuHandler(_this.menu.newMenuChoices);
             }
         }, true);
         Utilitary.currentScene.getSceneContainer().addEventListener("touchstart", function () {
             if (!_this.menu.accEdit.isOn) {
-                _this.menu.newMenuChoices = MenuChoices.null;
+                _this.menu.newMenuChoices = MenuChoices["null"];
                 _this.menu.menuHandler(_this.menu.newMenuChoices);
             }
         }, true);
@@ -5649,7 +5525,8 @@ var App = (function () {
         }
         ;
         //locate libraries used in libfaust compiler
-        var args = ["-I", location.origin + "/faustplayground/faustcode/"];
+        var libpath = location.origin + location.pathname.substring(0, location.pathname.lastIndexOf('/')) + "/faustcode/";
+        var args = ["-I", libpath];
         //try to create the asm.js code/factory with the faust code given. Then callback to function passing the factory.
         try {
             this.factory = faust.createDSPFactory(compileFaust.sourceCode, args, function (factory) { compileFaust.callback(factory); });
@@ -5669,7 +5546,7 @@ var App = (function () {
         if (!factory) {
             new Message(Utilitary.messageRessource.errorFactory + faust.getErrorMessage());
             Utilitary.hideFullPageLoading();
-            return null;
+            //return null;
         }
         var module = new ModuleClass(Utilitary.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), function (module) { Utilitary.currentScene.removeModule(module); }, this.compileFaust);
         module.moduleFaust.setSource(this.tempModuleSourceCode);
@@ -5693,7 +5570,7 @@ var App = (function () {
             module.moduleView.fModuleContainer.style.opacity = "0.5";
             module.moduleView.fModuleContainer.style.boxShadow = "0 5px 10px rgba(0, 0, 0, 0.4)";
         };
-        // the current scene add the module and hide the loading page 
+        // the current scene add the module and hide the loading page
         Utilitary.currentScene.addModule(module);
         if (!Utilitary.currentScene.isInitLoading) {
             Utilitary.hideFullPageLoading();
@@ -5703,15 +5580,15 @@ var App = (function () {
     ***********************  HANDLE DRAG AND DROP ***********************
     ********************************************************************/
     //-- custom event to load file from the load menu with the file explorer
-    //Init drag and drop reactions, scroll event and body resize event to resize svg element size, 
+    //Init drag and drop reactions, scroll event and body resize event to resize svg element size,
     // add custom double touch event to load dsp from the library menu
     App.prototype.setGeneralAppListener = function (app) {
         var _this = this;
         //custom event to load file from the load menu with the file explorer
         document.addEventListener("fileload", function (e) { _this.loadFileEvent(e); });
         //All drog and drop events
-        window.ondragover = function () { this.className = 'hover'; return false; };
-        window.ondragend = function () { this.className = ''; return false; };
+        window.ondragover = function () { return false; };
+        window.ondragend = function () { return false; };
         document.ondragstart = function () { _this.styleOnDragStart(); };
         document.ondragenter = function (e) {
             var srcElement = e.srcElement;
@@ -5915,17 +5792,6 @@ var App = (function () {
     };
     return App;
 }());
-/*				MAIN.JS
-    Entry point of the Program
-    intefaces used through the app
-
-
-
-
-*/
-/// <reference path="App.ts"/>
-/// <reference path="Messages.ts"/>
-"use strict";
 //listner on load of all element to init the app
 window.addEventListener('load', init, false);
 //initialization af the app, create app and ressource to get text with correct localization
