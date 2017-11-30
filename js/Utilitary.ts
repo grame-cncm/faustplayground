@@ -20,7 +20,7 @@ class Utilitary {
     static driveApi: DriveAPI;
 
     static errorCallBack(message: string) {
-  
+
     }
     static showFullPageLoading() {
 
@@ -107,24 +107,6 @@ interface AudioBufferSourceNode {
     noteOn: (any: any) => any;
 }
 
-interface Navigator {
-    //default way to get the devices of browsers
-    getUserMedia(
-        options: { video?: boolean; audio?: boolean; },
-        success: (stream: any) => void,
-        error?: (error: string) => void
-    ): void;
-    webkitGetUserMedia(
-        options: { video?: boolean; audio?: boolean; },
-        successCallback: (stream: any) => void,
-        errorCallback?: (error: string) => void
-    ): void;
-    mozGetUserMedia(
-        options: { video?: boolean; audio?: boolean; },
-        successCallback: (stream: any) => void,
-        errorCallback?: (error: string) => void
-    ): void;
-}
 
 interface IPositionModule {
     x: number;
@@ -136,27 +118,6 @@ class PositionModule implements IPositionModule {
     y: number;
 }
 
-
-interface MediaStream {
-    id: string;
-    active: boolean;
-}
-
-interface MediaStreamAudioSourceNode extends AudioNode {
-
-}
-
-interface MediaStreamAudioDestinationNode extends AudioNode {
-    stream: MediaStream;
-}
-
-interface AudioContext {
-    close: () => void;
-    createMediaStreamSource: (m: MediaStream) => MediaStreamAudioSourceNode;
-    createMediaStreamDestination: () => any;
-    resume: () => void;
-    suspend: () => void;
-}
 interface IHTMLDivElementSrc extends HTMLDivElement {
     audioNode: MediaStreamAudioSourceNode;
 }
