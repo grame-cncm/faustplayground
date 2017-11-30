@@ -8,8 +8,7 @@ Activate Physical input/ output
 Handle Drag and Drop
 Create Factories and Modules
 
-
-    */
+*/
 /// <reference path="Scenes/SceneClass.ts"/>
 /// <reference path="Modules/ModuleClass.ts"/>
 /// <reference path="Modules/ModuleView.ts"/>
@@ -38,7 +37,6 @@ Create Factories and Modules
 
 //object containg info necessary to compile faust code
 
-
 class App {
     private static currentScene: number;
     private static src: IHTMLDivElementSrc;
@@ -59,7 +57,6 @@ class App {
     params: any[];
 
     factory: Factory;
-
 
     createAllScenes(): void {
         var sceneView: SceneView = new SceneView();
@@ -95,8 +92,6 @@ class App {
         document.getElementsByTagName("body")[0].appendChild(dialogue)
     }
 
-
-
     /********************************************************************
     ****************  CREATE FAUST FACTORIES AND MODULES ****************
     ********************************************************************/
@@ -125,9 +120,7 @@ class App {
         }
 
         if (currentScene) { currentScene.unmuteScene() };
-
     }
-
 
     //create Module, set the source faust code to its moduleFaust, set the faust interface , add the input output connection nodes
     //
@@ -140,33 +133,35 @@ class App {
 
         var module: ModuleClass = new ModuleClass(Utilitary.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), (module) => { Utilitary.currentScene.removeModule(module) }, this.compileFaust);
         module.moduleFaust.setSource(this.tempModuleSourceCode);
-        module.createDSP(factory);
-        module.setFaustInterfaceControles();
-        module.createFaustInterface();
-        module.addInputOutputNodes();
+        
+       	// SL 30/11
+        module.createDSP(factory, function() {
+        	module.setFaustInterfaceControles();
+        	module.createFaustInterface();
+        	module.addInputOutputNodes();
 
-        //set listener to recompile when dropping faust code on the module
-        if (this.tempModuleName != "input" && this.tempModuleName != "output") {
-            module.moduleView.fModuleContainer.ondrop = (e) => {
-                e.stopPropagation();
-                this.styleOnDragEnd()
-                this.uploadOn(this, module, 0, 0, e)
-            };
-        }
-        module.moduleView.fModuleContainer.ondragover = () => {
-            module.moduleView.fModuleContainer.style.opacity = "1";
-            module.moduleView.fModuleContainer.style.boxShadow = "0 0 40px rgb(255, 0, 0)";
-        }
-        module.moduleView.fModuleContainer.ondragleave = () => {
-            module.moduleView.fModuleContainer.style.opacity = "0.5";
-            module.moduleView.fModuleContainer.style.boxShadow = "0 5px 10px rgba(0, 0, 0, 0.4)";
-        }
-        // the current scene add the module and hide the loading page
-        Utilitary.currentScene.addModule(module);
-        if (!Utilitary.currentScene.isInitLoading) {
-            Utilitary.hideFullPageLoading()
-        }
-
+       	 	//set listener to recompile when dropping faust code on the module
+       	 	if (this.tempModuleName != "input" && this.tempModuleName != "output") {
+           		module.moduleView.fModuleContainer.ondrop = (e) => {
+               		e.stopPropagation();
+                	this.styleOnDragEnd()
+                	this.uploadOn(this, module, 0, 0, e)
+            	};
+        	}
+        	module.moduleView.fModuleContainer.ondragover = () => {
+            	module.moduleView.fModuleContainer.style.opacity = "1";
+            	module.moduleView.fModuleContainer.style.boxShadow = "0 0 40px rgb(255, 0, 0)";
+        	}
+        	module.moduleView.fModuleContainer.ondragleave = () => {
+           		module.moduleView.fModuleContainer.style.opacity = "0.5";
+            	module.moduleView.fModuleContainer.style.boxShadow = "0 5px 10px rgba(0, 0, 0, 0.4)";
+        	}
+        	// the current scene add the module and hide the loading page
+        	Utilitary.currentScene.addModule(module);
+        	if (!Utilitary.currentScene.isInitLoading) {
+            	Utilitary.hideFullPageLoading()
+        	}
+        });
     }
 
     /********************************************************************
@@ -222,7 +217,6 @@ class App {
         //custom double touch from library menu to load an effect or an intrument.
         document.addEventListener("dbltouchlib", (e: CustomEvent) => { this.dblTouchUpload(e) });
     }
-
 
     //-- Upload content dropped on the page and allocate the content to the right function
     uploadOn(app: App, module: ModuleClass, x: number, y: number, e: DragEvent) {
@@ -283,7 +277,6 @@ class App {
         }, Utilitary.errorCallBack)
     }
 
-
     // used for dsp code faust
     uploadCodeFaust(app: App, module: ModuleClass, x: number, y: number, e: DragEvent, dsp_code:string) {
         dsp_code = "process = vgroup(\"" + "TEXT" + "\",environment{" + dsp_code + "}.process);";
@@ -305,19 +298,14 @@ class App {
     loadFile(file: File, module: ModuleClass, x: number, y: number) {
         var dsp_code: string;
         var reader: FileReader = new FileReader();
-
         var ext: string = file.name.toString().split('.').pop();
-
         var filename: string = file.name.toString().split('.').shift();
-
         var type: string;
 
         if (ext == "dsp") {
             type = "dsp";
             reader.readAsText(file);
-
-        }
-        else if (ext == "json"||ext=="jfaust") {
+        } else if (ext == "json"||ext=="jfaust") {
             type = "json";
             reader.readAsText(file);
         } else {
@@ -349,9 +337,7 @@ class App {
         Utilitary.showFullPageLoading();
         var position: PositionModule = Utilitary.currentScene.positionDblTapModule();
         this.uploadUrl(this, null, position.x, position.y, e.detail);
-
     }
-
 
     ////////////////////////////// design on drag or drop //////////////////////////////////////
 
@@ -401,7 +387,6 @@ class App {
             document.getElementById("svgCanvas").style.height = "100%";
         }
     }
-
 
     errorCallBack(message: string) {
 

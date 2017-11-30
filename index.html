@@ -23,7 +23,6 @@
     <link rel="stylesheet" href="css/perfect-scrollbar.min.css" />
 <!-- JAVASCRIPT FUNCTIONS -->
 
-
 	<script>
 	if (window != window.top)
 		document.write("<style>header {display:none}</style>")
@@ -35,15 +34,26 @@
     </div>
 </body>
 
-
 <!-- JAVASCRIPT LIBRARIES USED -->
 <script src="js/Lib/AudioContextMonkeyPatch.js"></script>
 <script src="js/Lib/qrcode.js"></script>
 <script src="js/Lib/perfectScrollBar/js/perfect-scrollbar.min.js"></script>
-<script src="js/Lib/webaudio-asm-worker-wrapper.js"></script>
+<script src="js/Lib/libfaust-wasm.js"></script>
+<script src="js/Lib/webaudio-wasm-wrapper.js"></script>
 <script src="js/Lib/FileSaver.min.js"></script>
 <script src="https://apis.google.com/js/client.js?onload=checkAuth"></script>
-
 <script src="js/faustplayground.js"></script>
+
+ <!-- 'init' is defined in faustplayground.js -->
+<script>
+        var isWasm = (typeof (WebAssembly) !== "undefined");
+        if (!isWasm) {
+            alert("WebAssembly is not supported in this browser, the page will not work !")
+        }
+        // 'faust_module' global is defined in webaudio-wasm-wrapper.js file, 'onRuntimeInitialized' will be called when code is ready
+        // (see https://kripken.github.io/emscripten-site/docs/getting_started/FAQ.html)
+        
+        faust_module['onRuntimeInitialized'] = init;
+    </script>
 
 </html>

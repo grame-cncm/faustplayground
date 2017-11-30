@@ -3,9 +3,6 @@
 /// <reference path="Utilitary.ts"/>
 /// <reference path="Modules/FaustInterface.ts"/>
 
-
-
-
 interface Window {
     DeviceMotionEvent: DeviceMotionEvent
 }

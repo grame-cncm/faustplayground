@@ -11,7 +11,6 @@ class Message {
     duration: number = 10000;
     delay: number = 4000;
 
-
     //Message show up and set a time out, if nothing happen, it remove it self
     //if one click, it stays, if double click it's removed (also the close button works)
     //fadeOutType can be eather null or "messageTransitionOutFast", to have new animation create new rules css
@@ -98,21 +97,16 @@ class MessageView {
     closeButton: HTMLElement
     message: HTMLElement
 
-    constructor() {
-        
-
-    }
+    constructor() {}
+    
     init(): HTMLDivElement {
 
         var messageContainer = document.createElement("div");
         messageContainer.className = "messageContainer messageHide messageTransitionIn";
 
-        
-
         var closeButton: HTMLElement = document.createElement("div")
         closeButton.id = "closeButton";
         this.closeButton = closeButton;
-
 
         var message = document.createElement("div");
         message.className = "message";
@@ -124,7 +118,6 @@ class MessageView {
         return messageContainer
     }
 }
-
 
 // take message text and callback as parmater
 //if validate, the callback is used, other with the confirm is removed
@@ -162,10 +155,8 @@ class ConfirmView {
     validButton: HTMLButtonElement;
     cancelButton: HTMLButtonElement;
 
-    constructor() {
-
-
-    }
+    constructor() {}
+    
     init(): HTMLDivElement {
 
         var messageContainer = document.createElement("div");

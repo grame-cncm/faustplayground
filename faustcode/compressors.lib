@@ -1,20 +1,5 @@
 //#################################### compressors.lib ####################################
-// A library of compressor effects.
-//
-// It should be used using the `co` environment:
-//
-// ```
-// co = library("compressors.lib");
-// process = co.functionCall;
-// ```
-//
-// Another option is to import `stdfaust.lib` which already contains the `co`
-// environment:
-//
-// ```
-// import("stdfaust.lib");
-// process = co.functionCall;
-// ```
+// A library of compressor effects. Its official prefix is `co`.
 //########################################################################################
 
 /************************************************************************
@@ -60,7 +45,7 @@ declare version "0.0";
 //=============================Functions Reference========================================
 //========================================================================================
 
-//--------------------`compressor_mono`-------------------
+//--------------------`(co.)compressor_mono`-------------------
 // Mono dynamic range compressors.
 // `compressor_mono` is a standard Faust function
 //
@@ -88,7 +73,7 @@ declare version "0.0";
 compressor_mono(ratio,thresh,att,rel,x) = x * compression_gain_mono(ratio,thresh,att,rel,x);
 
 
-//--------------------`compressor_stereo`-------------------
+//--------------------`(co.)compressor_stereo`-------------------
 // Stereo dynamic range compressors.
 //
 // #### Usage
@@ -130,7 +115,7 @@ with {
 };
 
 
-//----------------`limiter_1176_R4_mono`----------------------
+//----------------`(co.)limiter_1176_R4_mono`----------------------
 // A limiter guards against hard-clipping.  It can be can be
 // implemented as a compressor having a high threshold (near the
 // clipping level), fast attack and release, and high ratio.  Since
@@ -161,7 +146,7 @@ with {
 limiter_1176_R4_mono = compressor_mono(4,-6,0.0008,0.5);
 
 
-//-------------------`limiter_1176_R4_stereo`---------------------
+//-------------------`(co.)limiter_1176_R4_stereo`---------------------
 // A limiter guards against hard-clipping.  It can be can be
 // implemented as a compressor having a high threshold (near the
 // clipping level), fast attack and release, and high ratio.  Since
@@ -189,4 +174,3 @@ limiter_1176_R4_mono = compressor_mono(4,-6,0.0008,0.5);
 //------------------------------------------------------------
 // TODO: author JOS, revised by RM
 limiter_1176_R4_stereo = compressor_stereo(4,-6,0.0008,0.5);
-

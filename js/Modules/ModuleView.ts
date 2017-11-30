@@ -14,14 +14,12 @@
 
 /// <reference path="../Utilitary.ts"/>
 
-
 interface HTMLfEdit extends HTMLDivElement {
     area: HTMLTextAreaElement;
 }
 interface HTMLinterfaceElement extends HTMLElement {
     label: string;
 }
-
 
 class ModuleView {
     inputOutputNodeDimension: number = 32;
@@ -40,9 +38,7 @@ class ModuleView {
     x: number;
     y: number;
 
-
     createModuleView(ID: number, x: number, y: number, name: string, htmlParent: HTMLElement): void {
-
 
         //------- GRAPHICAL ELEMENTS OF MODULE
         var fModuleContainer = document.createElement("div");
@@ -105,14 +101,10 @@ class ModuleView {
 
             fFooter.appendChild(fEditImg);
             fModuleContainer.appendChild(fFooter);
-
-
-
         }
 
         htmlParent.appendChild(fModuleContainer);
-        
-
+   
         this.fName = name;
         this.fModuleContainer = fModuleContainer;
         this.fInterfaceContainer = fInterfaceContainer;
@@ -161,11 +153,9 @@ class ModuleView {
         if (this.fOutputNode) {
             this.fModuleContainer.removeChild(this.fOutputNode);
             this.fOutputNode = null;
-
         }
     }
 
- 
     isPointInOutput(x: number, y: number): boolean {
 
         if (this.fOutputNode && this.fOutputNode.getBoundingClientRect().left < x && x < this.fOutputNode.getBoundingClientRect().right && this.fOutputNode.getBoundingClientRect().top < y && y < this.fOutputNode.getBoundingClientRect().bottom) {

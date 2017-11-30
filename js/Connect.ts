@@ -30,12 +30,14 @@ class Connector {
 
     // connect input node to device input
     connectInput(inputModule: ModuleClass, divSrc: IHTMLDivElementSrc): void {
-        divSrc.audioNode.connect(inputModule.moduleFaust.getDSP().getProcessor());
+    	// SL 30/11
+        divSrc.audioNode.connect(inputModule.moduleFaust.getDSP());
     }
 
     //connect output to device output
     connectOutput(outputModule: ModuleClass, divOut: IHTMLDivElementOut): void {
-        outputModule.moduleFaust.getDSP().getProcessor().connect(divOut.audioNode);
+    	// SL 30/11
+        outputModule.moduleFaust.getDSP().connect(divOut.audioNode);
     }
     // Connect Nodes in Web Audio Graph
     connectModules(source: ModuleClass, destination: ModuleClass): void {
@@ -48,8 +50,9 @@ class Connector {
             sourceDSP = source.moduleFaust.getDSP();
         }
 
-        if (sourceDSP.getProcessor && destinationDSP.getProcessor()) {
-            sourceDSP.getProcessor().connect(destinationDSP.getProcessor())
+		// SL 30/11
+        if (sourceDSP && destinationDSP) {
+            sourceDSP.connect(destinationDSP)
         }
         source.setDSPValue();
         destination.setDSPValue();
@@ -65,10 +68,10 @@ class Connector {
 
         if (sourceCopy != undefined && sourceCopy.moduleFaust.getDSP) {
             sourceCopyDSP = sourceCopy.moduleFaust.getDSP();
-            sourceCopyDSP.getProcessor().disconnect();
+            // SL 30/11
+            sourceCopyDSP.disconnect();
         }
-        
-		
+    	
         // Reconnect all disconnected connections (because disconnect API cannot break a single connection)
         if (source!=undefined&&source.moduleFaust.getOutputConnections()) {
             for (var i = 0; i < source.moduleFaust.getOutputConnections().length; i++){

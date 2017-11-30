@@ -6,7 +6,6 @@
 // Update the acc metadata associated to <name> in <faustcode>. Returns the updated faust code
 //==============================================================================================
 
-
 // Iterate into faust code to find next path-string.
 class PathIterator
 {

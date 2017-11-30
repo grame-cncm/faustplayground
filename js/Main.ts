@@ -1,10 +1,6 @@
 /*				MAIN.JS
 	Entry point of the Program
     intefaces used through the app
-
-
-
-
 */
 
 /// <reference path="App.ts"/>
@@ -13,12 +9,9 @@
 "use strict";
 
 //listner on load of all element to init the app
-window.addEventListener('load', init, false);
 
-
-
-
-
+//SL 30/11
+//window.addEventListener('load', init, false);
 
 //initialization af the app, create app and ressource to get text with correct localization
 //then resumeInit on callback when text is loaded
@@ -50,7 +43,6 @@ function resumeInit(app: App) {
     Utilitary.driveApi = new DriveAPI();
     app.menu.setDriveApi(Utilitary.driveApi);
     Utilitary.driveApi.checkAuth();
-
 
     //error catcher
     window.addEventListener("error", (e: ErrorEvent) => {
