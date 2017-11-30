@@ -1,13 +1,11 @@
 /*				CONNECT.JS
 	Handles Audio/Graphical Connection/Deconnection of modules
 	This is a historical file from Chris Wilson, modified for Faust ModuleClass needs.	
-		
 */
 
 /// <reference path="Modules/ModuleClass.ts"/>
 /// <reference path="Utilitary.ts"/>
 /// <reference path="Dragging.ts"/>
-
 
 "use strict";
 
@@ -30,13 +28,11 @@ class Connector {
 
     // connect input node to device input
     connectInput(inputModule: ModuleClass, divSrc: IHTMLDivElementSrc): void {
-    	// SL 30/11
         divSrc.audioNode.connect(inputModule.moduleFaust.getDSP());
     }
 
     //connect output to device output
     connectOutput(outputModule: ModuleClass, divOut: IHTMLDivElementOut): void {
-    	// SL 30/11
         outputModule.moduleFaust.getDSP().connect(divOut.audioNode);
     }
     // Connect Nodes in Web Audio Graph
@@ -49,8 +45,7 @@ class Connector {
         if (source.moduleFaust.getDSP) {
             sourceDSP = source.moduleFaust.getDSP();
         }
-
-		// SL 30/11
+        
         if (sourceDSP && destinationDSP) {
             sourceDSP.connect(destinationDSP)
         }
@@ -68,7 +63,6 @@ class Connector {
 
         if (sourceCopy != undefined && sourceCopy.moduleFaust.getDSP) {
             sourceCopyDSP = sourceCopy.moduleFaust.getDSP();
-            // SL 30/11
             sourceCopyDSP.disconnect();
         }
     	
@@ -101,8 +95,6 @@ class Connector {
         drag.startDraggingConnection(source, outtarget);
         drag.stopDraggingConnection(source, destination);
     }
-
-
 
     deleteConnection(event: MouseEvent, drag: Drag): boolean {
         event.stopPropagation();

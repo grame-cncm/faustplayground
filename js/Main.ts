@@ -8,10 +8,7 @@
 
 "use strict";
 
-//listner on load of all element to init the app
-
-//SL 30/11
-//window.addEventListener('load', init, false);
+// init is call by libfaust-wasm.js load end handler
 
 //initialization af the app, create app and ressource to get text with correct localization
 //then resumeInit on callback when text is loaded
@@ -74,9 +71,13 @@ function IosInit(){
     // play the file
     if (source.noteOn) {
         source.noteOn(0);
+    } else if (source.start) {
+    	source.start();
     }
     window.removeEventListener('touchend', IosInit, false)
 }
+
+
 
 function IosInit2() {
     var buffer = Utilitary.audioContext.createBuffer(1, 1, 22050);
@@ -89,6 +90,8 @@ function IosInit2() {
     // play the file
     if (source.noteOn) {
         source.noteOn(0);
+    } else if (source.start) {
+    	source.start();
     }
     window.removeEventListener('touchstart', IosInit2, false)
 }

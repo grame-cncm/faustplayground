@@ -133,7 +133,6 @@ interface IfDSP extends AudioNode {
     getNumInputs: () => number;
     getNumOutputs: () => number;
     controls: () => any;
-    // SL 30/11
 }
 
 interface CompileFaust {

@@ -1908,14 +1908,11 @@ var ModuleClass = (function () {
         Connector.redrawOutputConnections(this, this.drag);
     };
     //--- Create and Update are called once a source code is compiled and the factory exists
-    // SL : 30/11
     ModuleClass.prototype.createDSP = function (factory, callback) {
         this.moduleFaust.factory = factory;
         try {
             if (factory != null) {
                 var moduleFaust = this.moduleFaust;
-                // SL : 30/11
-                //this.moduleFaust.fDSP = faust.createDSPInstance(factory, Utilitary.audioContext, 1024);
                 faust.createDSPInstance(factory, Utilitary.audioContext, 1024, function (dsp) { moduleFaust.fDSP = dsp; callback(); });
             }
             else {
@@ -1939,7 +1936,6 @@ var ModuleClass = (function () {
         module.deleteFaustInterface();
         module.moduleView.deleteInputOutputNodes();
         // Create new one
-        // SL 30/11
         module.createDSP(factory, function () {
             module.moduleFaust.fName = module.moduleFaust.fTempName;
             module.moduleFaust.fSource = module.moduleFaust.fTempSource;
@@ -2161,7 +2157,6 @@ ModuleClass.isNodesModuleUnstyle = true;
 /*				CONNECT.JS
     Handles Audio/Graphical Connection/Deconnection of modules
     This is a historical file from Chris Wilson, modified for Faust ModuleClass needs.
-        
 */
 /// <reference path="Modules/ModuleClass.ts"/>
 /// <reference path="Utilitary.ts"/>
@@ -2172,12 +2167,10 @@ var Connector = (function () {
     }
     // connect input node to device input
     Connector.prototype.connectInput = function (inputModule, divSrc) {
-        // SL 30/11
         divSrc.audioNode.connect(inputModule.moduleFaust.getDSP());
     };
     //connect output to device output
     Connector.prototype.connectOutput = function (outputModule, divOut) {
-        // SL 30/11
         outputModule.moduleFaust.getDSP().connect(divOut.audioNode);
     };
     // Connect Nodes in Web Audio Graph
@@ -2190,7 +2183,6 @@ var Connector = (function () {
         if (source.moduleFaust.getDSP) {
             sourceDSP = source.moduleFaust.getDSP();
         }
-        // SL 30/11
         if (sourceDSP && destinationDSP) {
             sourceDSP.connect(destinationDSP);
         }
@@ -2205,7 +2197,6 @@ var Connector = (function () {
         // Searching for src/dst DSP if existing
         if (sourceCopy != undefined && sourceCopy.moduleFaust.getDSP) {
             sourceCopyDSP = sourceCopy.moduleFaust.getDSP();
-            // SL 30/11
             sourceCopyDSP.disconnect();
         }
         // Reconnect all disconnected connections (because disconnect API cannot break a single connection)
@@ -3121,9 +3112,6 @@ var Scene = (function () {
                 moduleFaust.integrateInput();
             });
         }
-        // SL 30/11
-        //this.fAudioOutput.addInputOutputNodes();
-        //this.integrateInput();
     };
     Scene.prototype.integrateAudioInput = function (factory) {
         if (this.fAudioInput) {
@@ -3136,10 +3124,6 @@ var Scene = (function () {
                 moduleFaust.isInitLoading = false;
             });
         }
-        // SL 30/11
-        //this.fAudioInput.addInputOutputNodes();
-        //Utilitary.hideFullPageLoading();
-        //this.isInitLoading = false;
     };
     Scene.prototype.getAudioOutput = function () { return this.fAudioOutput; };
     Scene.prototype.getAudioInput = function () { return this.fAudioInput; };
@@ -3340,7 +3324,6 @@ var Scene = (function () {
             }
             var module = new ModuleClass(Utilitary.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), function (module) { _this.removeModule(module); }, this.compileFaust);
             module.moduleFaust.setSource(this.tempModuleSourceCode);
-            // SL 30/11
             module.createDSP(factory, function () {
                 module.patchID = this.tempPatchId;
                 if (this.tempParams) {
@@ -5689,7 +5672,6 @@ var App = (function () {
         }
         var module = new ModuleClass(Utilitary.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), function (module) { Utilitary.currentScene.removeModule(module); }, this.compileFaust);
         module.moduleFaust.setSource(this.tempModuleSourceCode);
-        // SL 30/11
         module.createDSP(factory, function () {
             var _this = this;
             module.setFaustInterfaceControles();
@@ -5930,8 +5912,7 @@ var App = (function () {
             document.getElementById("svgCanvas").style.height = "100%";
         }
     };
-    App.prototype.errorCallBack = function (message) {
-    };
+    App.prototype.errorCallBack = function (message) { };
     return App;
 }());
 /*				MAIN.JS
@@ -5941,9 +5922,7 @@ var App = (function () {
 /// <reference path="App.ts"/>
 /// <reference path="Messages.ts"/>
 "use strict";
-//listner on load of all element to init the app
-//SL 30/11
-//window.addEventListener('load', init, false);
+// init is call by libfaust-wasm.js load end handler
 //initialization af the app, create app and ressource to get text with correct localization
 //then resumeInit on callback when text is loaded
 function init() {
@@ -5998,6 +5977,9 @@ function IosInit() {
     if (source.noteOn) {
         source.noteOn(0);
     }
+    else if (source.start) {
+        source.start();
+    }
     window.removeEventListener('touchend', IosInit, false);
 }
 function IosInit2() {
@@ -6009,6 +5991,9 @@ function IosInit2() {
     // play the file
     if (source.noteOn) {
         source.noteOn(0);
+    }
+    else if (source.start) {
+        source.start();
     }
     window.removeEventListener('touchstart', IosInit2, false);
 }

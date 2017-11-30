@@ -152,9 +152,6 @@ class Scene {
             	moduleFaust.integrateInput(); 
             });
         }
-        // SL 30/11
-        //this.fAudioOutput.addInputOutputNodes();
-        //this.integrateInput();
     }
     
     private integrateAudioInput(factory: Factory): void {
@@ -168,12 +165,7 @@ class Scene {
         		moduleFaust.isInitLoading = false;
         	});
         }
-        
-        // SL 30/11
-        //this.fAudioInput.addInputOutputNodes();
-        //Utilitary.hideFullPageLoading();
-        //this.isInitLoading = false;
-    }
+  }
 
     getAudioOutput(): ModuleClass { return this.fAudioOutput; }
     getAudioInput(): ModuleClass { return this.fAudioInput; }
@@ -393,7 +385,6 @@ class Scene {
 
             var module: ModuleClass = new ModuleClass(Utilitary.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), (module) => {this.removeModule(module) }, this.compileFaust);
             module.moduleFaust.setSource(this.tempModuleSourceCode);
-            // SL 30/11
             module.createDSP(factory, function() {
             	module.patchID = this.tempPatchId;
             	if (this.tempParams) {

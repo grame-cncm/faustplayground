@@ -170,14 +170,11 @@ class ModuleClass  {
     }
 	
     //--- Create and Update are called once a source code is compiled and the factory exists
-    // SL : 30/11
     createDSP(factory: Factory, callback: DSPCallback): void {
         this.moduleFaust.factory = factory;
         try {
             if (factory != null) {
             	var moduleFaust = this.moduleFaust;
-            	// SL : 30/11
-                //this.moduleFaust.fDSP = faust.createDSPInstance(factory, Utilitary.audioContext, 1024);
                 faust.createDSPInstance(factory, Utilitary.audioContext, 1024, function(dsp) { moduleFaust.fDSP = dsp; callback(); });
             } else {
                 throw new Error("create DSP Error factory null")
@@ -205,8 +202,7 @@ class ModuleClass  {
         module.moduleView.deleteInputOutputNodes();	
  		
         // Create new one
-		// SL 30/11
-        module.createDSP(factory, function() {
+		module.createDSP(factory, function() {
         	module.moduleFaust.fName = module.moduleFaust.fTempName;
         	module.moduleFaust.fSource = module.moduleFaust.fTempSource
         	module.setFaustInterfaceControles()
