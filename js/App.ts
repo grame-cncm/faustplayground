@@ -100,7 +100,7 @@ class App {
     /********************************************************************
     ****************  CREATE FAUST FACTORIES AND MODULES ****************
     ********************************************************************/
-    
+
     compileFaust(compileFaust: CompileFaust) {
 
         //  Temporarily Saving parameters of compilation
@@ -114,7 +114,8 @@ class App {
         if (currentScene) { currentScene.muteScene() };
 
         //locate libraries used in libfaust compiler
-        var args: string[] = ["-I", location.origin + "/faustplayground/faustcode/"];
+        var libpath = location.origin + location.pathname.substring(0, location.pathname.lastIndexOf('/')) + "/faustcode/";
+        var args: string[] = ["-I", libpath];
 
         //try to create the asm.js code/factory with the faust code given. Then callback to function passing the factory.
         try {
@@ -122,7 +123,7 @@ class App {
         } catch (error) {
             new Message(error)
         }
-        
+
         if (currentScene) { currentScene.unmuteScene() };
 
     }
@@ -134,7 +135,7 @@ class App {
         if (!factory) {
             new Message(Utilitary.messageRessource.errorFactory + faust.getErrorMessage());
             Utilitary.hideFullPageLoading();
-            return null;
+            //return null;
         }
 
         var module: ModuleClass = new ModuleClass(Utilitary.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), (module) => { Utilitary.currentScene.removeModule(module) }, this.compileFaust);
@@ -160,7 +161,7 @@ class App {
             module.moduleView.fModuleContainer.style.opacity = "0.5";
             module.moduleView.fModuleContainer.style.boxShadow = "0 5px 10px rgba(0, 0, 0, 0.4)";
         }
-        // the current scene add the module and hide the loading page 
+        // the current scene add the module and hide the loading page
         Utilitary.currentScene.addModule(module);
         if (!Utilitary.currentScene.isInitLoading) {
             Utilitary.hideFullPageLoading()
@@ -173,7 +174,7 @@ class App {
     ********************************************************************/
 
     //-- custom event to load file from the load menu with the file explorer
-    //Init drag and drop reactions, scroll event and body resize event to resize svg element size, 
+    //Init drag and drop reactions, scroll event and body resize event to resize svg element size,
     // add custom double touch event to load dsp from the library menu
     setGeneralAppListener(app: App): void {
 
@@ -181,8 +182,8 @@ class App {
         document.addEventListener("fileload", (e: CustomEvent) => { this.loadFileEvent(e) })
 
         //All drog and drop events
-        window.ondragover = function () { this.className = 'hover'; return false; };
-        window.ondragend = function () { this.className = ''; return false; };
+        window.ondragover = function () { return false; };
+        window.ondragend  = function () { return false; };
         document.ondragstart = () => { this.styleOnDragStart() };
         document.ondragenter = (e) => {
             var srcElement = <HTMLElement>e.srcElement
@@ -227,31 +228,31 @@ class App {
     uploadOn(app: App, module: ModuleClass, x: number, y: number, e: DragEvent) {
         Utilitary.showFullPageLoading();
         e.preventDefault();
-        
+
         if (e.dataTransfer.files.length > 0) {
 			// we are dropping a file
 			for (var i = 0; i < e.dataTransfer.files.length; i = i + 1) {
 				var f = e.dataTransfer.files[i];
 				console.log("FILES DROP : "+ i + " : " + f.name);
-                this.loadFile(f, module, x+10*i, y+10*i); 
+                this.loadFile(f, module, x+10*i, y+10*i);
 			}
-            
+
 		} else if (e.dataTransfer.getData('URL') && e.dataTransfer.getData('URL').split(':').shift() != "file") {
             // CASE 1 : the dropped object is a url to some faust code
             var url = e.dataTransfer.getData('URL');
             console.log("URL DROP : "+ url);
             this.uploadUrl(app, module, x, y, url);
-            
+
         } else if (e.dataTransfer.getData('URL').split(':').shift() != "file") {
             var dsp_code: string = e.dataTransfer.getData('text');
-            console.log("Text DROP : " + dsp_code);            
+            console.log("Text DROP : " + dsp_code);
             // CASE 2 : the dropped object is some faust code
             if (dsp_code) {
-                 console.log("DROP: CASE 2 ");   
+                 console.log("DROP: CASE 2 ");
                 this.uploadCodeFaust(app, module, x, y, e, dsp_code);
             } else {
                 // CASE 3 : the dropped object is a file containing some faust code or jfaust/json
-                console.log("DROP: CASE 3 ");   
+                console.log("DROP: CASE 3 ");
                 try {
                     this.uploadFileFaust(app, module, x, y, e, dsp_code);
                 } catch (error) {
@@ -259,9 +260,9 @@ class App {
                     Utilitary.hideFullPageLoading();
                 }
             }
-            
+
         } else { // CASE 4 : any other strange thing
-            console.log("DROP: CASE 4 STRANGE ");   
+            console.log("DROP: CASE 4 STRANGE ");
             new Message(Utilitary.messageRessource.errorObjectNotFaustCompatible);
             Utilitary.hideFullPageLoading();
         }
@@ -297,7 +298,7 @@ class App {
     uploadFileFaust(app: App, module: ModuleClass, x: number, y: number, e: DragEvent, dsp_code: string) {
         var files: FileList = e.dataTransfer.files;
         var file: File = files[0];
-        this.loadFile(file, module, x, y); 
+        this.loadFile(file, module, x, y);
     }
 
     //Load file dsp or jfaust
@@ -314,7 +315,7 @@ class App {
         if (ext == "dsp") {
             type = "dsp";
             reader.readAsText(file);
-          
+
         }
         else if (ext == "json"||ext=="jfaust") {
             type = "json";
@@ -380,7 +381,7 @@ class App {
 
     //manage the window size
     checkRealWindowSize() {
-        
+
         if (window.scrollX > 0) {
             console.log(document.getElementsByTagName("html")[0]);
             document.getElementsByTagName("html")[0].style.width = window.innerWidth + window.scrollX + "px";
@@ -398,7 +399,7 @@ class App {
         } else {
             document.getElementsByTagName("html")[0].style.height = "100%";
             document.getElementById("svgCanvas").style.height = "100%";
-        } 
+        }
     }
 
 
