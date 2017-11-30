@@ -2591,7 +2591,7 @@ var ExportView = /** @class */ (function () {
         var fwurl = document.createElement("input");
         fwurl.id = "faustweburl";
         fwurl.className = "inputExport";
-        fwurl.value = "http://faustservice.grame.fr";
+        fwurl.value = "https://faustservice.grame.fr";
         this.inputServerUrl = fwurl;
         urlDiv.appendChild(fwurl);
         var exportChoiceDiv = document.createElement('div');
@@ -2813,8 +2813,8 @@ var Export = /** @class */ (function () {
     Export.prototype.renameScene = function () {
         Scene.rename(this.exportView.inputNameApp, this.exportView.rulesName, this.exportView.dynamicName);
     };
-    Export.exportUrl = "http://faustservice.grame.fr";
-    Export.targetsUrl = "http://faustservice.grame.fr/targets";
+    Export.exportUrl = "https://faustservice.grame.fr";
+    Export.targetsUrl = "https://faustservice.grame.fr/targets";
     return Export;
 }());
 var SceneView = /** @class */ (function () {

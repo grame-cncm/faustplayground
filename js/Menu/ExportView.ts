@@ -33,7 +33,7 @@ class ExportView {
         var exportResultContainer: HTMLElement = document.createElement("div");
         exportResultContainer.id = "exportResultContainer";
         exportResultContainer.className = "exportSubmenu";
-         
+
 
 
 
@@ -115,7 +115,7 @@ class ExportView {
         var fwurl: HTMLInputElement = document.createElement("input");
         fwurl.id = "faustweburl";
         fwurl.className = "inputExport";
-        fwurl.value = "http://faustservice.grame.fr";
+        fwurl.value = "https://faustservice.grame.fr";
         this.inputServerUrl = fwurl;
 
         urlDiv.appendChild(fwurl);
@@ -178,7 +178,7 @@ class ExportView {
 
 
         exportResultContainer.appendChild(exportResultTitle);
-    
+
 
         exportContainer.appendChild(nameAppContainer);
         exportContainer.appendChild(exportOptionContainer);
