@@ -2,18 +2,16 @@
 /// <reference path="Lib/qrcode.d.ts"/>
 
 
-"use strict"
-
 /************************************************************
 ***************** Interface to FaustWeb *********************
 ************************************************************/
 class ExportLib{
-   
+
     //--- Send asynchronous POST request to FaustWeb to compile a faust DSP
     // @exportUrl : url of FaustWeb service to target
     // @name : name of DSP to compile
     // @source_code : Faust code to compile
-    // @callback : function called once request succeeded 
+    // @callback : function called once request succeeded
     // 				- @param : the sha key corresponding to source_code
     static getSHAKey(exportUrl:string, name:string, source_code:string, callback:(shaKey:string)=>any, errCallback?):void
     {
@@ -23,7 +21,7 @@ class ExportLib{
 
         var params: FormData = new FormData();
         params.append('file', file);
-        var urlToTarget: string = exportUrl + "/filepost";	
+        var urlToTarget: string = exportUrl + "/filepost";
 	    newRequest.open("POST", urlToTarget, true);
 
 	    newRequest.onreadystatechange = function() {
@@ -32,20 +30,20 @@ class ExportLib{
 		    else if (newRequest.readyState == 4 && newRequest.status == 400)
 			    errCallback(newRequest.responseText);
 	    }
-				
+
 	    newRequest.send(params);
-    }	
-	
-    //--- Send asynchronous GET request to precompile target 
+    }
+
+    //--- Send asynchronous GET request to precompile target
     // @exportUrl : url of FaustWeb service to target
     // @sha : sha key of DSP to precompile
     // @platform/architecture : platform/architecture to precompile
-    // @callback : function called once request succeeded 
-    // 				- @param : the sha key 
+    // @callback : function called once request succeeded
+    // 				- @param : the sha key
     sendPrecompileRequest(exportUrl: string, sha: string, platforme: string, architecture: string, appType: string, callback: (serverUrl: string, shaKey: string, plateforme: string, architecture: string, appType: string)=>any)
     {
         var getrequest: XMLHttpRequest = new XMLHttpRequest();
-				
+
 	    getrequest.onreadystatechange = function() {
             if (getrequest.readyState == 4) {
                 callback(exportUrl, sha, platforme, architecture, appType);
@@ -53,12 +51,12 @@ class ExportLib{
 	    }
 
         var compileUrl: string = exportUrl + "/" + sha + "/" + platforme + "/" + architecture + "/precompile";
-				
+
 	    getrequest.open("GET", compileUrl, true);
 	    getrequest.send(null);
     }
 
-    //--- Transform target 
+    //--- Transform target
     // WARNING = THIS FUNCTION REQUIRES QRCODE.JS TO BE INCLUDED IN YOUR HTML FILE
     // @exportUrl : url of FaustWeb service to target
     // @sha : sha key of DSP
@@ -69,7 +67,7 @@ class ExportLib{
 	    var downloadString = url + "/" + sha + "/" + plateform + "/" + architecture + "/" + target;
 	    var whiteContainer = document.createElement('div');
 	    whiteContainer.style.cssText = "width:" + size.toString() + "px; height:" + size.toString() + "px; background-color:white; position:relative; margin-left:auto; margin-right:auto; padding:3px;";
-	
+
 	    var qqDiv = document.createElement('qrcode');
         var qq = new QRCode(qqDiv, {
     	    text: downloadString,
@@ -104,7 +102,7 @@ class ExportLib{
     {
 	    var architectures:string[] = [];
 	    var data = JSON.parse(json);
-		
-	    return data[platform];		
+
+	    return data[platform];
     }
 }

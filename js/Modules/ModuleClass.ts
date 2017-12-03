@@ -1,6 +1,6 @@
 /*				MODULECLASS.JS
 	HAND-MADE JAVASCRIPT CLASS CONTAINING A FAUST MODULE AND ITS INTERFACE
-			
+
 */
 
 /// <reference path="../Dragging.ts"/>
@@ -12,8 +12,6 @@
 /// <reference path="ModuleView.ts"/>
 
 interface DSPCallback 	{ (): void; }
-
-"use strict";
 
 class ModuleClass  {
     static isNodesModuleUnstyle: boolean = true;
@@ -116,7 +114,7 @@ class ModuleClass  {
             module.dragList[index].getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module, e) => { module.dragList[index].startDraggingConnector(el, x, y, module, e) });
 
         } else if (event.type == "touchmove") {
-            
+
             for (var i = 0; i < module.dragList.length; i++) {
                 if (module.dragList[i].originTarget == event.target) {
                     module.dragList[i].getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module, e) => { module.dragList[i].whileDraggingConnector(el, x, y, module, e) })
@@ -140,8 +138,8 @@ class ModuleClass  {
         var connector: Connector = new Connector()
         connector.disconnectModule(this);
 
-        this.deleteFaustInterface();	
-    
+        this.deleteFaustInterface();
+
         // Then delete the visual element
         if (this.moduleView)
             this.moduleView.fModuleContainer.parentNode.removeChild(this.moduleView.fModuleContainer);
@@ -168,7 +166,7 @@ class ModuleClass  {
         Connector.redrawInputConnections(this, this.drag);
         Connector.redrawOutputConnections(this, this.drag);
     }
-	
+
     //--- Create and Update are called once a source code is compiled and the factory exists
     createDSP(factory: Factory, callback: DSPCallback): void {
         this.moduleFaust.factory = factory;
@@ -185,22 +183,22 @@ class ModuleClass  {
         }
     }
 
-    //--- Update DSP in module 
+    //--- Update DSP in module
     private updateDSP(factory: Factory, module: ModuleClass): void {
 
         var toDelete: IfDSP = module.moduleFaust.fDSP;
-	
+
         // 	Save Cnx
         var saveOutCnx: Connector[] = new Array().concat(module.moduleFaust.fOutputConnections);
         var saveInCnx: Connector[] = new Array().concat(module.moduleFaust.fInputConnections);
-			
-        // Delete old ModuleClass 
+
+        // Delete old ModuleClass
         var connector: Connector = new Connector();
         connector.disconnectModule(module);
 
         module.deleteFaustInterface();
-        module.moduleView.deleteInputOutputNodes();	
- 		
+        module.moduleView.deleteInputOutputNodes();
+
         // Create new one
 		module.createDSP(factory, function() {
         	module.moduleFaust.fName = module.moduleFaust.fTempName;
@@ -264,7 +262,7 @@ class ModuleClass  {
         var module: ModuleClass = this;
         this.compileFaust({ name: name, sourceCode: code, x: this.moduleView.x, y: this.moduleView.y, callback: (factory) => { module.updateDSP(factory, module) }});
     }
-	
+
     //---- React to recompilation triggered by click on icon
     private recompileSource(event: MouseEvent, module: ModuleClass): void {
         Utilitary.showFullPageLoading();
@@ -282,7 +280,7 @@ class ModuleClass  {
         module.moduleView.fEditImg.removeEventListener("click", this.eventCloseEditHandler);
         module.moduleView.fEditImg.removeEventListener("touchend", this.eventCloseEditHandler);
     }
-	
+
     /***************** CREATE/DELETE the DSP Interface ********************/
 
     // Fill fInterfaceContainer with the DSP's Interface (--> see FaustInterface.js)
@@ -347,9 +345,9 @@ class ModuleClass  {
     updateCodeFaust(details: ElementCodeFaustParser) {
         var m = forgeAccMetadata(details.newAccValue, details.isEnabled);
         var s = updateAccInFaustCode(this.moduleFaust.fSource, details.sliderName, m );
-        this.moduleFaust.fSource = s; 
+        this.moduleFaust.fSource = s;
     }
-    
+
     //---- Generic callback for Faust Interface
     //---- Called every time an element of the UI changes value
     interfaceSliderCallback(faustControler: FaustInterfaceControler): any {
@@ -392,7 +390,7 @@ class ModuleClass  {
         // 	Search for DSP then update the value of its parameter.
         this.moduleFaust.fDSP.setParamValue(text, val.toString());
     }
-	
+
     // Save graphical parameters of a Faust Node
     private saveInterfaceParams(): void {
 
@@ -400,7 +398,7 @@ class ModuleClass  {
         var controls = this.moduleControles;
         for (var j = 0; j < controls.length; j++) {
             var text: string = controls[j].itemParam.address;
-            this.fModuleInterfaceParams[text] = controls[j].value;           
+            this.fModuleInterfaceParams[text] = controls[j].value;
         }
     }
     recallInterfaceParams(): void {
@@ -417,7 +415,7 @@ class ModuleClass  {
     addInterfaceParam(path: string, value: number): void {
         this.fModuleInterfaceParams[path] = value.toString();
     }
-		
+
     /******************* GET/SET INPUT/OUTPUT NODES **********************/
     addInputOutputNodes(): void {
         var module: ModuleClass = this;

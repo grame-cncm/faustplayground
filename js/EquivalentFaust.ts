@@ -1,7 +1,7 @@
 /*				EQUIVALENTFAUST.JS
 
 	HELPER FUNCTIONS TO CREATE FAUST EQUIVALENT EXPRESSION FROM A PATCH
-	
+
 	FIRST PART --> DERECURSIVIZE THE PATCH
 	SECOND PART --> CREATE THE FAUST EQUIVALENT FROM THE "DERECURSIVIZED" PATCH
 */
@@ -9,10 +9,7 @@
 /// <reference path="Modules/ModuleClass.ts"/>
 /// <reference path="Connect.ts"/>
 
-
-"use strict";
-
-/******************************************************************** 
+/********************************************************************
 *************  ALGORITHME DE DÉRECURSIVATION DU PATCH ***************
 ********************************************************************/
 interface IModuleTree {
@@ -53,7 +50,7 @@ class EquivalentFaust {
     }
 
     treatRecursiveModule(moduleTree: ModuleTree):void {
-			
+
         // 	Save recursion in map and flag it
         var ModuleToReplace = this.getFirstOccurenceOfModuleInCourse(moduleTree);
 
@@ -79,7 +76,7 @@ class EquivalentFaust {
         moduleTree.course = [];
 
         if (parent) {
-	
+
             // 		COPY PARENT COURSE
             for (var k = 0; k < parent.course.length; k++)
                 moduleTree.course[k] = parent.course[k];
@@ -99,8 +96,8 @@ class EquivalentFaust {
         else if (this.getFirstOccurenceOfModuleInCourse(moduleTree)) {
 
             this.treatRecursiveModule(moduleTree);
-		
-            // 	Stop Recursion in Tree		
+
+            // 	Stop Recursion in Tree
             moduleTree = null;
         }
         else if (module.patchID == "input") {
@@ -122,7 +119,7 @@ class EquivalentFaust {
         return moduleTree;
     }
 
-    /******************************************************************** 
+    /********************************************************************
     ***********************  CREATE FAUST EQUIVALENT ********************
     ********************************************************************/
 
@@ -138,7 +135,7 @@ class EquivalentFaust {
 
         var moduleInputs: ModuleTree[] = module.moduleInputs;
         var faustResult: string = "";
-	
+
         // Iterate on input Modules to compute them
         if (moduleInputs && moduleInputs.length != 0) {
 
@@ -237,9 +234,9 @@ class EquivalentFaust {
 
             if (dest.moduleFaust.getInputConnections())
                 faustResult += "process = vgroup(\"" + patchName + "\",(" + this.computeModule(destinationDIVVV) + "));";
-		
+
             // 		console.log(faustResult);
-	
+
             return faustResult;
         }
         else
@@ -263,23 +260,23 @@ class EquivalentFaust {
 
 //    function createFaustEquivalent(scene, patchName, parent){
 
-//    // Save All Params	
+//    // Save All Params
 //	    var modules = scene.getModules();
-	
-//	    for (var i = 0; i < modules.length; i++){	
+
+//	    for (var i = 0; i < modules.length; i++){
 //		    if(modules[i])
 //			    modules[i].saveParams();
 //	    }
-	
+
 //    // Concatenate All Params
 //	    var fullParams = new Array();
 
 //	    for (var i = 0; i < modules.length; i++) {
-		
+
 //		    if(modules[i]){
-		
+
 //			    var arrayParams = modules[i].getParams;
-		
+
 //    //   BIDOUILLE!!!!! Adding component wrapping to avoid merging of 2 instances of same factory
 //			    for(key in arrayParams){
 //				    var newKey = "/" + patchName /*+ "/component" + i.toString()*/ + key;
@@ -288,17 +285,17 @@ class EquivalentFaust {
 //		    }
 //	    }
 
-//    // THIS SHOULD BE DONE BUT FOR NOW IT CAUSED A PROBLEM, I CAN'T REMEMBER WHICH... 
+//    // THIS SHOULD BE DONE BUT FOR NOW IT CAUSED A PROBLEM, I CAN'T REMEMBER WHICH...
 //    // 	wrapSourceCodesInGroups();
-	
+
 //	    var faustResult = getFaustEquivalent(scene, patchName);
-	
+
 //	    if(faustResult){
 
 //    // Save concatenated params in new DIV
 
 //		    var DSP = createDSP(faustResult);
-					
+
 //		    if(DSP){
 
 //			    var faustModule = createModule(idX++, document.body.scrollWidth/3, document.body.scrollHeight/3, patchName, parent, window.scenes[2].removeModule);

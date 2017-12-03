@@ -1,15 +1,14 @@
 ﻿/*				PLAYGROUND.JS
 	Init Normal Scene with all its graphical elements
 
-	This is the unique scene of the Normal Playground	
+	This is the unique scene of the Normal Playground
 */
 /// <reference path="../Scenes/SceneClass.ts"/>
 /// <reference path="../Menu/Export.ts"/>
 
-"use strict";
 class SceneView {
 
-/******************************************************************** 
+/********************************************************************
 **************************  INITIALIZATION **************************
 ********************************************************************/
     //expor: Export = new Export()
@@ -21,7 +20,7 @@ class SceneView {
     initNormalScene(scene: Scene) {
         var container = document.createElement("div");
         container.id = "Normal";
-    
+
         var svgCanvas = <SVGElement>document.createElementNS("http://www.w3.org/2000/svg", "svg");
         svgCanvas.id = "svgCanvas";
         container.appendChild(svgCanvas);
@@ -74,7 +73,7 @@ class SceneView {
         imageLogo.className = "logoGrame";
         imageLogo.src = "img/grame.png";
         imageDiv.appendChild(imageLogo);
-        
+
         var dropElementScene = document.createElement("div");
         dropElementScene.className = "dropElementGraph";
         dropElementScene.style.display = "none";
@@ -84,7 +83,7 @@ class SceneView {
         dropElementText.textContent = Utilitary.messageRessource.drop;
         dropElementText.className = "dropElementText";
         dropElementScene.appendChild(dropElementText);
-        
+
         container.appendChild(dropElementScene);
         this.fSceneContainer = container;
         var playgroundView: SceneView = this;

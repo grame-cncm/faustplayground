@@ -6,8 +6,6 @@
 /// <reference path="App.ts"/>
 /// <reference path="Messages.ts"/>
 
-"use strict";
-
 // init is call by libfaust-wasm.js load end handler
 
 //initialization af the app, create app and ressource to get text with correct localization
@@ -29,7 +27,7 @@ function resumeInit(app: App) {
         Utilitary.hideFullPageLoading();
     }
     Utilitary.addFullPageLoading();
-    
+
     app.createAllScenes();
     app.createMenu();
 

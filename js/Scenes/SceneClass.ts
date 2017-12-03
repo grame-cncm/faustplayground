@@ -8,8 +8,6 @@
 /// <reference path="../Messages.ts"/>
 /// <reference path="SceneView.ts"/>
 
-"use strict";
-
 class Scene {
     //temporary arrays used to recall a scene from a jfaust file
     arrayRecalScene: JsonSaveModule[] = [];
@@ -132,7 +130,7 @@ class Scene {
         var scene: Scene = this;
         this.compileFaust({ name:"input", sourceCode:"process=_,_;", x:positionInput.x, y:positionInput.y, callback:(factory)=>{ scene.integrateAudioInput(factory) }});
     }
-    
+
     integrateOutput() {
         var positionOutput: PositionModule = this.positionOutputModule();
         var scene: Scene = this;
@@ -149,11 +147,11 @@ class Scene {
             this.fAudioOutput.createDSP(factory, function() {
             	moduleFaust.activateAudioOutput(moduleFaust.fAudioOutput);
             	moduleFaust.fAudioOutput.addInputOutputNodes();
-            	moduleFaust.integrateInput(); 
+            	moduleFaust.integrateInput();
             });
         }
     }
-    
+
     private integrateAudioInput(factory: Factory): void {
         if (this.fAudioInput) {
             this.fAudioInput.moduleFaust.setSource("process=_,_;");

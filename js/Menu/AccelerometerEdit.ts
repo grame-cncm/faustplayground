@@ -2,7 +2,6 @@
    /// <reference path="../Accelerometer.ts"/>
    /// <reference path="AccelerometerEditView.ts"/>
 
-"use strict";
 
 
 class AccelerometerEdit {
@@ -52,10 +51,10 @@ class AccelerometerEdit {
 
     }
     //function used when starting or stoping editing mode
-    //setting sider with event to edit it 
+    //setting sider with event to edit it
     editAction() {
         if (this.isOn) {
-            
+
             for (var i = 0; i < AccelerometerHandler.faustInterfaceControler.length; i++) {
                 var currentIFControler = AccelerometerHandler.faustInterfaceControler[i]
                 if (currentIFControler.faustInterfaceView.group) {
@@ -72,7 +71,7 @@ class AccelerometerEdit {
             Utilitary.isAccelerometerEditOn = false;
         } else {
             for (var i = 0; i < AccelerometerHandler.faustInterfaceControler.length; i++) {
-               var currentIFControler = AccelerometerHandler.faustInterfaceControler[i]                
+               var currentIFControler = AccelerometerHandler.faustInterfaceControler[i]
                 if (currentIFControler.faustInterfaceView.group) {
                     currentIFControler.callbackEdit = this.editEvent.bind(this, currentIFControler);
                     currentIFControler.faustInterfaceView.group.addEventListener("click", currentIFControler.callbackEdit, true);
@@ -140,7 +139,7 @@ class AccelerometerEdit {
         //storing original slider and output element
         this.originalSlider = faustView.slider;
         this.originalValueOutput = faustView.output;
-        //cloning and creating elements 
+        //cloning and creating elements
         this.currentParentElemSliderClone = <HTMLElement>faustView.group.cloneNode(true);
         var title = document.createElement("h6");
         title.textContent = faustIControler.name;
@@ -233,7 +232,7 @@ class AccelerometerEdit {
             this.faustView.slider.disabled = false
 
         }
-        
+
     }
     //Place graphical element of the editing view
     placeElement() {
@@ -304,8 +303,8 @@ class AccelerometerEdit {
             default:
                 this.accelerometerEditView.radioCurve1.checked = true;
                 break;
-        }  
-    } 
+        }
+    }
 
     //set axis to the good radio button axis
     selectDefaultAxis(accSlider: AccelerometerSlider) {
@@ -372,7 +371,7 @@ class AccelerometerEdit {
         acc.isActive = true;
 
     }
-    //copy params of the accSlider 
+    //copy params of the accSlider
     copyParamsAccSlider(accSlider: AccelerometerSlider) {
         this.accParams = {
             isEnabled: accSlider.isEnabled,
