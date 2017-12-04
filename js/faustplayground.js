@@ -5437,7 +5437,7 @@ class App {
         }
         ;
         //locate libraries used in libfaust compiler
-        var libpath = location.origin + location.pathname.substring(0, location.pathname.lastIndexOf('/')) + "/faustcode/";
+        var libpath = location.origin + location.pathname.substring(0, location.pathname.lastIndexOf('/')) + "/faustlibraries/";
         var args = ["-I", libpath];
         //try to create the asm.js code/factory with the faust code given. Then callback to function passing the factory.
         try {
