@@ -167,20 +167,17 @@ class Scene {
 ********************************************************************/
 
     activateAudioInput(): void {
-
-        var navigatorLoc: Navigator = navigator;
-
-        if (navigatorLoc.getUserMedia) {
-            navigatorLoc.getUserMedia({ audio: true }, (mediaStream) => { this.getDevice(mediaStream) },  (e)=>{
+        navigator.mediaDevices.getUserMedia({ audio: true })
+        .then (
+            (mediaStream) => { this.getDevice(mediaStream) }
+        ).catch (
+            (err) => {
+                console.error(err);
                 this.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)"
                 this.fAudioInput.moduleView.fInterfaceContainer.title = Utilitary.messageRessource.errorGettingAudioInput;
                 new Message(Utilitary.messageRessource.errorGettingAudioInput);
-            });
-        } else {
-            this.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)"
-            new Message(Utilitary.messageRessource.errorInputAPINotAvailable);
-            this.fAudioInput.moduleView.fInterfaceContainer.title = Utilitary.messageRessource.errorInputAPINotAvailable;
-        }
+            }
+        );
     }
 
     private getDevice(device: MediaStream): void {
