@@ -52,8 +52,6 @@ class DriveAPI{
      * @param {Object} authResult Authorization result.
      */
     handleAuthResult(authResult,auto?) {
-        var buttonConnect = document.getElementById('buttonConnectLoadDrive');
-        var buttonConnect2 = document.getElementById('buttonConnectSaveDrive');
         if (authResult && !authResult.error) {
             // Hide auth UI, then load client library.
 
@@ -133,7 +131,7 @@ class DriveAPI{
     }
 
 
-    
+
 
     /**
      * Append a pre element to the body containing the given message
@@ -148,7 +146,7 @@ class DriveAPI{
 
         var event = new CustomEvent("fillselect", { 'detail': option })
         document.dispatchEvent(event);
-        
+
     }
     /**
  * Download a file's content.
@@ -210,7 +208,7 @@ class DriveAPI{
         request.execute((resp) => {
             this.getFile(resp.id, (fileMetada) => { this.updateFile(resp.id, fileMetada, this.tempBlob,null) })
         });
-        
+
     }
 
     /**

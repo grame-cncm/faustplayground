@@ -9,9 +9,9 @@
     /// <reference path="Load.ts"/>
     /// <reference path="Save.ts"/>
     /// <reference path="AccelerometerEdit.ts"/>
-    /// <reference path="../DriveAPI.ts"/> 
+    /// <reference path="../DriveAPI.ts"/>
     /// <reference path="../Messages.ts"/>
-  
+
 interface Document {
     cancelFullScreen: () => any;
     mozCancelFullScreen: () => any;
@@ -338,7 +338,7 @@ class Menu {
         }
     }
 
-    //update all element that display the scene name 
+    //update all element that display the scene name
     updatePatchNameToInput(e: Event) {
         this.menuView.patchNameScene.textContent = Utilitary.currentScene.sceneName;
         this.menuView.exportView.dynamicName.textContent = Utilitary.currentScene.sceneName;
@@ -352,7 +352,6 @@ class Menu {
 
     //handle fullscreen mode
     fullScreen() {
-        var body = <HTMLBodyElement>document.getElementsByTagName("body")[0];
         if (this.isFullScreen) {
             if (document.cancelFullScreen) {
                 document.cancelFullScreen()
@@ -377,7 +376,6 @@ class Menu {
 
     //handle the enabing/disabling of all slider having a accelerometer
     accelerometer() {
-        var checkboxs = document.getElementsByClassName("accCheckbox")
         if (this.isAccelerometer) {
             this.isAccelerometer = false;
             Utilitary.isAccelerometerOn = false;
@@ -391,7 +389,7 @@ class Menu {
                 if (!Utilitary.isAccelerometerEditOn) {
                     slider.disabled = false;
                 }
-                
+
             }
         } else if (!this.isAccelerometer) {
             this.menuView.accButton.style.opacity = "1";
@@ -521,7 +519,7 @@ class Menu {
         this.clearSelect(this.save.saveView.cloudSelectFile);
         this.drive.updateConnection();
     }
-    
+
     startLoadingDrive() {
         if (!this.isMenuDriveLoading) {
             this.isMenuDriveLoading = true;

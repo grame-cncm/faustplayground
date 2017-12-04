@@ -330,7 +330,6 @@ faust.readDSPFactoryFromMachine = function (machine, max_polyphony)
 
 faust.readDSPFactoryFromMachineAux = function (factory_name, factory_code, sha_key, max_polyphony) {
     
-
     // 'libfaustworker.js' asm.js backend generates the ASM module + UI method, then we compile the code
     eval(factory_code);
     

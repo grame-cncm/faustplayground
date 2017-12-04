@@ -3,9 +3,6 @@
 /// <reference path="Utilitary.ts"/>
 /// <reference path="Modules/FaustInterface.ts"/>
 
-
-
-
 interface Window {
     DeviceMotionEvent: DeviceMotionEvent
 }
@@ -13,7 +10,7 @@ interface Window {
 enum Axis { x, y, z };
 enum Curve { Up, Down, UpDown, DownUp };
 
-//object describing value off accelerometer metadata values. 
+//object describing value off accelerometer metadata values.
 class AccMeta {
     axis: Axis;
     curve: Curve;
@@ -84,12 +81,12 @@ class AccelerometerSlider {
 }
 
 
-//object responsible of storing all accelerometerSlider and propagate to them the accelerometer infos. 
+//object responsible of storing all accelerometerSlider and propagate to them the accelerometer infos.
 class AccelerometerHandler {
     //array containing all the FaustInterfaceControler of the scene
     static faustInterfaceControler: FaustInterfaceControler[] = [];
     //faustInterfaceControler of the AccelerometerEditView
-    static faustInterfaceControlerEdit: FaustInterfaceControler = null;
+    static faustInterfaceControlerEdit: FaustInterfaceControler|null = null;
 
     // get Accelerometer value
     getAccelerometerValue() {
@@ -118,7 +115,7 @@ class AccelerometerHandler {
     }
 
     //create and register accelerometerSlide
-    static registerAcceleratedSlider(accParams: AccParams, faustInterfaceControler: FaustInterfaceControler, sliderEdit?: boolean) {     
+    static registerAcceleratedSlider(accParams: AccParams, faustInterfaceControler: FaustInterfaceControler, sliderEdit?: boolean) {
         var accelerometerSlide: AccelerometerSlider = new AccelerometerSlider(accParams);
         faustInterfaceControler.accelerometerSlider = accelerometerSlide;
             AccelerometerHandler.curveSplitter(accelerometerSlide)
@@ -131,7 +128,7 @@ class AccelerometerHandler {
 
     //give the good axis value to the accelerometerslider, convert it to the faust value before
     axisSplitter(accelerometerSlide: AccelerometerSlider, x: number, y: number, z: number, callBack: (acc: AccelerometerSlider, val: number, axeValue: number) => void) {
-        
+
         switch (accelerometerSlide.axis) {
             case Axis.x:
                 var newVal = accelerometerSlide.converter.uiToFaust(x);
@@ -156,7 +153,7 @@ class AccelerometerHandler {
         AccelerometerHandler.faustInterfaceControlerEdit.faustInterfaceView.slider.value = axeValue.toString();
     }
 
-    //Apply the right converter with the right curve to an accelerometerSlider 
+    //Apply the right converter with the right curve to an accelerometerSlider
     static curveSplitter(accelerometerSlide: AccelerometerSlider) {
         switch (accelerometerSlide.curve) {
             case Curve.Up:
@@ -229,7 +226,7 @@ class Interpolator {
     getLowHigh(amin: number, amax: number): InterpolateObject {
         return { amin: this.range.fLo, amax: this.range.fHi}
     }
-} 
+}
 interface InterpolateObject3pt {
     amin: number;
     amid: number;
@@ -246,7 +243,7 @@ class Interpolator3pt {
         this.fMiddle = mid;
     }
     returnMappedValue(x: number): number {
-        return (x < this.fMiddle) ? this.fSegment1.returnMappedValue(x) : this.fSegment2.returnMappedValue(x) 
+        return (x < this.fMiddle) ? this.fSegment1.returnMappedValue(x) : this.fSegment2.returnMappedValue(x)
     }
     getMappingValues(amin: number, amid: number, amax: number): InterpolateObject3pt {
         var lowHighSegment1 = this.fSegment1.getLowHigh(amin, amid);

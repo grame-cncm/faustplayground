@@ -4,8 +4,6 @@
 /// <reference path="DriveAPI.ts"/>
 /// <reference path="Main.ts"/>
 
-
-
 class Utilitary {
     static audioContext: AudioContext;
     static moduleList: ModuleClass[];
@@ -23,7 +21,6 @@ class Utilitary {
 
     }
     static showFullPageLoading() {
-
         document.getElementById("loadingPage").style.visibility = "visible";
         //too demanding for mobile firefox...
         //document.getElementById("Normal").style.filter = "blur(2px)"
@@ -37,7 +34,6 @@ class Utilitary {
         //document.getElementById("Normal").style.webkitFilter = "none"
         //document.getElementById("menuContainer").style.filter = "none"
         //document.getElementById("menuContainer").style.webkitFilter = "none"
-
     }
     static isAppPedagogique(): boolean {
         if (window.location.href.indexOf("kids.html") > -1) {
@@ -89,8 +85,6 @@ class Utilitary {
     }
 
     static addFullPageLoading() {
-
-
         var loadingText = document.getElementById("loadingTextBig");
         loadingText.id = "loadingTextBig"
         loadingText.textContent = Utilitary.messageRessource.loading;
@@ -106,7 +100,6 @@ class Utilitary {
 interface AudioBufferSourceNode {
     noteOn: (any: any) => any;
 }
-
 
 interface IPositionModule {
     x: number;
@@ -133,14 +126,13 @@ interface HTMLInterfaceContainer extends HTMLDivElement {
     unlitClassname: string;
     lastLit: any;
 }
-interface IfDSP {
-    json: () => string;
-    getValue: (text: string) => string;
-    setValue: (text: string, val: string) => void;
+interface IfDSP extends AudioNode {
+    getJSON: () => string;
+    getParamValue: (text: string) => string;
+    setParamValue: (text: string, val: string) => void;
     getNumInputs: () => number;
     getNumOutputs: () => number;
     controls: () => any;
-    getProcessor: () => ScriptProcessorNode;
 }
 
 interface CompileFaust {

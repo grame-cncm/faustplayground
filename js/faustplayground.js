@@ -1,47 +1,29 @@
-/*				DRAGGING.JS
-    Handles Graphical Drag of Modules and Connections
-    This is a historical file from Chris Wilson, modified for Faust ModuleClass needs.
-    
-    --> Things could probably be easier...
-    
-
-        
-*/
-/// <reference path="Connect.ts"/>
-/// <reference path="Modules/ModuleClass.ts"/>
-/// <reference path="Utilitary.ts"/>
-"use strict";
 /// <reference path="App.ts"/>
 /// <reference path="Utilitary.ts"/>
 //contains all the key of resources json files in folders ressources
-var Ressources = /** @class */ (function () {
-    function Ressources() {
-    }
+class Ressources {
     //get ressource depending on the location, default is french
-    Ressources.prototype.getRessources = function (app) {
-        var _this = this;
+    getRessources(app) {
         var localization = navigator.language;
         if (localization == "fr" || localization == "fr-FR") {
-            Utilitary.getXHR("ressources/ressources_fr-FR.json", function (ressource) { _this.loadMessages(ressource, app); }, Utilitary.errorCallBack);
+            Utilitary.getXHR("ressources/ressources_fr-FR.json", (ressource) => { this.loadMessages(ressource, app); }, Utilitary.errorCallBack);
         }
         else {
-            Utilitary.getXHR("ressources/ressources_en-EN.json", function (ressource) { _this.loadMessages(ressource, app); }, Utilitary.errorCallBack);
+            Utilitary.getXHR("ressources/ressources_en-EN.json", (ressource) => { this.loadMessages(ressource, app); }, Utilitary.errorCallBack);
         }
-    };
+    }
     // load the json object
-    Ressources.prototype.loadMessages = function (ressourceJson, app) {
+    loadMessages(ressourceJson, app) {
         Utilitary.messageRessource = JSON.parse(ressourceJson);
         resumeInit(app);
-    };
-    return Ressources;
-}());
+    }
+}
 //Contain Message, MessageView, Confirm, Confirm view class
-var Message = /** @class */ (function () {
+class Message {
     //Message show up and set a time out, if nothing happen, it remove it self
     //if one click, it stays, if double click it's removed (also the close button works)
     //fadeOutType can be eather null or "messageTransitionOutFast", to have new animation create new rules css
-    function Message(message, fadeOutType, duration, delay) {
-        var _this = this;
+    constructor(message, fadeOutType, duration, delay) {
         this.isTouch = false;
         this.fadeOutType = "messageTransitionOut";
         this.duration = 10000;
@@ -49,7 +31,7 @@ var Message = /** @class */ (function () {
         this.messageView = new MessageView();
         this.messageViewContainer = this.messageView.init();
         this.messageView.message.textContent = message;
-        this.removeEventHandler = function (e) { _this.removeMessage(e); };
+        this.removeEventHandler = (e) => { this.removeMessage(e); };
         this.messageView.closeButton.addEventListener("click", this.removeEventHandler);
         if (fadeOutType != undefined) {
             this.fadeOutType = fadeOutType;
@@ -61,30 +43,29 @@ var Message = /** @class */ (function () {
             this.delay = delay;
         }
         document.getElementById("dialogue").appendChild(this.messageViewContainer);
-        this.timeoutHide = setTimeout(function () { _this.hideMessage(); }, this.duration);
-        setTimeout(function () { _this.displayMessage(); }, 500);
-        document.addEventListener("messagedbltouch", function () { _this.removeEventHandler(); });
-        this.messageViewContainer.addEventListener("click", function (e) { _this.clearTimeouts(e); });
-        this.messageViewContainer.addEventListener("click", function () { _this.dbleTouchMessage(); });
-        this.messageViewContainer.addEventListener("dblclick", function () { _this.removeEventHandler(); });
+        this.timeoutHide = setTimeout(() => { this.hideMessage(); }, this.duration);
+        setTimeout(() => { this.displayMessage(); }, 500);
+        document.addEventListener("messagedbltouch", () => { this.removeEventHandler(); });
+        this.messageViewContainer.addEventListener("click", (e) => { this.clearTimeouts(e); });
+        this.messageViewContainer.addEventListener("click", () => { this.dbleTouchMessage(); });
+        this.messageViewContainer.addEventListener("dblclick", () => { this.removeEventHandler(); });
     }
-    Message.prototype.displayMessage = function () {
+    displayMessage() {
         this.messageViewContainer.classList.remove("messageHide");
         this.messageViewContainer.classList.add("messageShow");
         this.messageViewContainer.classList.add("messageTransitionIn");
         this.messageViewContainer.classList.remove(this.fadeOutType);
-    };
-    Message.prototype.hideMessage = function () {
-        var _this = this;
+    }
+    hideMessage() {
         if (this.messageViewContainer != undefined) {
             this.messageViewContainer.classList.remove("messageTransitionIn");
             this.messageViewContainer.classList.add(this.fadeOutType);
             this.messageViewContainer.classList.add("messageHide");
             this.messageViewContainer.classList.remove("messageShow");
-            this.timeoutRemove = setTimeout(function () { _this.removeMessage(); }, this.delay);
+            this.timeoutRemove = setTimeout(() => { this.removeMessage(); }, this.delay);
         }
-    };
-    Message.prototype.removeMessage = function (e) {
+    }
+    removeMessage(e) {
         if (e != undefined) {
             e.stopPropagation();
             e.preventDefault();
@@ -93,23 +74,22 @@ var Message = /** @class */ (function () {
             this.messageViewContainer.remove();
             delete this.messageViewContainer;
         }
-    };
-    Message.prototype.dbleTouchMessage = function () {
-        var _this = this;
+    }
+    dbleTouchMessage() {
         if (!this.isTouch) {
             this.isTouch = true;
-            window.setTimeout(function () { _this.isTouch = false; }, 300);
+            window.setTimeout(() => { this.isTouch = false; }, 300);
         }
         else {
             this.dispatchEventCloseDblTouch();
             this.isTouch = false;
         }
-    };
-    Message.prototype.dispatchEventCloseDblTouch = function () {
+    }
+    dispatchEventCloseDblTouch() {
         var event = new CustomEvent("messagedbltouch");
         document.dispatchEvent(event);
-    };
-    Message.prototype.clearTimeouts = function (e) {
+    }
+    clearTimeouts(e) {
         e.stopPropagation();
         e.preventDefault();
         clearTimeout(this.timeoutHide);
@@ -117,13 +97,11 @@ var Message = /** @class */ (function () {
             clearTimeout(this.timeoutRemove);
         }
         this.displayMessage();
-    };
-    return Message;
-}());
-var MessageView = /** @class */ (function () {
-    function MessageView() {
     }
-    MessageView.prototype.init = function () {
+}
+class MessageView {
+    constructor() { }
+    init() {
         var messageContainer = document.createElement("div");
         messageContainer.className = "messageContainer messageHide messageTransitionIn";
         var closeButton = document.createElement("div");
@@ -135,27 +113,25 @@ var MessageView = /** @class */ (function () {
         messageContainer.appendChild(closeButton);
         messageContainer.appendChild(message);
         return messageContainer;
-    };
-    return MessageView;
-}());
+    }
+}
 // take message text and callback as parmater
 //if validate, the callback is used, other with the confirm is removed
-var Confirm = /** @class */ (function () {
-    function Confirm(message, callback) {
-        var _this = this;
+class Confirm {
+    constructor(message, callback) {
         this.confirmView = new ConfirmView();
         this.confirmViewContainer = this.confirmView.init();
         this.confirmView.message.textContent = message;
         document.getElementById("dialogue").appendChild(this.confirmViewContainer);
         this.displayMessage();
-        this.confirmView.validButton.addEventListener("click", function () { callback(function () { _this.removeMessage(); }); });
-        this.confirmView.cancelButton.addEventListener("click", function () { _this.removeMessage(); });
+        this.confirmView.validButton.addEventListener("click", () => { callback(() => { this.removeMessage(); }); });
+        this.confirmView.cancelButton.addEventListener("click", () => { this.removeMessage(); });
     }
-    Confirm.prototype.displayMessage = function () {
+    displayMessage() {
         this.confirmViewContainer.classList.remove("messageHide");
         this.confirmViewContainer.classList.add("messageShow");
-    };
-    Confirm.prototype.removeMessage = function (e) {
+    }
+    removeMessage(e) {
         if (e != undefined) {
             e.stopPropagation();
             e.preventDefault();
@@ -164,13 +140,11 @@ var Confirm = /** @class */ (function () {
             this.confirmViewContainer.remove();
             delete this.confirmViewContainer;
         }
-    };
-    return Confirm;
-}());
-var ConfirmView = /** @class */ (function () {
-    function ConfirmView() {
     }
-    ConfirmView.prototype.init = function () {
+}
+class ConfirmView {
+    constructor() { }
+    init() {
         var messageContainer = document.createElement("div");
         messageContainer.className = "messageContainer messageHide";
         var message = document.createElement("div");
@@ -191,15 +165,14 @@ var ConfirmView = /** @class */ (function () {
         messageContainer.appendChild(message);
         messageContainer.appendChild(validContainer);
         return messageContainer;
-    };
-    return ConfirmView;
-}());
+    }
+}
 // class to handel Drive Api request//
 // using the v2 version
 /// <reference path="Messages.ts"/>
 /// <reference path="Utilitary.ts"/>
-var DriveAPI = /** @class */ (function () {
-    function DriveAPI() {
+class DriveAPI {
+    constructor() {
         this.CLIENT_ID = '937268536763-j0tfilisap0274toolo0hehndnhgsrva.apps.googleusercontent.com';
         this.SCOPES = ['https://www.googleapis.com/auth/drive'];
         this.faustFolder = "FaustPlayground";
@@ -210,24 +183,21 @@ var DriveAPI = /** @class */ (function () {
      * Check if current user has authorized this application.
     * disable to deactivate pop up window when not connected
      */
-    DriveAPI.prototype.checkAuth = function () {
-    };
-    DriveAPI.prototype.updateConnection = function () {
-        var _this = this;
+    checkAuth() {
+    }
+    updateConnection() {
         gapi.auth.authorize({
             'client_id': this.CLIENT_ID,
             'scope': this.SCOPES.join(' '),
             'immediate': true
-        }, function (authResult) { _this.handleAuthResult(authResult); });
-    };
+        }, (authResult) => { this.handleAuthResult(authResult); });
+    }
     /**
      * Handle response from authorization server.
      *
      * @param {Object} authResult Authorization result.
      */
-    DriveAPI.prototype.handleAuthResult = function (authResult, auto) {
-        var buttonConnect = document.getElementById('buttonConnectLoadDrive');
-        var buttonConnect2 = document.getElementById('buttonConnectSaveDrive');
+    handleAuthResult(authResult, auto) {
         if (authResult && !authResult.error) {
             // Hide auth UI, then load client library.
             var event = new CustomEvent("authon");
@@ -244,36 +214,33 @@ var DriveAPI = /** @class */ (function () {
             var event = new CustomEvent("clouderror", { 'detail': authResult.error });
             document.dispatchEvent(event);
         }
-    };
+    }
     /**
      * Initiate auth flow in response to user clicking authorize button.
      *
      * @param {Event} event Button click event.
      */
-    DriveAPI.prototype.handleAuthClick = function (event) {
-        var _this = this;
-        gapi.auth.authorize({ client_id: this.CLIENT_ID, scope: this.SCOPES, immediate: false }, function (authResult) { _this.handleAuthResult(authResult); });
+    handleAuthClick(event) {
+        gapi.auth.authorize({ client_id: this.CLIENT_ID, scope: this.SCOPES, immediate: false }, (authResult) => { this.handleAuthResult(authResult); });
         return false;
-    };
+    }
     /**
      * Load Drive API client library.
      */
-    DriveAPI.prototype.loadDriveApi = function () {
-        var _this = this;
+    loadDriveApi() {
         var event = new CustomEvent("startloaddrive");
         document.dispatchEvent(event);
-        gapi.client.load('drive', 'v2', function () { _this.listFolder(); });
-    };
+        gapi.client.load('drive', 'v2', () => { this.listFolder(); });
+    }
     /**
      * Print files.
      */
-    DriveAPI.prototype.listFolder = function () {
-        var _this = this;
+    listFolder() {
         var request = gapi.client.drive.files.list({
             'maxResults': 10000,
             'q': "title contains 'jfaust' and trashed!=true "
         });
-        request.execute(function (resp) {
+        request.execute((resp) => {
             var event = new CustomEvent("finishloaddrive");
             document.dispatchEvent(event);
             var files = resp.items;
@@ -281,44 +248,43 @@ var DriveAPI = /** @class */ (function () {
                 for (var i = 0; i < files.length; i++) {
                     var file = files[i];
                     if (file.fileExtension == "jfaust") {
-                        _this.appendPre(file.title, file.id);
+                        this.appendPre(file.title, file.id);
                     }
                 }
             }
             else {
-                _this.appendPre(Utilitary.messageRessource.noFileOnCloud, null);
+                this.appendPre(Utilitary.messageRessource.noFileOnCloud, null);
             }
         });
-    };
-    DriveAPI.prototype.getFileMetadata = function (fileId) {
-        var _this = this;
+    }
+    getFileMetadata(fileId) {
         var request = gapi.client.drive.files.get({
             'fileId': fileId
         });
-        request.execute(function (file) {
-            _this.appendPre(file.title, file.id);
+        request.execute((file) => {
+            this.appendPre(file.title, file.id);
         });
-    };
+    }
     /**
      * Append a pre element to the body containing the given message
      * as its text node.
      *
      * @param {string} message Text to be placed in pre element.
      */
-    DriveAPI.prototype.appendPre = function (name, id) {
+    appendPre(name, id) {
         var option = document.createElement("option");
         option.value = id;
         option.textContent = name.replace(/.jfaust$/, '');
         var event = new CustomEvent("fillselect", { 'detail': option });
         document.dispatchEvent(event);
-    };
+    }
     /**
  * Download a file's content.
  *
  * @param {File} file Drive File instance.
  * @param {Function} callback Function to call when the request is complete.
  */
-    DriveAPI.prototype.downloadFile = function (file, callback) {
+    downloadFile(file, callback) {
         if (file.downloadUrl) {
             var accessToken = gapi.auth.getToken().access_token;
             var xhr = new XMLHttpRequest();
@@ -335,29 +301,27 @@ var DriveAPI = /** @class */ (function () {
         else {
             callback(null);
         }
-    };
+    }
     /**
  * Print a file's metadata.
  *
  * @param {String} fileId ID of the file to print metadata for.
  */
-    DriveAPI.prototype.getFile = function (fileId, callback) {
-        var _this = this;
+    getFile(fileId, callback) {
         var request = gapi.client.drive.files.get({
-            'fileId': fileId
+            'fileId': fileId,
         });
         try {
-            request.execute(function (resp) {
-                _this.lastSavedFileMetadata = resp;
+            request.execute((resp) => {
+                this.lastSavedFileMetadata = resp;
                 callback(resp);
             });
         }
         catch (e) {
             new Message("erreur");
         }
-    };
-    DriveAPI.prototype.createFile = function (fileName, callback) {
-        var _this = this;
+    }
+    createFile(fileName, callback) {
         var event = new CustomEvent("startloaddrive");
         document.dispatchEvent(event);
         var request = gapi.client.request({
@@ -365,13 +329,13 @@ var DriveAPI = /** @class */ (function () {
             'method': 'POST',
             'body': {
                 "title": fileName + this.extension,
-                "mimeType": "application/json"
+                "mimeType": "application/json",
             }
         });
-        request.execute(function (resp) {
-            _this.getFile(resp.id, function (fileMetada) { _this.updateFile(resp.id, fileMetada, _this.tempBlob, null); });
+        request.execute((resp) => {
+            this.getFile(resp.id, (fileMetada) => { this.updateFile(resp.id, fileMetada, this.tempBlob, null); });
         });
-    };
+    }
     /**
  * Update an existing file's metadata and content.
  *
@@ -380,12 +344,12 @@ var DriveAPI = /** @class */ (function () {
  * @param {File} fileData File object to read data from.
  * @param {Function} callback Callback function to call when the request is complete.
  */
-    DriveAPI.prototype.updateFile = function (fileId, fileMetadata, fileData, callback) {
+    updateFile(fileId, fileMetadata, fileData, callback) {
         var event = new CustomEvent("startloaddrive");
         document.dispatchEvent(event);
-        var boundary = '-------314159265358979323846';
-        var delimiter = "\r\n--" + boundary + "\r\n";
-        var close_delim = "\r\n--" + boundary + "--";
+        const boundary = '-------314159265358979323846';
+        const delimiter = "\r\n--" + boundary + "\r\n";
+        const close_delim = "\r\n--" + boundary + "--";
         var reader = new FileReader();
         reader.readAsBinaryString(fileData);
         reader.onload = function (e) {
@@ -411,7 +375,7 @@ var DriveAPI = /** @class */ (function () {
                 'body': multipartRequestBody
             });
             if (!callback) {
-                callback = function () {
+                callback = () => {
                     var event = new CustomEvent("updatecloudselect");
                     document.dispatchEvent(event);
                     event = new CustomEvent("successave");
@@ -420,8 +384,8 @@ var DriveAPI = /** @class */ (function () {
             }
             request.execute(callback);
         };
-    };
-    DriveAPI.prototype.trashFile = function (fileId) {
+    }
+    trashFile(fileId) {
         var event = new CustomEvent("startloaddrive");
         document.dispatchEvent(event);
         var request = gapi.client.drive.files.trash({
@@ -431,44 +395,41 @@ var DriveAPI = /** @class */ (function () {
             var event = new CustomEvent("updatecloudselect");
             document.dispatchEvent(event);
         });
-    };
-    return DriveAPI;
-}());
+    }
+}
 /// <reference path="Modules/ModuleClass.ts"/>
 /// <reference path="Scenes/SceneClass.ts"/>
 /// <reference path="Ressources.ts"/>
 /// <reference path="DriveAPI.ts"/>
 /// <reference path="Main.ts"/>
-var Utilitary = /** @class */ (function () {
-    function Utilitary() {
+class Utilitary {
+    static errorCallBack(message) {
     }
-    Utilitary.errorCallBack = function (message) {
-    };
-    Utilitary.showFullPageLoading = function () {
+    static showFullPageLoading() {
         document.getElementById("loadingPage").style.visibility = "visible";
         //too demanding for mobile firefox...
         //document.getElementById("Normal").style.filter = "blur(2px)"
         //document.getElementById("Normal").style.webkitFilter = "blur(2px)"
         //document.getElementById("menuContainer").style.filter = "blur(2px)"
         //document.getElementById("menuContainer").style.webkitFilter = "blur(2px)"
-    };
-    Utilitary.hideFullPageLoading = function () {
+    }
+    static hideFullPageLoading() {
         document.getElementById("loadingPage").style.visibility = "hidden";
         //document.getElementById("Normal").style.filter = "none"
         //document.getElementById("Normal").style.webkitFilter = "none"
         //document.getElementById("menuContainer").style.filter = "none"
         //document.getElementById("menuContainer").style.webkitFilter = "none"
-    };
-    Utilitary.isAppPedagogique = function () {
+    }
+    static isAppPedagogique() {
         if (window.location.href.indexOf("kids.html") > -1) {
             return true;
         }
         else {
             return false;
         }
-    };
+    }
     //generic function to make XHR request
-    Utilitary.getXHR = function (url, callback, errCallback) {
+    static getXHR(url, callback, errCallback) {
         var getrequest = new XMLHttpRequest();
         getrequest.onreadystatechange = function () {
             console.log("enter onreadystatechange");
@@ -481,8 +442,8 @@ var Utilitary = /** @class */ (function () {
         };
         getrequest.open("GET", url, true);
         getrequest.send(null);
-    };
-    Utilitary.addLoadingLogo = function (idTarget) {
+    }
+    static addLoadingLogo(idTarget) {
         var loadingDiv = document.createElement("div");
         loadingDiv.className = "loadingDiv";
         var loadingImg = document.createElement("img");
@@ -496,54 +457,62 @@ var Utilitary = /** @class */ (function () {
         if (document.getElementById(idTarget) != null) {
             document.getElementById(idTarget).appendChild(loadingDiv);
         }
-    };
-    Utilitary.removeLoadingLogo = function (idTarget) {
+    }
+    static removeLoadingLogo(idTarget) {
         var divTarget = document.getElementById(idTarget);
         if (divTarget != null && divTarget.getElementsByClassName("loadingDiv").length > 0) {
             while (divTarget.getElementsByClassName("loadingDiv").length != 0) {
                 divTarget.getElementsByClassName("loadingDiv")[0].remove();
             }
         }
-    };
-    Utilitary.addFullPageLoading = function () {
+    }
+    static addFullPageLoading() {
         var loadingText = document.getElementById("loadingTextBig");
         loadingText.id = "loadingTextBig";
         loadingText.textContent = Utilitary.messageRessource.loading;
-    };
-    Utilitary.replaceAll = function (str, find, replace) {
-        return str.replace(new RegExp(find, 'g'), replace);
-    };
-    Utilitary.messageRessource = new Ressources();
-    Utilitary.idX = 0;
-    Utilitary.baseImg = "img/";
-    Utilitary.isAccelerometerOn = false;
-    Utilitary.isAccelerometerEditOn = false;
-    return Utilitary;
-}());
-var PositionModule = /** @class */ (function () {
-    function PositionModule() {
     }
-    return PositionModule;
-}());
+    static replaceAll(str, find, replace) {
+        return str.replace(new RegExp(find, 'g'), replace);
+    }
+}
+Utilitary.messageRessource = new Ressources();
+Utilitary.idX = 0;
+Utilitary.baseImg = "img/";
+Utilitary.isAccelerometerOn = false;
+Utilitary.isAccelerometerEditOn = false;
+class PositionModule {
+}
+/*				DRAGGING.JS
+    Handles Graphical Drag of Modules and Connections
+    This is a historical file from Chris Wilson, modified for Faust ModuleClass needs.
+
+    --> Things could probably be easier...
+
+
+
+*/
+/// <reference path="Connect.ts"/>
+/// <reference path="Modules/ModuleClass.ts"/>
+/// <reference path="Utilitary.ts"/>
 /***********************************************************************************/
 /****** Node Dragging - these are used for dragging the audio modules interface*****/
 /***********************************************************************************/
-var Drag = /** @class */ (function () {
-    function Drag() {
+class Drag {
+    constructor() {
         this.zIndex = 0;
         this.connector = new Connector();
         this.isDragConnector = false;
     }
     //used to dispatch the element, the location and the event to the callback function with click event
-    Drag.prototype.getDraggingMouseEvent = function (mouseEvent, module, draggingFunction) {
+    getDraggingMouseEvent(mouseEvent, module, draggingFunction) {
         var event = mouseEvent;
         var el = mouseEvent.target;
         var x = mouseEvent.clientX + window.scrollX;
         var y = mouseEvent.clientY + window.scrollY;
         draggingFunction(el, x, y, module, event);
-    };
+    }
     //used to dispatch the element, the location and the event to the callback function with touch event
-    Drag.prototype.getDraggingTouchEvent = function (touchEvent, module, draggingFunction) {
+    getDraggingTouchEvent(touchEvent, module, draggingFunction) {
         var event = touchEvent;
         if (touchEvent.targetTouches.length > 0) {
             var touch = touchEvent.targetTouches[0];
@@ -564,8 +533,8 @@ var Drag = /** @class */ (function () {
         else {
             draggingFunction(null, null, null, module, event);
         }
-    };
-    Drag.prototype.startDraggingModule = function (el, x, y, module, event) {
+    }
+    startDraggingModule(el, x, y, module, event) {
         var moduleContainer = module.moduleView.getModuleContainer();
         // Save starting positions of cursor and element.
         this.cursorStartX = x;
@@ -585,8 +554,8 @@ var Drag = /** @class */ (function () {
         document.addEventListener("mousemove", module.eventDraggingHandler, false);
         event.stopPropagation();
         event.preventDefault();
-    };
-    Drag.prototype.whileDraggingModule = function (el, x, y, module, event) {
+    }
+    whileDraggingModule(el, x, y, module, event) {
         var moduleContainer = module.moduleView.getModuleContainer();
         // Move drag element by the same amount the cursor has moved.
         moduleContainer.style.left = (this.elementStartLeft + x - this.cursorStartX) + "px";
@@ -598,30 +567,29 @@ var Drag = /** @class */ (function () {
             Connector.redrawOutputConnections(module, this);
         }
         event.stopPropagation();
-    };
-    Drag.prototype.stopDraggingModule = function (el, x, y, module, event) {
+    }
+    stopDraggingModule(el, x, y, module, event) {
         // Stop capturing mousemove and mouseup events.
         document.removeEventListener("mouseup", module.eventDraggingHandler, false);
         document.removeEventListener("mousemove", module.eventDraggingHandler, false);
-    };
+    }
     /************************************************************************************/
     /*** Connector Dragging - these are used for dragging the connectors between nodes***/
     /************************************************************************************/
-    Drag.prototype.updateConnectorShapePath = function (connectorShape, x1, x2, y1, y2) {
+    updateConnectorShapePath(connectorShape, x1, x2, y1, y2) {
         connectorShape.x1 = x1;
         connectorShape.x2 = x2;
         connectorShape.y1 = y1;
         connectorShape.y2 = y2;
-    };
-    Drag.prototype.setCurvePath = function (x1, y1, x2, y2, x1Bezier, x2Bezier) {
+    }
+    setCurvePath(x1, y1, x2, y2, x1Bezier, x2Bezier) {
         return "M" + x1 + "," + y1 + " C" + x1Bezier + "," + y1 + " " + x2Bezier + "," + y2 + " " + x2 + "," + y2;
-    };
-    Drag.prototype.calculBezier = function (x1, x2) {
+    }
+    calculBezier(x1, x2) {
         return x1 - (x1 - x2) / 2;
         ;
-    };
-    Drag.prototype.startDraggingConnection = function (module, target) {
-        var _this = this;
+    }
+    startDraggingConnection(module, target) {
         // if this is the green or red button, use its parent.
         if (target.classList.contains("node-button"))
             target = target.parentNode;
@@ -653,11 +621,10 @@ var Drag = /** @class */ (function () {
         Connector.connectorId++;
         //console.log("connector Id = " + Connector.connectorId);
         this.connector.connectorShape = curve;
-        this.connector.connectorShape.onclick = function (event) { _this.connector.deleteConnection(event, _this); };
+        this.connector.connectorShape.onclick = (event) => { this.connector.deleteConnection(event, this); };
         document.getElementById("svgCanvas").appendChild(curve);
-    };
-    Drag.prototype.stopDraggingConnection = function (sourceModule, destination, target) {
-        var _this = this;
+    }
+    stopDraggingConnection(sourceModule, destination, target) {
         if (sourceModule.moduleView.getInterfaceContainer().lastLit) {
             sourceModule.moduleView.getInterfaceContainer().lastLit.className = sourceModule.moduleView.getInterfaceContainer().lastLit.unlitClassname;
             sourceModule.moduleView.getInterfaceContainer().lastLit = null;
@@ -676,7 +643,7 @@ var Drag = /** @class */ (function () {
             else
                 offset = destination.moduleView.getOutputNode();
             var toElem = offset;
-            // Get the position of the originating connector with respect to the page.			
+            // Get the position of the originating connector with respect to the page.
             x = destination.moduleView.inputOutputNodeDimension / 2;
             y = destination.moduleView.inputOutputNodeDimension / 2;
             while (offset) {
@@ -720,7 +687,7 @@ var Drag = /** @class */ (function () {
                 this.connector.destination = dst;
                 this.connector.source = src;
                 connector.saveConnection(src, dst, this.connector.connectorShape);
-                this.connector.connectorShape.onclick = function (event) { connector.deleteConnection(event, _this); };
+                this.connector.connectorShape.onclick = (event) => { connector.deleteConnection(event, this); };
                 //this.connectorShape = null;
                 return;
             }
@@ -728,16 +695,16 @@ var Drag = /** @class */ (function () {
         // Otherwise, delete the line
         this.connector.connectorShape.parentNode.removeChild(this.connector.connectorShape);
         this.connector.connectorShape = null;
-    };
-    Drag.prototype.startDraggingConnector = function (target, x, y, module, event) {
+    }
+    startDraggingConnector(target, x, y, module, event) {
         this.startDraggingConnection(module, target);
         // Capture mousemove and mouseup events on the page.
         document.addEventListener("mousemove", module.eventConnectorHandler);
         document.addEventListener("mouseup", module.eventConnectorHandler);
         event.preventDefault();
         event.stopPropagation();
-    };
-    Drag.prototype.whileDraggingConnector = function (target, x, y, module, event) {
+    }
+    whileDraggingConnector(target, x, y, module, event) {
         if (this.isDragConnector) {
             var currentHoverElement = document.elementFromPoint(x - scrollX, y - scrollY);
             if (currentHoverElement.classList.contains("node-input")) {
@@ -804,8 +771,8 @@ var Drag = /** @class */ (function () {
         }
         event.preventDefault();
         event.stopPropagation();
-    };
-    Drag.prototype.stopDraggingConnector = function (target, x, y, module) {
+    }
+    stopDraggingConnector(target, x, y, module) {
         x = x - window.scrollX;
         y = y - window.scrollY;
         // Stop capturing mousemove and mouseup events.
@@ -836,8 +803,8 @@ var Drag = /** @class */ (function () {
         var index = module.dragList.indexOf(this);
         module.dragList.splice(index, 1);
         this.isDragConnector = false;
-    };
-    Drag.prototype.isConnectionValid = function (target) {
+    }
+    isConnectionValid(target) {
         if (target.classList.contains("node-button")) {
             target = target.parentNode;
         }
@@ -850,8 +817,8 @@ var Drag = /** @class */ (function () {
         else {
             return true;
         }
-    };
-    Drag.prototype.isConnectionUnique = function (moduleSource, moduleDestination) {
+    }
+    isConnectionUnique(moduleSource, moduleDestination) {
         if (this.isOriginInput) {
             for (var i = 0; i < moduleSource.moduleFaust.fInputConnections.length; i++) {
                 for (var j = 0; j < moduleDestination.moduleFaust.fOutputConnections.length; j++) {
@@ -871,9 +838,8 @@ var Drag = /** @class */ (function () {
             }
         }
         return true;
-    };
-    return Drag;
-}());
+    }
+}
 /// <reference path="Messages.ts"/>
 /// <reference path="Utilitary.ts"/>
 //==============================================================================================
@@ -881,15 +847,15 @@ var Drag = /** @class */ (function () {
 // Update the acc metadata associated to <name> in <faustcode>. Returns the updated faust code
 //==============================================================================================
 // Iterate into faust code to find next path-string.
-var PathIterator = /** @class */ (function () {
-    function PathIterator(faustCode) {
+class PathIterator {
+    constructor(faustCode) {
         this.fFaustCode = faustCode;
         this.fStart = 0;
         this.fEnd = 0;
     }
     // search and select next string :  "...."  
     // (not completely safe, but should be OK)
-    PathIterator.prototype.findNextPathString = function () {
+    findNextPathString() {
         var p1 = this.fFaustCode.indexOf('"', this.fEnd + 1);
         var p2 = this.fFaustCode.indexOf('"', p1 + 1);
         //console.log(`Current positions : ${this.fEnd}, ${p1}, ${p2}`);
@@ -902,12 +868,12 @@ var PathIterator = /** @class */ (function () {
             return path;
         }
         else {
-            console.log("no more path found: " + this.fEnd + ", " + p1 + ", " + p2);
+            console.log(`no more path found: ${this.fEnd}, ${p1}, ${p2}`);
             return "";
         }
-    };
+    }
     // Replace the current selected path with a new string and return the update faust code
-    PathIterator.prototype.updateCurrentPathString = function (newstring) {
+    updateCurrentPathString(newstring) {
         if ((0 < this.fStart) && (this.fStart < this.fEnd)) {
             // we have a valide path to replace
             return this.fFaustCode.slice(0, this.fStart) + newstring + this.fFaustCode.slice(this.fEnd);
@@ -916,16 +882,15 @@ var PathIterator = /** @class */ (function () {
             console.log("ERROR, trying to update an invalide path");
             return this.fFaustCode;
         }
-    };
-    return PathIterator;
-}());
+    }
+}
 // Forge accelerometer metadata -> "acc: bla bla bla"" or "noacc: bla bla bla""
 function forgeAccMetadata(newAccValue, isEnabled) {
     if (isEnabled) {
-        return "acc:" + newAccValue;
+        return `acc:${newAccValue}`;
     }
     else {
-        return "noacc:" + newAccValue;
+        return `noacc:${newAccValue}`;
     }
 }
 // Remove all metadatas of a uipath : "foo[...][...]" -> "foo"
@@ -973,7 +938,7 @@ function replaceAccInPath(oldpath, newacc) {
             return newpath;
         }
     }
-    console.log("ERROR in replaceAccInPath() : malformed path " + oldpath);
+    console.log(`ERROR in replaceAccInPath() : malformed path ${oldpath}`);
     return oldpath;
 }
 // Checks if a ui name matches a ui path. For examples "toto" matches "[1]toto[acc:...]"
@@ -1020,15 +985,12 @@ var Curve;
     Curve[Curve["DownUp"] = 3] = "DownUp";
 })(Curve || (Curve = {}));
 ;
-//object describing value off accelerometer metadata values. 
-var AccMeta = /** @class */ (function () {
-    function AccMeta() {
-    }
-    return AccMeta;
-}());
+//object describing value off accelerometer metadata values.
+class AccMeta {
+}
 //Contains the info regarding the mapping of the FaustInterfaceControler and the accelerometer
-var AccelerometerSlider = /** @class */ (function () {
-    function AccelerometerSlider(accParams) {
+class AccelerometerSlider {
+    constructor(accParams) {
         if (accParams != null) {
             this.isEnabled = accParams.isEnabled;
             this.acc = accParams.acc;
@@ -1041,7 +1003,7 @@ var AccelerometerSlider = /** @class */ (function () {
             this.isActive = Utilitary.isAccelerometerOn;
         }
     }
-    AccelerometerSlider.prototype.setAttributes = function (fMetaAcc) {
+    setAttributes(fMetaAcc) {
         if (fMetaAcc != null) {
             var arrayMeta = fMetaAcc.split(" ");
             this.axis = parseInt(arrayMeta[0]);
@@ -1050,33 +1012,29 @@ var AccelerometerSlider = /** @class */ (function () {
             this.amid = parseInt(arrayMeta[3]);
             this.amax = parseInt(arrayMeta[4]);
         }
-    };
-    AccelerometerSlider.prototype.setAttributesDetailed = function (axis, curve, min, mid, max) {
+    }
+    setAttributesDetailed(axis, curve, min, mid, max) {
         this.axis = axis;
         this.curve = curve;
         this.amin = min;
         this.amid = mid;
         this.amax = max;
-    };
-    return AccelerometerSlider;
-}());
-//object responsible of storing all accelerometerSlider and propagate to them the accelerometer infos. 
-var AccelerometerHandler = /** @class */ (function () {
-    function AccelerometerHandler() {
     }
+}
+//object responsible of storing all accelerometerSlider and propagate to them the accelerometer infos.
+class AccelerometerHandler {
     // get Accelerometer value
-    AccelerometerHandler.prototype.getAccelerometerValue = function () {
-        var _this = this;
+    getAccelerometerValue() {
         if (window.DeviceMotionEvent) {
-            window.addEventListener("devicemotion", function (event) { _this.propagate(event); }, false);
+            window.addEventListener("devicemotion", (event) => { this.propagate(event); }, false);
         }
         else {
             // Browser doesn't support DeviceMotionEvent
             console.log(Utilitary.messageRessource.noDeviceMotion);
         }
-    };
+    }
     // propagate the new x, y, z value of the accelerometer to the registred object
-    AccelerometerHandler.prototype.propagate = function (event) {
+    propagate(event) {
         var x = event.accelerationIncludingGravity.x;
         var y = event.accelerationIncludingGravity.y;
         var z = event.accelerationIncludingGravity.z;
@@ -1089,9 +1047,9 @@ var AccelerometerHandler = /** @class */ (function () {
         if (AccelerometerHandler.faustInterfaceControlerEdit != null) {
             this.axisSplitter(AccelerometerHandler.faustInterfaceControlerEdit.accelerometerSlider, x, y, z, this.applyValueToEdit);
         }
-    };
+    }
     //create and register accelerometerSlide
-    AccelerometerHandler.registerAcceleratedSlider = function (accParams, faustInterfaceControler, sliderEdit) {
+    static registerAcceleratedSlider(accParams, faustInterfaceControler, sliderEdit) {
         var accelerometerSlide = new AccelerometerSlider(accParams);
         faustInterfaceControler.accelerometerSlider = accelerometerSlide;
         AccelerometerHandler.curveSplitter(accelerometerSlide);
@@ -1101,9 +1059,9 @@ var AccelerometerHandler = /** @class */ (function () {
         else {
             AccelerometerHandler.faustInterfaceControler.push(faustInterfaceControler);
         }
-    };
+    }
     //give the good axis value to the accelerometerslider, convert it to the faust value before
-    AccelerometerHandler.prototype.axisSplitter = function (accelerometerSlide, x, y, z, callBack) {
+    axisSplitter(accelerometerSlide, x, y, z, callBack) {
         switch (accelerometerSlide.axis) {
             case Axis.x:
                 var newVal = accelerometerSlide.converter.uiToFaust(x);
@@ -1118,17 +1076,17 @@ var AccelerometerHandler = /** @class */ (function () {
                 callBack(accelerometerSlide, newVal, z);
                 break;
         }
-    };
+    }
     //update value of the dsp
-    AccelerometerHandler.prototype.applyNewValueToModule = function (accSlid, newVal, axeValue) {
+    applyNewValueToModule(accSlid, newVal, axeValue) {
         accSlid.callbackValueChange(accSlid.address, newVal);
-    };
+    }
     //update value of the edit range in AccelerometerEditView
-    AccelerometerHandler.prototype.applyValueToEdit = function (accSlid, newVal, axeValue) {
+    applyValueToEdit(accSlid, newVal, axeValue) {
         AccelerometerHandler.faustInterfaceControlerEdit.faustInterfaceView.slider.value = axeValue.toString();
-    };
-    //Apply the right converter with the right curve to an accelerometerSlider 
-    AccelerometerHandler.curveSplitter = function (accelerometerSlide) {
+    }
+    //Apply the right converter with the right curve to an accelerometerSlider
+    static curveSplitter(accelerometerSlide) {
         switch (accelerometerSlide.curve) {
             case Curve.Up:
                 accelerometerSlide.converter = new AccUpConverter(accelerometerSlide.amin, accelerometerSlide.amid, accelerometerSlide.amax, accelerometerSlide.min, accelerometerSlide.init, accelerometerSlide.max);
@@ -1145,22 +1103,21 @@ var AccelerometerHandler = /** @class */ (function () {
             default:
                 accelerometerSlide.converter = new AccUpConverter(accelerometerSlide.amin, accelerometerSlide.amid, accelerometerSlide.amax, accelerometerSlide.min, accelerometerSlide.init, accelerometerSlide.max);
         }
-    };
-    //array containing all the FaustInterfaceControler of the scene
-    AccelerometerHandler.faustInterfaceControler = [];
-    //faustInterfaceControler of the AccelerometerEditView
-    AccelerometerHandler.faustInterfaceControlerEdit = null;
-    return AccelerometerHandler;
-}());
+    }
+}
+//array containing all the FaustInterfaceControler of the scene
+AccelerometerHandler.faustInterfaceControler = [];
+//faustInterfaceControler of the AccelerometerEditView
+AccelerometerHandler.faustInterfaceControlerEdit = null;
 /***************************************************************************************
 ********************  Converter objects use to map acc and faust value *****************
 ****************************************************************************************/
-var MinMaxClip = /** @class */ (function () {
-    function MinMaxClip(x, y) {
+class MinMaxClip {
+    constructor(x, y) {
         this.fLo = Math.min(x, y);
         this.fHi = Math.max(x, y);
     }
-    MinMaxClip.prototype.clip = function (x) {
+    clip(x) {
         if (x < this.fLo) {
             return this.fLo;
         }
@@ -1170,11 +1127,10 @@ var MinMaxClip = /** @class */ (function () {
         else {
             return x;
         }
-    };
-    return MinMaxClip;
-}());
-var Interpolator = /** @class */ (function () {
-    function Interpolator(lo, hi, v1, v2) {
+    }
+}
+class Interpolator {
+    constructor(lo, hi, v1, v2) {
         this.range = new MinMaxClip(lo, hi);
         if (hi != lo) {
             //regular case
@@ -1186,147 +1142,142 @@ var Interpolator = /** @class */ (function () {
             this.fOffset = (v1 + v2) / 2;
         }
     }
-    Interpolator.prototype.returnMappedValue = function (v) {
+    returnMappedValue(v) {
         var x = this.range.clip(v);
         return this.fOffset + x * this.fCoef;
-    };
-    Interpolator.prototype.getLowHigh = function (amin, amax) {
+    }
+    getLowHigh(amin, amax) {
         return { amin: this.range.fLo, amax: this.range.fHi };
-    };
-    return Interpolator;
-}());
-var Interpolator3pt = /** @class */ (function () {
-    function Interpolator3pt(lo, mid, hi, v1, vMid, v2) {
+    }
+}
+class Interpolator3pt {
+    constructor(lo, mid, hi, v1, vMid, v2) {
         this.fSegment1 = new Interpolator(lo, mid, v1, vMid);
         this.fSegment2 = new Interpolator(mid, hi, vMid, v2);
         this.fMiddle = mid;
     }
-    Interpolator3pt.prototype.returnMappedValue = function (x) {
+    returnMappedValue(x) {
         return (x < this.fMiddle) ? this.fSegment1.returnMappedValue(x) : this.fSegment2.returnMappedValue(x);
-    };
-    Interpolator3pt.prototype.getMappingValues = function (amin, amid, amax) {
+    }
+    getMappingValues(amin, amid, amax) {
         var lowHighSegment1 = this.fSegment1.getLowHigh(amin, amid);
         var lowHighSegment2 = this.fSegment2.getLowHigh(amid, amax);
         return { amin: lowHighSegment1.amin, amid: lowHighSegment2.amin, amax: lowHighSegment2.amax };
-    };
-    return Interpolator3pt;
-}());
-var AccUpConverter = /** @class */ (function () {
-    function AccUpConverter(amin, amid, amax, fmin, fmid, fmax) {
+    }
+}
+class AccUpConverter {
+    constructor(amin, amid, amax, fmin, fmid, fmax) {
         this.fActive = true;
         this.accToFaust = new Interpolator3pt(amin, amid, amax, fmin, fmid, fmax);
         this.faustToAcc = new Interpolator3pt(fmin, fmid, fmax, amin, amid, amax);
     }
-    AccUpConverter.prototype.uiToFaust = function (x) { return this.accToFaust.returnMappedValue(x); };
-    AccUpConverter.prototype.faustToUi = function (x) { return this.accToFaust.returnMappedValue(x); };
+    uiToFaust(x) { return this.accToFaust.returnMappedValue(x); }
+    faustToUi(x) { return this.accToFaust.returnMappedValue(x); }
     ;
-    AccUpConverter.prototype.setMappingValues = function (amin, amid, amax, min, init, max) {
+    setMappingValues(amin, amid, amax, min, init, max) {
         this.accToFaust = new Interpolator3pt(amin, amid, amax, min, init, max);
         this.faustToAcc = new Interpolator3pt(min, init, max, amin, amid, amax);
-    };
+    }
     ;
-    AccUpConverter.prototype.getMappingValues = function (amin, amid, amax) {
+    getMappingValues(amin, amid, amax) {
         return this.accToFaust.getMappingValues(amin, amid, amax);
-    };
+    }
     ;
-    AccUpConverter.prototype.setActive = function (onOff) { this.fActive = onOff; };
+    setActive(onOff) { this.fActive = onOff; }
     ;
-    AccUpConverter.prototype.getActive = function () { return this.fActive; };
+    getActive() { return this.fActive; }
     ;
-    return AccUpConverter;
-}());
-var AccDownConverter = /** @class */ (function () {
-    function AccDownConverter(amin, amid, amax, fmin, fmid, fmax) {
+}
+class AccDownConverter {
+    constructor(amin, amid, amax, fmin, fmid, fmax) {
         this.fActive = true;
         this.accToFaust = new Interpolator3pt(amin, amid, amax, fmax, fmid, fmin);
         this.faustToAcc = new Interpolator3pt(fmin, fmid, fmax, amax, amid, amin);
     }
-    AccDownConverter.prototype.uiToFaust = function (x) { return this.accToFaust.returnMappedValue(x); };
-    AccDownConverter.prototype.faustToUi = function (x) { return this.accToFaust.returnMappedValue(x); };
+    uiToFaust(x) { return this.accToFaust.returnMappedValue(x); }
+    faustToUi(x) { return this.accToFaust.returnMappedValue(x); }
     ;
-    AccDownConverter.prototype.setMappingValues = function (amin, amid, amax, min, init, max) {
+    setMappingValues(amin, amid, amax, min, init, max) {
         this.accToFaust = new Interpolator3pt(amin, amid, amax, max, init, min);
         this.faustToAcc = new Interpolator3pt(min, init, max, amax, amid, amin);
-    };
+    }
     ;
-    AccDownConverter.prototype.getMappingValues = function (amin, amid, amax) {
+    getMappingValues(amin, amid, amax) {
         return this.accToFaust.getMappingValues(amin, amid, amax);
-    };
+    }
     ;
-    AccDownConverter.prototype.setActive = function (onOff) { this.fActive = onOff; };
+    setActive(onOff) { this.fActive = onOff; }
     ;
-    AccDownConverter.prototype.getActive = function () { return this.fActive; };
+    getActive() { return this.fActive; }
     ;
-    return AccDownConverter;
-}());
-var AccUpDownConverter = /** @class */ (function () {
-    function AccUpDownConverter(amin, amid, amax, fmin, fmid, fmax) {
+}
+class AccUpDownConverter {
+    constructor(amin, amid, amax, fmin, fmid, fmax) {
         this.fActive = true;
         this.accToFaust = new Interpolator3pt(amin, amid, amax, fmin, fmax, fmin);
         this.faustToAcc = new Interpolator(fmin, fmax, amin, amax);
     }
-    AccUpDownConverter.prototype.uiToFaust = function (x) { return this.accToFaust.returnMappedValue(x); };
-    AccUpDownConverter.prototype.faustToUi = function (x) { return this.accToFaust.returnMappedValue(x); };
+    uiToFaust(x) { return this.accToFaust.returnMappedValue(x); }
+    faustToUi(x) { return this.accToFaust.returnMappedValue(x); }
     ;
-    AccUpDownConverter.prototype.setMappingValues = function (amin, amid, amax, min, init, max) {
+    setMappingValues(amin, amid, amax, min, init, max) {
         this.accToFaust = new Interpolator3pt(amin, amid, amax, min, max, min);
         this.faustToAcc = new Interpolator(min, max, amin, amax);
-    };
+    }
     ;
-    AccUpDownConverter.prototype.getMappingValues = function (amin, amid, amax) {
+    getMappingValues(amin, amid, amax) {
         return this.accToFaust.getMappingValues(amin, amid, amax);
-    };
+    }
     ;
-    AccUpDownConverter.prototype.setActive = function (onOff) { this.fActive = onOff; };
+    setActive(onOff) { this.fActive = onOff; }
     ;
-    AccUpDownConverter.prototype.getActive = function () { return this.fActive; };
+    getActive() { return this.fActive; }
     ;
-    return AccUpDownConverter;
-}());
-var AccDownUpConverter = /** @class */ (function () {
-    function AccDownUpConverter(amin, amid, amax, fmin, fmid, fmax) {
+}
+class AccDownUpConverter {
+    constructor(amin, amid, amax, fmin, fmid, fmax) {
         this.fActive = true;
         this.accToFaust = new Interpolator3pt(amin, amid, amax, fmax, fmin, fmax);
         this.faustToAcc = new Interpolator(fmin, fmax, amin, amax);
     }
-    AccDownUpConverter.prototype.uiToFaust = function (x) { return this.accToFaust.returnMappedValue(x); };
-    AccDownUpConverter.prototype.faustToUi = function (x) { return this.accToFaust.returnMappedValue(x); };
+    uiToFaust(x) { return this.accToFaust.returnMappedValue(x); }
+    faustToUi(x) { return this.accToFaust.returnMappedValue(x); }
     ;
-    AccDownUpConverter.prototype.setMappingValues = function (amin, amid, amax, min, init, max) {
+    setMappingValues(amin, amid, amax, min, init, max) {
         this.accToFaust = new Interpolator3pt(amin, amid, amax, max, min, max);
         this.faustToAcc = new Interpolator(min, max, amin, amax);
-    };
+    }
     ;
-    AccDownUpConverter.prototype.getMappingValues = function (amin, amid, amax) {
+    getMappingValues(amin, amid, amax) {
         return this.accToFaust.getMappingValues(amin, amid, amax);
-    };
+    }
     ;
-    AccDownUpConverter.prototype.setActive = function (onOff) { this.fActive = onOff; };
+    setActive(onOff) { this.fActive = onOff; }
     ;
-    AccDownUpConverter.prototype.getActive = function () { return this.fActive; };
+    getActive() { return this.fActive; }
     ;
-    return AccDownUpConverter;
-}());
-var FaustInterfaceControler = /** @class */ (function () {
-    function FaustInterfaceControler(interfaceCallback, setDSPValueCallback) {
+}
+/// <reference path="../Accelerometer.ts"/>
+/// <reference path="../Utilitary.ts"/>
+class FaustInterfaceControler {
+    constructor(interfaceCallback, setDSPValueCallback) {
         this.accDefault = "0 0 -10 0 10";
         this.interfaceCallback = interfaceCallback;
         this.setDSPValueCallback = setDSPValueCallback;
     }
     //parse interface json from faust webaudio-asm-wrapper to create corresponding FaustInterfaceControler
-    FaustInterfaceControler.prototype.parseFaustJsonUI = function (ui, module) {
+    parseFaustJsonUI(ui, module) {
         this.faustControlers = [];
         for (var i = 0; i < ui.length; i++) {
             this.parse_group(ui[i], module);
         }
         return this.faustControlers;
-    };
-    FaustInterfaceControler.prototype.parse_group = function (group, module) {
+    }
+    parse_group(group, module) {
         if (group.items)
             this.parse_items(group.items, module);
-    };
-    FaustInterfaceControler.prototype.parse_item = function (item, module) {
-        var _this = this;
+    }
+    parse_item(item, module) {
         var params = module.getInterfaceParams();
         if (params && params[item.address]) {
             item.init = params[item.address];
@@ -1336,7 +1287,7 @@ var FaustInterfaceControler = /** @class */ (function () {
         }
         else if (item.type === "vslider" || item.type === "hslider") {
             var itemElement = item;
-            var controler = new FaustInterfaceControler(function () { _this.interfaceCallback(controler); }, function (adress, value) { _this.setDSPValueCallback(adress, value); });
+            var controler = new FaustInterfaceControler(() => { this.interfaceCallback(controler); }, (adress, value) => { this.setDSPValueCallback(adress, value); });
             controler.name = itemElement.label;
             controler.itemParam = itemElement;
             controler.value = itemElement.init;
@@ -1344,24 +1295,24 @@ var FaustInterfaceControler = /** @class */ (function () {
         }
         else if (item.type === "button") {
             var itemElement = item;
-            var controler = new FaustInterfaceControler(function (faustInterface) { _this.interfaceCallback(faustInterface); }, function (adress, value) { _this.setDSPValueCallback(adress, value); });
+            var controler = new FaustInterfaceControler((faustInterface) => { this.interfaceCallback(faustInterface); }, (adress, value) => { this.setDSPValueCallback(adress, value); });
             controler.itemParam = itemElement;
             controler.value = "0";
             this.faustControlers.push(controler);
         }
         else if (item.type === "checkbox") {
             var itemElement = item;
-            var controler = new FaustInterfaceControler(function (faustInterface) { _this.interfaceCallback(faustInterface); }, function (adress, value) { _this.setDSPValueCallback(adress, value); });
+            var controler = new FaustInterfaceControler((faustInterface) => { this.interfaceCallback(faustInterface); }, (adress, value) => { this.setDSPValueCallback(adress, value); });
             controler.itemParam = itemElement;
             controler.value = "0";
             this.faustControlers.push(controler);
         }
-    };
-    FaustInterfaceControler.prototype.parse_items = function (items, node) {
+    }
+    parse_items(items, node) {
         for (var i = 0; i < items.length; i++)
             this.parse_item(items[i], node);
-    };
-    FaustInterfaceControler.prototype.setParams = function () {
+    }
+    setParams() {
         if (this.itemParam.meta != undefined) {
             for (var j = 0; j < this.itemParam.meta.length; j++) {
                 if (this.itemParam.meta[j].unit) {
@@ -1385,9 +1336,9 @@ var FaustInterfaceControler = /** @class */ (function () {
             min: parseFloat(this.itemParam.min),
             label: this.itemParam.label
         };
-    };
-    // create and allocate right faustInterfaceView 
-    FaustInterfaceControler.prototype.createFaustInterfaceElement = function () {
+    }
+    // create and allocate right faustInterfaceView
+    createFaustInterfaceElement() {
         if (this.faustInterfaceView && this.faustInterfaceView.type) {
             if (this.faustInterfaceView.type === "vslider" || this.faustInterfaceView.type === "hslider") {
                 return this.faustInterfaceView.addFaustModuleSlider(this.itemParam, parseFloat(this.precision), this.unit);
@@ -1399,48 +1350,46 @@ var FaustInterfaceControler = /** @class */ (function () {
                 return this.faustInterfaceView.addFaustCheckBox(this.itemParam.init);
             }
         }
-    };
+    }
     // Set eventListner of the faustInterfaceView
-    FaustInterfaceControler.prototype.setEventListener = function () {
-        var _this = this;
+    setEventListener() {
         if (this.faustInterfaceView && this.faustInterfaceView.type) {
             if (this.faustInterfaceView.type === "vslider" || this.faustInterfaceView.type === "hslider") {
-                this.faustInterfaceView.slider.addEventListener("input", function (event) {
-                    _this.interfaceCallback(_this);
+                this.faustInterfaceView.slider.addEventListener("input", (event) => {
+                    this.interfaceCallback(this);
                     event.stopPropagation();
                     event.preventDefault();
                 });
-                this.faustInterfaceView.slider.addEventListener("mousedown", function (e) { e.stopPropagation(); });
-                this.faustInterfaceView.slider.addEventListener("touchstart", function (e) { e.stopPropagation(); });
-                this.faustInterfaceView.slider.addEventListener("touchmove", function (e) { e.stopPropagation(); });
+                this.faustInterfaceView.slider.addEventListener("mousedown", (e) => { e.stopPropagation(); });
+                this.faustInterfaceView.slider.addEventListener("touchstart", (e) => { e.stopPropagation(); });
+                this.faustInterfaceView.slider.addEventListener("touchmove", (e) => { e.stopPropagation(); });
             }
             else if (this.faustInterfaceView.type === "button") {
-                this.faustInterfaceView.button.addEventListener("mousedown", function (e) {
+                this.faustInterfaceView.button.addEventListener("mousedown", (e) => {
                     e.stopPropagation();
-                    _this.interfaceCallback(_this);
+                    this.interfaceCallback(this);
                 });
-                this.faustInterfaceView.button.addEventListener("mouseup", function (e) {
+                this.faustInterfaceView.button.addEventListener("mouseup", (e) => {
                     e.stopPropagation();
-                    _this.interfaceCallback(_this);
+                    this.interfaceCallback(this);
                 });
-                this.faustInterfaceView.button.addEventListener("touchstart", function (e) {
+                this.faustInterfaceView.button.addEventListener("touchstart", (e) => {
                     e.stopPropagation();
-                    _this.interfaceCallback(_this);
+                    this.interfaceCallback(this);
                 });
-                this.faustInterfaceView.button.addEventListener("touchend", function (e) {
+                this.faustInterfaceView.button.addEventListener("touchend", (e) => {
                     e.stopPropagation();
-                    _this.interfaceCallback(_this);
+                    this.interfaceCallback(this);
                 });
             }
             else if (this.faustInterfaceView.type === "checkbox") {
             }
         }
-    };
+    }
     //attach acceleromterSlider to faustInterfaceControler
     //give the acc or noacc values
     //if no accelerometer value, it create a default noacc one
-    FaustInterfaceControler.prototype.createAccelerometer = function () {
-        var _this = this;
+    createAccelerometer() {
         if (this.itemParam.meta) {
             var meta = this.itemParam.meta;
             for (var i = 0; i < meta.length; i++) {
@@ -1449,7 +1398,7 @@ var FaustInterfaceControler = /** @class */ (function () {
                     this.accParams.acc = this.acc;
                     this.accParams.isEnabled = true;
                     AccelerometerHandler.registerAcceleratedSlider(this.accParams, this);
-                    this.accelerometerSlider.callbackValueChange = function (address, value) { _this.callbackValueChange(address, value); };
+                    this.accelerometerSlider.callbackValueChange = (address, value) => { this.callbackValueChange(address, value); };
                     this.accelerometerSlider.isEnabled = true;
                     this.faustInterfaceView.slider.classList.add("allowed");
                     this.faustInterfaceView.group.classList.add(Axis[this.accelerometerSlider.axis]);
@@ -1465,7 +1414,7 @@ var FaustInterfaceControler = /** @class */ (function () {
                     this.accParams.acc = this.acc;
                     this.accParams.isEnabled = false;
                     AccelerometerHandler.registerAcceleratedSlider(this.accParams, this);
-                    this.accelerometerSlider.callbackValueChange = function (address, value) { _this.callbackValueChange(address, value); };
+                    this.accelerometerSlider.callbackValueChange = (address, value) => { this.callbackValueChange(address, value); };
                     this.accelerometerSlider.isEnabled = false;
                     this.faustInterfaceView.slider.parentElement.classList.add("disabledAcc");
                 }
@@ -1475,7 +1424,7 @@ var FaustInterfaceControler = /** @class */ (function () {
                 this.accParams.acc = this.acc;
                 this.accParams.isEnabled = false;
                 AccelerometerHandler.registerAcceleratedSlider(this.accParams, this);
-                this.accelerometerSlider.callbackValueChange = function (address, value) { _this.callbackValueChange(address, value); };
+                this.accelerometerSlider.callbackValueChange = (address, value) => { this.callbackValueChange(address, value); };
                 this.accelerometerSlider.isEnabled = false;
                 if (this.faustInterfaceView.slider != undefined) {
                     this.faustInterfaceView.slider.parentElement.classList.add("disabledAcc");
@@ -1487,29 +1436,28 @@ var FaustInterfaceControler = /** @class */ (function () {
             this.accParams.acc = this.acc;
             this.accParams.isEnabled = false;
             AccelerometerHandler.registerAcceleratedSlider(this.accParams, this);
-            this.accelerometerSlider.callbackValueChange = function (address, value) { _this.callbackValueChange(address, value); };
+            this.accelerometerSlider.callbackValueChange = (address, value) => { this.callbackValueChange(address, value); };
             this.accelerometerSlider.isEnabled = false;
             if (this.faustInterfaceView.slider != undefined) {
                 this.faustInterfaceView.slider.parentElement.classList.add("disabledAcc");
             }
         }
-    };
-    //callback to update the dsp value 
-    FaustInterfaceControler.prototype.callbackValueChange = function (address, value) {
+    }
+    //callback to update the dsp value
+    callbackValueChange(address, value) {
         this.setDSPValueCallback(address, String(value));
         this.faustInterfaceView.slider.value = String((value - parseFloat(this.itemParam.min)) / parseFloat(this.itemParam.step));
         this.faustInterfaceView.output.textContent = String(value.toFixed(parseFloat(this.precision)));
-    };
-    return FaustInterfaceControler;
-}());
+    }
+}
 /********************************************************************
  ********************* ADD GRAPHICAL ELEMENTS ***********************
  ********************************************************************/
-var FaustInterfaceView = /** @class */ (function () {
-    function FaustInterfaceView(type) {
+class FaustInterfaceView {
+    constructor(type) {
         this.type = type;
     }
-    FaustInterfaceView.prototype.addFaustModuleSlider = function (itemParam, precision, unit) {
+    addFaustModuleSlider(itemParam, precision, unit) {
         var group = document.createElement("div");
         group.className = "control-group";
         var info = document.createElement("div");
@@ -1542,8 +1490,8 @@ var FaustInterfaceView = /** @class */ (function () {
         group.appendChild(slider);
         this.group = group;
         return group;
-    };
-    FaustInterfaceView.prototype.addFaustCheckBox = function (ivalue) {
+    }
+    addFaustCheckBox(ivalue) {
         var group = document.createElement("div");
         var checkbox = document.createElement("input");
         checkbox.type = "checkbox";
@@ -1555,8 +1503,8 @@ var FaustInterfaceView = /** @class */ (function () {
         group.appendChild(checkbox);
         group.appendChild(label);
         return checkbox;
-    };
-    FaustInterfaceView.prototype.addFaustButton = function (itemParam) {
+    }
+    addFaustButton(itemParam) {
         var group = document.createElement("div");
         var button = document.createElement("input");
         button.type = "button";
@@ -1564,14 +1512,13 @@ var FaustInterfaceView = /** @class */ (function () {
         this.button.value = itemParam.label;
         group.appendChild(button);
         return button;
-    };
-    return FaustInterfaceView;
-}());
+    }
+}
 /// <reference path="../Connect.ts"/>
 /*MODULEFAUST.JS
 HAND - MADE JAVASCRIPT CLASS CONTAINING A FAUST MODULE */
-var ModuleFaust = /** @class */ (function () {
-    function ModuleFaust(name) {
+class ModuleFaust {
+    constructor(name) {
         this.fOutputConnections = [];
         this.fInputConnections = [];
         this.recallOutputsDestination = [];
@@ -1580,35 +1527,34 @@ var ModuleFaust = /** @class */ (function () {
     }
     /*************** ACTIONS ON IN/OUTPUT MODULES ***************************/
     // ------ Returns Connection Array OR null if there are none
-    ModuleFaust.prototype.getInputConnections = function () {
+    getInputConnections() {
         return this.fInputConnections;
-    };
-    ModuleFaust.prototype.getOutputConnections = function () {
+    }
+    getOutputConnections() {
         return this.fOutputConnections;
-    };
-    ModuleFaust.prototype.addOutputConnection = function (connector) {
+    }
+    addOutputConnection(connector) {
         this.fOutputConnections.push(connector);
-    };
-    ModuleFaust.prototype.addInputConnection = function (connector) {
+    }
+    addInputConnection(connector) {
         this.fInputConnections.push(connector);
-    };
-    ModuleFaust.prototype.removeOutputConnection = function (connector) {
+    }
+    removeOutputConnection(connector) {
         this.fOutputConnections.splice(this.fOutputConnections.indexOf(connector), 1);
-    };
-    ModuleFaust.prototype.removeInputConnection = function (connector) {
+    }
+    removeInputConnection(connector) {
         this.fInputConnections.splice(this.fInputConnections.indexOf(connector), 1);
-    };
+    }
     /********************** GET/SET SOURCE/NAME/DSP ***********************/
-    ModuleFaust.prototype.setSource = function (code) {
+    setSource(code) {
         this.fSource = code;
-    };
-    ModuleFaust.prototype.getSource = function () { return this.fSource; };
-    ModuleFaust.prototype.getName = function () { return this.fName; };
-    ModuleFaust.prototype.getDSP = function () {
+    }
+    getSource() { return this.fSource; }
+    getName() { return this.fName; }
+    getDSP() {
         return this.fDSP;
-    };
-    return ModuleFaust;
-}());
+    }
+}
 /*				MODULEVIEW.JS
     HAND-MADE JAVASCRIPT CLASS CONTAINING A FAUST MODULE  INTERFACE
     
@@ -1622,11 +1568,11 @@ var ModuleFaust = /** @class */ (function () {
     IMG --> fEditImg
     ===================*/
 /// <reference path="../Utilitary.ts"/>
-var ModuleView = /** @class */ (function () {
-    function ModuleView() {
+class ModuleView {
+    constructor() {
         this.inputOutputNodeDimension = 32;
     }
-    ModuleView.prototype.createModuleView = function (ID, x, y, name, htmlParent) {
+    createModuleView(ID, x, y, name, htmlParent) {
         //------- GRAPHICAL ELEMENTS OF MODULE
         var fModuleContainer = document.createElement("div");
         fModuleContainer.className = "moduleFaust";
@@ -1690,17 +1636,17 @@ var ModuleView = /** @class */ (function () {
         this.fTitle = fTitle;
         this.x = x;
         this.y = y;
-    };
+    }
     // ------ Returns Graphical input and output Node
-    ModuleView.prototype.getOutputNode = function () { return this.fOutputNode; };
-    ModuleView.prototype.getInputNode = function () { return this.fInputNode; };
-    ModuleView.prototype.getModuleContainer = function () {
+    getOutputNode() { return this.fOutputNode; }
+    getInputNode() { return this.fInputNode; }
+    getModuleContainer() {
         return this.fModuleContainer;
-    };
-    ModuleView.prototype.getInterfaceContainer = function () {
+    }
+    getInterfaceContainer() {
         return this.fInterfaceContainer;
-    };
-    ModuleView.prototype.setInputNode = function () {
+    }
+    setInputNode() {
         this.fInputNode = document.createElement("div");
         this.fInputNode.className = "node node-input";
         this.fInputNode.draggable = false;
@@ -1709,8 +1655,8 @@ var ModuleView = /** @class */ (function () {
         spanNode.className = "node-button";
         this.fInputNode.appendChild(spanNode);
         this.fModuleContainer.appendChild(this.fInputNode);
-    };
-    ModuleView.prototype.setOutputNode = function () {
+    }
+    setOutputNode() {
         this.fOutputNode = document.createElement("div");
         this.fOutputNode.className = "node node-output";
         this.fOutputNode.draggable = false;
@@ -1719,8 +1665,8 @@ var ModuleView = /** @class */ (function () {
         spanNode.className = "node-button";
         this.fOutputNode.appendChild(spanNode);
         this.fModuleContainer.appendChild(this.fOutputNode);
-    };
-    ModuleView.prototype.deleteInputOutputNodes = function () {
+    }
+    deleteInputOutputNodes() {
         if (this.fInputNode) {
             this.fModuleContainer.removeChild(this.fInputNode);
             this.fInputNode = null;
@@ -1729,106 +1675,114 @@ var ModuleView = /** @class */ (function () {
             this.fModuleContainer.removeChild(this.fOutputNode);
             this.fOutputNode = null;
         }
-    };
-    ModuleView.prototype.isPointInOutput = function (x, y) {
+    }
+    isPointInOutput(x, y) {
         if (this.fOutputNode && this.fOutputNode.getBoundingClientRect().left < x && x < this.fOutputNode.getBoundingClientRect().right && this.fOutputNode.getBoundingClientRect().top < y && y < this.fOutputNode.getBoundingClientRect().bottom) {
             return true;
         }
         return false;
-    };
-    ModuleView.prototype.isPointInInput = function (x, y) {
+    }
+    isPointInInput(x, y) {
         if (this.fInputNode && this.fInputNode.getBoundingClientRect().left <= x && x <= this.fInputNode.getBoundingClientRect().right && this.fInputNode.getBoundingClientRect().top <= y && y <= this.fInputNode.getBoundingClientRect().bottom) {
             return true;
         }
         return false;
-    };
-    ModuleView.prototype.isPointInNode = function (x, y) {
+    }
+    isPointInNode(x, y) {
         if (this.fModuleContainer && this.fModuleContainer.getBoundingClientRect().left < x && x < this.fModuleContainer.getBoundingClientRect().right && this.fModuleContainer.getBoundingClientRect().top < y && y < this.fModuleContainer.getBoundingClientRect().bottom) {
             return true;
         }
         return false;
-    };
-    return ModuleView;
-}());
-var ModuleClass = /** @class */ (function () {
-    function ModuleClass(id, x, y, name, htmlElementModuleContainer, removeModuleCallBack, compileFaust) {
-        var _this = this;
+    }
+}
+/*				MODULECLASS.JS
+    HAND-MADE JAVASCRIPT CLASS CONTAINING A FAUST MODULE AND ITS INTERFACE
+
+*/
+/// <reference path="../Dragging.ts"/>
+/// <reference path="../CodeFaustParser.ts"/>
+/// <reference path="../Connect.ts"/>
+/// <reference path="../Modules/FaustInterface.ts"/>
+/// <reference path="../Messages.ts"/>
+/// <reference path="ModuleFaust.ts"/>
+/// <reference path="ModuleView.ts"/>
+class ModuleClass {
+    constructor(id, x, y, name, htmlElementModuleContainer, removeModuleCallBack, compileFaust) {
         //drag object to handle dragging of module and connection
         this.drag = new Drag();
         this.dragList = [];
         this.moduleControles = [];
         this.fModuleInterfaceParams = {};
-        this.eventConnectorHandler = function (event) { _this.dragCnxCallback(event, _this); };
-        this.eventCloseEditHandler = function (event) { _this.recompileSource(event, _this); };
-        this.eventOpenEditHandler = function () { _this.edit(); };
+        this.eventConnectorHandler = (event) => { this.dragCnxCallback(event, this); };
+        this.eventCloseEditHandler = (event) => { this.recompileSource(event, this); };
+        this.eventOpenEditHandler = () => { this.edit(); };
         this.compileFaust = compileFaust;
         this.deleteCallback = removeModuleCallBack;
-        this.eventDraggingHandler = function (event) { _this.dragCallback(event, _this); };
+        this.eventDraggingHandler = (event) => { this.dragCallback(event, this); };
         this.moduleView = new ModuleView();
         this.moduleView.createModuleView(id, x, y, name, htmlElementModuleContainer);
         this.moduleFaust = new ModuleFaust(name);
         this.addEvents();
     }
     //add all event listener to the moduleView
-    ModuleClass.prototype.addEvents = function () {
-        var _this = this;
+    addEvents() {
         this.moduleView.getModuleContainer().addEventListener("mousedown", this.eventDraggingHandler, false);
         this.moduleView.getModuleContainer().addEventListener("touchstart", this.eventDraggingHandler, false);
         this.moduleView.getModuleContainer().addEventListener("touchmove", this.eventDraggingHandler, false);
         this.moduleView.getModuleContainer().addEventListener("touchend", this.eventDraggingHandler, false);
         if (this.moduleView.textArea != undefined) {
-            this.moduleView.textArea.addEventListener("touchstart", function (e) { e.stopPropagation(); });
-            this.moduleView.textArea.addEventListener("touchend", function (e) { e.stopPropagation(); });
-            this.moduleView.textArea.addEventListener("touchmove", function (e) { e.stopPropagation(); });
-            this.moduleView.textArea.addEventListener("mousedown", function (e) { e.stopPropagation(); });
+            this.moduleView.textArea.addEventListener("touchstart", (e) => { e.stopPropagation(); });
+            this.moduleView.textArea.addEventListener("touchend", (e) => { e.stopPropagation(); });
+            this.moduleView.textArea.addEventListener("touchmove", (e) => { e.stopPropagation(); });
+            this.moduleView.textArea.addEventListener("mousedown", (e) => { e.stopPropagation(); });
         }
         if (this.moduleView.closeButton != undefined) {
-            this.moduleView.closeButton.addEventListener("click", function () { _this.deleteModule(); });
-            this.moduleView.closeButton.addEventListener("touchend", function () { _this.deleteModule(); });
+            this.moduleView.closeButton.addEventListener("click", () => { this.deleteModule(); });
+            this.moduleView.closeButton.addEventListener("touchend", () => { this.deleteModule(); });
         }
         if (this.moduleView.miniButton != undefined) {
-            this.moduleView.miniButton.addEventListener("click", function () { _this.minModule(); });
-            this.moduleView.miniButton.addEventListener("touchend", function () { _this.minModule(); });
+            this.moduleView.miniButton.addEventListener("click", () => { this.minModule(); });
+            this.moduleView.miniButton.addEventListener("touchend", () => { this.minModule(); });
         }
         if (this.moduleView.maxButton != undefined) {
-            this.moduleView.maxButton.addEventListener("click", function () { _this.maxModule(); });
-            this.moduleView.maxButton.addEventListener("touchend", function () { _this.maxModule(); });
+            this.moduleView.maxButton.addEventListener("click", () => { this.maxModule(); });
+            this.moduleView.maxButton.addEventListener("touchend", () => { this.maxModule(); });
         }
         if (this.moduleView.fEditImg != undefined) {
             this.moduleView.fEditImg.addEventListener("click", this.eventOpenEditHandler);
             this.moduleView.fEditImg.addEventListener("touchend", this.eventOpenEditHandler);
         }
-    };
+    }
     /***************  PRIVATE METHODS  ******************************/
-    ModuleClass.prototype.dragCallback = function (event, module) {
+    dragCallback(event, module) {
         if (event.type == "mousedown") {
-            module.drag.getDraggingMouseEvent(event, module, function (el, x, y, module, e) { module.drag.startDraggingModule(el, x, y, module, e); });
+            module.drag.getDraggingMouseEvent(event, module, (el, x, y, module, e) => { module.drag.startDraggingModule(el, x, y, module, e); });
         }
         else if (event.type == "mouseup") {
-            module.drag.getDraggingMouseEvent(event, module, function (el, x, y, module, e) { module.drag.stopDraggingModule(el, x, y, module, e); });
+            module.drag.getDraggingMouseEvent(event, module, (el, x, y, module, e) => { module.drag.stopDraggingModule(el, x, y, module, e); });
         }
         else if (event.type == "mousemove") {
-            module.drag.getDraggingMouseEvent(event, module, function (el, x, y, module, e) { module.drag.whileDraggingModule(el, x, y, module, e); });
+            module.drag.getDraggingMouseEvent(event, module, (el, x, y, module, e) => { module.drag.whileDraggingModule(el, x, y, module, e); });
         }
         else if (event.type == "touchstart") {
-            module.drag.getDraggingTouchEvent(event, module, function (el, x, y, module, e) { module.drag.startDraggingModule(el, x, y, module, e); });
+            module.drag.getDraggingTouchEvent(event, module, (el, x, y, module, e) => { module.drag.startDraggingModule(el, x, y, module, e); });
         }
         else if (event.type == "touchmove") {
-            module.drag.getDraggingTouchEvent(event, module, function (el, x, y, module, e) { module.drag.whileDraggingModule(el, x, y, module, e); });
+            module.drag.getDraggingTouchEvent(event, module, (el, x, y, module, e) => { module.drag.whileDraggingModule(el, x, y, module, e); });
         }
         else if (event.type == "touchend") {
-            module.drag.getDraggingTouchEvent(event, module, function (el, x, y, module, e) { module.drag.stopDraggingModule(el, x, y, module, e); });
+            module.drag.getDraggingTouchEvent(event, module, (el, x, y, module, e) => { module.drag.stopDraggingModule(el, x, y, module, e); });
         }
-    };
-    ModuleClass.prototype.dragCnxCallback = function (event, module) {
+    }
+    dragCnxCallback(event, module) {
         if (event.type == "mousedown") {
-            module.drag.getDraggingMouseEvent(event, module, function (el, x, y, module, e) { module.drag.startDraggingConnector(el, x, y, module, e); });
+            module.drag.getDraggingMouseEvent(event, module, (el, x, y, module, e) => { module.drag.startDraggingConnector(el, x, y, module, e); });
         }
         else if (event.type == "mouseup") {
-            module.drag.getDraggingMouseEvent(event, module, function (el, x, y, module) { module.drag.stopDraggingConnector(el, x, y, module); });
+            module.drag.getDraggingMouseEvent(event, module, (el, x, y, module) => { module.drag.stopDraggingConnector(el, x, y, module); });
         }
         else if (event.type == "mousemove") {
-            module.drag.getDraggingMouseEvent(event, module, function (el, x, y, module, e) { module.drag.whileDraggingConnector(el, x, y, module, e); });
+            module.drag.getDraggingMouseEvent(event, module, (el, x, y, module, e) => { module.drag.whileDraggingConnector(el, x, y, module, e); });
         }
         else if (event.type == "touchstart") {
             var newdrag = new Drag();
@@ -1836,12 +1790,12 @@ var ModuleClass = /** @class */ (function () {
             newdrag.originTarget = event.target;
             module.dragList.push(newdrag);
             var index = module.dragList.length - 1;
-            module.dragList[index].getDraggingTouchEvent(event, module, function (el, x, y, module, e) { module.dragList[index].startDraggingConnector(el, x, y, module, e); });
+            module.dragList[index].getDraggingTouchEvent(event, module, (el, x, y, module, e) => { module.dragList[index].startDraggingConnector(el, x, y, module, e); });
         }
         else if (event.type == "touchmove") {
             for (var i = 0; i < module.dragList.length; i++) {
                 if (module.dragList[i].originTarget == event.target) {
-                    module.dragList[i].getDraggingTouchEvent(event, module, function (el, x, y, module, e) { module.dragList[i].whileDraggingConnector(el, x, y, module, e); });
+                    module.dragList[i].getDraggingTouchEvent(event, module, (el, x, y, module, e) => { module.dragList[i].whileDraggingConnector(el, x, y, module, e); });
                 }
             }
         }
@@ -1850,14 +1804,14 @@ var ModuleClass = /** @class */ (function () {
             document.dispatchEvent(customEvent);
             for (var i = 0; i < module.dragList.length; i++) {
                 if (module.dragList[i].originTarget == event.target) {
-                    module.dragList[i].getDraggingTouchEvent(event, module, function (el, x, y, module) { module.dragList[i].stopDraggingConnector(el, x, y, module); });
+                    module.dragList[i].getDraggingTouchEvent(event, module, (el, x, y, module) => { module.dragList[i].stopDraggingConnector(el, x, y, module); });
                 }
             }
             document.dispatchEvent(customEvent);
         }
-    };
+    }
     /*******************************  PUBLIC METHODS  **********************************/
-    ModuleClass.prototype.deleteModule = function () {
+    deleteModule() {
         var connector = new Connector();
         connector.disconnectModule(this);
         this.deleteFaustInterface();
@@ -1866,31 +1820,32 @@ var ModuleClass = /** @class */ (function () {
             this.moduleView.fModuleContainer.parentNode.removeChild(this.moduleView.fModuleContainer);
         this.deleteDSP(this.moduleFaust.fDSP);
         this.deleteCallback(this);
-    };
+    }
     //make module smaller
-    ModuleClass.prototype.minModule = function () {
+    minModule() {
         this.moduleView.fInterfaceContainer.classList.add("mini");
         this.moduleView.fTitle.classList.add("miniTitle");
         this.moduleView.miniButton.style.display = "none";
         this.moduleView.maxButton.style.display = "block";
         Connector.redrawInputConnections(this, this.drag);
         Connector.redrawOutputConnections(this, this.drag);
-    };
+    }
     //restore module size
-    ModuleClass.prototype.maxModule = function () {
+    maxModule() {
         this.moduleView.fInterfaceContainer.classList.remove("mini");
         this.moduleView.fTitle.classList.remove("miniTitle");
         this.moduleView.maxButton.style.display = "none";
         this.moduleView.miniButton.style.display = "block";
         Connector.redrawInputConnections(this, this.drag);
         Connector.redrawOutputConnections(this, this.drag);
-    };
+    }
     //--- Create and Update are called once a source code is compiled and the factory exists
-    ModuleClass.prototype.createDSP = function (factory) {
+    createDSP(factory, callback) {
         this.moduleFaust.factory = factory;
         try {
             if (factory != null) {
-                this.moduleFaust.fDSP = faust.createDSPInstance(factory, Utilitary.audioContext, 1024);
+                var moduleFaust = this.moduleFaust;
+                faust.createDSPInstance(factory, Utilitary.audioContext, 1024, function (dsp) { moduleFaust.fDSP = dsp; callback(); });
             }
             else {
                 throw new Error("create DSP Error factory null");
@@ -1900,48 +1855,49 @@ var ModuleClass = /** @class */ (function () {
             new Message(Utilitary.messageRessource.errorCreateDSP + " : " + e);
             Utilitary.hideFullPageLoading();
         }
-    };
-    //--- Update DSP in module 
-    ModuleClass.prototype.updateDSP = function (factory, module) {
+    }
+    //--- Update DSP in module
+    updateDSP(factory, module) {
         var toDelete = module.moduleFaust.fDSP;
         // 	Save Cnx
         var saveOutCnx = new Array().concat(module.moduleFaust.fOutputConnections);
         var saveInCnx = new Array().concat(module.moduleFaust.fInputConnections);
-        // Delete old ModuleClass 
+        // Delete old ModuleClass
         var connector = new Connector();
         connector.disconnectModule(module);
         module.deleteFaustInterface();
         module.moduleView.deleteInputOutputNodes();
         // Create new one
-        module.createDSP(factory);
-        module.moduleFaust.fName = module.moduleFaust.fTempName;
-        module.moduleFaust.fSource = module.moduleFaust.fTempSource;
-        module.setFaustInterfaceControles();
-        module.createFaustInterface();
-        module.addInputOutputNodes();
-        module.deleteDSP(toDelete);
-        // Recall Cnx
-        if (saveOutCnx && module.moduleView.getOutputNode()) {
-            for (var i = 0; i < saveOutCnx.length; i++) {
-                if (saveOutCnx[i])
-                    connector.createConnection(module, module.moduleView.getOutputNode(), saveOutCnx[i].destination, saveOutCnx[i].destination.moduleView.getInputNode());
+        module.createDSP(factory, function () {
+            module.moduleFaust.fName = module.moduleFaust.fTempName;
+            module.moduleFaust.fSource = module.moduleFaust.fTempSource;
+            module.setFaustInterfaceControles();
+            module.createFaustInterface();
+            module.addInputOutputNodes();
+            module.deleteDSP(toDelete);
+            // Recall Cnx
+            if (saveOutCnx && module.moduleView.getOutputNode()) {
+                for (var i = 0; i < saveOutCnx.length; i++) {
+                    if (saveOutCnx[i])
+                        connector.createConnection(module, module.moduleView.getOutputNode(), saveOutCnx[i].destination, saveOutCnx[i].destination.moduleView.getInputNode());
+                }
             }
-        }
-        if (saveInCnx && module.moduleView.getInputNode()) {
-            for (var i = 0; i < saveInCnx.length; i++) {
-                if (saveInCnx[i])
-                    connector.createConnection(saveInCnx[i].source, saveInCnx[i].source.moduleView.getOutputNode(), module, module.moduleView.getInputNode());
+            if (saveInCnx && module.moduleView.getInputNode()) {
+                for (var i = 0; i < saveInCnx.length; i++) {
+                    if (saveInCnx[i])
+                        connector.createConnection(saveInCnx[i].source, saveInCnx[i].source.moduleView.getOutputNode(), module, module.moduleView.getInputNode());
+                }
             }
-        }
-        Utilitary.hideFullPageLoading();
-    };
-    ModuleClass.prototype.deleteDSP = function (todelete) {
+            Utilitary.hideFullPageLoading();
+        });
+    }
+    deleteDSP(todelete) {
         // 	TO DO SAFELY --> FOR NOW CRASHES SOMETIMES
         // 		if(todelete)
         // 		    faust.deleteDSPInstance(todelete);
-    };
+    }
     /******************** EDIT SOURCE & RECOMPILE *************************/
-    ModuleClass.prototype.edit = function () {
+    edit() {
         this.saveInterfaceParams();
         var event = new CustomEvent("codeeditevent");
         document.dispatchEvent(event);
@@ -1955,20 +1911,19 @@ var ModuleClass = /** @class */ (function () {
         this.moduleView.fEditImg.addEventListener("touchend", this.eventCloseEditHandler);
         this.moduleView.fEditImg.removeEventListener("click", this.eventOpenEditHandler);
         this.moduleView.fEditImg.removeEventListener("touchend", this.eventOpenEditHandler);
-    };
+    }
     //---- Update ModuleClass with new name/code source
-    ModuleClass.prototype.update = function (name, code) {
+    update(name, code) {
         var event = new CustomEvent("codeeditevent");
         document.dispatchEvent(event);
         this.moduleFaust.fTempName = name;
         this.moduleFaust.fTempSource = code;
         var module = this;
-        this.compileFaust({ name: name, sourceCode: code, x: this.moduleView.x, y: this.moduleView.y, callback: function (factory) { module.updateDSP(factory, module); } });
-    };
+        this.compileFaust({ name: name, sourceCode: code, x: this.moduleView.x, y: this.moduleView.y, callback: (factory) => { module.updateDSP(factory, module); } });
+    }
     //---- React to recompilation triggered by click on icon
-    ModuleClass.prototype.recompileSource = function (event, module) {
+    recompileSource(event, module) {
         Utilitary.showFullPageLoading();
-        var buttonImage = event.target;
         var dsp_code = this.moduleView.textArea.value;
         this.moduleView.textArea.style.display = "none";
         Connector.redrawOutputConnections(this, this.drag);
@@ -1980,17 +1935,16 @@ var ModuleClass = /** @class */ (function () {
         module.moduleView.fEditImg.addEventListener("touchend", this.eventOpenEditHandler);
         module.moduleView.fEditImg.removeEventListener("click", this.eventCloseEditHandler);
         module.moduleView.fEditImg.removeEventListener("touchend", this.eventCloseEditHandler);
-    };
+    }
     /***************** CREATE/DELETE the DSP Interface ********************/
     // Fill fInterfaceContainer with the DSP's Interface (--> see FaustInterface.js)
-    ModuleClass.prototype.setFaustInterfaceControles = function () {
-        var _this = this;
+    setFaustInterfaceControles() {
         this.moduleView.fTitle.textContent = this.moduleFaust.fName;
-        var moduleFaustInterface = new FaustInterfaceControler(function (faustInterface) { _this.interfaceSliderCallback(faustInterface); }, function (adress, value) { _this.moduleFaust.fDSP.setValue(adress, value); });
-        this.moduleControles = moduleFaustInterface.parseFaustJsonUI(JSON.parse(this.moduleFaust.fDSP.json()).ui, this);
-    };
+        var moduleFaustInterface = new FaustInterfaceControler((faustInterface) => { this.interfaceSliderCallback(faustInterface); }, (adress, value) => { this.moduleFaust.fDSP.setParamValue(adress, value); });
+        this.moduleControles = moduleFaustInterface.parseFaustJsonUI(JSON.parse(this.moduleFaust.fDSP.getJSON()).ui, this);
+    }
     // Create FaustInterfaceControler, set its callback and add its AccelerometerSlider
-    ModuleClass.prototype.createFaustInterface = function () {
+    createFaustInterface() {
         for (var i = 0; i < this.moduleControles.length; i++) {
             var faustInterfaceControler = this.moduleControles[i];
             faustInterfaceControler.setParams();
@@ -2001,16 +1955,16 @@ var ModuleClass = /** @class */ (function () {
             faustInterfaceControler.setEventListener();
             faustInterfaceControler.createAccelerometer();
         }
-    };
+    }
     // Delete all FaustInterfaceControler
-    ModuleClass.prototype.deleteFaustInterface = function () {
+    deleteFaustInterface() {
         this.deleteAccelerometerRef();
         while (this.moduleView.fInterfaceContainer.childNodes.length != 0) {
             this.moduleView.fInterfaceContainer.removeChild(this.moduleView.fInterfaceContainer.childNodes[0]);
         }
-    };
+    }
     // Remove AccelerometerSlider ref from AccelerometerHandler
-    ModuleClass.prototype.deleteAccelerometerRef = function () {
+    deleteAccelerometerRef() {
         for (var i = 0; i < this.moduleControles.length; i++) {
             if (this.moduleControles[i].accelerometerSlider != null && this.moduleControles[i].accelerometerSlider != undefined) {
                 var index = AccelerometerHandler.faustInterfaceControler.indexOf(this.moduleControles[i]);
@@ -2019,26 +1973,26 @@ var ModuleClass = /** @class */ (function () {
             }
         }
         this.moduleControles = [];
-    };
+    }
     // set DSP value to all FaustInterfaceControlers
-    ModuleClass.prototype.setDSPValue = function () {
+    setDSPValue() {
         for (var i = 0; i < this.moduleControles.length; i++) {
-            this.moduleFaust.fDSP.setValue(this.moduleControles[i].itemParam.address, this.moduleControles[i].value);
+            this.moduleFaust.fDSP.setParamValue(this.moduleControles[i].itemParam.address, this.moduleControles[i].value);
         }
-    };
+    }
     // set DSP value to specific FaustInterfaceControlers
-    ModuleClass.prototype.setDSPValueCallback = function (address, value) {
-        this.moduleFaust.fDSP.setValue(address, value);
-    };
+    setDSPValueCallback(address, value) {
+        this.moduleFaust.fDSP.setParamValue(address, value);
+    }
     // Updates Faust Code with new accelerometer metadata
-    ModuleClass.prototype.updateCodeFaust = function (details) {
+    updateCodeFaust(details) {
         var m = forgeAccMetadata(details.newAccValue, details.isEnabled);
         var s = updateAccInFaustCode(this.moduleFaust.fSource, details.sliderName, m);
         this.moduleFaust.fSource = s;
-    };
+    }
     //---- Generic callback for Faust Interface
     //---- Called every time an element of the UI changes value
-    ModuleClass.prototype.interfaceSliderCallback = function (faustControler) {
+    interfaceSliderCallback(faustControler) {
         var val;
         if (faustControler.faustInterfaceView.slider) {
             var input = faustControler.faustInterfaceView.slider;
@@ -2060,10 +2014,9 @@ var ModuleClass = /** @class */ (function () {
         if (output)
             output.textContent = "" + val + " " + faustControler.unit;
         // 	Search for DSP then update the value of its parameter.
-        this.moduleFaust.fDSP.setValue(text, val);
-    };
-    ModuleClass.prototype.interfaceButtonCallback = function (faustControler, val) {
-        var input = faustControler.faustInterfaceView.button;
+        this.moduleFaust.fDSP.setParamValue(text, val);
+    }
+    interfaceButtonCallback(faustControler, val) {
         var text = faustControler.itemParam.address;
         faustControler.value = val.toString();
         var output = faustControler.faustInterfaceView.output;
@@ -2071,33 +2024,31 @@ var ModuleClass = /** @class */ (function () {
         if (output)
             output.textContent = "" + val + " " + faustControler.unit;
         // 	Search for DSP then update the value of its parameter.
-        this.moduleFaust.fDSP.setValue(text, val.toString());
-    };
+        this.moduleFaust.fDSP.setParamValue(text, val.toString());
+    }
     // Save graphical parameters of a Faust Node
-    ModuleClass.prototype.saveInterfaceParams = function () {
-        var interfaceElements = this.moduleView.fInterfaceContainer.childNodes;
+    saveInterfaceParams() {
         var controls = this.moduleControles;
         for (var j = 0; j < controls.length; j++) {
             var text = controls[j].itemParam.address;
             this.fModuleInterfaceParams[text] = controls[j].value;
         }
-    };
-    ModuleClass.prototype.recallInterfaceParams = function () {
+    }
+    recallInterfaceParams() {
         for (var key in this.fModuleInterfaceParams)
-            this.moduleFaust.fDSP.setValue(key, this.fModuleInterfaceParams[key]);
-    };
-    ModuleClass.prototype.getInterfaceParams = function () {
+            this.moduleFaust.fDSP.setParamValue(key, this.fModuleInterfaceParams[key]);
+    }
+    getInterfaceParams() {
         return this.fModuleInterfaceParams;
-    };
-    ModuleClass.prototype.setInterfaceParams = function (parameters) {
+    }
+    setInterfaceParams(parameters) {
         this.fModuleInterfaceParams = parameters;
-    };
-    ModuleClass.prototype.addInterfaceParam = function (path, value) {
+    }
+    addInterfaceParam(path, value) {
         this.fModuleInterfaceParams[path] = value.toString();
-    };
+    }
     /******************* GET/SET INPUT/OUTPUT NODES **********************/
-    ModuleClass.prototype.addInputOutputNodes = function () {
-        var module = this;
+    addInputOutputNodes() {
         if (this.moduleFaust.fDSP.getNumInputs() > 0 && this.moduleView.fName != "input") {
             this.moduleView.setInputNode();
             this.moduleView.fInputNode.addEventListener("mousedown", this.eventConnectorHandler);
@@ -2112,37 +2063,41 @@ var ModuleClass = /** @class */ (function () {
             this.moduleView.fOutputNode.addEventListener("touchmove", this.eventConnectorHandler);
             this.moduleView.fOutputNode.addEventListener("touchend", this.eventConnectorHandler);
         }
-    };
+    }
     //manage style of node when touchover will dragging
     //make the use easier for connections
-    ModuleClass.prototype.styleInputNodeTouchDragOver = function (el) {
+    styleInputNodeTouchDragOver(el) {
         el.style.border = "15px double rgb(0, 211, 255)";
         el.style.left = "-32px";
         el.style.marginTop = "-32px";
         ModuleClass.isNodesModuleUnstyle = false;
-    };
-    ModuleClass.prototype.styleOutputNodeTouchDragOver = function (el) {
+    }
+    styleOutputNodeTouchDragOver(el) {
         el.style.border = "15px double rgb(0, 211, 255)";
         el.style.right = "-32px";
         el.style.marginTop = "-32px";
         ModuleClass.isNodesModuleUnstyle = false;
-    };
-    ModuleClass.isNodesModuleUnstyle = true;
-    return ModuleClass;
-}());
-var Connector = /** @class */ (function () {
-    function Connector() {
     }
+}
+ModuleClass.isNodesModuleUnstyle = true;
+/*				CONNECT.JS
+    Handles Audio/Graphical Connection/Deconnection of modules
+    This is a historical file from Chris Wilson, modified for Faust ModuleClass needs.
+*/
+/// <reference path="Modules/ModuleClass.ts"/>
+/// <reference path="Utilitary.ts"/>
+/// <reference path="Dragging.ts"/>
+class Connector {
     // connect input node to device input
-    Connector.prototype.connectInput = function (inputModule, divSrc) {
-        divSrc.audioNode.connect(inputModule.moduleFaust.getDSP().getProcessor());
-    };
+    connectInput(inputModule, divSrc) {
+        divSrc.audioNode.connect(inputModule.moduleFaust.getDSP());
+    }
     //connect output to device output
-    Connector.prototype.connectOutput = function (outputModule, divOut) {
-        outputModule.moduleFaust.getDSP().getProcessor().connect(divOut.audioNode);
-    };
+    connectOutput(outputModule, divOut) {
+        outputModule.moduleFaust.getDSP().connect(divOut.audioNode);
+    }
     // Connect Nodes in Web Audio Graph
-    Connector.prototype.connectModules = function (source, destination) {
+    connectModules(source, destination) {
         var sourceDSP;
         var destinationDSP;
         if (destination != null && destination.moduleFaust.getDSP) {
@@ -2151,21 +2106,21 @@ var Connector = /** @class */ (function () {
         if (source.moduleFaust.getDSP) {
             sourceDSP = source.moduleFaust.getDSP();
         }
-        if (sourceDSP.getProcessor && destinationDSP.getProcessor()) {
-            sourceDSP.getProcessor().connect(destinationDSP.getProcessor());
+        if (sourceDSP && destinationDSP) {
+            sourceDSP.connect(destinationDSP);
         }
         source.setDSPValue();
         destination.setDSPValue();
-    };
+    }
     // Disconnect Nodes in Web Audio Graph
-    Connector.prototype.disconnectModules = function (source, destination) {
+    disconnectModules(source, destination) {
         // We want to be dealing with the audio node elements from here on
         var sourceCopy = source;
         var sourceCopyDSP;
         // Searching for src/dst DSP if existing
         if (sourceCopy != undefined && sourceCopy.moduleFaust.getDSP) {
             sourceCopyDSP = sourceCopy.moduleFaust.getDSP();
-            sourceCopyDSP.getProcessor().disconnect();
+            sourceCopyDSP.disconnect();
         }
         // Reconnect all disconnected connections (because disconnect API cannot break a single connection)
         if (source != undefined && source.moduleFaust.getOutputConnections()) {
@@ -2174,30 +2129,30 @@ var Connector = /** @class */ (function () {
                     this.connectModules(source, source.moduleFaust.getOutputConnections()[i].destination);
             }
         }
-    };
+    }
     /**************************************************/
     /***************** Save Connection*****************/
     /**************************************************/
     //----- Add connection to src and dst connections structures
-    Connector.prototype.saveConnection = function (source, destination, connectorShape) {
+    saveConnection(source, destination, connectorShape) {
         this.connectorShape = connectorShape;
         this.destination = destination;
         this.source = source;
-    };
+    }
     /***************************************************************/
     /**************** Create/Break Connection(s) *******************/
     /***************************************************************/
-    Connector.prototype.createConnection = function (source, outtarget, destination, intarget) {
+    createConnection(source, outtarget, destination, intarget) {
         var drag = new Drag();
         drag.startDraggingConnection(source, outtarget);
         drag.stopDraggingConnection(source, destination);
-    };
-    Connector.prototype.deleteConnection = function (event, drag) {
+    }
+    deleteConnection(event, drag) {
         event.stopPropagation();
         this.breakSingleInputConnection(this.source, this.destination, this);
         return true;
-    };
-    Connector.prototype.breakSingleInputConnection = function (source, destination, connector) {
+    }
+    breakSingleInputConnection(source, destination, connector) {
         this.disconnectModules(source, destination);
         // delete connection from src .outputConnections,
         if (source != undefined && source.moduleFaust.getOutputConnections) {
@@ -2210,21 +2165,21 @@ var Connector = /** @class */ (function () {
         // and delete the connectorShape
         if (connector.connectorShape)
             connector.connectorShape.remove();
-    };
+    }
     // Disconnect a node from all its connections
-    Connector.prototype.disconnectModule = function (module) {
+    disconnectModule(module) {
         //for all output nodes
         if (module.moduleFaust.getOutputConnections && module.moduleFaust.getOutputConnections()) {
             while (module.moduleFaust.getOutputConnections().length > 0)
                 this.breakSingleInputConnection(module, module.moduleFaust.getOutputConnections()[0].destination, module.moduleFaust.getOutputConnections()[0]);
         }
-        //for all input nodes 
+        //for all input nodes
         if (module.moduleFaust.getInputConnections && module.moduleFaust.getInputConnections()) {
             while (module.moduleFaust.getInputConnections().length > 0)
                 this.breakSingleInputConnection(module.moduleFaust.getInputConnections()[0].source, module, module.moduleFaust.getInputConnections()[0]);
         }
-    };
-    Connector.redrawInputConnections = function (module, drag) {
+    }
+    static redrawInputConnections(module, drag) {
         var offset = module.moduleView.getInputNode();
         var x = module.moduleView.inputOutputNodeDimension / 2; // + window.scrollX ;
         var y = module.moduleView.inputOutputNodeDimension / 2; // + window.scrollY;
@@ -2243,8 +2198,8 @@ var Connector = /** @class */ (function () {
             currentConnectorShape.setAttributeNS(null, "d", d);
             drag.updateConnectorShapePath(currentConnectorShape, x1, x2, y1, y2);
         }
-    };
-    Connector.redrawOutputConnections = function (module, drag) {
+    }
+    static redrawOutputConnections(module, drag) {
         var offset = module.moduleView.getOutputNode();
         var x = module.moduleView.inputOutputNodeDimension / 2; // + window.scrollX ;
         var y = module.moduleView.inputOutputNodeDimension / 2; // + window.scrollY;
@@ -2265,23 +2220,21 @@ var Connector = /** @class */ (function () {
                 drag.updateConnectorShapePath(currentConnectorShape, x1, x2, y1, y2);
             }
         }
-    };
-    Connector.connectorId = 0;
-    return Connector;
-}());
+    }
+}
+Connector.connectorId = 0;
+/// <reference path="Lib/qrcode.d.ts"/>
 /************************************************************
 ***************** Interface to FaustWeb *********************
 ************************************************************/
-var ExportLib = /** @class */ (function () {
-    function ExportLib() {
-    }
+class ExportLib {
     //--- Send asynchronous POST request to FaustWeb to compile a faust DSP
     // @exportUrl : url of FaustWeb service to target
     // @name : name of DSP to compile
     // @source_code : Faust code to compile
-    // @callback : function called once request succeeded 
+    // @callback : function called once request succeeded
     // 				- @param : the sha key corresponding to source_code
-    ExportLib.getSHAKey = function (exportUrl, name, source_code, callback, errCallback) {
+    static getSHAKey(exportUrl, name, source_code, callback, errCallback) {
         var filename = name + ".dsp";
         var file = new File([source_code], filename);
         var newRequest = new XMLHttpRequest();
@@ -2296,14 +2249,14 @@ var ExportLib = /** @class */ (function () {
                 errCallback(newRequest.responseText);
         };
         newRequest.send(params);
-    };
-    //--- Send asynchronous GET request to precompile target 
+    }
+    //--- Send asynchronous GET request to precompile target
     // @exportUrl : url of FaustWeb service to target
     // @sha : sha key of DSP to precompile
     // @platform/architecture : platform/architecture to precompile
-    // @callback : function called once request succeeded 
-    // 				- @param : the sha key 
-    ExportLib.prototype.sendPrecompileRequest = function (exportUrl, sha, platforme, architecture, appType, callback) {
+    // @callback : function called once request succeeded
+    // 				- @param : the sha key
+    sendPrecompileRequest(exportUrl, sha, platforme, architecture, appType, callback) {
         var getrequest = new XMLHttpRequest();
         getrequest.onreadystatechange = function () {
             if (getrequest.readyState == 4) {
@@ -2313,19 +2266,19 @@ var ExportLib = /** @class */ (function () {
         var compileUrl = exportUrl + "/" + sha + "/" + platforme + "/" + architecture + "/precompile";
         getrequest.open("GET", compileUrl, true);
         getrequest.send(null);
-    };
-    //--- Transform target 
+    }
+    //--- Transform target
     // WARNING = THIS FUNCTION REQUIRES QRCODE.JS TO BE INCLUDED IN YOUR HTML FILE
     // @exportUrl : url of FaustWeb service to target
     // @sha : sha key of DSP
     // @platform/architecture/target : platform/architecture/target compiled
     // @cote : width and height of the returned QrCode
-    ExportLib.getQrCode = function (url, sha, plateform, architecture, target, size) {
+    static getQrCode(url, sha, plateform, architecture, target, size) {
         var downloadString = url + "/" + sha + "/" + plateform + "/" + architecture + "/" + target;
         var whiteContainer = document.createElement('div');
         whiteContainer.style.cssText = "width:" + size.toString() + "px; height:" + size.toString() + "px; background-color:white; position:relative; margin-left:auto; margin-right:auto; padding:3px;";
         var qqDiv = document.createElement('qrcode');
-        var qq = new QRCode(qqDiv, {
+        new QRCode(qqDiv, {
             text: downloadString,
             width: size,
             height: size,
@@ -2335,9 +2288,9 @@ var ExportLib = /** @class */ (function () {
         });
         whiteContainer.appendChild(qqDiv);
         return whiteContainer;
-    };
+    }
     // Return the array of available platforms from the json description
-    ExportLib.prototype.getPlatforms = function (json) {
+    getPlatforms(json) {
         var platforms = [];
         var data = JSON.parse(json);
         var index = 0;
@@ -2346,49 +2299,52 @@ var ExportLib = /** @class */ (function () {
             index++;
         }
         return platforms;
-    };
+    }
     // Return the list of available architectures for a specific platform from the json description
-    ExportLib.prototype.getArchitectures = function (json, platform) {
-        var architectures = [];
+    getArchitectures(json, platform) {
         var data = JSON.parse(json);
         return data[platform];
-    };
-    return ExportLib;
-}());
-var ModuleTree = /** @class */ (function () {
-    function ModuleTree() {
     }
-    return ModuleTree;
-}());
-var EquivalentFaust = /** @class */ (function () {
-    function EquivalentFaust() {
-    }
-    EquivalentFaust.prototype.isModuleRecursiveExisting = function (moduleTree) {
+}
+/*				EQUIVALENTFAUST.JS
+
+    HELPER FUNCTIONS TO CREATE FAUST EQUIVALENT EXPRESSION FROM A PATCH
+
+    FIRST PART --> DERECURSIVIZE THE PATCH
+    SECOND PART --> CREATE THE FAUST EQUIVALENT FROM THE "DERECURSIVIZED" PATCH
+*/
+/// <reference path="Scenes/SceneClass.ts"/>
+/// <reference path="Modules/ModuleClass.ts"/>
+/// <reference path="Connect.ts"/>
+class ModuleTree {
+}
+class EquivalentFaust {
+    isModuleRecursiveExisting(moduleTree) {
         if (Utilitary.recursiveMap[moduleTree.patchID])
             return true;
         return false;
-    };
-    EquivalentFaust.prototype.giveIdToModules = function (scene) {
+    }
+    giveIdToModules(scene) {
         var modules = scene.getModules();
         for (var i = 0; i < modules.length; i++) {
             modules[i].patchID = String(i + 1);
         }
-    };
-    EquivalentFaust.prototype.treatRecursiveModule = function (moduleTree) {
+    }
+    treatRecursiveModule(moduleTree) {
         // 	Save recursion in map and flag it
         var ModuleToReplace = this.getFirstOccurenceOfModuleInCourse(moduleTree);
         Utilitary.recursiveMap[moduleTree.patchID] = ModuleToReplace;
         ModuleToReplace.recursiveFlag = true;
-    };
-    EquivalentFaust.prototype.getFirstOccurenceOfModuleInCourse = function (moduleTree) {
+    }
+    getFirstOccurenceOfModuleInCourse(moduleTree) {
         for (var i = 0; i < moduleTree.course.length; i++) {
             if (moduleTree.patchID == moduleTree.course[i].patchID) {
                 return moduleTree.course[i];
             }
         }
         return null;
-    };
-    EquivalentFaust.prototype.createTree = function (module, parent) {
+    }
+    createTree(module, parent) {
         var moduleTree = new ModuleTree();
         moduleTree.patchID = module.patchID;
         moduleTree.course = [];
@@ -2406,7 +2362,7 @@ var EquivalentFaust = /** @class */ (function () {
         }
         else if (this.getFirstOccurenceOfModuleInCourse(moduleTree)) {
             this.treatRecursiveModule(moduleTree);
-            // 	Stop Recursion in Tree		
+            // 	Stop Recursion in Tree
             moduleTree = null;
         }
         else if (module.patchID == "input") {
@@ -2422,7 +2378,7 @@ var EquivalentFaust = /** @class */ (function () {
             }
         }
         return moduleTree;
-    };
+    }
     /********************************************************************
     ***********************  CREATE FAUST EQUIVALENT ********************
     ********************************************************************/
@@ -2432,7 +2388,7 @@ var EquivalentFaust = /** @class */ (function () {
     //*** All trees are composed in parallel
     //*** Every Faust Expression is "Stereoized" before composition with other expressions to ensure composability
     // Computing a Module is computing its entries and merging them in the Module's own faust code.
-    EquivalentFaust.prototype.computeModule = function (module) {
+    computeModule(module) {
         var moduleInputs = module.moduleInputs;
         var faustResult = "";
         // Iterate on input Modules to compute them
@@ -2460,9 +2416,9 @@ var EquivalentFaust = /** @class */ (function () {
         else
             faustResult += "stereoize(environment{" + ModuleCode + "}.process)";
         return faustResult;
-    };
+    }
     // Computing the trees unconnected to the output
-    EquivalentFaust.prototype.connectUnconnectedModules = function (faustModuleList, output) {
+    connectUnconnectedModules(faustModuleList, output) {
         for (var i in faustModuleList) {
             var outputNode = faustModuleList[i].moduleView.getOutputNode();
             if (faustModuleList[i].moduleFaust.fName != "input" && outputNode && (!faustModuleList[i].moduleFaust.getOutputConnections || !faustModuleList[i].moduleFaust.getOutputConnections() || faustModuleList[i].moduleFaust.getOutputConnections().length == 0)) {
@@ -2470,9 +2426,9 @@ var EquivalentFaust = /** @class */ (function () {
                 connector.createConnection(faustModuleList[i], faustModuleList[i].moduleView.getOutputNode(), output, output.moduleView.getInputNode());
             }
         }
-    };
+    }
     //Calculate Faust Equivalent of the Scene
-    EquivalentFaust.prototype.getFaustEquivalent = function (scene, patchName) {
+    getFaustEquivalent(scene, patchName) {
         var faustModuleList = scene.getModules();
         if (faustModuleList.length > 0) {
             var dest = scene.getAudioOutput();
@@ -2514,15 +2470,54 @@ var EquivalentFaust = /** @class */ (function () {
         }
         else
             return null;
-    };
-    return EquivalentFaust;
-}());
+    }
+}
+//--------Plus Utilisé ---------------Create Faust Equivalent Module of the Scene
+//    // To avoid sharing instances of a same factory in the resulting Faust Equivalent
+//    wrapSourceCodesInGroups(){
+//	    var modules = getElementsByClassName("div", "moduleFaust");
+//	    for (var i = 0; i < modules.length; i++)
+//		    modules[i].Source = "process = vgroup(\"component"+ i.toString() + "\",environment{" + modules[i].Source + "}.process);";
+//    }
+//    function createFaustEquivalent(scene, patchName, parent){
+//    // Save All Params
+//	    var modules = scene.getModules();
+//	    for (var i = 0; i < modules.length; i++){
+//		    if(modules[i])
+//			    modules[i].saveParams();
+//	    }
+//    // Concatenate All Params
+//	    var fullParams = new Array();
+//	    for (var i = 0; i < modules.length; i++) {
+//		    if(modules[i]){
+//			    var arrayParams = modules[i].getParams;
+//    //   BIDOUILLE!!!!! Adding component wrapping to avoid merging of 2 instances of same factory
+//			    for(key in arrayParams){
+//				    var newKey = "/" + patchName /*+ "/component" + i.toString()*/ + key;
+//				    fullParams[newKey] = arrayParams[key];
+//			    }
+//		    }
+//	    }
+//    // THIS SHOULD BE DONE BUT FOR NOW IT CAUSED A PROBLEM, I CAN'T REMEMBER WHICH...
+//    // 	wrapSourceCodesInGroups();
+//	    var faustResult = getFaustEquivalent(scene, patchName);
+//	    if(faustResult){
+//    // Save concatenated params in new DIV
+//		    var DSP = createDSP(faustResult);
+//		    if(DSP){
+//			    var faustModule = createModule(idX++, document.body.scrollWidth/3, document.body.scrollHeight/3, patchName, parent, window.scenes[2].removeModule);
+// 			    faustModule.createDSP(faustResult);
+// 			    faustModule.setParams(fullParams);
+// 			    return faustModule;
+//		    }
+//	    }
+//	    return null;
+//    }
+//}
 //ExportView
 /// <reference path="../Utilitary.ts"/>
-var ExportView = /** @class */ (function () {
-    function ExportView() {
-    }
-    ExportView.prototype.initExportView = function () {
+class ExportView {
+    initExportView() {
         var exportContainer = document.createElement("div");
         exportContainer.id = "exportContent";
         exportContainer.className = "menuContent";
@@ -2608,7 +2603,6 @@ var ExportView = /** @class */ (function () {
         var selectPlatform = document.createElement("select");
         selectPlatform.id = "platforms";
         selectPlatform.className = "selects";
-        var self = this;
         this.selectPlatform = selectPlatform;
         selectDiv.appendChild(selectPlatform);
         var selectArch = document.createElement("select");
@@ -2641,22 +2635,29 @@ var ExportView = /** @class */ (function () {
         exportContainer.appendChild(exportOptionContainer);
         exportContainer.appendChild(exportResultContainer);
         return exportContainer;
-    };
-    return ExportView;
-}());
+    }
+}
+/*				EXPORT.JS
+    Handles Graphical elements for the Export Feature of the normal Playground
+
+*/
+/// <reference path="../ExportLib.ts"/>
+/// <reference path="../EquivalentFaust.ts"/>
+/// <reference path="../Messages.ts"/>
+/// <reference path="ExportView.ts"/>
+/// <reference path="../Utilitary.ts"/>
 /********************************************************************
 *********************  HANDLE FAUST WEB TARGETS *********************
 ********************************************************************/
-var Export = /** @class */ (function () {
-    function Export() {
-        var _this = this;
+class Export {
+    constructor() {
         //------ Update Architectures with Plateform change
-        this.updateArchitectures = function () {
-            if (!_this.clearSelectBox('architectures')) {
+        this.updateArchitectures = () => {
+            if (!this.clearSelectBox('architectures')) {
                 return;
             }
             else {
-                var data = JSON.parse(_this.jsonText);
+                var data = JSON.parse(this.jsonText);
                 var platformsSelect = document.getElementById('platforms'); //get the combobox
                 var options = platformsSelect.options[platformsSelect.selectedIndex];
                 var selPlatform = options.value;
@@ -2665,25 +2666,25 @@ var Export = /** @class */ (function () {
                 for (var subData in dataCopy) {
                     if (iterator < dataCopy.length) {
                         var mainData = dataCopy[subData];
-                        _this.addItem('architectures', mainData);
+                        this.addItem('architectures', mainData);
                         iterator = iterator + 1;
                     }
                 }
             }
         };
         //callback to get Target on server
-        this.uploadTargets = function () {
-            _this.clearSelectBox('platforms');
-            _this.clearSelectBox('architectures');
+        this.uploadTargets = () => {
+            this.clearSelectBox('platforms');
+            this.clearSelectBox('architectures');
             var input = document.getElementById("faustweburl");
             Export.exportUrl = input.value;
             Export.targetsUrl = Export.exportUrl + "/targets";
-            Utilitary.getXHR(Export.targetsUrl, function (json) { _this.uploadTargetCallback(json); }, function (errorMessage) { Utilitary.errorCallBack(errorMessage); });
+            Utilitary.getXHR(Export.targetsUrl, (json) => { this.uploadTargetCallback(json); }, (errorMessage) => { Utilitary.errorCallBack(errorMessage); });
         };
         /********************************************************************
         **************  CALLBACK ONCE SHA KEY WAS CALCULATED  ***************
         ********************************************************************/
-        this.exportFaustCode = function (shaKey) {
+        this.exportFaustCode = (shaKey) => {
             var platformsSelect = document.getElementById("platforms"); //get the combobox
             var optionPlateform = platformsSelect.options[platformsSelect.selectedIndex];
             var platforme = optionPlateform.value;
@@ -2695,11 +2696,11 @@ var Export = /** @class */ (function () {
             if (architecture == "android")
                 appType = "binary.apk";
             var exportLib = new ExportLib();
-            exportLib.sendPrecompileRequest(serverUrl, shaKey, platforme, architecture, appType, function (serverUrl, shaKey, plateforme, architecture, appType) { _this.setDownloadOptions(serverUrl, shaKey, plateforme, architecture, appType); });
+            exportLib.sendPrecompileRequest(serverUrl, shaKey, platforme, architecture, appType, (serverUrl, shaKey, plateforme, architecture, appType) => { this.setDownloadOptions(serverUrl, shaKey, plateforme, architecture, appType); });
             // 	Delete existing content if existing
         };
         //set download QR Code and Button
-        this.setDownloadOptions = function (serverUrl, shaKey, plateforme, architecture, appType) {
+        this.setDownloadOptions = (serverUrl, shaKey, plateforme, architecture, appType) => {
             if (shaKey.indexOf("ERROR") == -1) {
                 var disposableExportDiv = document.createElement("div");
                 disposableExportDiv.id = "disposableExportDiv";
@@ -2715,49 +2716,48 @@ var Export = /** @class */ (function () {
                 linkDownload.className = "button";
                 linkDownload.textContent = Utilitary.messageRessource.buttonDownloadApp;
                 downloadBottomButtonContainer.appendChild(linkDownload);
-                _this.exportView.downloadButton = linkDownload;
-                _this.exportView.downloadButton.onclick = function () { window.location.href = _this.exportView.downloadButton.value; };
+                this.exportView.downloadButton = linkDownload;
+                this.exportView.downloadButton.onclick = () => { window.location.href = this.exportView.downloadButton.value; };
                 document.getElementById("exportResultContainer").appendChild(disposableExportDiv);
                 disposableExportDiv.appendChild(qrDiv);
                 disposableExportDiv.appendChild(downloadBottomButtonContainer);
-                _this.exportView.exportButton.addEventListener("click", _this.eventExport);
-                _this.exportView.exportButton.style.opacity = "1";
+                this.exportView.exportButton.addEventListener("click", this.eventExport);
+                this.exportView.exportButton.style.opacity = "1";
                 Utilitary.removeLoadingLogo("exportResultContainer");
             }
             else {
                 new Message(shaKey);
             }
-            _this.exportView.exportButton.addEventListener("click", _this.eventExport);
-            _this.exportView.exportButton.style.opacity = "1";
+            this.exportView.exportButton.addEventListener("click", this.eventExport);
+            this.exportView.exportButton.style.opacity = "1";
             Utilitary.removeLoadingLogo("exportResultContainer");
         };
     }
     // Set EventListener
-    Export.prototype.setEventListeners = function () {
-        var _this = this;
-        this.exportView.refreshButton.onclick = function () { _this.uploadTargets(); };
-        this.exportView.selectPlatform.onchange = function () { _this.updateArchitectures(); };
-        this.exportView.inputServerUrl.onkeypress = function (e) { if (e.which == 13) {
-            _this.uploadTargets();
+    setEventListeners() {
+        this.exportView.refreshButton.onclick = () => { this.uploadTargets(); };
+        this.exportView.selectPlatform.onchange = () => { this.updateArchitectures(); };
+        this.exportView.inputServerUrl.onkeypress = (e) => { if (e.which == 13) {
+            this.uploadTargets();
         } };
-        this.eventExport = function (event) { _this.exportPatch(event, _this); };
+        this.eventExport = (event) => { this.exportPatch(event, this); };
         this.exportView.exportButton.addEventListener("click", this.eventExport);
-        this.exportView.buttonNameApp.onclick = function () { _this.renameScene(); };
-        this.exportView.inputNameApp.onkeypress = function (e) { if (e.which == 13) {
-            _this.renameScene();
+        this.exportView.buttonNameApp.onclick = () => { this.renameScene(); };
+        this.exportView.inputNameApp.onkeypress = (e) => { if (e.which == 13) {
+            this.renameScene();
         } };
-        this.exportView.moreOptionDiv.addEventListener("click", function () { _this.exportView.moreOptionDiv.style.display = "none"; _this.exportView.lessOptionDiv.style.display = _this.exportView.optionContainer.style.display = "block"; }, false);
-        this.exportView.lessOptionDiv.addEventListener("click", function () { _this.exportView.moreOptionDiv.style.display = "block"; _this.exportView.lessOptionDiv.style.display = _this.exportView.optionContainer.style.display = "none"; }, false);
-    };
+        this.exportView.moreOptionDiv.addEventListener("click", () => { this.exportView.moreOptionDiv.style.display = "none"; this.exportView.lessOptionDiv.style.display = this.exportView.optionContainer.style.display = "block"; }, false);
+        this.exportView.lessOptionDiv.addEventListener("click", () => { this.exportView.moreOptionDiv.style.display = "block"; this.exportView.lessOptionDiv.style.display = this.exportView.optionContainer.style.display = "none"; }, false);
+    }
     // add options into select boxes
-    Export.prototype.addItem = function (id, itemText) {
+    addItem(id, itemText) {
         var platformsSelect = document.getElementById(id);
         var option = document.createElement('option');
         option.text = itemText;
         platformsSelect.add(option);
-    };
+    }
     //clear select boxes
-    Export.prototype.clearSelectBox = function (id) {
+    clearSelectBox(id) {
         if (document.getElementById(id) != undefined) {
             while (document.getElementById(id).childNodes.length > 0) {
                 document.getElementById(id).removeChild(document.getElementById(id).childNodes[0]);
@@ -2767,9 +2767,9 @@ var Export = /** @class */ (function () {
         else {
             return false;
         }
-    };
+    }
     //callback to refresh Target
-    Export.prototype.uploadTargetCallback = function (json) {
+    uploadTargetCallback(json) {
         this.jsonText = json;
         var data = JSON.parse(this.jsonText);
         for (var platform in data) {
@@ -2777,9 +2777,9 @@ var Export = /** @class */ (function () {
         }
         this.setDefaultSelect();
         this.updateArchitectures();
-    };
+    }
     //set selection to default, currently android
-    Export.prototype.setDefaultSelect = function () {
+    setDefaultSelect() {
         var platefromSelect = document.getElementById("platforms");
         var options = platefromSelect.options;
         for (var i = 0; i < options.length; i++) {
@@ -2787,11 +2787,11 @@ var Export = /** @class */ (function () {
                 platefromSelect.selectedIndex = i;
             }
         }
-    };
+    }
     /********************************************************************
     *********************  HANDLE POST TO FAUST WEB  ********************
     ********************************************************************/
-    Export.prototype.exportPatch = function (event, expor) {
+    exportPatch(event, expor) {
         this.exportView.exportButton.removeEventListener("click", this.eventExport);
         this.exportView.exportButton.style.opacity = "0.3";
         var sceneName = Utilitary.currentScene.sceneName;
@@ -2803,24 +2803,28 @@ var Export = /** @class */ (function () {
         var equivalentFaust = new EquivalentFaust();
         var faustCode = equivalentFaust.getFaustEquivalent(Utilitary.currentScene, Utilitary.currentScene.sceneName);
         ExportLib.getSHAKey(document.getElementById("faustweburl").value, Utilitary.currentScene.sceneName, faustCode, expor.exportFaustCode);
-    };
-    Export.prototype.removeQRCode = function () {
+    }
+    removeQRCode() {
         var disposableExportDiv = document.getElementById('disposableExportDiv');
         if (disposableExportDiv) {
             disposableExportDiv.remove();
         }
-    };
-    Export.prototype.renameScene = function () {
-        Scene.rename(this.exportView.inputNameApp, this.exportView.rulesName, this.exportView.dynamicName);
-    };
-    Export.exportUrl = "https://faustservice.grame.fr";
-    Export.targetsUrl = "https://faustservice.grame.fr/targets";
-    return Export;
-}());
-var SceneView = /** @class */ (function () {
-    function SceneView() {
     }
-    SceneView.prototype.initNormalScene = function (scene) {
+    renameScene() {
+        Scene.rename(this.exportView.inputNameApp, this.exportView.rulesName, this.exportView.dynamicName);
+    }
+}
+Export.exportUrl = "https://faustservice.grame.fr";
+Export.targetsUrl = "https://faustservice.grame.fr/targets";
+/*				PLAYGROUND.JS
+    Init Normal Scene with all its graphical elements
+
+    This is the unique scene of the Normal Playground
+*/
+/// <reference path="../Scenes/SceneClass.ts"/>
+/// <reference path="../Menu/Export.ts"/>
+class SceneView {
+    initNormalScene(scene) {
         var container = document.createElement("div");
         container.id = "Normal";
         var svgCanvas = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -2875,13 +2879,19 @@ var SceneView = /** @class */ (function () {
         dropElementScene.appendChild(dropElementText);
         container.appendChild(dropElementScene);
         this.fSceneContainer = container;
-        var playgroundView = this;
-    };
-    return SceneView;
-}());
-var Scene = /** @class */ (function () {
-    function Scene(identifiant, compileFaust, sceneView) {
-        var _this = this;
+    }
+}
+/*				SCENECLASS.JS
+    HAND-MADE JAVASCRIPT CLASS CONTAINING THE API OF A GENERIC SCENE
+*/
+/// <reference path="../Connect.ts"/>
+/// <reference path="../Modules/ModuleClass.ts"/>
+/// <reference path="../Lib/webaudio-asm-worker-wrapper.d.ts"/>
+/// <reference path="../Utilitary.ts"/>
+/// <reference path="../Messages.ts"/>
+/// <reference path="SceneView.ts"/>
+class Scene {
+    constructor(identifiant, compileFaust, sceneView) {
         //temporary arrays used to recall a scene from a jfaust file
         this.arrayRecalScene = [];
         this.arrayRecalledModule = [];
@@ -2897,11 +2907,11 @@ var Scene = /** @class */ (function () {
         this.sceneView.initNormalScene(this);
         this.integrateSceneInBody();
         this.integrateOutput();
-        document.addEventListener("unstylenode", function () { _this.unstyleNode(); });
+        document.addEventListener("unstylenode", () => { this.unstyleNode(); });
     }
-    Scene.prototype.getSceneContainer = function () { return this.sceneView.fSceneContainer; };
+    getSceneContainer() { return this.sceneView.fSceneContainer; }
     /*********************** MUTE/UNMUTE SCENE ***************************/
-    Scene.prototype.muteScene = function () {
+    muteScene() {
         var out = document.getElementById("audioOutput");
         if (out != null) {
             if (out.audioNode.context.suspend != undefined) {
@@ -2910,13 +2920,12 @@ var Scene = /** @class */ (function () {
                 this.getAudioOutput().moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-speaker-mute.png)";
             }
         }
-    };
-    Scene.prototype.unmuteScene = function () {
-        var _this = this;
+    }
+    unmuteScene() {
         console.log("timeIn");
-        window.setTimeout(function () { _this.delayedUnmuteScene(); }, 500);
-    };
-    Scene.prototype.delayedUnmuteScene = function () {
+        window.setTimeout(() => { this.delayedUnmuteScene(); }, 500);
+    }
+    delayedUnmuteScene() {
         console.log("timeout");
         var out = document.getElementById("audioOutput");
         if (out != null) {
@@ -2926,128 +2935,114 @@ var Scene = /** @class */ (function () {
                 this.getAudioOutput().moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-speaker.png)";
             }
         }
-    };
+    }
     //add listner on the output module to give the user the possibility to mute/onmute the scene
-    Scene.prototype.addMuteOutputListner = function (moduleOutput) {
-        var _this = this;
-        moduleOutput.moduleView.fModuleContainer.ontouchstart = function () { _this.dbleTouchOutput(); };
-        moduleOutput.moduleView.fModuleContainer.ondblclick = function () { _this.dispatchEventMuteUnmute(); };
-    };
+    addMuteOutputListner(moduleOutput) {
+        moduleOutput.moduleView.fModuleContainer.ontouchstart = () => { this.dbleTouchOutput(); };
+        moduleOutput.moduleView.fModuleContainer.ondblclick = () => { this.dispatchEventMuteUnmute(); };
+    }
     //custom doubl touch event to mute
-    Scene.prototype.dbleTouchOutput = function () {
-        var _this = this;
+    dbleTouchOutput() {
         if (!this.isOutputTouch) {
             this.isOutputTouch = true;
-            window.setTimeout(function () { _this.isOutputTouch = false; }, 300);
+            window.setTimeout(() => { this.isOutputTouch = false; }, 300);
         }
         else {
             this.dispatchEventMuteUnmute();
             this.isOutputTouch = false;
         }
-    };
-    Scene.prototype.dispatchEventMuteUnmute = function () {
+    }
+    dispatchEventMuteUnmute() {
         if (!this.isMute) {
             this.muteScene();
         }
         else {
             this.unmuteScene();
         }
-    };
+    }
     /******************** HANDLE MODULES IN SCENE ************************/
-    Scene.prototype.getModules = function () { return this.fModuleList; };
-    Scene.prototype.addModule = function (module) { this.fModuleList.push(module); };
-    Scene.prototype.removeModule = function (module) {
+    getModules() { return this.fModuleList; }
+    addModule(module) { this.fModuleList.push(module); }
+    removeModule(module) {
         this.fModuleList.splice(this.fModuleList.indexOf(module), 1);
-    };
-    Scene.prototype.cleanModules = function () {
-        for (var i = this.fModuleList.length - 1; i >= 0; i--) {
-            this.fModuleList[i].deleteModule();
-            this.removeModule(this.fModuleList[i]);
-        }
-    };
+    }
     /*******************************  PUBLIC METHODS  **********************************/
-    Scene.prototype.integrateSceneInBody = function () {
+    integrateSceneInBody() {
         document.body.appendChild(this.sceneView.fSceneContainer);
-    };
+    }
     /*************** ACTIONS ON AUDIO IN/OUTPUT ***************************/
-    Scene.prototype.integrateInput = function () {
-        var _this = this;
+    integrateInput() {
         var positionInput = this.positionInputModule();
-        this.fAudioInput = new ModuleClass(Utilitary.idX++, positionInput.x, positionInput.y, "input", this.sceneView.inputOutputModuleContainer, function (module) { _this.removeModule(module); }, this.compileFaust);
+        this.fAudioInput = new ModuleClass(Utilitary.idX++, positionInput.x, positionInput.y, "input", this.sceneView.inputOutputModuleContainer, (module) => { this.removeModule(module); }, this.compileFaust);
         this.fAudioInput.patchID = "input";
         var scene = this;
-        this.compileFaust({ name: "input", sourceCode: "process=_,_;", x: positionInput.x, y: positionInput.y, callback: function (factory) { scene.integrateAudioInput(factory); } });
-    };
-    Scene.prototype.integrateOutput = function () {
-        var _this = this;
+        this.compileFaust({ name: "input", sourceCode: "process=_,_;", x: positionInput.x, y: positionInput.y, callback: (factory) => { scene.integrateAudioInput(factory); } });
+    }
+    integrateOutput() {
         var positionOutput = this.positionOutputModule();
         var scene = this;
-        this.fAudioOutput = new ModuleClass(Utilitary.idX++, positionOutput.x, positionOutput.y, "output", this.sceneView.inputOutputModuleContainer, function (module) { _this.removeModule(module); }, this.compileFaust);
+        this.fAudioOutput = new ModuleClass(Utilitary.idX++, positionOutput.x, positionOutput.y, "output", this.sceneView.inputOutputModuleContainer, (module) => { this.removeModule(module); }, this.compileFaust);
         this.fAudioOutput.patchID = "output";
         this.addMuteOutputListner(this.fAudioOutput);
-        this.compileFaust({ name: "output", sourceCode: "process=_,_;", x: positionOutput.x, y: positionOutput.y, callback: function (factory) { scene.integrateAudioOutput(factory); } });
-    };
-    Scene.prototype.integrateAudioOutput = function (factory) {
+        this.compileFaust({ name: "output", sourceCode: "process=_,_;", x: positionOutput.x, y: positionOutput.y, callback: (factory) => { scene.integrateAudioOutput(factory); } });
+    }
+    integrateAudioOutput(factory) {
         if (this.fAudioOutput) {
             this.fAudioOutput.moduleFaust.setSource("process=_,_;");
-            this.fAudioOutput.createDSP(factory);
-            this.activateAudioOutput(this.fAudioOutput);
+            var moduleFaust = this;
+            this.fAudioOutput.createDSP(factory, function () {
+                moduleFaust.activateAudioOutput(moduleFaust.fAudioOutput);
+                moduleFaust.fAudioOutput.addInputOutputNodes();
+                moduleFaust.integrateInput();
+            });
         }
-        this.fAudioOutput.addInputOutputNodes();
-        this.integrateInput();
-    };
-    Scene.prototype.integrateAudioInput = function (factory) {
+    }
+    integrateAudioInput(factory) {
         if (this.fAudioInput) {
             this.fAudioInput.moduleFaust.setSource("process=_,_;");
-            this.fAudioInput.createDSP(factory);
-            this.activateAudioInput();
+            var moduleFaust = this;
+            this.fAudioInput.createDSP(factory, function () {
+                moduleFaust.activateAudioInput();
+                moduleFaust.fAudioInput.addInputOutputNodes();
+                Utilitary.hideFullPageLoading();
+                moduleFaust.isInitLoading = false;
+            });
         }
-        this.fAudioInput.addInputOutputNodes();
-        Utilitary.hideFullPageLoading();
-        this.isInitLoading = false;
-    };
-    Scene.prototype.getAudioOutput = function () { return this.fAudioOutput; };
-    Scene.prototype.getAudioInput = function () { return this.fAudioInput; };
+    }
+    getAudioOutput() { return this.fAudioOutput; }
+    getAudioInput() { return this.fAudioInput; }
     /********************************************************************
 **********************  ACTIVATE PHYSICAL IN/OUTPUT *****************
 ********************************************************************/
-    Scene.prototype.activateAudioInput = function () {
-        var _this = this;
-        var navigatorLoc = navigator;
-        if (navigatorLoc.getUserMedia) {
-            navigatorLoc.getUserMedia({ audio: true }, function (mediaStream) { _this.getDevice(mediaStream); }, function (e) {
-                _this.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)";
-                _this.fAudioInput.moduleView.fInterfaceContainer.title = Utilitary.messageRessource.errorGettingAudioInput;
-                new Message(Utilitary.messageRessource.errorGettingAudioInput);
-            });
-        }
-        else {
+    activateAudioInput() {
+        navigator.mediaDevices.getUserMedia({ audio: true })
+            .then((mediaStream) => { this.getDevice(mediaStream); }).catch((err) => {
+            console.error(err);
             this.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)";
-            new Message(Utilitary.messageRessource.errorInputAPINotAvailable);
-            this.fAudioInput.moduleView.fInterfaceContainer.title = Utilitary.messageRessource.errorInputAPINotAvailable;
-        }
-    };
-    Scene.prototype.getDevice = function (device) {
+            this.fAudioInput.moduleView.fInterfaceContainer.title = Utilitary.messageRessource.errorGettingAudioInput;
+            new Message(Utilitary.messageRessource.errorGettingAudioInput);
+        });
+    }
+    getDevice(device) {
         // Create an AudioNode from the stream.
         var src = document.getElementById("input");
         src.audioNode = Utilitary.audioContext.createMediaStreamSource(device);
         document.body.appendChild(src);
-        var drag = new Drag();
         var connect = new Connector();
         connect.connectInput(this.fAudioInput, src);
-    };
-    Scene.prototype.activateAudioOutput = function (sceneOutput) {
+    }
+    activateAudioOutput(sceneOutput) {
         var out = document.createElement("div");
         out.id = "audioOutput";
         out.audioNode = Utilitary.audioContext.destination;
         document.body.appendChild(out);
         var connect = new Connector();
         connect.connectOutput(sceneOutput, out);
-    };
+    }
     /*********************** SAVE/RECALL SCENE ***************************/
     // use a collection of JsonSaveModule describing the scene and the modules to save it in a json string
     // isPrecompiled is used to save or not the asm.js code
-    Scene.prototype.saveScene = function (isPrecompiled) {
+    saveScene(isPrecompiled) {
         for (var i = 0; i < this.fModuleList.length; i++) {
             if (this.fModuleList[i].patchID != "output" && this.fModuleList[i].patchID != "input") {
                 this.fModuleList[i].patchID = String(i + 1);
@@ -3088,7 +3083,7 @@ var Scene = /** @class */ (function () {
                     for (var j = 0; j < params.length; j++) {
                         var jsonSlider = new JsonSliderSave();
                         jsonSlider.path = params[j];
-                        jsonSlider.value = this.fModuleList[i].moduleFaust.getDSP().getValue(params[j]);
+                        jsonSlider.value = this.fModuleList[i].moduleFaust.getDSP().getParamValue(params[j]);
                         jsonParams.sliders.push(jsonSlider);
                     }
                 }
@@ -3121,9 +3116,9 @@ var Scene = /** @class */ (function () {
         }
         json = JSON.stringify(jsonObjectCollection);
         return json;
-    };
+    }
     //recall scene from json/jfaust fill arrayRecalScene with each JsonSaveModule
-    Scene.prototype.recallScene = function (json) {
+    recallScene(json) {
         if (json != null) {
             try {
                 var jsonObjectCollection = JSON.parse(json);
@@ -3143,14 +3138,13 @@ var Scene = /** @class */ (function () {
             Utilitary.hideFullPageLoading();
             new Message(Utilitary.messageRessource.errorLoading);
         }
-    };
+    }
     // recall module at rank 0 of arrayRecalScene
     // direct use of the asm.js code if exist
     // or compile the faust code
     //
     // When arrayRecalScene empty, connect the modules in the scene
-    Scene.prototype.lunchModuleCreation = function () {
-        var _this = this;
+    lunchModuleCreation() {
         if (this.arrayRecalScene.length != 0) {
             var jsonObject = this.arrayRecalScene[0];
             if (jsonObject.factory != undefined) {
@@ -3163,7 +3157,7 @@ var Scene = /** @class */ (function () {
             else if (jsonObject.patchId != "output" && jsonObject.patchId != "input") {
                 this.tempPatchId = jsonObject.patchId;
                 this.sceneName = jsonObject.sceneName;
-                var argumentCompile = { name: jsonObject.name, sourceCode: jsonObject.code, x: parseFloat(jsonObject.x), y: parseFloat(jsonObject.y), callback: function (factory) { _this.createModule(factory); } };
+                var argumentCompile = { name: jsonObject.name, sourceCode: jsonObject.code, x: parseFloat(jsonObject.x), y: parseFloat(jsonObject.y), callback: (factory) => { this.createModule(factory); } };
                 this.compileFaust(argumentCompile);
             }
             else {
@@ -3183,56 +3177,56 @@ var Scene = /** @class */ (function () {
             document.dispatchEvent(event);
             Utilitary.hideFullPageLoading();
         }
-    };
+    }
     //update temporary info for the module being created
-    Scene.prototype.updateAppTempModuleInfo = function (jsonSaveObject) {
+    updateAppTempModuleInfo(jsonSaveObject) {
         this.tempModuleX = parseFloat(jsonSaveObject.x);
         this.tempModuleY = parseFloat(jsonSaveObject.y);
         this.tempModuleName = jsonSaveObject.name;
         this.tempModuleSourceCode = jsonSaveObject.code;
         this.tempPatchId = jsonSaveObject.patchId;
         this.tempParams = jsonSaveObject.params;
-    };
+    }
     //create Module then remove corresponding JsonSaveModule from arrayRecalScene at rank 0
     //re-lunch module of following Module/JsonSaveModule
-    Scene.prototype.createModule = function (factory) {
-        var _this = this;
+    createModule(factory) {
         try {
             if (!factory) {
                 new Message(faust.getErrorMessage());
                 Utilitary.hideFullPageLoading();
                 return;
             }
-            var module = new ModuleClass(Utilitary.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), function (module) { _this.removeModule(module); }, this.compileFaust);
+            var module = new ModuleClass(Utilitary.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), (module) => { this.removeModule(module); }, this.compileFaust);
             module.moduleFaust.setSource(this.tempModuleSourceCode);
-            module.createDSP(factory);
-            module.patchID = this.tempPatchId;
-            if (this.tempParams) {
-                for (var i = 0; i < this.tempParams.sliders.length; i++) {
-                    var slider = this.tempParams.sliders[i];
-                    module.addInterfaceParam(slider.path, parseFloat(slider.value));
+            module.createDSP(factory, () => {
+                module.patchID = this.tempPatchId;
+                if (this.tempParams) {
+                    for (var i = 0; i < this.tempParams.sliders.length; i++) {
+                        var slider = this.tempParams.sliders[i];
+                        module.addInterfaceParam(slider.path, parseFloat(slider.value));
+                    }
                 }
-            }
-            module.moduleFaust.recallInputsSource = this.arrayRecalScene[0].inputs.source;
-            module.moduleFaust.recallOutputsDestination = this.arrayRecalScene[0].outputs.destination;
-            this.arrayRecalledModule.push(module);
-            module.recallInterfaceParams();
-            module.setFaustInterfaceControles();
-            module.createFaustInterface();
-            module.addInputOutputNodes();
-            this.addModule(module);
-            this.recallAccValues(this.arrayRecalScene[0].acc, module);
-            this.arrayRecalScene.shift();
-            this.lunchModuleCreation();
+                module.moduleFaust.recallInputsSource = this.arrayRecalScene[0].inputs.source;
+                module.moduleFaust.recallOutputsDestination = this.arrayRecalScene[0].outputs.destination;
+                this.arrayRecalledModule.push(module);
+                module.recallInterfaceParams();
+                module.setFaustInterfaceControles();
+                module.createFaustInterface();
+                module.addInputOutputNodes();
+                this.addModule(module);
+                this.recallAccValues(this.arrayRecalScene[0].acc, module);
+                this.arrayRecalScene.shift();
+                this.lunchModuleCreation();
+            });
         }
         catch (e) {
             new Message(Utilitary.messageRessource.errorCreateModuleRecall);
             this.arrayRecalScene.shift();
             this.lunchModuleCreation();
         }
-    };
+    }
     //recall of the accelerometer mapping parameters for each FaustInterfaceControler of the Module
-    Scene.prototype.recallAccValues = function (jsonAccs, module) {
+    recallAccValues(jsonAccs, module) {
         if (jsonAccs != undefined) {
             for (var i in jsonAccs.controles) {
                 var controle = jsonAccs.controles[i];
@@ -3277,9 +3271,9 @@ var Scene = /** @class */ (function () {
                 }
             }
         }
-    };
+    }
     //connect Modules recalled
-    Scene.prototype.connectModule = function (module) {
+    connectModule(module) {
         try {
             for (var i = 0; i < module.moduleFaust.recallInputsSource.length; i++) {
                 var moduleSource = this.getModuleByPatchId(module.moduleFaust.recallInputsSource[i]);
@@ -3299,9 +3293,9 @@ var Scene = /** @class */ (function () {
         catch (e) {
             new Message(Utilitary.messageRessource.errorConnectionRecall);
         }
-    };
+    }
     //use to identify the module to be connected to when recalling connections between modules
-    Scene.prototype.getModuleByPatchId = function (patchId) {
+    getModuleByPatchId(patchId) {
         if (patchId == "output") {
             return this.fAudioOutput;
         }
@@ -3317,9 +3311,9 @@ var Scene = /** @class */ (function () {
             }
         }
         return null;
-    };
+    }
     //use to replace all éèàù ' from string and replace it with eeau__
-    Scene.cleanName = function (newName) {
+    static cleanName(newName) {
         newName = Utilitary.replaceAll(newName, "é", "e");
         newName = Utilitary.replaceAll(newName, "è", "e");
         newName = Utilitary.replaceAll(newName, "à", "a");
@@ -3327,10 +3321,10 @@ var Scene = /** @class */ (function () {
         newName = Utilitary.replaceAll(newName, " ", "_");
         newName = Utilitary.replaceAll(newName, "'", "_");
         return newName;
-    };
+    }
     //check if string start only with letter (no accent)
     //and contains only letter (no accent) underscore and number for a lenght between 1 and 50 char
-    Scene.isNameValid = function (newName) {
+    static isNameValid(newName) {
         var pattern = new RegExp("^[a-zA-Z_][a-zA-Z_0-9]{1,50}$");
         if (pattern.test(newName)) {
             return true;
@@ -3338,9 +3332,9 @@ var Scene = /** @class */ (function () {
         else {
             return false;
         }
-    };
+    }
     //rename scene if format is correct and return true otherwise return false
-    Scene.rename = function (input, spanRule, spanDynamic) {
+    static rename(input, spanRule, spanDynamic) {
         var newName = input.value;
         newName = Scene.cleanName(newName);
         if (Scene.isNameValid(newName)) {
@@ -3361,28 +3355,28 @@ var Scene = /** @class */ (function () {
             new Message(Utilitary.messageRessource.invalidSceneName);
             return false;
         }
-    };
+    }
     /***************** SET POSITION OF INPUT OUTPUT MODULE ***************/
-    Scene.prototype.positionInputModule = function () {
+    positionInputModule() {
         var position = new PositionModule();
         position.x = 10;
         position.y = window.innerHeight / 2;
         return position;
-    };
-    Scene.prototype.positionOutputModule = function () {
+    }
+    positionOutputModule() {
         var position = new PositionModule();
         position.x = window.innerWidth - 98;
         position.y = window.innerHeight / 2;
         return position;
-    };
-    Scene.prototype.positionDblTapModule = function () {
+    }
+    positionDblTapModule() {
         var position = new PositionModule();
         position.x = window.innerWidth / 2;
         position.y = window.innerHeight / 2;
         return position;
-    };
+    }
     /***************** Unstyle node connection of all modules on touchscreen  ***************/
-    Scene.prototype.unstyleNode = function () {
+    unstyleNode() {
         var modules = this.getModules();
         modules.push(this.fAudioInput);
         modules.push(this.fAudioOutput);
@@ -3399,71 +3393,38 @@ var Scene = /** @class */ (function () {
             }
         }
         ModuleClass.isNodesModuleUnstyle = true;
-    };
-    return Scene;
-}());
-var JsonSaveCollection = /** @class */ (function () {
-    function JsonSaveCollection() {
     }
-    return JsonSaveCollection;
-}());
-var JsonSaveModule = /** @class */ (function () {
-    function JsonSaveModule() {
-    }
-    return JsonSaveModule;
-}());
-var JsonOutputsSave = /** @class */ (function () {
-    function JsonOutputsSave() {
-    }
-    return JsonOutputsSave;
-}());
-var JsonInputsSave = /** @class */ (function () {
-    function JsonInputsSave() {
-    }
-    return JsonInputsSave;
-}());
-var JsonParamsSave = /** @class */ (function () {
-    function JsonParamsSave() {
-    }
-    return JsonParamsSave;
-}());
-var JsonAccSaves = /** @class */ (function () {
-    function JsonAccSaves() {
-    }
-    return JsonAccSaves;
-}());
-var JsonAccSave = /** @class */ (function () {
-    function JsonAccSave() {
-    }
-    return JsonAccSave;
-}());
-var JsonSliderSave = /** @class */ (function () {
-    function JsonSliderSave() {
-    }
-    return JsonSliderSave;
-}());
-var JsonFactorySave = /** @class */ (function () {
-    function JsonFactorySave() {
-    }
-    return JsonFactorySave;
-}());
+}
+class JsonSaveCollection {
+}
+class JsonSaveModule {
+}
+class JsonOutputsSave {
+}
+class JsonInputsSave {
+}
+class JsonParamsSave {
+}
+class JsonAccSaves {
+}
+class JsonAccSave {
+}
+class JsonSliderSave {
+}
+class JsonFactorySave {
+}
 /// <reference path="Messages.ts"/>
 //class ErrorFaust
-var ErrorFaust = /** @class */ (function () {
-    function ErrorFaust() {
-    }
-    ErrorFaust.errorCallBack = function (errorMessage) {
+class ErrorFaust {
+    static errorCallBack(errorMessage) {
         new Message(errorMessage);
-    };
-    return ErrorFaust;
-}());
+    }
+}
 //LibraryView.ts : LibraryView Class which contains all the graphical parts of the library
 /// <reference path="../Utilitary.ts"/>
 /// <reference path="../Lib/perfectScrollBar/js/perfect-ScrollBar.min.d.ts"/>
-var LibraryView = /** @class */ (function () {
-    function LibraryView() {
-    }
-    LibraryView.prototype.initLibraryView = function () {
+class LibraryView {
+    initLibraryView() {
         var libraryContent = document.createElement("div");
         libraryContent.id = "libraryContent";
         libraryContent.className = "menuContent";
@@ -3519,9 +3480,8 @@ var LibraryView = /** @class */ (function () {
         libraryContent.appendChild(effetLibraryContent);
         libraryContent.appendChild(exempleLibraryContent);
         return libraryContent;
-    };
-    return LibraryView;
-}());
+    }
+}
 /*				LIBRARY.JS
     Creates Graphical Library of Faust Modules
     Connects with faust.grame.fr to receive the json description of available modules
@@ -3548,19 +3508,18 @@ var LibraryView = /** @class */ (function () {
 */
 /// <reference path="../Utilitary.ts"/>
 /// <reference path="LibraryView.ts"/>
-var Library = /** @class */ (function () {
-    function Library() {
+class Library {
+    constructor() {
         this.isSmaller = false;
         this.isDblTouch = false;
     }
     //get json with library infos
-    Library.prototype.fillLibrary = function () {
-        var _this = this;
+    fillLibrary() {
         var url = "faust-modules/index.json";
-        Utilitary.getXHR(url, function (json) { _this.fillLibraryCallBack(json); }, function (errorMessage) { Utilitary.errorCallBack(errorMessage); });
-    };
+        Utilitary.getXHR(url, (json) => { this.fillLibraryCallBack(json); }, (errorMessage) => { Utilitary.errorCallBack(errorMessage); });
+    }
     //dispatch library info to each submenu
-    Library.prototype.fillLibraryCallBack = function (json) {
+    fillLibraryCallBack(json) {
         var jsonObject = JSON.parse(json);
         jsonObject.effet = "effetLibrarySelect";
         jsonObject.effetSupprStructure = "faust-modules/effects/";
@@ -3571,10 +3530,9 @@ var Library = /** @class */ (function () {
         this.fillSubMenu(jsonObject.instruments, jsonObject.instrument, jsonObject.instrumentSupprStructure);
         this.fillSubMenu(jsonObject.effets, jsonObject.effet, jsonObject.effetSupprStructure);
         this.fillSubMenu(jsonObject.exemples, jsonObject.exemple, jsonObject.exempleSupprStructure);
-    };
+    }
     //fill submenu and attach events
-    Library.prototype.fillSubMenu = function (options, subMenuId, stringStructureRemoved) {
-        var _this = this;
+    fillSubMenu(options, subMenuId, stringStructureRemoved) {
         var subMenu = document.getElementById(subMenuId);
         for (var i = 0; i < options.length; i++) {
             var li = document.createElement("li");
@@ -3583,22 +3541,21 @@ var Library = /** @class */ (function () {
             a.href = options[i];
             a.draggable = true;
             a.title = Utilitary.messageRessource.hoverLibraryElement;
-            a.addEventListener("click", function (e) { e.preventDefault(); });
+            a.addEventListener("click", (e) => { e.preventDefault(); });
             var dblckickHandler = this.dispatchEventLibrary.bind(this, a.href);
             a.ondblclick = dblckickHandler;
-            a.ontouchstart = function (e) { _this.dbleTouchMenu(e); };
+            a.ontouchstart = (e) => { this.dbleTouchMenu(e); };
             a.text = this.cleanNameElement(options[i], stringStructureRemoved);
             subMenu.appendChild(li);
         }
-    };
+    }
     //custom doube touch event handler
-    Library.prototype.dbleTouchMenu = function (touchEvent) {
-        var _this = this;
+    dbleTouchMenu(touchEvent) {
         var anchor = touchEvent.target;
         if (!this.isLibraryTouch) {
             this.isLibraryTouch = true;
             this.previousTouchUrl = anchor.href;
-            window.setTimeout(function () { _this.isLibraryTouch = false; _this.previousTouchUrl = ""; }, 300);
+            window.setTimeout(() => { this.isLibraryTouch = false; this.previousTouchUrl = ""; }, 300);
         }
         else if (anchor.href == this.previousTouchUrl) {
             Utilitary.showFullPageLoading();
@@ -3608,66 +3565,46 @@ var Library = /** @class */ (function () {
         else {
             this.isLibraryTouch = false;
         }
-    };
+    }
     //dispatch custom double touch
-    Library.prototype.dispatchEventLibrary = function (url) {
+    dispatchEventLibrary(url) {
         var event = new CustomEvent("dbltouchlib", { 'detail': url });
         document.dispatchEvent(event);
-    };
+    }
     // init scroll to show scroll from perfectScroll.js 
-    Library.prototype.initScroll = function () {
+    initScroll() {
         this.libraryView.effetLibrarySelect.scrollTop += 1;
         this.libraryView.exempleLibrarySelect.scrollTop += 1;
         this.libraryView.intrumentLibrarySelect.scrollTop += 1;
-    };
-    //remove .dsp extention and uri from element to get title
-    Library.prototype.cleanNameElement = function (elementComplete, stringStructureRemoved) {
-        return elementComplete.replace(stringStructureRemoved, "").replace(".dsp", "");
-    };
-    return Library;
-}());
-//HelpView.ts: HelpView class contains the graphical structure of the help menu.
-var HelpView = /** @class */ (function () {
-    function HelpView() {
     }
-    HelpView.prototype.initHelpView = function () {
+    //remove .dsp extention and uri from element to get title
+    cleanNameElement(elementComplete, stringStructureRemoved) {
+        return elementComplete.replace(stringStructureRemoved, "").replace(".dsp", "");
+    }
+}
+//HelpView.ts: HelpView class contains the graphical structure of the help menu.
+class HelpView {
+    initHelpView() {
         var helpContainer = document.createElement("div");
         helpContainer.id = "helpContent";
         helpContainer.className = "helpContent";
-        var videoIFrame = document.createElement("iframe");
-        //videoIFrame.id = "videoIFrame";
-        //videoIFrame.width = "600";
-        //videoIFrame.height = "300";
-        //videoIFrame.src = "https://www.youtube.com/embed/6pnfzL_kBD0?enablejsapi=1&version=3&playerapiid=ytplayer";
-        //videoIFrame.frameBorder = "0";
-        //videoIFrame.allowFullscreen = true;
-        //videoIFrame.setAttribute("allowscriptaccess", "always");
-        //this.videoIframe = videoIFrame;
         var videoContainer = document.createElement("div");
         videoContainer.id = "videoContainer";
-        //videoContainer.appendChild(videoIFrame);
         this.videoContainer = videoContainer;
         helpContainer.appendChild(videoContainer);
-        //<iframe width="854" height= "480" src= "https://www.youtube.com/embed/6pnfzL_kBD0" frameborder= "0" allowfullscreen> </iframe>
         return helpContainer;
-    };
-    return HelpView;
-}());
+    }
+}
 //Help.ts : Help class, that controle behaviour of the help panel.
 /// <reference path="HelpView.ts"/>
-var Help = /** @class */ (function () {
-    function Help() {
-    }
-    Help.prototype.stopVideo = function () {
+class Help {
+    stopVideo() {
         //this.helpView.videoIframe.contentWindow.postMessage('{"event":"command","func":"' + 'stopVideo' + '","args":""}', '*');
-    };
-    return Help;
-}());
-/// <reference path="../Utilitary.ts"/>
-var LoadView = /** @class */ (function () {
-    function LoadView() {
     }
-    LoadView.prototype.initLoadView = function () {
+}
+/// <reference path="../Utilitary.ts"/>
+class LoadView {
+    initLoadView() {
         var loadContainer = document.createElement("div");
         loadContainer.id = "loadContainer";
         loadContainer.className = "menuContent";
@@ -3789,84 +3726,74 @@ var LoadView = /** @class */ (function () {
         loadContainer.appendChild(loadLocalContainer);
         loadContainer.appendChild(loadCloudContainer);
         return loadContainer;
-    };
-    return LoadView;
-}());
+    }
+}
 /// <reference path="../DriveAPI.ts"/>   
 /// <reference path="LoadView.ts"/>   
-var Load = /** @class */ (function () {
-    function Load() {
-    }
+class Load {
     //Set event listener
-    Load.prototype.setEventListeners = function () {
-        var _this = this;
-        this.loadView.loadFileButton.addEventListener("click", function () { _this.openFile(); });
-        this.loadView.buttonLoadLocal.addEventListener("click", function () { _this.localLoad(); });
-        this.loadView.buttonLoadCloud.addEventListener("click", function () { _this.cloudLoad(); });
-        this.loadView.buttonConnectDrive.addEventListener("click", function (e) { _this.drive.handleAuthClick(e); });
-        this.loadView.aBigExemple.addEventListener("click", function (e) { _this.getEx(e); });
-        this.loadView.aLightExemple.addEventListener("click", function (e) { _this.getEx(e); });
-        this.loadView.aBigPreExemple.addEventListener("click", function (e) { _this.getEx(e); });
-        this.loadView.aLightPreExemple.addEventListener("click", function (e) { _this.getEx(e); });
-        this.loadView.buttonChangeAccount.addEventListener("click", function (e) { _this.logOut(); });
-    };
+    setEventListeners() {
+        this.loadView.loadFileButton.addEventListener("click", () => { this.openFile(); });
+        this.loadView.buttonLoadLocal.addEventListener("click", () => { this.localLoad(); });
+        this.loadView.buttonLoadCloud.addEventListener("click", () => { this.cloudLoad(); });
+        this.loadView.buttonConnectDrive.addEventListener("click", (e) => { this.drive.handleAuthClick(e); });
+        this.loadView.aBigExemple.addEventListener("click", (e) => { this.getEx(e); });
+        this.loadView.aLightExemple.addEventListener("click", (e) => { this.getEx(e); });
+        this.loadView.aBigPreExemple.addEventListener("click", (e) => { this.getEx(e); });
+        this.loadView.aLightPreExemple.addEventListener("click", (e) => { this.getEx(e); });
+        this.loadView.buttonChangeAccount.addEventListener("click", (e) => { this.logOut(); });
+    }
     //open file from browser dialogue open window
-    Load.prototype.openFile = function () {
+    openFile() {
         if (this.loadView.loadFileInput.files.length > 0) {
             var file = this.loadView.loadFileInput.files.item(0);
             var event = new CustomEvent("fileload", { 'detail': file });
             document.dispatchEvent(event);
         }
-    };
+    }
     //load scene from local storage
-    Load.prototype.localLoad = function () {
+    localLoad() {
         if (this.loadView.existingSceneSelect.selectedIndex > -1) {
             Utilitary.showFullPageLoading();
             var option = this.loadView.existingSceneSelect.options[this.loadView.existingSceneSelect.selectedIndex];
             var name = option.value;
             this.sceneCurrent.recallScene(localStorage.getItem(name));
         }
-    };
+    }
     //load exemple
-    Load.prototype.getEx = function (e) {
-        var _this = this;
+    getEx(e) {
         e.preventDefault();
         var anchorTarget = e.target;
-        Utilitary.getXHR(anchorTarget.href, function (json) { _this.loadEx(json); }, null);
-    };
-    Load.prototype.loadEx = function (json) {
+        Utilitary.getXHR(anchorTarget.href, (json) => { this.loadEx(json); }, null);
+    }
+    loadEx(json) {
         Utilitary.showFullPageLoading();
         this.sceneCurrent.recallScene(json);
-    };
+    }
     //load file scene from cloud Drive API
     //get id file from Drive API then is able to get content
-    Load.prototype.cloudLoad = function () {
-        var _this = this;
+    cloudLoad() {
         if (this.loadView.cloudSelectFile.selectedIndex > -1) {
             Utilitary.showFullPageLoading();
             var option = this.loadView.cloudSelectFile.options[this.loadView.cloudSelectFile.selectedIndex];
             var id = option.value;
-            var file = this.drive.getFile(id, function (resp) { _this.getContent(resp); });
+            var file = this.drive.getFile(id, (resp) => { this.getContent(resp); });
             console.log(file);
         }
-    };
+    }
     // get content from file loaded from cloud
-    Load.prototype.getContent = function (resp) {
-        var _this = this;
-        this.drive.downloadFile(resp, function (json) { _this.sceneCurrent.recallScene(json); });
-    };
+    getContent(resp) {
+        this.drive.downloadFile(resp, (json) => { this.sceneCurrent.recallScene(json); });
+    }
     //logOut from google account
-    Load.prototype.logOut = function () {
+    logOut() {
         var event = new CustomEvent("authoff");
         document.dispatchEvent(event);
-    };
-    return Load;
-}());
-/// <reference path="../Utilitary.ts"/>
-var SaveView = /** @class */ (function () {
-    function SaveView() {
     }
-    SaveView.prototype.initSaveView = function () {
+}
+/// <reference path="../Utilitary.ts"/>
+class SaveView {
+    initSaveView() {
         var saveContainer = document.createElement("div");
         saveContainer.id = "saveContainer";
         saveContainer.className = "menuContent";
@@ -4015,45 +3942,40 @@ var SaveView = /** @class */ (function () {
         saveContainer.appendChild(localSaveContainer);
         saveContainer.appendChild(cloudSaveContainer);
         return saveContainer;
-    };
-    return SaveView;
-}());
+    }
+}
 /// <reference path="../Lib/fileSaver.min.d.ts"/>
 /// <reference path="../Messages.ts"/>
 /// <reference path="../Utilitary.ts"/>
 /// <reference path="../DriveAPI.ts"/>
 /// <reference path="SaveView.ts"/>
-var Save = /** @class */ (function () {
-    function Save() {
+class Save {
+    setEventListeners() {
+        this.saveView.buttonDownloadApp.addEventListener("click", () => { this.downloadApp(); });
+        this.saveView.buttonLocalSave.addEventListener("click", () => { this.saveLocal(); });
+        this.saveView.buttonLocalSuppr.addEventListener("click", () => { this.supprLocal(); });
+        this.saveView.existingSceneSelect.addEventListener("change", () => { this.getNameSelected(); });
+        this.saveView.cloudSelectFile.addEventListener("change", () => { this.getNameSelectedCloud(); });
+        this.saveView.buttonConnectDrive.addEventListener("click", (e) => { this.drive.handleAuthClick(e); });
+        this.saveView.buttonChangeAccount.addEventListener("click", () => { this.logOut(); });
+        this.saveView.buttonSaveCloud.addEventListener("click", () => { this.saveCloud(); });
+        this.saveView.buttonCloudSuppr.addEventListener("click", () => { this.supprCloud(); });
+        document.addEventListener("successave", () => { new Message(Utilitary.messageRessource.sucessSave, "messageTransitionOutFast", 2000, 500); });
     }
-    Save.prototype.setEventListeners = function () {
-        var _this = this;
-        this.saveView.buttonDownloadApp.addEventListener("click", function () { _this.downloadApp(); });
-        this.saveView.buttonLocalSave.addEventListener("click", function () { _this.saveLocal(); });
-        this.saveView.buttonLocalSuppr.addEventListener("click", function () { _this.supprLocal(); });
-        this.saveView.existingSceneSelect.addEventListener("change", function () { _this.getNameSelected(); });
-        this.saveView.cloudSelectFile.addEventListener("change", function () { _this.getNameSelectedCloud(); });
-        this.saveView.buttonConnectDrive.addEventListener("click", function (e) { _this.drive.handleAuthClick(e); });
-        this.saveView.buttonChangeAccount.addEventListener("click", function () { _this.logOut(); });
-        this.saveView.buttonSaveCloud.addEventListener("click", function () { _this.saveCloud(); });
-        this.saveView.buttonCloudSuppr.addEventListener("click", function () { _this.supprCloud(); });
-        document.addEventListener("successave", function () { new Message(Utilitary.messageRessource.sucessSave, "messageTransitionOutFast", 2000, 500); });
-    };
     //create a file jfaust and save it to the device
-    Save.prototype.downloadApp = function () {
+    downloadApp() {
         if (this.saveView.inputDownload.value != Utilitary.currentScene.sceneName && !Scene.rename(this.saveView.inputDownload, this.saveView.rulesName, this.saveView.dynamicName)) {
         }
         else {
             var jsonScene = this.sceneCurrent.saveScene(this.saveView.checkBoxPrecompile.checked);
             var blob = new Blob([jsonScene], {
-                type: "application/json;charset=utf-8;"
+                type: "application/json;charset=utf-8;",
             });
             saveAs(blob, Utilitary.currentScene.sceneName + ".jfaust");
         }
-    };
+    }
     //save scene in local storage
-    Save.prototype.saveLocal = function () {
-        var _this = this;
+    saveLocal() {
         if (this.saveView.inputLocalStorage.value != Utilitary.currentScene.sceneName && !Scene.rename(this.saveView.inputLocalStorage, this.saveView.rulesName, this.saveView.dynamicName)) {
         }
         else {
@@ -4061,7 +3983,7 @@ var Save = /** @class */ (function () {
                 var name = this.saveView.inputLocalStorage.value;
                 var jsonScene = this.sceneCurrent.saveScene(true);
                 if (this.isFileExisting(name)) {
-                    new Confirm(Utilitary.messageRessource.confirmReplace, function (callback) { _this.replaceSaveLocal(name, jsonScene, callback); });
+                    new Confirm(Utilitary.messageRessource.confirmReplace, (callback) => { this.replaceSaveLocal(name, jsonScene, callback); });
                     return;
                 }
                 else {
@@ -4075,44 +3997,44 @@ var Save = /** @class */ (function () {
                 new Message(Utilitary.messageRessource.errorLocalStorage);
             }
         }
-    };
+    }
     //replace an existing scene in local Storage
-    Save.prototype.replaceSaveLocal = function (name, jsonScene, confirmCallBack) {
+    replaceSaveLocal(name, jsonScene, confirmCallBack) {
         localStorage.setItem(name, jsonScene);
         new Message(Utilitary.messageRessource.sucessSave, "messageTransitionOutFast", 2000, 500);
         var event = new CustomEvent("updatelist");
         document.dispatchEvent(event);
         confirmCallBack();
-    };
+    }
     //check if a scene name already exist in local storage
-    Save.prototype.isFileExisting = function (name) {
+    isFileExisting(name) {
         for (var i = 0; i < localStorage.length; i++) {
             if (localStorage.key(i) == name) {
                 return true;
             }
         }
         return false;
-    };
+    }
     //check if a scene name already exist in Cloud
-    Save.prototype.isFileCloudExisting = function (name) {
+    isFileCloudExisting(name) {
         for (var i = 0; i < this.saveView.cloudSelectFile.options.length; i++) {
             if (this.saveView.cloudSelectFile.options[i].textContent == name) {
                 return true;
             }
         }
         return false;
-    };
+    }
     // get scene name selected in select local storage and set it to the input text localStorage
-    Save.prototype.getNameSelected = function () {
+    getNameSelected() {
         var option = this.saveView.existingSceneSelect.options[this.saveView.existingSceneSelect.selectedIndex];
         this.saveView.inputLocalStorage.value = option.value;
-    };
+    }
     // get scene name selected in select cloud and set it to the input text clou
-    Save.prototype.getNameSelectedCloud = function () {
+    getNameSelectedCloud() {
         this.saveView.inputCloudStorage.value = this.saveView.cloudSelectFile.options[this.saveView.cloudSelectFile.selectedIndex].textContent;
-    };
+    }
     //get value of select option by its text content, used here to get id of drive file
-    Save.prototype.getValueByTextContent = function (select, name) {
+    getValueByTextContent(select, name) {
         for (var i = 0; i < select.options.length; i++) {
             if (select.options[i].textContent == name) {
                 var option = select.options[i];
@@ -4120,37 +4042,35 @@ var Save = /** @class */ (function () {
             }
         }
         return null;
-    };
+    }
     //suppr scene from local storage confirm
-    Save.prototype.supprLocal = function () {
-        var _this = this;
+    supprLocal() {
         if (this.saveView.existingSceneSelect.selectedIndex > -1) {
-            new Confirm(Utilitary.messageRessource.confirmSuppr, function (callbackConfirm) { _this.supprLocalCallback(callbackConfirm); });
+            new Confirm(Utilitary.messageRessource.confirmSuppr, (callbackConfirm) => { this.supprLocalCallback(callbackConfirm); });
         }
-    };
+    }
     //suppr scene from local storage callback
-    Save.prototype.supprLocalCallback = function (callbackConfirm) {
+    supprLocalCallback(callbackConfirm) {
         var option = this.saveView.existingSceneSelect.options[this.saveView.existingSceneSelect.selectedIndex];
         var name = option.value;
         localStorage.removeItem(name);
         var event = new CustomEvent("updatelist");
         document.dispatchEvent(event);
         callbackConfirm();
-    };
+    }
     //logOut from google account
-    Save.prototype.logOut = function () {
+    logOut() {
         var event = new CustomEvent("authoff");
         document.dispatchEvent(event);
-    };
+    }
     // save scene in the cloud, create a jfaust file
-    Save.prototype.saveCloud = function () {
-        var _this = this;
+    saveCloud() {
         if (this.saveView.inputCloudStorage.value != Utilitary.currentScene.sceneName && !Scene.rename(this.saveView.inputCloudStorage, this.saveView.rulesName, this.saveView.dynamicName)) {
         }
         else {
             var name = this.saveView.inputCloudStorage.value;
             if (this.isFileCloudExisting(name)) {
-                new Confirm(Utilitary.messageRessource.confirmReplace, function (confirmCallback) { _this.replaceCloud(name, confirmCallback); });
+                new Confirm(Utilitary.messageRessource.confirmReplace, (confirmCallback) => { this.replaceCloud(name, confirmCallback); });
                 return;
             }
             else {
@@ -4160,43 +4080,40 @@ var Save = /** @class */ (function () {
                 this.drive.createFile(Utilitary.currentScene.sceneName, null);
             }
         }
-    };
+    }
     //update/replace a scene on the cloud
-    Save.prototype.replaceCloud = function (name, confirmCallback) {
-        var _this = this;
+    replaceCloud(name, confirmCallback) {
         var jsonScene = this.sceneCurrent.saveScene(true);
         var blob = new Blob([jsonScene], { type: "application/json;charset=utf-8;" });
         this.drive.tempBlob = blob;
         var id = this.getValueByTextContent(this.saveView.cloudSelectFile, name);
         if (id != null) {
-            this.drive.getFile(id, function () {
-                _this.drive.updateFile(id, _this.drive.lastSavedFileMetadata, blob, null);
+            this.drive.getFile(id, () => {
+                this.drive.updateFile(id, this.drive.lastSavedFileMetadata, blob, null);
             });
         }
         confirmCallback();
-    };
+    }
     //trash a file in the cloud confirm
     //could be retreive from the cloud's trash can 
-    Save.prototype.supprCloud = function () {
-        var _this = this;
+    supprCloud() {
         if (this.saveView.cloudSelectFile.selectedIndex > -1) {
-            new Confirm(Utilitary.messageRessource.confirmSuppr, function (confirmCallBack) { _this.supprCloudCallback(confirmCallBack); });
+            new Confirm(Utilitary.messageRessource.confirmSuppr, (confirmCallBack) => { this.supprCloudCallback(confirmCallBack); });
         }
-    };
+    }
     //trash a file in the cloud callback
-    Save.prototype.supprCloudCallback = function (confirmCallBack) {
+    supprCloudCallback(confirmCallBack) {
         var option = this.saveView.cloudSelectFile.options[this.saveView.cloudSelectFile.selectedIndex];
         var id = option.value;
         this.drive.trashFile(id);
         confirmCallBack();
-    };
-    return Save;
-}());
-/// <reference path="../Utilitary.ts"/>
-var AccelerometerEditView = /** @class */ (function () {
-    function AccelerometerEditView() {
     }
-    AccelerometerEditView.prototype.initAccelerometerEdit = function () {
+}
+/// <reference path="../Utilitary.ts"/>
+class AccelerometerEditView {
+    constructor() {
+    }
+    initAccelerometerEdit() {
         var blockLayer = document.createElement("div");
         blockLayer.id = "accBlockLayer";
         this.blockLayer = blockLayer;
@@ -4384,34 +4301,35 @@ var AccelerometerEditView = /** @class */ (function () {
         container.appendChild(validContainer);
         blockLayer.appendChild(container);
         return blockLayer;
-    };
-    return AccelerometerEditView;
-}());
-var AccelerometerEdit = /** @class */ (function () {
-    function AccelerometerEdit(accelerometerEditView) {
-        var _this = this;
+    }
+}
+//AccelerometerEdit
+/// <reference path="../Accelerometer.ts"/>
+/// <reference path="AccelerometerEditView.ts"/>
+class AccelerometerEdit {
+    constructor(accelerometerEditView) {
         this.isOn = false;
         this.accelerometerEditView = accelerometerEditView;
-        this.eventEditHandler = function (event, faustIControler) { _this.editEvent(faustIControler, event); };
-        this.accelerometerEditView.cancelButton.addEventListener("click", function () { _this.cancelAccelerometerEdit(); });
-        this.accelerometerEditView.validButton.addEventListener("click", function () { _this.applyAccelerometerEdit(); });
-        this.accelerometerEditView.radioAxisX.addEventListener("change", function (event) { _this.radioAxisSplit(event); });
-        this.accelerometerEditView.radioAxisY.addEventListener("change", function (event) { _this.radioAxisSplit(event); });
-        this.accelerometerEditView.radioAxisZ.addEventListener("change", function (event) { _this.radioAxisSplit(event); });
-        this.accelerometerEditView.radioAxis0.addEventListener("change", function (event) { _this.disablerEnablerAcc(event); });
-        this.accelerometerEditView.radioCurve1.addEventListener("change", function (event) { _this.radioCurveSplit(event); });
-        this.accelerometerEditView.radioCurve2.addEventListener("change", function (event) { _this.radioCurveSplit(event); });
-        this.accelerometerEditView.radioCurve3.addEventListener("change", function (event) { _this.radioCurveSplit(event); });
-        this.accelerometerEditView.radioCurve4.addEventListener("change", function (event) { _this.radioCurveSplit(event); });
-        this.accelerometerEditView.checkeOnOff.addEventListener("change", function (event) { _this.accelerometerEventSwitch(event); });
-        this.accelerometerEditView.rangeVirtual.addEventListener("input", function (event) { _this.virtualAccelerometer(event); });
-        this.accelerometerEditView.rangeMin.addEventListener("input", function (event) { _this.accMin(); });
-        this.accelerometerEditView.rangeMid.addEventListener("input", function (event) { _this.accMid(); });
-        this.accelerometerEditView.rangeMax.addEventListener("input", function (event) { _this.accMax(); });
+        this.eventEditHandler = (event, faustIControler) => { this.editEvent(faustIControler, event); };
+        this.accelerometerEditView.cancelButton.addEventListener("click", () => { this.cancelAccelerometerEdit(); });
+        this.accelerometerEditView.validButton.addEventListener("click", () => { this.applyAccelerometerEdit(); });
+        this.accelerometerEditView.radioAxisX.addEventListener("change", (event) => { this.radioAxisSplit(event); });
+        this.accelerometerEditView.radioAxisY.addEventListener("change", (event) => { this.radioAxisSplit(event); });
+        this.accelerometerEditView.radioAxisZ.addEventListener("change", (event) => { this.radioAxisSplit(event); });
+        this.accelerometerEditView.radioAxis0.addEventListener("change", (event) => { this.disablerEnablerAcc(event); });
+        this.accelerometerEditView.radioCurve1.addEventListener("change", (event) => { this.radioCurveSplit(event); });
+        this.accelerometerEditView.radioCurve2.addEventListener("change", (event) => { this.radioCurveSplit(event); });
+        this.accelerometerEditView.radioCurve3.addEventListener("change", (event) => { this.radioCurveSplit(event); });
+        this.accelerometerEditView.radioCurve4.addEventListener("change", (event) => { this.radioCurveSplit(event); });
+        this.accelerometerEditView.checkeOnOff.addEventListener("change", (event) => { this.accelerometerEventSwitch(event); });
+        this.accelerometerEditView.rangeVirtual.addEventListener("input", (event) => { this.virtualAccelerometer(event); });
+        this.accelerometerEditView.rangeMin.addEventListener("input", (event) => { this.accMin(); });
+        this.accelerometerEditView.rangeMid.addEventListener("input", (event) => { this.accMid(); });
+        this.accelerometerEditView.rangeMax.addEventListener("input", (event) => { this.accMax(); });
     }
     //function used when starting or stoping editing mode
-    //setting sider with event to edit it 
-    AccelerometerEdit.prototype.editAction = function () {
+    //setting sider with event to edit it
+    editAction() {
         if (this.isOn) {
             for (var i = 0; i < AccelerometerHandler.faustInterfaceControler.length; i++) {
                 var currentIFControler = AccelerometerHandler.faustInterfaceControler[i];
@@ -4441,9 +4359,9 @@ var AccelerometerEdit = /** @class */ (function () {
             this.isOn = true;
             Utilitary.isAccelerometerEditOn = true;
         }
-    };
+    }
     //set the slider to disable or enable according to acc isActive and isDisable
-    AccelerometerEdit.prototype.setSliderDisableValue = function (faustIControler) {
+    setSliderDisableValue(faustIControler) {
         var acc = faustIControler.accelerometerSlider;
         var slider = faustIControler.faustInterfaceView.slider;
         if (slider) {
@@ -4457,9 +4375,9 @@ var AccelerometerEdit = /** @class */ (function () {
                 slider.disabled = false;
             }
         }
-    };
+    }
     //event handler when click/touch slider in edit mode
-    AccelerometerEdit.prototype.editEvent = function (faustIControler, event) {
+    editEvent(faustIControler, event) {
         event.stopPropagation();
         event.preventDefault();
         var acc = faustIControler.accelerometerSlider;
@@ -4486,14 +4404,14 @@ var AccelerometerEdit = /** @class */ (function () {
         this.addCloneSlider(faustIControler);
         // enable or disable acc
         this.applyAccEnableDisable(acc);
-    };
+    }
     //cloning the slider edited to preview it
-    AccelerometerEdit.prototype.addCloneSlider = function (faustIControler) {
+    addCloneSlider(faustIControler) {
         var faustView = faustIControler.faustInterfaceView;
         //storing original slider and output element
         this.originalSlider = faustView.slider;
         this.originalValueOutput = faustView.output;
-        //cloning and creating elements 
+        //cloning and creating elements
         this.currentParentElemSliderClone = faustView.group.cloneNode(true);
         var title = document.createElement("h6");
         title.textContent = faustIControler.name;
@@ -4502,17 +4420,17 @@ var AccelerometerEdit = /** @class */ (function () {
         faustView.slider = this.currentParentElemSliderClone.getElementsByTagName("input")[0];
         faustView.output = this.currentParentElemSliderClone.getElementsByClassName("value")[0];
         this.accelerometerSwitch(faustIControler.accelerometerSlider.isActive);
-    };
+    }
     //remove clone/preview slider
-    AccelerometerEdit.prototype.removeCloneSlider = function (faustIControler) {
+    removeCloneSlider(faustIControler) {
         var faustView = faustIControler.faustInterfaceView;
         this.accelerometerEditView.cloneContainer.removeChild(this.accelerometerEditView.cloneContainer.getElementsByTagName("div")[0]);
         faustView.slider = this.originalSlider;
         faustView.output = this.originalValueOutput;
         this.accelerometerEditView.container.getElementsByTagName("h6")[0].remove();
-    };
+    }
     //cancel editing mode, and not applying changes
-    AccelerometerEdit.prototype.cancelAccelerometerEdit = function () {
+    cancelAccelerometerEdit() {
         //reset original values
         this.accSlid.setAttributes(this.originalAccValue);
         this.accSlid.init = this.originalDefaultVal;
@@ -4528,8 +4446,8 @@ var AccelerometerEdit = /** @class */ (function () {
         //hide editing interface
         this.accelerometerEditView.blockLayer.style.display = "none";
         window.removeEventListener("resize", this.windowResizeEvent);
-    };
-    AccelerometerEdit.prototype.applyAccelerometerEdit = function () {
+    }
+    applyAccelerometerEdit() {
         this.removeCloneSlider(this.faustIControler);
         //applying new axis style to slider
         this.faustView.group.classList.remove(this.originalAxis);
@@ -4555,9 +4473,9 @@ var AccelerometerEdit = /** @class */ (function () {
             this.faustIControler.updateFaustCodeCallback(detail);
         }
         this.applyDisableEnableAcc();
-    };
+    }
     //disable or enable slider according to isActive and isEnable
-    AccelerometerEdit.prototype.applyDisableEnableAcc = function () {
+    applyDisableEnableAcc() {
         if (this.accSlid.isEnabled) {
             this.faustView.group.classList.remove("disabledAcc");
             if (this.accSlid.isActive) {
@@ -4577,9 +4495,9 @@ var AccelerometerEdit = /** @class */ (function () {
             this.faustView.slider.classList.add("allowed");
             this.faustView.slider.disabled = false;
         }
-    };
+    }
     //Place graphical element of the editing view
-    AccelerometerEdit.prototype.placeElement = function () {
+    placeElement() {
         this.accelerometerEditView.blockLayer.style.display = "block";
         this.accelerometerEditView.blockLayer.style.height = window.innerHeight + "px";
         this.accelerometerEditView.rangeContainer.style.top = window.innerHeight / 1.8 + "px";
@@ -4587,9 +4505,9 @@ var AccelerometerEdit = /** @class */ (function () {
         this.accelerometerEditView.checkeOnOffContainer.style.top = window.innerHeight / 8 + "px";
         this.accelerometerEditView.radioAxisContainer.style.top = window.innerHeight / 12 + "px";
         this.accelerometerEditView.radioCurveContainer.style.top = window.innerHeight / 25 + "px";
-    };
+    }
     //store original values of the controller being edited
-    AccelerometerEdit.prototype.storeAccelerometerSliderInfos = function (faustIControler) {
+    storeAccelerometerSliderInfos(faustIControler) {
         var acc = faustIControler.accelerometerSlider;
         this.originalAxis = Axis[acc.axis];
         this.originalAccValue = acc.acc;
@@ -4603,19 +4521,19 @@ var AccelerometerEdit = /** @class */ (function () {
         else {
             this.originalSliderAllowedStyle = "allowed";
         }
-    };
+    }
     //check or uncheck the checkbox for enabling/disabling the acc on the app
-    AccelerometerEdit.prototype.applyAccEnableDisable = function (accSlider) {
+    applyAccEnableDisable(accSlider) {
         if (accSlider.isEnabled) {
             this.accelerometerEditView.radioAxis0.checked = false;
         }
         else {
             this.accelerometerEditView.radioAxis0.checked = true;
         }
-    };
+    }
     //check or uncheck the checkbox for enabling/disabling the acc on the app and faust code
     //applying styling accordingly
-    AccelerometerEdit.prototype.disablerEnablerAcc = function (e) {
+    disablerEnablerAcc(e) {
         if (this.accSlid.isEnabled) {
             this.accSlid.isEnabled = false;
             this.accelerometerEditView.cloneContainer.getElementsByTagName("div")[0].classList.add("disabledAcc");
@@ -4628,9 +4546,9 @@ var AccelerometerEdit = /** @class */ (function () {
             this.faustView.group.classList.remove("disabledAcc");
             this.accelerometerEditView.rangeContainer.classList.remove("disabledAcc");
         }
-    };
+    }
     //set curve to the good radio button curve
-    AccelerometerEdit.prototype.selectDefaultCurve = function (accSlider) {
+    selectDefaultCurve(accSlider) {
         switch (accSlider.curve) {
             case Curve.Up:
                 this.accelerometerEditView.radioCurve1.checked = true;
@@ -4648,9 +4566,9 @@ var AccelerometerEdit = /** @class */ (function () {
                 this.accelerometerEditView.radioCurve1.checked = true;
                 break;
         }
-    };
+    }
     //set axis to the good radio button axis
-    AccelerometerEdit.prototype.selectDefaultAxis = function (accSlider) {
+    selectDefaultAxis(accSlider) {
         switch (accSlider.axis) {
             case Axis.x:
                 this.accelerometerEditView.radioAxisX.checked = true;
@@ -4662,38 +4580,38 @@ var AccelerometerEdit = /** @class */ (function () {
                 this.accelerometerEditView.radioAxisZ.checked = true;
                 break;
         }
-    };
+    }
     //set values to the minimum acc range
-    AccelerometerEdit.prototype.applyRangeMinValues = function (accSlider) {
+    applyRangeMinValues(accSlider) {
         this.accelerometerEditView.rangeMin.min = "-20";
         this.accelerometerEditView.rangeMin.max = "20";
         this.accelerometerEditView.rangeMin.step = "0.1";
         this.accelerometerEditView.rangeMin.value = String(accSlider.amin);
-    };
+    }
     //set values to the middle acc range
-    AccelerometerEdit.prototype.applyRangeMidValues = function (accSlider) {
+    applyRangeMidValues(accSlider) {
         this.accelerometerEditView.rangeMid.min = "-20";
         this.accelerometerEditView.rangeMid.max = "20";
         this.accelerometerEditView.rangeMid.step = "0.1";
         this.accelerometerEditView.rangeMid.value = String(accSlider.amid);
-    };
+    }
     //set values to the maximum acc range
-    AccelerometerEdit.prototype.applyRangeMaxValues = function (accSlider) {
+    applyRangeMaxValues(accSlider) {
         this.accelerometerEditView.rangeMax.min = "-20";
         this.accelerometerEditView.rangeMax.max = "20";
         this.accelerometerEditView.rangeMax.step = "0.1";
         this.accelerometerEditView.rangeMax.value = String(accSlider.amax);
-    };
+    }
     //set values to the virtual range
-    AccelerometerEdit.prototype.applyRangeVirtualValues = function (accSlider) {
+    applyRangeVirtualValues(accSlider) {
         this.accelerometerEditView.rangeVirtual.min = "-20";
         this.accelerometerEditView.rangeVirtual.max = "20";
         this.accelerometerEditView.rangeVirtual.value = "0";
         this.accelerometerEditView.rangeVirtual.step = "0.1";
-    };
+    }
     //set values to the accelerometer range
     //create a faustInterfaceControler and register it to the AccelerometerHandler
-    AccelerometerEdit.prototype.applyRangeCurrentValues = function (accSlider) {
+    applyRangeCurrentValues(accSlider) {
         this.accelerometerEditView.rangeCurrent.min = "-20";
         this.accelerometerEditView.rangeCurrent.max = "20";
         this.accelerometerEditView.rangeCurrent.value = "0";
@@ -4706,9 +4624,9 @@ var AccelerometerEdit = /** @class */ (function () {
         faustInterfaceControlerEdit.faustInterfaceView.slider = this.accelerometerEditView.rangeCurrent;
         faustInterfaceControlerEdit.faustInterfaceView.slider.parentElement.classList.add(Axis[acc.axis]);
         acc.isActive = true;
-    };
-    //copy params of the accSlider 
-    AccelerometerEdit.prototype.copyParamsAccSlider = function (accSlider) {
+    }
+    //copy params of the accSlider
+    copyParamsAccSlider(accSlider) {
         this.accParams = {
             isEnabled: accSlider.isEnabled,
             acc: accSlider.acc,
@@ -4718,9 +4636,9 @@ var AccelerometerEdit = /** @class */ (function () {
             init: accSlider.init,
             label: accSlider.label
         };
-    };
+    }
     // split edited acc axis according the radio axis selection
-    AccelerometerEdit.prototype.radioAxisSplit = function (event) {
+    radioAxisSplit(event) {
         console.log("change");
         var radio = event.target;
         if (radio.id == "radioX") {
@@ -4732,9 +4650,9 @@ var AccelerometerEdit = /** @class */ (function () {
         else if (radio.id == "radioZ") {
             this.editAxis(Axis.z);
         }
-    };
+    }
     // split edited acc curve according the radio curve selection
-    AccelerometerEdit.prototype.radioCurveSplit = function (event) {
+    radioCurveSplit(event) {
         console.log("change");
         var radio = event.target;
         if (radio.id == "radio1") {
@@ -4749,9 +4667,9 @@ var AccelerometerEdit = /** @class */ (function () {
         else if (radio.id == "radio4") {
             this.editCurve(Curve.DownUp);
         }
-    };
+    }
     //apply new axis value the the AccelerometerSlider
-    AccelerometerEdit.prototype.editAxis = function (axe) {
+    editAxis(axe) {
         this.accelerometerEditView.cloneContainer.getElementsByTagName("div")[0].classList.remove(Axis[this.accSlid.axis]);
         this.accelerometerEditView.cloneContainer.getElementsByTagName("div")[0].classList.add(Axis[axe]);
         var oldAxis = this.accSlid.axis;
@@ -4761,21 +4679,21 @@ var AccelerometerEdit = /** @class */ (function () {
         editAcc.axis = axe;
         faustView.slider.parentElement.classList.remove(Axis[oldAxis]);
         faustView.slider.parentElement.classList.add(Axis[editAcc.axis]);
-    };
+    }
     //apply new curve value the the AccelerometerSlider
-    AccelerometerEdit.prototype.editCurve = function (curve) {
+    editCurve(curve) {
         this.accSlid.curve = curve;
         var editAcc = AccelerometerHandler.faustInterfaceControlerEdit.accelerometerSlider;
         editAcc.curve = curve;
         AccelerometerHandler.curveSplitter(this.accSlid);
         this.applyValuetoFaust();
-    };
+    }
     //event handler to switch isActive
-    AccelerometerEdit.prototype.accelerometerEventSwitch = function (event) {
+    accelerometerEventSwitch(event) {
         this.accelerometerSwitch(this.accelerometerEditView.checkeOnOff.checked);
-    };
+    }
     //change isActive of AccelerometerSlider
-    AccelerometerEdit.prototype.accelerometerSwitch = function (isSliderActive) {
+    accelerometerSwitch(isSliderActive) {
         if (isSliderActive) {
             this.accSlid.isActive = isSliderActive;
             if (this.accSlid.isEnabled) {
@@ -4789,43 +4707,41 @@ var AccelerometerEdit = /** @class */ (function () {
             this.sliderAllowedStyle = "allowed";
             this.accSlid.isActive = isSliderActive;
         }
-    };
+    }
     //apply value of virtual Accelerometer when it's use//
     //disable acc if enabled
-    AccelerometerEdit.prototype.virtualAccelerometer = function (event) {
+    virtualAccelerometer(event) {
         if (this.accelerometerEditView.checkeOnOff.checked == true) {
             this.accelerometerEditView.checkeOnOff.checked = false;
             this.accelerometerSwitch(false);
             this.accSlid.isActive = false;
         }
-        var rangeVal = parseFloat(this.accelerometerEditView.rangeVirtual.value);
         this.applyValuetoFaust();
-    };
+    }
     //apply change to AccelerometerSlider from min slider
-    AccelerometerEdit.prototype.accMin = function () {
+    accMin() {
         this.accSlid.amin = parseFloat(this.accelerometerEditView.rangeMin.value);
         this.accSlid.converter.setMappingValues(this.accSlid.amin, this.accSlid.amid, this.accSlid.amax, this.accSlid.min, this.accSlid.init, this.accSlid.max);
         this.applyValuetoFaust();
-    };
+    }
     //apply change to AccelerometerSlider from mid slider
-    AccelerometerEdit.prototype.accMid = function () {
+    accMid() {
         this.accSlid.amid = parseFloat(this.accelerometerEditView.rangeMid.value);
         this.accSlid.converter.setMappingValues(this.accSlid.amin, this.accSlid.amid, this.accSlid.amax, this.accSlid.min, this.accSlid.init, this.accSlid.max);
         this.applyValuetoFaust();
-    };
+    }
     //apply change to AccelerometerSlider from max slider
-    AccelerometerEdit.prototype.accMax = function () {
+    accMax() {
         this.accSlid.amax = parseFloat(this.accelerometerEditView.rangeMax.value);
         this.accSlid.converter.setMappingValues(this.accSlid.amin, this.accSlid.amid, this.accSlid.amax, this.accSlid.min, this.accSlid.init, this.accSlid.max);
         this.applyValuetoFaust();
-    };
+    }
     //apply values changes to the AccelerometerSlider
-    AccelerometerEdit.prototype.applyValuetoFaust = function () {
+    applyValuetoFaust() {
         var rangeVal = parseFloat(this.accelerometerEditView.rangeVirtual.value);
         Utilitary.accHandler.axisSplitter(this.accSlid, rangeVal, rangeVal, rangeVal, Utilitary.accHandler.applyNewValueToModule);
-    };
-    return AccelerometerEdit;
-}());
+    }
+}
 //Menu.ts  Menu class which handles the menu behaviours and contains the MenuView
 /// <reference path="Library.ts"/>
 /// <reference path="LibraryView.ts"/>
@@ -4836,7 +4752,7 @@ var AccelerometerEdit = /** @class */ (function () {
 /// <reference path="Load.ts"/>
 /// <reference path="Save.ts"/>
 /// <reference path="AccelerometerEdit.ts"/>
-/// <reference path="../DriveAPI.ts"/> 
+/// <reference path="../DriveAPI.ts"/>
 /// <reference path="../Messages.ts"/>
 var MenuChoices;
 (function (MenuChoices) {
@@ -4849,38 +4765,37 @@ var MenuChoices;
     MenuChoices[MenuChoices["load"] = 6] = "load";
     MenuChoices[MenuChoices["null"] = 7] = "null";
 })(MenuChoices || (MenuChoices = {}));
-var Menu = /** @class */ (function () {
-    function Menu(htmlContainer) {
-        var _this = this;
+class Menu {
+    constructor(htmlContainer) {
         this.isMenuDriveLoading = false;
-        this.currentMenuChoices = MenuChoices["null"];
+        this.currentMenuChoices = MenuChoices.null;
         this.isFullScreen = false;
         this.isAccelerometer = Utilitary.isAccelerometerOn;
         //create and init menu view wich gone create and init all sub menus views
         this.menuView = new MenuView();
         this.menuView.init(htmlContainer);
         //add Event Listeners
-        this.menuView.libraryButtonMenu.onclick = function () { _this.menuHandler(_this.newMenuChoices = MenuChoices.library); };
-        this.menuView.exportButtonMenu.onclick = function () { _this.menuHandler(_this.newMenuChoices = MenuChoices["export"]); };
-        this.menuView.helpButtonMenu.onclick = function () { _this.menuHandler(_this.newMenuChoices = MenuChoices.help); };
-        this.menuView.editButtonMenu.addEventListener("click", function () { _this.menuHandler(_this.newMenuChoices = MenuChoices.edit); });
-        this.menuView.closeButton.onclick = function () { _this.menuHandler(_this.newMenuChoices = MenuChoices["null"]); };
-        this.menuView.saveButton.addEventListener("click", function () { _this.menuHandler(_this.newMenuChoices = MenuChoices.save); });
-        this.menuView.loadButton.addEventListener("click", function () { _this.menuHandler(_this.newMenuChoices = MenuChoices.load); });
-        this.menuView.fullScreenButton.addEventListener("click", function () { _this.fullScreen(); });
-        this.menuView.accButton.addEventListener("click", function () { _this.accelerometer(); });
-        this.menuView.cleanButton.addEventListener("click", function () { new Confirm(Utilitary.messageRessource.confirmEmptyScene, function (callback) { _this.cleanScene(callback); }); });
+        this.menuView.libraryButtonMenu.onclick = () => { this.menuHandler(this.newMenuChoices = MenuChoices.library); };
+        this.menuView.exportButtonMenu.onclick = () => { this.menuHandler(this.newMenuChoices = MenuChoices.export); };
+        this.menuView.helpButtonMenu.onclick = () => { this.menuHandler(this.newMenuChoices = MenuChoices.help); };
+        this.menuView.editButtonMenu.addEventListener("click", () => { this.menuHandler(this.newMenuChoices = MenuChoices.edit); });
+        this.menuView.closeButton.onclick = () => { this.menuHandler(this.newMenuChoices = MenuChoices.null); };
+        this.menuView.saveButton.addEventListener("click", () => { this.menuHandler(this.newMenuChoices = MenuChoices.save); });
+        this.menuView.loadButton.addEventListener("click", () => { this.menuHandler(this.newMenuChoices = MenuChoices.load); });
+        this.menuView.fullScreenButton.addEventListener("click", () => { this.fullScreen(); });
+        this.menuView.accButton.addEventListener("click", () => { this.accelerometer(); });
+        this.menuView.cleanButton.addEventListener("click", () => { new Confirm(Utilitary.messageRessource.confirmEmptyScene, (callback) => { this.cleanScene(callback); }); });
         //add eventListern customs
-        document.addEventListener("updatename", function (e) { _this.updatePatchNameToInput(e); });
-        document.addEventListener("codeeditevent", function () { _this.customeCodeEditEvent(); });
-        document.addEventListener("updatelist", function () { _this.updateSelectLocalEvent(); });
-        document.addEventListener("authon", function () { _this.authOn(); });
-        document.addEventListener("authoff", function () { _this.authOff(); });
-        document.addEventListener("fillselect", function (optionEvent) { _this.fillSelectCloud(optionEvent); });
-        document.addEventListener("updatecloudselect", function () { _this.updateSelectCloudEvent(); });
-        document.addEventListener("startloaddrive", function () { _this.startLoadingDrive(); });
-        document.addEventListener("finishloaddrive", function () { _this.finishLoadingDrive(); });
-        document.addEventListener("clouderror", function (e) { _this.connectionProblem(e); });
+        document.addEventListener("updatename", (e) => { this.updatePatchNameToInput(e); });
+        document.addEventListener("codeeditevent", () => { this.customeCodeEditEvent(); });
+        document.addEventListener("updatelist", () => { this.updateSelectLocalEvent(); });
+        document.addEventListener("authon", () => { this.authOn(); });
+        document.addEventListener("authoff", () => { this.authOff(); });
+        document.addEventListener("fillselect", (optionEvent) => { this.fillSelectCloud(optionEvent); });
+        document.addEventListener("updatecloudselect", () => { this.updateSelectCloudEvent(); });
+        document.addEventListener("startloaddrive", () => { this.startLoadingDrive(); });
+        document.addEventListener("finishloaddrive", () => { this.finishLoadingDrive(); });
+        document.addEventListener("clouderror", (e) => { this.connectionProblem(e); });
         //create and init all menus objects
         this.library = new Library();
         this.library.libraryView = this.menuView.libraryView;
@@ -4904,13 +4819,13 @@ var Menu = /** @class */ (function () {
         this.accEdit = new AccelerometerEdit(this.menuView.accEditView);
     }
     // dispatch the action of the menu buttons to the right submenu handler
-    Menu.prototype.menuHandler = function (newMenuChoices) {
+    menuHandler(newMenuChoices) {
         this.help.stopVideo();
         switch (newMenuChoices) {
             case MenuChoices.library:
                 this.libraryMenu();
                 break;
-            case MenuChoices["export"]:
+            case MenuChoices.export:
                 this.exportMenu();
                 break;
             case MenuChoices.help:
@@ -4925,16 +4840,16 @@ var Menu = /** @class */ (function () {
             case MenuChoices.load:
                 this.loadMenu();
                 break;
-            case MenuChoices["null"]:
+            case MenuChoices.null:
                 this.cleanMenu();
                 this.closeMenu();
                 break;
         }
-    };
+    }
     //manage the library display
-    Menu.prototype.libraryMenu = function () {
+    libraryMenu() {
         switch (this.currentMenuChoices) {
-            case MenuChoices["null"]:// case MenuChoices.edit:
+            case MenuChoices.null:// case MenuChoices.edit:
                 this.menuView.contentsMenu.style.display = "block";
                 this.menuView.libraryContent.style.display = "block";
                 this.currentMenuChoices = MenuChoices.library;
@@ -4945,7 +4860,7 @@ var Menu = /** @class */ (function () {
             case MenuChoices.library:
                 this.menuView.contentsMenu.style.display = "none";
                 this.menuView.libraryContent.style.display = "none";
-                this.currentMenuChoices = MenuChoices["null"];
+                this.currentMenuChoices = MenuChoices.null;
                 this.menuView.libraryButtonMenu.style.backgroundColor = this.menuView.menuColorDefault;
                 this.menuView.libraryButtonMenu.style.zIndex = "0";
                 break;
@@ -4957,11 +4872,11 @@ var Menu = /** @class */ (function () {
                 this.currentMenuChoices = MenuChoices.library;
                 break;
         }
-    };
+    }
     //manage the load display
-    Menu.prototype.loadMenu = function () {
+    loadMenu() {
         switch (this.currentMenuChoices) {
-            case MenuChoices["null"]:// case MenuChoices.edit:
+            case MenuChoices.null:// case MenuChoices.edit:
                 this.menuView.contentsMenu.style.display = "block";
                 this.menuView.loadContent.style.display = "inline-table";
                 this.currentMenuChoices = MenuChoices.load;
@@ -4971,7 +4886,7 @@ var Menu = /** @class */ (function () {
             case MenuChoices.load:
                 this.menuView.contentsMenu.style.display = "none";
                 this.menuView.loadContent.style.display = "none";
-                this.currentMenuChoices = MenuChoices["null"];
+                this.currentMenuChoices = MenuChoices.null;
                 this.menuView.loadButton.style.backgroundColor = this.menuView.menuColorDefault;
                 this.menuView.loadButton.style.zIndex = "0";
                 break;
@@ -4983,21 +4898,21 @@ var Menu = /** @class */ (function () {
                 this.currentMenuChoices = MenuChoices.load;
                 break;
         }
-    };
+    }
     //manage the export display
-    Menu.prototype.exportMenu = function () {
+    exportMenu() {
         switch (this.currentMenuChoices) {
-            case MenuChoices["null"]:// case MenuChoices.edit:
+            case MenuChoices.null:// case MenuChoices.edit:
                 this.menuView.contentsMenu.style.display = "block";
                 this.menuView.exportContent.style.display = "inline-table";
-                this.currentMenuChoices = MenuChoices["export"];
+                this.currentMenuChoices = MenuChoices.export;
                 this.menuView.exportButtonMenu.style.backgroundColor = this.menuView.menuColorSelected;
                 this.menuView.exportButtonMenu.style.zIndex = "1";
                 break;
-            case MenuChoices["export"]:
+            case MenuChoices.export:
                 this.menuView.contentsMenu.style.display = "none";
                 this.menuView.exportContent.style.display = "none";
-                this.currentMenuChoices = MenuChoices["null"];
+                this.currentMenuChoices = MenuChoices.null;
                 this.menuView.exportButtonMenu.style.backgroundColor = this.menuView.menuColorDefault;
                 this.menuView.exportButtonMenu.style.zIndex = "0";
                 break;
@@ -5006,14 +4921,14 @@ var Menu = /** @class */ (function () {
                 this.menuView.exportButtonMenu.style.backgroundColor = this.menuView.menuColorSelected;
                 this.menuView.exportButtonMenu.style.zIndex = "1";
                 this.menuView.exportContent.style.display = "inline-table";
-                this.currentMenuChoices = MenuChoices["export"];
+                this.currentMenuChoices = MenuChoices.export;
                 break;
         }
-    };
+    }
     //manage the save display
-    Menu.prototype.saveMenu = function () {
+    saveMenu() {
         switch (this.currentMenuChoices) {
-            case MenuChoices["null"]:// case MenuChoices.edit:
+            case MenuChoices.null:// case MenuChoices.edit:
                 this.menuView.contentsMenu.style.display = "block";
                 this.menuView.saveContent.style.display = "inline-table";
                 this.currentMenuChoices = MenuChoices.save;
@@ -5023,7 +4938,7 @@ var Menu = /** @class */ (function () {
             case MenuChoices.save:
                 this.menuView.contentsMenu.style.display = "none";
                 this.menuView.saveContent.style.display = "none";
-                this.currentMenuChoices = MenuChoices["null"];
+                this.currentMenuChoices = MenuChoices.null;
                 this.menuView.saveButton.style.backgroundColor = this.menuView.menuColorDefault;
                 this.menuView.saveButton.style.zIndex = "0";
                 break;
@@ -5035,11 +4950,11 @@ var Menu = /** @class */ (function () {
                 this.currentMenuChoices = MenuChoices.save;
                 break;
         }
-    };
+    }
     //manage the help display
-    Menu.prototype.helpMenu = function () {
+    helpMenu() {
         switch (this.currentMenuChoices) {
-            case MenuChoices["null"]://case MenuChoices.edit:
+            case MenuChoices.null://case MenuChoices.edit:
                 this.menuView.contentsMenu.style.display = "block";
                 this.menuView.helpContent.style.display = "block";
                 this.menuView.helpButtonMenu.style.backgroundColor = this.menuView.menuColorSelected;
@@ -5049,7 +4964,7 @@ var Menu = /** @class */ (function () {
             case MenuChoices.help:
                 this.menuView.contentsMenu.style.display = "none";
                 this.menuView.helpContent.style.display = "none";
-                this.currentMenuChoices = MenuChoices["null"];
+                this.currentMenuChoices = MenuChoices.null;
                 this.menuView.helpButtonMenu.style.backgroundColor = this.menuView.menuColorDefault;
                 this.menuView.helpButtonMenu.style.zIndex = "0";
                 break;
@@ -5061,11 +4976,11 @@ var Menu = /** @class */ (function () {
                 this.currentMenuChoices = MenuChoices.help;
                 break;
         }
-    };
+    }
     //manage the accelerometerEdit mode and display
-    Menu.prototype.editMenu = function () {
+    editMenu() {
         switch (this.currentMenuChoices) {
-            case MenuChoices["null"]:
+            case MenuChoices.null:
                 this.menuView.editButtonMenu.style.backgroundColor = "#00C50D";
                 this.menuView.editButtonMenu.style.boxShadow = "yellow 0px 0px 51px inset";
                 this.accEdit.editAction();
@@ -5076,7 +4991,7 @@ var Menu = /** @class */ (function () {
                 this.menuView.editButtonMenu.style.backgroundColor = this.menuView.menuColorDefault;
                 this.menuView.editButtonMenu.style.boxShadow = "none";
                 this.menuView.contentsMenu.style.display = "none";
-                this.currentMenuChoices = MenuChoices["null"];
+                this.currentMenuChoices = MenuChoices.null;
                 break;
             default:
                 this.cleanMenu();
@@ -5087,17 +5002,17 @@ var Menu = /** @class */ (function () {
                 this.currentMenuChoices = MenuChoices.edit;
                 break;
         }
-    };
+    }
     //Close the menu
-    Menu.prototype.closeMenu = function () {
+    closeMenu() {
         for (var i = 0; i < this.menuView.HTMLElementsMenu.length; i++) {
             this.menuView.HTMLElementsMenu[i].style.display = "none";
         }
         this.menuView.contentsMenu.style.display = "none";
-        this.currentMenuChoices = MenuChoices["null"];
-    };
+        this.currentMenuChoices = MenuChoices.null;
+    }
     //hide all elements currently displayed in the menu
-    Menu.prototype.cleanMenu = function () {
+    cleanMenu() {
         if (this.accEdit.isOn) {
             this.accEdit.editAction();
             this.menuView.editButtonMenu.style.backgroundColor = this.menuView.menuColorDefault;
@@ -5111,9 +5026,9 @@ var Menu = /** @class */ (function () {
             this.menuView.HTMLButtonsMenu[i].style.backgroundColor = this.menuView.menuColorDefault;
             this.menuView.HTMLButtonsMenu[i].style.zIndex = "0";
         }
-    };
-    //update all element that display the scene name 
-    Menu.prototype.updatePatchNameToInput = function (e) {
+    }
+    //update all element that display the scene name
+    updatePatchNameToInput(e) {
         this.menuView.patchNameScene.textContent = Utilitary.currentScene.sceneName;
         this.menuView.exportView.dynamicName.textContent = Utilitary.currentScene.sceneName;
         this.menuView.exportView.inputNameApp.value = Utilitary.currentScene.sceneName;
@@ -5122,10 +5037,9 @@ var Menu = /** @class */ (function () {
         this.menuView.saveView.inputLocalStorage.value = Utilitary.currentScene.sceneName;
         this.menuView.saveView.inputCloudStorage.value = Utilitary.currentScene.sceneName;
         new Message(Utilitary.messageRessource.successRenameScene, "messageTransitionOutFast", 2000, 500);
-    };
+    }
     //handle fullscreen mode
-    Menu.prototype.fullScreen = function () {
-        var body = document.getElementsByTagName("body")[0];
+    fullScreen() {
         if (this.isFullScreen) {
             if (document.cancelFullScreen) {
                 document.cancelFullScreen();
@@ -5150,10 +5064,9 @@ var Menu = /** @class */ (function () {
             }
             this.isFullScreen = true;
         }
-    };
+    }
     //handle the enabing/disabling of all slider having a accelerometer
-    Menu.prototype.accelerometer = function () {
-        var checkboxs = document.getElementsByClassName("accCheckbox");
+    accelerometer() {
         if (this.isAccelerometer) {
             this.isAccelerometer = false;
             Utilitary.isAccelerometerOn = false;
@@ -5186,9 +5099,9 @@ var Menu = /** @class */ (function () {
                 }
             }
         }
-    };
+    }
     //removing all modules from the scene
-    Menu.prototype.cleanScene = function (callBack) {
+    cleanScene(callBack) {
         var modules = this.sceneCurrent.getModules();
         while (modules.length != 0) {
             if (modules[0].patchID != "output" && modules[0].patchID != "input") {
@@ -5202,28 +5115,28 @@ var Menu = /** @class */ (function () {
             }
         }
         callBack();
-    };
+    }
     //close menu when editing a module's Faust code
     //the idea here is to disable the accelerometerEdit mode if enabled
-    Menu.prototype.customeCodeEditEvent = function () {
-        this.menuHandler(MenuChoices["null"]);
-    };
+    customeCodeEditEvent() {
+        this.menuHandler(MenuChoices.null);
+    }
     //refresh the select boxes of localstorage when adding or removing a saved scene
-    Menu.prototype.updateSelectLocalEvent = function () {
+    updateSelectLocalEvent() {
         this.updateSelectLocal(this.menuView.loadView.existingSceneSelect);
         this.updateSelectLocal(this.menuView.saveView.existingSceneSelect);
-    };
+    }
     //empty a selectBox
-    Menu.prototype.clearSelect = function (select) {
+    clearSelect(select) {
         select.innerHTML = "";
-    };
+    }
     //refresh a select box
-    Menu.prototype.updateSelectLocal = function (select) {
+    updateSelectLocal(select) {
         this.clearSelect(select);
         this.fillSelectLocal(select);
-    };
+    }
     //fill select box
-    Menu.prototype.fillSelectLocal = function (select) {
+    fillSelectLocal(select) {
         if (typeof sessionStorage != 'undefined') {
             for (var i = 0; i < localStorage.length; i++) {
                 var option = document.createElement("option");
@@ -5232,21 +5145,21 @@ var Menu = /** @class */ (function () {
                 select.add(option);
             }
         }
-    };
+    }
     //dispatch the current scene to the menus objects
-    Menu.prototype.setMenuScene = function (scene) {
+    setMenuScene(scene) {
         this.sceneCurrent = scene;
         this.save.sceneCurrent = scene;
         this.load.sceneCurrent = scene;
-    };
+    }
     //dispatch the drive API to the menus objects
-    Menu.prototype.setDriveApi = function (drive) {
+    setDriveApi(drive) {
         this.drive = drive;
         this.save.drive = drive;
         this.load.drive = drive;
-    };
+    }
     //show element from cloud Drive when logged on
-    Menu.prototype.authOn = function () {
+    authOn() {
         this.load.loadView.cloudSelectFile.style.display = "block";
         this.save.saveView.cloudSelectFile.style.display = "block";
         this.load.loadView.buttonChangeAccount.style.display = "block";
@@ -5255,9 +5168,9 @@ var Menu = /** @class */ (function () {
         this.save.saveView.buttonConnectDrive.style.display = "none";
         this.save.saveView.buttonCloudSuppr.style.display = "block";
         this.save.saveView.inputCloudStorage.style.display = "block";
-    };
+    }
     //show element from cloud Drive when logged out
-    Menu.prototype.authOff = function () {
+    authOff() {
         this.load.loadView.cloudSelectFile.style.display = "none";
         this.save.saveView.cloudSelectFile.style.display = "none";
         this.load.loadView.buttonChangeAccount.style.display = "none";
@@ -5269,22 +5182,22 @@ var Menu = /** @class */ (function () {
         this.clearSelect(this.save.saveView.cloudSelectFile);
         this.clearSelect(this.load.loadView.cloudSelectFile);
         window.open("https://accounts.google.com/logout", "newwindow", "width=500,height=700");
-    };
+    }
     //display Drive Connection error
-    Menu.prototype.connectionProblem = function (event) {
+    connectionProblem(event) {
         new Message(Utilitary.messageRessource.errorConnectionCloud + " : " + event.detail);
-    };
-    Menu.prototype.fillSelectCloud = function (optionEvent) {
+    }
+    fillSelectCloud(optionEvent) {
         this.load.loadView.cloudSelectFile.add(optionEvent.detail);
         var optionSave = optionEvent.detail.cloneNode(true);
         this.save.saveView.cloudSelectFile.add(optionSave);
-    };
-    Menu.prototype.updateSelectCloudEvent = function () {
+    }
+    updateSelectCloudEvent() {
         this.clearSelect(this.load.loadView.cloudSelectFile);
         this.clearSelect(this.save.saveView.cloudSelectFile);
         this.drive.updateConnection();
-    };
-    Menu.prototype.startLoadingDrive = function () {
+    }
+    startLoadingDrive() {
         if (!this.isMenuDriveLoading) {
             this.isMenuDriveLoading = true;
             this.save.saveView.driveContainer.style.display = "none";
@@ -5292,8 +5205,8 @@ var Menu = /** @class */ (function () {
             Utilitary.addLoadingLogo("loadCloudContainer");
             Utilitary.addLoadingLogo("cloudSaveContainer");
         }
-    };
-    Menu.prototype.finishLoadingDrive = function () {
+    }
+    finishLoadingDrive() {
         if (this.isMenuDriveLoading) {
             this.isMenuDriveLoading = false;
             this.save.saveView.driveContainer.style.display = "block";
@@ -5301,22 +5214,21 @@ var Menu = /** @class */ (function () {
             Utilitary.removeLoadingLogo("loadCloudContainer");
             Utilitary.removeLoadingLogo("cloudSaveContainer");
         }
-    };
-    return Menu;
-}());
+    }
+}
 //MenuView.ts : MenuView Class which contains all the graphical parts of the menu
 /// <reference path="../Accelerometer.ts"/>
 /// <reference path="AccelerometerEditView.ts"/>
 /// <reference path="LoadView.ts"/>
 /// <reference path="SaveView.ts"/>
-var MenuView = /** @class */ (function () {
-    function MenuView() {
+class MenuView {
+    constructor() {
         this.HTMLElementsMenu = [];
         this.HTMLButtonsMenu = [];
         this.menuColorDefault = "rgba(227, 64, 80, 0.73)";
         this.menuColorSelected = "rgb(209, 64, 80)";
     }
-    MenuView.prototype.init = function (htmlContainer) {
+    init(htmlContainer) {
         var menuContainer = document.createElement('div');
         menuContainer.id = "menuContainer";
         this.menuContainer = menuContainer;
@@ -5435,9 +5347,8 @@ var MenuView = /** @class */ (function () {
         this.exportContent = exportContent;
         this.helpContent = helpContent;
         this.contentsMenu = contentsMenu;
-    };
-    return MenuView;
-}());
+    }
+}
 /*     APP.JS
 
 
@@ -5448,8 +5359,7 @@ Activate Physical input/ output
 Handle Drag and Drop
 Create Factories and Modules
 
-
-    */
+*/
 /// <reference path="Scenes/SceneClass.ts"/>
 /// <reference path="Modules/ModuleClass.ts"/>
 /// <reference path="Modules/ModuleView.ts"/>
@@ -5476,44 +5386,40 @@ Create Factories and Modules
 /// <reference path="Messages.ts"/>
 /// <reference path="Lib/perfectScrollBar/js/perfect-ScrollBar.min.d.ts"/>
 //object containg info necessary to compile faust code
-var App = /** @class */ (function () {
-    function App() {
-    }
-    App.prototype.createAllScenes = function () {
+class App {
+    createAllScenes() {
         var sceneView = new SceneView();
         Utilitary.currentScene = new Scene("Normal", this.compileFaust, sceneView);
         this.setGeneralAppListener(this);
-        App.currentScene = 0;
-    };
-    App.prototype.createMenu = function () {
-        var _this = this;
+    }
+    createMenu() {
         this.menu = new Menu(document.getElementsByTagName('body')[0]);
         //pass the scene to the menu to allow it to access the scene
         this.menu.setMenuScene(Utilitary.currentScene);
         //add eventlistener on the scene to hide menu when clicked or touched
-        Utilitary.currentScene.getSceneContainer().addEventListener("mousedown", function () {
-            if (!_this.menu.accEdit.isOn) {
-                _this.menu.newMenuChoices = MenuChoices["null"];
-                _this.menu.menuHandler(_this.menu.newMenuChoices);
+        Utilitary.currentScene.getSceneContainer().addEventListener("mousedown", () => {
+            if (!this.menu.accEdit.isOn) {
+                this.menu.newMenuChoices = MenuChoices.null;
+                this.menu.menuHandler(this.menu.newMenuChoices);
             }
         }, true);
-        Utilitary.currentScene.getSceneContainer().addEventListener("touchstart", function () {
-            if (!_this.menu.accEdit.isOn) {
-                _this.menu.newMenuChoices = MenuChoices["null"];
-                _this.menu.menuHandler(_this.menu.newMenuChoices);
+        Utilitary.currentScene.getSceneContainer().addEventListener("touchstart", () => {
+            if (!this.menu.accEdit.isOn) {
+                this.menu.newMenuChoices = MenuChoices.null;
+                this.menu.menuHandler(this.menu.newMenuChoices);
             }
         }, true);
-    };
+    }
     //create div to append messages and confirms
-    App.prototype.createDialogue = function () {
+    createDialogue() {
         var dialogue = document.createElement("div");
         dialogue.id = "dialogue";
         document.getElementsByTagName("body")[0].appendChild(dialogue);
-    };
+    }
     /********************************************************************
     ****************  CREATE FAUST FACTORIES AND MODULES ****************
     ********************************************************************/
-    App.prototype.compileFaust = function (compileFaust) {
+    compileFaust(compileFaust) {
         //  Temporarily Saving parameters of compilation
         this.tempModuleName = compileFaust.name;
         this.tempModuleSourceCode = compileFaust.sourceCode;
@@ -5525,11 +5431,11 @@ var App = /** @class */ (function () {
         }
         ;
         //locate libraries used in libfaust compiler
-        var libpath = location.origin + location.pathname.substring(0, location.pathname.lastIndexOf('/')) + "/faustcode/";
+        var libpath = location.origin + location.pathname.substring(0, location.pathname.lastIndexOf('/')) + "/faustlibraries/";
         var args = ["-I", libpath];
         //try to create the asm.js code/factory with the faust code given. Then callback to function passing the factory.
         try {
-            this.factory = faust.createDSPFactory(compileFaust.sourceCode, args, function (factory) { compileFaust.callback(factory); });
+            this.factory = faust.createDSPFactory(compileFaust.sourceCode, args, (factory) => { compileFaust.callback(factory); });
         }
         catch (error) {
             new Message(error);
@@ -5538,94 +5444,92 @@ var App = /** @class */ (function () {
             currentScene.unmuteScene();
         }
         ;
-    };
+    }
     //create Module, set the source faust code to its moduleFaust, set the faust interface , add the input output connection nodes
     //
-    App.prototype.createModule = function (factory) {
-        var _this = this;
+    createModule(factory) {
         if (!factory) {
             new Message(Utilitary.messageRessource.errorFactory + faust.getErrorMessage());
             Utilitary.hideFullPageLoading();
-            //return null;
+            return;
         }
-        var module = new ModuleClass(Utilitary.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), function (module) { Utilitary.currentScene.removeModule(module); }, this.compileFaust);
+        var module = new ModuleClass(Utilitary.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), (module) => { Utilitary.currentScene.removeModule(module); }, this.compileFaust);
         module.moduleFaust.setSource(this.tempModuleSourceCode);
-        module.createDSP(factory);
-        module.setFaustInterfaceControles();
-        module.createFaustInterface();
-        module.addInputOutputNodes();
-        //set listener to recompile when dropping faust code on the module
-        if (this.tempModuleName != "input" && this.tempModuleName != "output") {
-            module.moduleView.fModuleContainer.ondrop = function (e) {
-                e.stopPropagation();
-                _this.styleOnDragEnd();
-                _this.uploadOn(_this, module, 0, 0, e);
+        module.createDSP(factory, () => {
+            module.setFaustInterfaceControles();
+            module.createFaustInterface();
+            module.addInputOutputNodes();
+            //set listener to recompile when dropping faust code on the module
+            if (this.tempModuleName != "input" && this.tempModuleName != "output") {
+                module.moduleView.fModuleContainer.ondrop = (e) => {
+                    e.stopPropagation();
+                    this.styleOnDragEnd();
+                    this.uploadOn(this, module, 0, 0, e);
+                };
+            }
+            module.moduleView.fModuleContainer.ondragover = () => {
+                module.moduleView.fModuleContainer.style.opacity = "1";
+                module.moduleView.fModuleContainer.style.boxShadow = "0 0 40px rgb(255, 0, 0)";
             };
-        }
-        module.moduleView.fModuleContainer.ondragover = function () {
-            module.moduleView.fModuleContainer.style.opacity = "1";
-            module.moduleView.fModuleContainer.style.boxShadow = "0 0 40px rgb(255, 0, 0)";
-        };
-        module.moduleView.fModuleContainer.ondragleave = function () {
-            module.moduleView.fModuleContainer.style.opacity = "0.5";
-            module.moduleView.fModuleContainer.style.boxShadow = "0 5px 10px rgba(0, 0, 0, 0.4)";
-        };
-        // the current scene add the module and hide the loading page
-        Utilitary.currentScene.addModule(module);
-        if (!Utilitary.currentScene.isInitLoading) {
-            Utilitary.hideFullPageLoading();
-        }
-    };
+            module.moduleView.fModuleContainer.ondragleave = () => {
+                module.moduleView.fModuleContainer.style.opacity = "0.5";
+                module.moduleView.fModuleContainer.style.boxShadow = "0 5px 10px rgba(0, 0, 0, 0.4)";
+            };
+            // the current scene add the module and hide the loading page
+            Utilitary.currentScene.addModule(module);
+            if (!Utilitary.currentScene.isInitLoading) {
+                Utilitary.hideFullPageLoading();
+            }
+        });
+    }
     /********************************************************************
     ***********************  HANDLE DRAG AND DROP ***********************
     ********************************************************************/
     //-- custom event to load file from the load menu with the file explorer
     //Init drag and drop reactions, scroll event and body resize event to resize svg element size,
     // add custom double touch event to load dsp from the library menu
-    App.prototype.setGeneralAppListener = function (app) {
-        var _this = this;
+    setGeneralAppListener(app) {
         //custom event to load file from the load menu with the file explorer
-        document.addEventListener("fileload", function (e) { _this.loadFileEvent(e); });
+        document.addEventListener("fileload", (e) => { this.loadFileEvent(e); });
         //All drog and drop events
         window.ondragover = function () { return false; };
         window.ondragend = function () { return false; };
-        document.ondragstart = function () { _this.styleOnDragStart(); };
-        document.ondragenter = function (e) {
+        document.ondragstart = () => { this.styleOnDragStart(); };
+        document.ondragenter = (e) => {
             var srcElement = e.srcElement;
             if (srcElement.className != null && srcElement.className == "node-button") {
             }
             else {
-                _this.styleOnDragStart();
+                this.styleOnDragStart();
             }
         };
-        document.ondragleave = function (e) {
+        document.ondragleave = (e) => {
             var elementTarget = e.target;
             if (elementTarget.id == "svgCanvas") {
                 //alert("svg")
-                _this.styleOnDragEnd();
+                this.styleOnDragEnd();
                 e.stopPropagation();
                 e.preventDefault();
             }
         };
         //scroll event to check the size of the document
-        document.onscroll = function () {
-            _this.checkRealWindowSize();
+        document.onscroll = () => {
+            this.checkRealWindowSize();
         };
         //resize event
         var body = document.getElementsByTagName("body")[0];
-        body.onresize = function () { _this.checkRealWindowSize(); };
-        window.ondrop = function (e) {
-            var target = e.target;
-            _this.styleOnDragEnd();
+        body.onresize = () => { this.checkRealWindowSize(); };
+        window.ondrop = (e) => {
+            this.styleOnDragEnd();
             var x = e.clientX;
             var y = e.clientY;
-            _this.uploadOn(_this, null, x, y, e);
+            this.uploadOn(this, null, x, y, e);
         };
         //custom double touch from library menu to load an effect or an intrument.
-        document.addEventListener("dbltouchlib", function (e) { _this.dblTouchUpload(e); });
-    };
+        document.addEventListener("dbltouchlib", (e) => { this.dblTouchUpload(e); });
+    }
     //-- Upload content dropped on the page and allocate the content to the right function
-    App.prototype.uploadOn = function (app, module, x, y, e) {
+    uploadOn(app, module, x, y, e) {
         Utilitary.showFullPageLoading();
         e.preventDefault();
         if (e.dataTransfer.files.length > 0) {
@@ -5667,40 +5571,39 @@ var App = /** @class */ (function () {
             new Message(Utilitary.messageRessource.errorObjectNotFaustCompatible);
             Utilitary.hideFullPageLoading();
         }
-    };
+    }
     //used for Url pointing at a dsp file
-    App.prototype.uploadUrl = function (app, module, x, y, url) {
+    uploadUrl(app, module, x, y, url) {
         var filename = url.toString().split('/').pop();
         filename = filename.toString().split('.').shift();
-        Utilitary.getXHR(url, function (codeFaust) {
+        Utilitary.getXHR(url, (codeFaust) => {
             var dsp_code = "process = vgroup(\"" + filename + "\",environment{" + codeFaust + "}.process);";
             if (module == null) {
-                app.compileFaust({ name: filename, sourceCode: dsp_code, x: x, y: y, callback: function (factory) { app.createModule(factory); } });
+                app.compileFaust({ name: filename, sourceCode: dsp_code, x: x, y: y, callback: (factory) => { app.createModule(factory); } });
             }
             else {
                 module.update(filename, dsp_code);
             }
         }, Utilitary.errorCallBack);
-    };
+    }
     // used for dsp code faust
-    App.prototype.uploadCodeFaust = function (app, module, x, y, e, dsp_code) {
+    uploadCodeFaust(app, module, x, y, e, dsp_code) {
         dsp_code = "process = vgroup(\"" + "TEXT" + "\",environment{" + dsp_code + "}.process);";
         if (!module) {
-            app.compileFaust({ name: "TEXT", sourceCode: dsp_code, x: x, y: y, callback: function (factory) { app.createModule(factory); } });
+            app.compileFaust({ name: "TEXT", sourceCode: dsp_code, x: x, y: y, callback: (factory) => { app.createModule(factory); } });
         }
         else {
             module.update("TEXT", dsp_code);
         }
-    };
+    }
     //used for File containing code faust or jfaust/json scene descriptor get the file then pass it to loadFile()
-    App.prototype.uploadFileFaust = function (app, module, x, y, e, dsp_code) {
+    uploadFileFaust(app, module, x, y, e, dsp_code) {
         var files = e.dataTransfer.files;
         var file = files[0];
         this.loadFile(file, module, x, y);
-    };
+    }
     //Load file dsp or jfaust
-    App.prototype.loadFile = function (file, module, x, y) {
-        var _this = this;
+    loadFile(file, module, x, y) {
         var dsp_code;
         var reader = new FileReader();
         var ext = file.name.toString().split('.').pop();
@@ -5717,10 +5620,10 @@ var App = /** @class */ (function () {
         else {
             throw new Error(Utilitary.messageRessource.errorObjectNotFaustCompatible);
         }
-        reader.onloadend = function (e) {
+        reader.onloadend = (e) => {
             dsp_code = "process = vgroup(\"" + filename + "\",environment{" + reader.result + "}.process);";
             if (!module && type == "dsp") {
-                _this.compileFaust({ name: filename, sourceCode: dsp_code, x: x, y: y, callback: function (factory) { _this.createModule(factory); } });
+                this.compileFaust({ name: filename, sourceCode: dsp_code, x: x, y: y, callback: (factory) => { this.createModule(factory); } });
             }
             else if (type == "dsp") {
                 module.update(filename, dsp_code);
@@ -5729,23 +5632,23 @@ var App = /** @class */ (function () {
                 Utilitary.currentScene.recallScene(reader.result);
             }
         };
-    };
+    }
     //used when a custom event from loading file with the browser dialogue
-    App.prototype.loadFileEvent = function (e) {
+    loadFileEvent(e) {
         Utilitary.showFullPageLoading();
         var file = e.detail;
         var position = Utilitary.currentScene.positionDblTapModule();
         this.loadFile(file, null, position.x, position.y);
-    };
+    }
     //used with the library double touch custom event
-    App.prototype.dblTouchUpload = function (e) {
+    dblTouchUpload(e) {
         Utilitary.showFullPageLoading();
         var position = Utilitary.currentScene.positionDblTapModule();
         this.uploadUrl(this, null, position.x, position.y, e.detail);
-    };
+    }
     ////////////////////////////// design on drag or drop //////////////////////////////////////
     // manage style during a drag and drop event
-    App.prototype.styleOnDragStart = function () {
+    styleOnDragStart() {
         this.menu.menuView.menuContainer.style.opacity = "0.5";
         this.menu.menuView.menuContainer.classList.add("no_pointer");
         Utilitary.currentScene.sceneView.dropElementScene.style.display = "block";
@@ -5754,8 +5657,8 @@ var App = /** @class */ (function () {
         for (var i = 0; i < modules.length; i++) {
             modules[i].moduleView.fModuleContainer.style.opacity = "0.5";
         }
-    };
-    App.prototype.styleOnDragEnd = function () {
+    }
+    styleOnDragEnd() {
         this.menu.menuView.menuContainer.classList.remove("no_pointer");
         this.menu.menuView.menuContainer.style.opacity = "1";
         Utilitary.currentScene.sceneView.dropElementScene.style.display = "none";
@@ -5765,9 +5668,9 @@ var App = /** @class */ (function () {
             modules[i].moduleView.fModuleContainer.style.opacity = "1";
             modules[i].moduleView.fModuleContainer.style.boxShadow = "0 5px 10px rgba(0, 0, 0, 0.4)";
         }
-    };
+    }
     //manage the window size
-    App.prototype.checkRealWindowSize = function () {
+    checkRealWindowSize() {
         if (window.scrollX > 0) {
             console.log(document.getElementsByTagName("html")[0]);
             document.getElementsByTagName("html")[0].style.width = window.innerWidth + window.scrollX + "px";
@@ -5787,13 +5690,16 @@ var App = /** @class */ (function () {
             document.getElementsByTagName("html")[0].style.height = "100%";
             document.getElementById("svgCanvas").style.height = "100%";
         }
-    };
-    App.prototype.errorCallBack = function (message) {
-    };
-    return App;
-}());
-//listner on load of all element to init the app
-window.addEventListener('load', init, false);
+    }
+    errorCallBack(message) { }
+}
+/*				MAIN.JS
+    Entry point of the Program
+    intefaces used through the app
+*/
+/// <reference path="App.ts"/>
+/// <reference path="Messages.ts"/>
+// init is call by libfaust-wasm.js load end handler
 //initialization af the app, create app and ressource to get text with correct localization
 //then resumeInit on callback when text is loaded
 function init() {
@@ -5823,7 +5729,7 @@ function resumeInit(app) {
     app.menu.setDriveApi(Utilitary.driveApi);
     Utilitary.driveApi.checkAuth();
     //error catcher
-    window.addEventListener("error", function (e) {
+    window.addEventListener("error", (e) => {
         if (e.message == "Uncaught Error: workerError" || e.message == "Error: workerError") {
             new Message(Utilitary.messageRessource.errorOccuredMessage + e.message);
             Utilitary.hideFullPageLoading();
@@ -5848,6 +5754,9 @@ function IosInit() {
     if (source.noteOn) {
         source.noteOn(0);
     }
+    else if (source.start) {
+        source.start();
+    }
     window.removeEventListener('touchend', IosInit, false);
 }
 function IosInit2() {
@@ -5859,6 +5768,9 @@ function IosInit2() {
     // play the file
     if (source.noteOn) {
         source.noteOn(0);
+    }
+    else if (source.start) {
+        source.start();
     }
     window.removeEventListener('touchstart', IosInit2, false);
 }

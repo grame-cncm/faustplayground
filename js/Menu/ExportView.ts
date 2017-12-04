@@ -139,7 +139,6 @@ class ExportView {
         var selectPlatform: HTMLSelectElement = document.createElement("select");
         selectPlatform.id = "platforms";
         selectPlatform.className = "selects";
-        var self = this;
         this.selectPlatform = selectPlatform;
         selectDiv.appendChild(selectPlatform);
 
