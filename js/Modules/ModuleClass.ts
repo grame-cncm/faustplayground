@@ -266,7 +266,6 @@ class ModuleClass  {
     //---- React to recompilation triggered by click on icon
     private recompileSource(event: MouseEvent, module: ModuleClass): void {
         Utilitary.showFullPageLoading();
-        var buttonImage: HTMLfEdit = <HTMLfEdit>event.target;
         var dsp_code: string = this.moduleView.textArea.value;
         this.moduleView.textArea.style.display = "none";
         Connector.redrawOutputConnections(this, this.drag);
@@ -377,7 +376,6 @@ class ModuleClass  {
     }
     interfaceButtonCallback(faustControler: FaustInterfaceControler, val?: number): any {
 
-        var input: HTMLInputElement = faustControler.faustInterfaceView.button;
         var text: string = faustControler.itemParam.address;
         faustControler.value = val.toString();
 
@@ -394,7 +392,6 @@ class ModuleClass  {
     // Save graphical parameters of a Faust Node
     private saveInterfaceParams(): void {
 
-        var interfaceElements: NodeList = this.moduleView.fInterfaceContainer.childNodes;
         var controls = this.moduleControles;
         for (var j = 0; j < controls.length; j++) {
             var text: string = controls[j].itemParam.address;
@@ -418,7 +415,6 @@ class ModuleClass  {
 
     /******************* GET/SET INPUT/OUTPUT NODES **********************/
     addInputOutputNodes(): void {
-        var module: ModuleClass = this;
         if (this.moduleFaust.fDSP.getNumInputs() > 0 && this.moduleView.fName != "input") {
             this.moduleView.setInputNode();
             this.moduleView.fInputNode.addEventListener("mousedown", this.eventConnectorHandler);

@@ -86,6 +86,5 @@ class SceneView {
 
         container.appendChild(dropElementScene);
         this.fSceneContainer = container;
-        var playgroundView: SceneView = this;
     }
 }

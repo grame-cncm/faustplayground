@@ -69,7 +69,7 @@ class ExportLib{
 	    whiteContainer.style.cssText = "width:" + size.toString() + "px; height:" + size.toString() + "px; background-color:white; position:relative; margin-left:auto; margin-right:auto; padding:3px;";
 
 	    var qqDiv = document.createElement('qrcode');
-        var qq = new QRCode(qqDiv, {
+        new QRCode(qqDiv, {
     	    text: downloadString,
 	        width: size,
     	    height: size,
@@ -100,7 +100,6 @@ class ExportLib{
     // Return the list of available architectures for a specific platform from the json description
     getArchitectures(json:string, platform:string)
     {
-	    var architectures:string[] = [];
 	    var data = JSON.parse(json);
 
 	    return data[platform];

@@ -38,10 +38,6 @@ Create Factories and Modules
 //object containg info necessary to compile faust code
 
 class App {
-    private static currentScene: number;
-    private static src: IHTMLDivElementSrc;
-    private static out: IHTMLDivElementOut;
-
     menu: Menu;
     scenes: Scene[];
 
@@ -62,7 +58,6 @@ class App {
         var sceneView: SceneView = new SceneView();
         Utilitary.currentScene = new Scene("Normal", this.compileFaust, sceneView);
         this.setGeneralAppListener(this);
-        App.currentScene = 0;
     }
 
     createMenu(): void {
@@ -128,7 +123,7 @@ class App {
         if (!factory) {
             new Message(Utilitary.messageRessource.errorFactory + faust.getErrorMessage());
             Utilitary.hideFullPageLoading();
-            //return null;
+            return;
         }
 
         var module: ModuleClass = new ModuleClass(Utilitary.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), (module) => { Utilitary.currentScene.removeModule(module) }, this.compileFaust);
@@ -206,7 +201,6 @@ class App {
         body.onresize = () => { this.checkRealWindowSize() };
 
         window.ondrop = (e) => {
-            var target = <HTMLElement>e.target;
             this.styleOnDragEnd()
             var x = e.clientX;
             var y = e.clientY;

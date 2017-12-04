@@ -110,12 +110,6 @@ class Scene {
         this.fModuleList.splice(this.fModuleList.indexOf(module), 1);
     }
 
-    private cleanModules():void {
-        for (var i = this.fModuleList.length - 1; i >= 0; i--) {
-            this.fModuleList[i].deleteModule();
-            this.removeModule(this.fModuleList[i]);
-        }
-    }
     /*******************************  PUBLIC METHODS  **********************************/
 
     integrateSceneInBody(): void {
@@ -195,7 +189,6 @@ class Scene {
         var src = <IHTMLDivElementSrc>document.getElementById("input");
         src.audioNode = Utilitary.audioContext.createMediaStreamSource(device);
         document.body.appendChild(src);
-        var drag: Drag = new Drag();
         var connect: Connector = new Connector();
         connect.connectInput(this.fAudioInput, src);
     }

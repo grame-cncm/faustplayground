@@ -461,7 +461,6 @@ class AccelerometerEdit {
             this.accelerometerSwitch(false);
             this.accSlid.isActive = false;
         }
-        var rangeVal = parseFloat(this.accelerometerEditView.rangeVirtual.value);
         this.applyValuetoFaust();
     }
 
