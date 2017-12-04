@@ -383,7 +383,7 @@ class Scene {
 
             var module: ModuleClass = new ModuleClass(Utilitary.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), (module) => {this.removeModule(module) }, this.compileFaust);
             module.moduleFaust.setSource(this.tempModuleSourceCode);
-            module.createDSP(factory, function() {
+            module.createDSP(factory, () => {
             	module.patchID = this.tempPatchId;
             	if (this.tempParams) {
                		for (var i = 0; i < this.tempParams.sliders.length; i++) {

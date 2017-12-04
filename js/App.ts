@@ -133,8 +133,8 @@ class App {
 
         var module: ModuleClass = new ModuleClass(Utilitary.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), (module) => { Utilitary.currentScene.removeModule(module) }, this.compileFaust);
         module.moduleFaust.setSource(this.tempModuleSourceCode);
-        
-        module.createDSP(factory, function() {
+
+        module.createDSP(factory, () => {
         	module.setFaustInterfaceControles();
         	module.createFaustInterface();
         	module.addInputOutputNodes();
@@ -388,7 +388,7 @@ class App {
     }
 
     errorCallBack(message: string) {}
-    
+
 }
 
 

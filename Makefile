@@ -1,2 +1,2 @@
 compile :
-	tsc -outFile js/faustplayground.js js/Main.ts
+	tsc --noImplicitThis -outFile js/faustplayground.js js/Main.ts
