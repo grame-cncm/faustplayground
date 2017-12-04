@@ -1,2 +1,2 @@
 compile :
-	tsc --noImplicitThis --noUnusedLocals -outFile js/faustplayground.js js/Main.ts
+	tsc --noImplicitThis --noUnusedLocals -target es6 -outFile js/faustplayground.js js/Main.ts
