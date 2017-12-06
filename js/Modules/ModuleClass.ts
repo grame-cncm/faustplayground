@@ -174,6 +174,8 @@ class ModuleClass  {
             if (factory != null) {
             	var moduleFaust = this.moduleFaust;
                 faust.createDSPInstance(factory, Utilitary.audioContext, 1024, function(dsp) { moduleFaust.fDSP = dsp; callback(); });
+                // To activate the AudioWorklet mode
+                //faust.createDSPWorkletInstance(factory, Utilitary.audioContext, function(dsp) { moduleFaust.fDSP = dsp; callback(); });
             } else {
                 throw new Error("create DSP Error factory null")
             }

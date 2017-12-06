@@ -167,9 +167,13 @@ class Scene {
 ********************************************************************/
 
     activateAudioInput(): void {
-        navigator.mediaDevices.getUserMedia({ audio: true })
+        navigator.mediaDevices.getUserMedia({ audio: {echoCancellation:false} as any})
+        // 'as any' is needed here because of a typo in lib.d.ts (echoCancellation is written echoCancelation)
         .then (
-            (mediaStream) => { this.getDevice(mediaStream) }
+            (mediaStream) => {
+                this.getDevice(mediaStream);
+                console.log("audio track has settings:", mediaStream.getAudioTracks()[0].getSettings());
+            }
         ).catch (
             (err) => {
                 console.error(err);

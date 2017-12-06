@@ -1846,6 +1846,8 @@ class ModuleClass {
             if (factory != null) {
                 var moduleFaust = this.moduleFaust;
                 faust.createDSPInstance(factory, Utilitary.audioContext, 1024, function (dsp) { moduleFaust.fDSP = dsp; callback(); });
+                // To activate the AudioWorklet mode
+                //faust.createDSPWorkletInstance(factory, Utilitary.audioContext, function(dsp) { moduleFaust.fDSP = dsp; callback(); });
             }
             else {
                 throw new Error("create DSP Error factory null");
@@ -3015,8 +3017,11 @@ class Scene {
 **********************  ACTIVATE PHYSICAL IN/OUTPUT *****************
 ********************************************************************/
     activateAudioInput() {
-        navigator.mediaDevices.getUserMedia({ audio: true })
-            .then((mediaStream) => { this.getDevice(mediaStream); }).catch((err) => {
+        navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false } })
+            .then((mediaStream) => {
+            this.getDevice(mediaStream);
+            console.log("audio track has settings:", mediaStream.getAudioTracks()[0].getSettings());
+        }).catch((err) => {
             console.error(err);
             this.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)";
             this.fAudioInput.moduleView.fInterfaceContainer.title = Utilitary.messageRessource.errorGettingAudioInput;
@@ -5432,8 +5437,8 @@ class App {
         ;
         //locate libraries used in libfaust compiler
         var libpath = location.origin + location.pathname.substring(0, location.pathname.lastIndexOf('/')) + "/faustlibraries/";
-        var args = ["-I", libpath];
-        //try to create the asm.js code/factory with the faust code given. Then callback to function passing the factory.
+        var args = ["-I", libpath, "-ftz", "2"];
+        //try to create the wasm code/factory with the given Faust code. Then callback to function passing the factory.
         try {
             this.factory = faust.createDSPFactory(compileFaust.sourceCode, args, (factory) => { compileFaust.callback(factory); });
         }
