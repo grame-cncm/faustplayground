@@ -105,9 +105,9 @@ class App {
 
         //locate libraries used in libfaust compiler
         var libpath = location.origin + location.pathname.substring(0, location.pathname.lastIndexOf('/')) + "/faustlibraries/";
-        var args: string[] = ["-I", libpath];
+        var args: string[] = ["-I", libpath, "-ftz", "2"];
 
-        //try to create the asm.js code/factory with the faust code given. Then callback to function passing the factory.
+        //try to create the wasm code/factory with the given Faust code. Then callback to function passing the factory.
         try {
             this.factory = faust.createDSPFactory(compileFaust.sourceCode, args, (factory) => { compileFaust.callback(factory) });
         } catch (error) {

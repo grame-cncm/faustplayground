@@ -1846,6 +1846,8 @@ class ModuleClass {
             if (factory != null) {
                 var moduleFaust = this.moduleFaust;
                 faust.createDSPInstance(factory, Utilitary.audioContext, 1024, function (dsp) { moduleFaust.fDSP = dsp; callback(); });
+                // To activate the AudioWorklet mode
+                //faust.createDSPWorkletInstance(factory, Utilitary.audioContext, function(dsp) { moduleFaust.fDSP = dsp; callback(); });
             }
             else {
                 throw new Error("create DSP Error factory null");
@@ -4849,7 +4851,7 @@ class Menu {
     //manage the library display
     libraryMenu() {
         switch (this.currentMenuChoices) {
-            case MenuChoices.null:// case MenuChoices.edit:
+            case MenuChoices.null:
                 this.menuView.contentsMenu.style.display = "block";
                 this.menuView.libraryContent.style.display = "block";
                 this.currentMenuChoices = MenuChoices.library;
@@ -4876,7 +4878,7 @@ class Menu {
     //manage the load display
     loadMenu() {
         switch (this.currentMenuChoices) {
-            case MenuChoices.null:// case MenuChoices.edit:
+            case MenuChoices.null:
                 this.menuView.contentsMenu.style.display = "block";
                 this.menuView.loadContent.style.display = "inline-table";
                 this.currentMenuChoices = MenuChoices.load;
@@ -4902,7 +4904,7 @@ class Menu {
     //manage the export display
     exportMenu() {
         switch (this.currentMenuChoices) {
-            case MenuChoices.null:// case MenuChoices.edit:
+            case MenuChoices.null:
                 this.menuView.contentsMenu.style.display = "block";
                 this.menuView.exportContent.style.display = "inline-table";
                 this.currentMenuChoices = MenuChoices.export;
@@ -4928,7 +4930,7 @@ class Menu {
     //manage the save display
     saveMenu() {
         switch (this.currentMenuChoices) {
-            case MenuChoices.null:// case MenuChoices.edit:
+            case MenuChoices.null:
                 this.menuView.contentsMenu.style.display = "block";
                 this.menuView.saveContent.style.display = "inline-table";
                 this.currentMenuChoices = MenuChoices.save;
@@ -4954,7 +4956,7 @@ class Menu {
     //manage the help display
     helpMenu() {
         switch (this.currentMenuChoices) {
-            case MenuChoices.null://case MenuChoices.edit:
+            case MenuChoices.null:
                 this.menuView.contentsMenu.style.display = "block";
                 this.menuView.helpContent.style.display = "block";
                 this.menuView.helpButtonMenu.style.backgroundColor = this.menuView.menuColorSelected;
@@ -5432,8 +5434,8 @@ class App {
         ;
         //locate libraries used in libfaust compiler
         var libpath = location.origin + location.pathname.substring(0, location.pathname.lastIndexOf('/')) + "/faustlibraries/";
-        var args = ["-I", libpath];
-        //try to create the asm.js code/factory with the faust code given. Then callback to function passing the factory.
+        var args = ["-I", libpath, "-ftz", "2"];
+        //try to create the wasm code/factory with the given Faust code. Then callback to function passing the factory.
         try {
             this.factory = faust.createDSPFactory(compileFaust.sourceCode, args, (factory) => { compileFaust.callback(factory); });
         }
