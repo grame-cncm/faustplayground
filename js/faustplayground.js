@@ -3017,8 +3017,11 @@ class Scene {
 **********************  ACTIVATE PHYSICAL IN/OUTPUT *****************
 ********************************************************************/
     activateAudioInput() {
-        navigator.mediaDevices.getUserMedia({ audio: true })
-            .then((mediaStream) => { this.getDevice(mediaStream); }).catch((err) => {
+        navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false } })
+            .then((mediaStream) => {
+            this.getDevice(mediaStream);
+            console.log("audio track has settings:", mediaStream.getAudioTracks()[0].getSettings());
+        }).catch((err) => {
             console.error(err);
             this.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)";
             this.fAudioInput.moduleView.fInterfaceContainer.title = Utilitary.messageRessource.errorGettingAudioInput;
@@ -4851,7 +4854,7 @@ class Menu {
     //manage the library display
     libraryMenu() {
         switch (this.currentMenuChoices) {
-            case MenuChoices.null:
+            case MenuChoices.null:// case MenuChoices.edit:
                 this.menuView.contentsMenu.style.display = "block";
                 this.menuView.libraryContent.style.display = "block";
                 this.currentMenuChoices = MenuChoices.library;
@@ -4878,7 +4881,7 @@ class Menu {
     //manage the load display
     loadMenu() {
         switch (this.currentMenuChoices) {
-            case MenuChoices.null:
+            case MenuChoices.null:// case MenuChoices.edit:
                 this.menuView.contentsMenu.style.display = "block";
                 this.menuView.loadContent.style.display = "inline-table";
                 this.currentMenuChoices = MenuChoices.load;
@@ -4904,7 +4907,7 @@ class Menu {
     //manage the export display
     exportMenu() {
         switch (this.currentMenuChoices) {
-            case MenuChoices.null:
+            case MenuChoices.null:// case MenuChoices.edit:
                 this.menuView.contentsMenu.style.display = "block";
                 this.menuView.exportContent.style.display = "inline-table";
                 this.currentMenuChoices = MenuChoices.export;
@@ -4930,7 +4933,7 @@ class Menu {
     //manage the save display
     saveMenu() {
         switch (this.currentMenuChoices) {
-            case MenuChoices.null:
+            case MenuChoices.null:// case MenuChoices.edit:
                 this.menuView.contentsMenu.style.display = "block";
                 this.menuView.saveContent.style.display = "inline-table";
                 this.currentMenuChoices = MenuChoices.save;
@@ -4956,7 +4959,7 @@ class Menu {
     //manage the help display
     helpMenu() {
         switch (this.currentMenuChoices) {
-            case MenuChoices.null:
+            case MenuChoices.null://case MenuChoices.edit:
                 this.menuView.contentsMenu.style.display = "block";
                 this.menuView.helpContent.style.display = "block";
                 this.menuView.helpButtonMenu.style.backgroundColor = this.menuView.menuColorSelected;
