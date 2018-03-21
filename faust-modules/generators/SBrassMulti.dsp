@@ -70,7 +70,7 @@ boreDelay(f) = de.fdelay(4096,slideTarget(f));
 vibrato = vibratoGain*os.osc(vibratoFreq)*instrument.envVibrato(vibratoBegin,vibratoAttack,100,vibratoRelease,gate);
 
 //envelope (Attack / Decay / Sustain / Release), breath pressure and vibrato
-breathPressure(p) = p*en.adsr(envelopeAttack,envelopeDecay,100,envelopeRelease,gate) + vibrato;
+breathPressure(p) = p*en.adsr(envelopeAttack,envelopeDecay,1,envelopeRelease,gate) + vibrato;
 mouthPressure(p) = 0.3*breathPressure(p);
 
 //scale the delay feedback

@@ -75,10 +75,10 @@ reflexionFilter = fi.lowpass(1,2000);
 //----------------------- Algorithm implementation ----------------------------
 
 //Pressure envelope
-env1(t) = en.adsr(env1Attack,env1Decay,90,env1Release,(t | pressureEnvelope))*pressure*1.1; 
+env1(t) = en.adsr(env1Attack,env1Decay,0.9,env1Release,(t | pressureEnvelope))*pressure*1.1; 
 
 //Global envelope
-env2(t) = en.asr(env2Attack,100,env2Release,t)*0.5;
+env2(t) = en.asr(env2Attack,1,env2Release,t)*0.5;
 
 //Vibrato Envelope
 vibratoEnvelope(t) = instrument.envVibrato(vibratoBegin,vibratoAttack,100,vibratoRelease,t)*vibratoGain; 

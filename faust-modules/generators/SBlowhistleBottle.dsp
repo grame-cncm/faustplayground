@@ -83,10 +83,10 @@ bandPassFilter(f) = instrument.bandPass(f,bottleRadius);
 //----------------------- Algorithm implementation ----------------------------
 
 //global envelope is of type attack - decay - sustain - release
-envelopeG(t) =  gain*en.adsr(gain*envelopeAttack,envelopeDecay,80,envelopeRelease,t);
+envelopeG(t) =  gain*en.adsr(gain*envelopeAttack,envelopeDecay,0.8,envelopeRelease,t);
 
 //pressure envelope is also ADSR
-envelope(t) = pressure*en.adsr(gain*0.02,0.01,80,gain*0.2,t);
+envelope(t) = pressure*en.adsr(gain*0.02,0.01,0.8,gain*0.2,t);
 
 //vibrato
 vibrato(t) = os.osc(vibratoFreq)*vibratoGain*instrument.envVibrato(vibratoBegin,vibratoAttack,100,vibratoRelease,t)*os.osc(vibratoFreq);

@@ -45,7 +45,7 @@ typeMod(n) = n;
 env(n) = ASR(n);
 ASR(n) = en.asr(a,s,r,t(n));
 a = 3;
-s = 100;
+s = 1;
 r = 2;
 t(n) = gate(n);
 

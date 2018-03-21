@@ -28,7 +28,7 @@ gate = hslider("[1]ON/OFF (ASR Envelope)[acc:2 0 -10 0 10]", 1,0,1,1);
 ASR =(en.asr(a,s,r,t))
 	with {
 		a = 1;
-		s = 100;
+		s = 1;
 		r = 1;
 		t = gate;
 		};
