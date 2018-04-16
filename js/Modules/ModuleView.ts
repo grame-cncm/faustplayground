@@ -1,7 +1,7 @@
 ﻿
 /*				MODULEVIEW.JS
 	HAND-MADE JAVASCRIPT CLASS CONTAINING A FAUST MODULE  INTERFACE
-	
+
 	Interface structure
 	===================
 	DIV --> this.fModuleContainer
@@ -104,7 +104,7 @@ class ModuleView {
         }
 
         htmlParent.appendChild(fModuleContainer);
-   
+
         this.fName = name;
         this.fModuleContainer = fModuleContainer;
         this.fInterfaceContainer = fInterfaceContainer;
@@ -172,7 +172,7 @@ class ModuleView {
     }
 
     isPointInNode(x: number, y: number): boolean {
-        
+
         if (this.fModuleContainer && this.fModuleContainer.getBoundingClientRect().left < x && x < this.fModuleContainer.getBoundingClientRect().right && this.fModuleContainer.getBoundingClientRect().top < y && y < this.fModuleContainer.getBoundingClientRect().bottom) {
             return true;
         }

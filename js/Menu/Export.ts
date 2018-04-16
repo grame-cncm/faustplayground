@@ -8,13 +8,9 @@
 /// <reference path="ExportView.ts"/>
 /// <reference path="../Utilitary.ts"/>
 
-
-
 /********************************************************************
 *********************  HANDLE FAUST WEB TARGETS *********************
 ********************************************************************/
-
-
 
 class Export{
     exportView: ExportView;
@@ -34,15 +30,13 @@ class Export{
         this.exportView.inputNameApp.onkeypress = (e: KeyboardEvent) => { if (e.which == 13) { this.renameScene() } };
         this.exportView.moreOptionDiv.addEventListener("click", () => { this.exportView.moreOptionDiv.style.display = "none"; this.exportView.lessOptionDiv.style.display = this.exportView.optionContainer.style.display = "block" }, false);
         this.exportView.lessOptionDiv.addEventListener("click", () => { this.exportView.moreOptionDiv.style.display = "block"; this.exportView.lessOptionDiv.style.display = this.exportView.optionContainer.style.display = "none" }, false);
-
-
     }
     // add options into select boxes
     addItem(id: string, itemText:string):void
     {
         var platformsSelect: HTMLSelectElement = <HTMLSelectElement>document.getElementById(id);
         var option: HTMLOptionElement = document.createElement('option');
-	    option.text = itemText;
+	      option.text = itemText;
         platformsSelect.add(option);
     }
     //clear select boxes
@@ -65,21 +59,16 @@ class Export{
             return
         } else {
 
-
             var data:string[] = JSON.parse(this.jsonText);
-
             var platformsSelect: HTMLSelectElement = <HTMLSelectElement>document.getElementById('platforms');//get the combobox
             var options = <HTMLOptionElement>platformsSelect.options[platformsSelect.selectedIndex]
             var selPlatform: string = options.value;
-
             var dataCopy :string[] = data[selPlatform];
             var iterator = 0;
 
             for (var subData in dataCopy) {
-
                 if (iterator < dataCopy.length) {
                     var mainData: string = dataCopy[subData];
-
                     this.addItem('architectures', mainData);
                     iterator = iterator + 1;
                 }
@@ -120,7 +109,6 @@ class Export{
                 platefromSelect.selectedIndex = i;
             }
         }
-
     }
 
     /********************************************************************
@@ -148,17 +136,13 @@ class Export{
 
     exportFaustCode=(shaKey: string)=>
     {
-
         var platformsSelect: HTMLSelectElement = <HTMLSelectElement>document.getElementById("platforms");//get the combobox
         var optionPlateform = <HTMLOptionElement>platformsSelect.options[platformsSelect.selectedIndex];
         var platforme: string = optionPlateform.value;
-
         var architecturesSelect: HTMLSelectElement = <HTMLSelectElement>document.getElementById("architectures");//get the combobox
         var optionArchi = <HTMLOptionElement>architecturesSelect.options[architecturesSelect.selectedIndex];
         var architecture: string = optionArchi.value;
-
         var serverUrl: string = (<HTMLInputElement>document.getElementById("faustweburl")).value;
-
         var appType: string = "binary.zip";
 
         if (architecture == "android")
@@ -168,9 +152,7 @@ class Export{
         exportLib.sendPrecompileRequest(serverUrl, shaKey, platforme, architecture, appType, (serverUrl: string, shaKey: string, plateforme: string, architecture: string, appType: string) => { this.setDownloadOptions(serverUrl, shaKey, plateforme, architecture, appType) });
 
         // 	Delete existing content if existing
-
     }
-
 
     //set download QR Code and Button
     setDownloadOptions = (serverUrl: string, shaKey: string, plateforme: string, architecture: string, appType: string) => {
@@ -200,7 +182,7 @@ class Export{
 
             this.exportView.exportButton.addEventListener("click", this.eventExport)
             this.exportView.exportButton.style.opacity = "1";
-           Utilitary.removeLoadingLogo("exportResultContainer");
+            Utilitary.removeLoadingLogo("exportResultContainer");
         } else {
             new Message(shaKey)
         }
@@ -208,7 +190,6 @@ class Export{
         this.exportView.exportButton.style.opacity = "1";
        Utilitary.removeLoadingLogo("exportResultContainer");
     }
-
 
     removeQRCode() {
         var disposableExportDiv: HTMLElement = document.getElementById('disposableExportDiv');
@@ -218,8 +199,5 @@ class Export{
     }
     renameScene() {
         Scene.rename(this.exportView.inputNameApp, this.exportView.rulesName, this.exportView.dynamicName);
-
     }
 }
-
-

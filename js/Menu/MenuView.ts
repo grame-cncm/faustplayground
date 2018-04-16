@@ -96,10 +96,8 @@ class MenuView {
         cleanButton.className = "buttonsLittleMenu";
         this.cleanButton = cleanButton;
 
-
         if (!Utilitary.isAccelerometerOn) {
             accButton.style.opacity = "0.2";
-
         }
 
         buttonsMenu.appendChild(libraryButtonMenu);
@@ -165,8 +163,6 @@ class MenuView {
         accEditContent.style.display = "none";
         this.accEditView = accEditView;
 
-
-
         contentsMenu.appendChild(CloseButtonContainer);
         contentsMenu.appendChild(libraryContent);
         contentsMenu.appendChild(loadContent);
@@ -178,7 +174,6 @@ class MenuView {
         menuContainer.appendChild(contentsMenu);
         menuContainer.appendChild(accEditContent);
 
-
         htmlContainer.appendChild(menuContainer);
         this.HTMLElementsMenu.push(libraryContent, loadContent, saveContent, exportContent, helpContent)
 
@@ -188,7 +183,5 @@ class MenuView {
         this.exportContent = exportContent;
         this.helpContent = helpContent;
         this.contentsMenu = contentsMenu;
-
     }
 }
-

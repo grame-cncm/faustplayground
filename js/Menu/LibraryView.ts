@@ -13,8 +13,6 @@ class LibraryView  {
 
     initLibraryView(): HTMLElement {
 
-
-
         var libraryContent: HTMLElement = document.createElement("div");
         libraryContent.id = "libraryContent";
         libraryContent.className = "menuContent";

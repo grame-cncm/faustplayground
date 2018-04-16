@@ -34,9 +34,6 @@ class ExportView {
         exportResultContainer.id = "exportResultContainer";
         exportResultContainer.className = "exportSubmenu";
 
-
-
-
 /////////////////////////////////  name App
 
         var nameAppTitle: HTMLSpanElement = document.createElement("span");
@@ -63,7 +60,6 @@ class ExportView {
         var renameBottomButtonContainer: HTMLElement = document.createElement("div");
         renameBottomButtonContainer.className = "bottomButtonContainer";
 
-
         var renameButton: HTMLButtonElement = document.createElement("button");
         renameButton.type = "button";
         renameButton.id = "buttonNameApp";
@@ -71,7 +67,6 @@ class ExportView {
         renameButton.textContent = Utilitary.messageRessource.buttonChangeSceneName;
 
         renameBottomButtonContainer.appendChild(renameButton)
-
 
         nameAppContainer.appendChild(nameAppTitle);
         nameAppContainer.appendChild(rulesName);
@@ -81,7 +76,6 @@ class ExportView {
         this.inputNameApp = input;
         this.buttonNameApp = renameButton;
 
-
         /////////////////////////////////  export Options
         var moreOptionDiv = document.createElement("div");
         moreOptionDiv.textContent = "+ plus d'options"
@@ -89,12 +83,10 @@ class ExportView {
         moreOptionDiv.style.display = "block";
         this.moreOptionDiv = moreOptionDiv;
 
-
         var optionContainer = document.createElement("div");
         optionContainer.id = "optionContainer";
         optionContainer.style.display = "none";
         this.optionContainer = optionContainer;
-
 
         var lessOptionDiv = document.createElement("div")
         lessOptionDiv.id = "lessOptionDiv";
@@ -102,10 +94,8 @@ class ExportView {
         lessOptionDiv.style.display = "none";
         this.lessOptionDiv = lessOptionDiv;
 
-
         var urlDiv: HTMLElement = document.createElement("div");
         urlDiv.id = "inputExport";
-
 
         var exportOptionTitle: HTMLSpanElement = document.createElement("span");
         exportOptionTitle.id = "exportOptionTitle";
@@ -122,8 +112,6 @@ class ExportView {
 
         var exportChoiceDiv: HTMLDivElement = document.createElement('div');
         exportChoiceDiv.id = "optionExportContainer"
-
-
 
         var refreshButton: HTMLButtonElement = document.createElement("button");
         refreshButton.textContent = Utilitary.messageRessource.buttonRefresh
@@ -154,7 +142,6 @@ class ExportView {
         exportButton.value = Utilitary.messageRessource.buttonExportScene;
         this.exportButton = exportButton;
 
-
         var exportBottomButtonContainer: HTMLElement = document.createElement("div");
         exportBottomButtonContainer.className = "bottomButtonContainer";
 
@@ -168,17 +155,12 @@ class ExportView {
         exportOptionContainer.appendChild(optionContainer);
         exportOptionContainer.appendChild(exportBottomButtonContainer);
 
-
 //////////////////////////// export Result
         var exportResultTitle: HTMLSpanElement = document.createElement("span");
         exportResultTitle.id = "exportResultTitle";
         exportResultTitle.textContent = Utilitary.messageRessource.titleDownlaodExport;
         exportResultTitle.className = "exportTitle";
-
-
         exportResultContainer.appendChild(exportResultTitle);
-
-
         exportContainer.appendChild(nameAppContainer);
         exportContainer.appendChild(exportOptionContainer);
         exportContainer.appendChild(exportResultContainer);

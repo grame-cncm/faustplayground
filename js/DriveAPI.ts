@@ -28,7 +28,6 @@ class DriveAPI{
     tempBlob: Blob;
     extension: string = ".jfaust";
 
-
     /**
      * Check if current user has authorized this application.
     * disable to deactivate pop up window when not connected
@@ -130,9 +129,6 @@ class DriveAPI{
         })
     }
 
-
-
-
     /**
      * Append a pre element to the body containing the given message
      * as its text node.
@@ -146,7 +142,6 @@ class DriveAPI{
 
         var event = new CustomEvent("fillselect", { 'detail': option })
         document.dispatchEvent(event);
-
     }
     /**
  * Download a file's content.
@@ -179,7 +174,6 @@ class DriveAPI{
     getFile(fileId,callback):any {
         var request = gapi.client.drive.files.get({
             'fileId': fileId,
-
         });
         try {
             request.execute((resp) => {
@@ -190,7 +184,6 @@ class DriveAPI{
             new Message("erreur")
         }
     }
-
 
     createFile(fileName: string, callback) {
         var event = new CustomEvent("startloaddrive");

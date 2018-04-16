@@ -157,7 +157,7 @@ class Scene {
         		moduleFaust.isInitLoading = false;
         	});
         }
-  }
+    }
 
     getAudioOutput(): ModuleClass { return this.fAudioOutput; }
     getAudioInput(): ModuleClass { return this.fAudioInput; }
@@ -496,7 +496,6 @@ class Scene {
         }
         return null;
     }
-
 
     //use to replace all éèàù ' from string and replace it with eeau__
     static cleanName(newName:string): string {

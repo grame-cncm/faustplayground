@@ -26,18 +26,14 @@ class ModuleTree implements IModuleTree {
     moduleInputs: ModuleTree[];
     recursiveFlag: boolean;
     sourceCode: string;
-
-
 }
+
 class EquivalentFaust {
 
     isModuleRecursiveExisting(moduleTree: ModuleTree): boolean {
-
         if (Utilitary.recursiveMap[moduleTree.patchID])
             return true;
-
         return false;
-
     }
 
     giveIdToModules(scene: Scene):void {
@@ -53,9 +49,7 @@ class EquivalentFaust {
 
         // 	Save recursion in map and flag it
         var ModuleToReplace = this.getFirstOccurenceOfModuleInCourse(moduleTree);
-
         Utilitary.recursiveMap[moduleTree.patchID] = ModuleToReplace;
-
         ModuleToReplace.recursiveFlag = true;
     }
 
@@ -115,7 +109,6 @@ class EquivalentFaust {
             }
         }
 
-
         return moduleTree;
     }
 
@@ -167,7 +160,6 @@ class EquivalentFaust {
             faustResult += "stereoize(environment{" + ModuleCode + "}.process))~(_,_)";
         else
             faustResult += "stereoize(environment{" + ModuleCode + "}.process)";
-
 
         return faustResult;
     }
@@ -308,5 +300,3 @@ class EquivalentFaust {
 //	    return null;
 //    }
 //}
-
-

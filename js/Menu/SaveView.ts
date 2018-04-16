@@ -39,7 +39,6 @@ class SaveView {
 
         ////////////////////////////////// download App
 
-
         var nameAppTitle: HTMLSpanElement = document.createElement("span");
         nameAppTitle.id = "nameAppTitle";
         nameAppTitle.textContent = Utilitary.messageRessource.saveDownload;
@@ -67,7 +66,6 @@ class SaveView {
         label.textContent = Utilitary.messageRessource.precompileOption;
         label.appendChild(checkBoxPrecompile);
 
-
         var inputDownload: HTMLInputElement = document.createElement("input");
         inputDownload.id = "inputNameApp";
         inputDownload.style.display = "none";
@@ -77,7 +75,6 @@ class SaveView {
         var downloadBottomButtonContainer: HTMLElement = document.createElement("div");
         downloadBottomButtonContainer.className = "bottomButtonContainer";
 
-
         var downloadButton: HTMLButtonElement = document.createElement("button");
         downloadButton.type = "button";
         downloadButton.id = "downloadButton";
@@ -85,8 +82,6 @@ class SaveView {
         downloadButton.textContent = Utilitary.messageRessource.buttonDownloadApp;
 
         downloadBottomButtonContainer.appendChild(downloadButton)
-
-
         downloadContainer.appendChild(nameAppTitle);
         downloadContainer.appendChild(rulesName);
         downloadContainer.appendChild(label);
@@ -95,7 +90,6 @@ class SaveView {
 
         this.inputDownload = inputDownload;
         this.buttonDownloadApp = downloadButton;
-
 
         ////////////////////////////////////////local save
 

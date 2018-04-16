@@ -4,8 +4,6 @@
 /*MODULEFAUST.JS
 HAND - MADE JAVASCRIPT CLASS CONTAINING A FAUST MODULE */
 
-
-
 class ModuleFaust {
     fDSP: IfDSP;
     factory: Factory;

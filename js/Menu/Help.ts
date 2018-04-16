@@ -6,5 +6,4 @@ class Help {
     stopVideo() {
         //this.helpView.videoIframe.contentWindow.postMessage('{"event":"command","func":"' + 'stopVideo' + '","args":""}', '*');
     }
-
 }

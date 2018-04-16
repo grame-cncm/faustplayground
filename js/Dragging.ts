@@ -3,23 +3,15 @@
 	This is a historical file from Chris Wilson, modified for Faust ModuleClass needs.
 
 	--> Things could probably be easier...
-
-
-
 */
 
 /// <reference path="Connect.ts"/>
 /// <reference path="Modules/ModuleClass.ts"/>
 /// <reference path="Utilitary.ts"/>
 
-
-
-
 /***********************************************************************************/
 /****** Node Dragging - these are used for dragging the audio modules interface*****/
 /***********************************************************************************/
-
-
 
 class Drag {
 
@@ -44,7 +36,6 @@ class Drag {
         draggingFunction(el, x, y, module,event);
     }
 
-
     //used to dispatch the element, the location and the event to the callback function with touch event
     getDraggingTouchEvent(touchEvent: TouchEvent, module: ModuleClass, draggingFunction: (el: HTMLElement, x: number, y: number, module: ModuleClass, event: Event) => void) {
         var event = <Event>touchEvent;
@@ -55,8 +46,6 @@ class Drag {
             var x = touch.clientX + window.scrollX;
             var y = touch.clientY + window.scrollY;
             draggingFunction(el, x, y, module,event);
-
-
         } else if (this.isDragConnector) {//id drag is a connection one with touch event
             for (var i = 0; i < touchEvent.changedTouches.length; i++) {
                 var touch: Touch = touchEvent.changedTouches[i];
@@ -115,7 +104,6 @@ class Drag {
         // Stop capturing mousemove and mouseup events.
         document.removeEventListener("mouseup", module.eventDraggingHandler, false)
         document.removeEventListener("mousemove", module.eventDraggingHandler, false)
-
     }
 
     /************************************************************************************/
@@ -131,13 +119,11 @@ class Drag {
 
     setCurvePath(x1: number, y1: number, x2: number, y2: number, x1Bezier: number, x2Bezier: number): string {
         return "M" + x1 + "," + y1 + " C" + x1Bezier + "," + y1 + " " + x2Bezier + "," + y2 + " " + x2 + "," + y2;
-
     }
 
     calculBezier(x1: number, x2: number): number {
         return x1 - (x1 - x2) / 2;;
     }
-
 
     startDraggingConnection(module: ModuleClass, target: HTMLElement):void {
 
@@ -160,14 +146,14 @@ class Drag {
   	    this.cursorStartX = x;
   	    this.cursorStartY = y;
 
-	    // remember if this is an input or output node, so we can match
+	       // remember if this is an input or output node, so we can match
         this.isOriginInput = target.classList.contains("node-input");
 
         module.moduleView.getInterfaceContainer().unlitClassname = module.moduleView.getInterfaceContainer().className;
         //module.moduleView.getInterfaceContainer().className += " canConnect";
 
-	    // Create a connector visual line
-	    var svgns:string = "http://www.w3.org/2000/svg";
+	       // Create a connector visual line
+	      var svgns:string = "http://www.w3.org/2000/svg";
 
         var curve: SVGElement = <SVGElement>document.createElementNS(svgns, "path");
         var d = this.setCurvePath(x,y,x,y,x,x)
@@ -178,8 +164,6 @@ class Drag {
         curve.id = String(Connector.connectorId);
         Connector.connectorId++
         //console.log("connector Id = " + Connector.connectorId);
-
-
 
         this.connector.connectorShape = <ConnectorShape>curve;
         this.connector.connectorShape.onclick = (event)=> { this.connector.deleteConnection(event, this) };
@@ -203,7 +187,7 @@ class Drag {
         var x: number, y: number
         if (destination && destination != sourceModule && this.isConnectionUnique(sourceModule, destination) && resultIsConnectionValid) {
 
-		    // Get the position of the originating connector with respect to the page.
+		       // Get the position of the originating connector with respect to the page.
 
             var offset: HTMLElement;
             if (!this.isOriginInput)
@@ -213,8 +197,7 @@ class Drag {
 
             var toElem: HTMLElement = offset;
 
-
-	    // Get the position of the originating connector with respect to the page.
+	          // Get the position of the originating connector with respect to the page.
             x = destination.moduleView.inputOutputNodeDimension / 2;
             y = destination.moduleView.inputOutputNodeDimension / 2;
 
@@ -222,7 +205,7 @@ class Drag {
                 x += offset.offsetLeft;
                 y += offset.offsetTop;
                 offset = <HTMLElement> offset.offsetParent;
-		    }
+		        }
 
             var x1 = this.cursorStartX;
             var y1 = this.cursorStartY;
@@ -234,22 +217,21 @@ class Drag {
 
             var src: ModuleClass, dst: ModuleClass;
 
-		    // If connecting from output to input
+		        // If connecting from output to input
             if (this.isOriginInput) {
 
-			    if (toElem.classList.contains("node-output")) {
-				    src = destination;
-				    dst = sourceModule;
-			    }
+            if (toElem.classList.contains("node-output")) {
+              src = destination;
+              dst = sourceModule;
+            }
 		    }
 		    else {
 			    if (toElem.classList.contains("node-input")) {
 
-                    // Make sure the connector line points go from src->dest (x1->x2)
-                    var d = this.setCurvePath(x2, y2, x1, y1, this.calculBezier(x1, x2), this.calculBezier(x1, x2))
-                    this.connector.connectorShape.setAttributeNS(null, "d", d);
-                    this.updateConnectorShapePath(this.connector.connectorShape,x2, x1, y2, y1);
-
+            // Make sure the connector line points go from src->dest (x1->x2)
+            var d = this.setCurvePath(x2, y2, x1, y1, this.calculBezier(x1, x2), this.calculBezier(x1, x2))
+            this.connector.connectorShape.setAttributeNS(null, "d", d);
+            this.updateConnectorShapePath(this.connector.connectorShape,x2, x1, y2, y1);
 
 				    // can connect!
 				    // TODO: first: swap the line endpoints so they're consistently x1->x2
@@ -257,28 +239,25 @@ class Drag {
 
                     src = sourceModule;
                     dst = destination;
-			    }
+			      }
 		    }
 
-            if (src && dst) {
+        if (src && dst) {
 
+            var connector: Connector = new Connector();
+            connector.connectModules(src, dst);
 
-                var connector: Connector = new Connector();
-                connector.connectModules(src, dst);
+            dst.moduleFaust.addInputConnection(connector);
+            src.moduleFaust.addOutputConnection(connector);
 
-                dst.moduleFaust.addInputConnection(connector);
-                src.moduleFaust.addOutputConnection(connector);
+            this.connector.destination = dst;
+            this.connector.source = src;
+            connector.saveConnection(src, dst, this.connector.connectorShape);
+            this.connector.connectorShape.onclick = (event)=> { connector.deleteConnection(event,this) };
 
-                this.connector.destination = dst;
-                this.connector.source = src;
-                connector.saveConnection(src, dst, this.connector.connectorShape);
-                this.connector.connectorShape.onclick = (event)=> { connector.deleteConnection(event,this) };
+	          //this.connectorShape = null;
 
-			    //this.connectorShape = null;
-
-
-
-			    return;
+			      return;
 		    }
 	    }
 
@@ -289,7 +268,6 @@ class Drag {
 
     startDraggingConnector(target: HTMLElement, x: number, y: number, module: ModuleClass, event: Event): void {
 
-
         this.startDraggingConnection(module,target);
 
         // Capture mousemove and mouseup events on the page.
@@ -297,12 +275,9 @@ class Drag {
         document.addEventListener("mousemove", module.eventConnectorHandler);
         document.addEventListener("mouseup", module.eventConnectorHandler);
 
-
         event.preventDefault();
         event.stopPropagation();
     }
-
-
 
     whileDraggingConnector(target: HTMLElement, x: number, y: number, module: ModuleClass, event: Event) {
 
@@ -338,14 +313,10 @@ class Drag {
         // Move connector visual line
         this.connector.connectorShape.setAttributeNS(null, "d", d);
 
-
-
         if (toElem.classList) {	// if we don't have class, we're not a node.
 	        // if this is the green or red button, use its parent.
 	        if (toElem.classList.contains("node-button"))
                 toElem = <HTMLInterfaceContainer>toElem.parentNode;
-
-
 
 		    // If we used to be lighting up a node, but we're not over it anymore,
 		    // unlight it.
@@ -371,7 +342,7 @@ class Drag {
 					    }
 				    }
 			    }
-            }
+         }
         }
         event.preventDefault();
         event.stopPropagation();
@@ -446,4 +417,3 @@ class Drag {
         return true
     }
 }
-

@@ -44,16 +44,16 @@ class ExportLib{
     {
         var getrequest: XMLHttpRequest = new XMLHttpRequest();
 
-	    getrequest.onreadystatechange = function() {
+	       getrequest.onreadystatechange = function() {
             if (getrequest.readyState == 4) {
                 callback(exportUrl, sha, platforme, architecture, appType);
             }
-	    }
+	       }
 
         var compileUrl: string = exportUrl + "/" + sha + "/" + platforme + "/" + architecture + "/precompile";
 
-	    getrequest.open("GET", compileUrl, true);
-	    getrequest.send(null);
+	      getrequest.open("GET", compileUrl, true);
+	      getrequest.send(null);
     }
 
     //--- Transform target
@@ -64,22 +64,22 @@ class ExportLib{
     // @cote : width and height of the returned QrCode
     static getQrCode(url: string, sha: string, plateform: string, architecture: string, target: string, size: number): HTMLDivElement
     {
-	    var downloadString = url + "/" + sha + "/" + plateform + "/" + architecture + "/" + target;
-	    var whiteContainer = document.createElement('div');
-	    whiteContainer.style.cssText = "width:" + size.toString() + "px; height:" + size.toString() + "px; background-color:white; position:relative; margin-left:auto; margin-right:auto; padding:3px;";
+        var downloadString = url + "/" + sha + "/" + plateform + "/" + architecture + "/" + target;
+        var whiteContainer = document.createElement('div');
+        whiteContainer.style.cssText = "width:" + size.toString() + "px; height:" + size.toString() + "px; background-color:white; position:relative; margin-left:auto; margin-right:auto; padding:3px;";
 
-	    var qqDiv = document.createElement('qrcode');
+        var qqDiv = document.createElement('qrcode');
         new QRCode(qqDiv, {
-    	    text: downloadString,
-	        width: size,
-    	    height: size,
-	        colorDark : "#000000",
-    	    colorLight : "#ffffff",
-	        correctLevel : QRCode.CorrectLevel.H
-	    });
+          text: downloadString,
+          width: size,
+          height: size,
+          colorDark : "#000000",
+          colorLight : "#ffffff",
+          correctLevel : QRCode.CorrectLevel.H
+        });
 
-	    whiteContainer.appendChild(qqDiv);
-	    return whiteContainer;
+        whiteContainer.appendChild(qqDiv);
+        return whiteContainer;
     }
 
     // Return the array of available platforms from the json description
@@ -101,7 +101,6 @@ class ExportLib{
     getArchitectures(json:string, platform:string)
     {
 	    var data = JSON.parse(json);
-
 	    return data[platform];
     }
 }

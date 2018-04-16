@@ -75,7 +75,6 @@ class FaustInterfaceControler {
     updateFaustCodeCallback: (details: ElementCodeFaustParser)=>void
     setDSPValueCallback: (address: string, value: string) => void;
 
-
     constructor(interfaceCallback: (faustInterfaceControler: FaustInterfaceControler) => void, setDSPValueCallback: (address: string, value: string) => void) {
         this.interfaceCallback = interfaceCallback;
         this.setDSPValueCallback = setDSPValueCallback;
@@ -284,9 +283,9 @@ class FaustInterfaceControler {
     }
 }
 
-   /********************************************************************
-    ********************* ADD GRAPHICAL ELEMENTS ***********************
-    ********************************************************************/
+/********************************************************************
+********************* ADD GRAPHICAL ELEMENTS ***********************
+********************************************************************/
 class FaustInterfaceView {
     type: string;
     slider: HTMLInputElement;
@@ -322,15 +321,15 @@ class FaustInterfaceView {
 
         val.appendChild(document.createTextNode("" + myValue + " " + unit));
         val.setAttribute("units", unit);
-	    info.appendChild(val);
+	      info.appendChild(val);
 
-	    group.appendChild(info);
+	      group.appendChild(info);
 
         var high: number = (parseFloat(itemParam.max) - parseFloat(itemParam.min)) / parseFloat(itemParam.step);
 
         var slider: HTMLInputElement = document.createElement("input");
-	    slider.type="range";
-	    slider.min =  "0";
+	      slider.type="range";
+	      slider.min =  "0";
         slider.max = String(high);
         slider.value = String((parseFloat(itemParam.init) - parseFloat(itemParam.min)) / parseFloat(itemParam.step));
         slider.step = "1";
@@ -338,26 +337,26 @@ class FaustInterfaceView {
         group.appendChild(slider);
 
         this.group = group
-	    return group;
+	      return group;
     }
 
     addFaustCheckBox(ivalue: string): HTMLInputElement {
         var group = document.createElement("div");
 
         var checkbox: HTMLInputElement = document.createElement("input");
-	    checkbox.type = "checkbox";
+        checkbox.type = "checkbox";
         checkbox.checked = false;
 
-	    checkbox.id = "mycheckbox";
+        checkbox.id = "mycheckbox";
 
         var label: HTMLLabelElement = document.createElement('label')
-	    label.htmlFor = "mycheckbox";
-	    label.appendChild(document.createTextNode(" " + ivalue));
+        label.htmlFor = "mycheckbox";
+        label.appendChild(document.createTextNode(" " + ivalue));
 
-	    group.appendChild(checkbox);
-	    group.appendChild(label);
+        group.appendChild(checkbox);
+        group.appendChild(label);
 
-	    return checkbox;
+        return checkbox;
     }
 
     addFaustButton(itemParam: Iitem):HTMLElement {
@@ -371,6 +370,6 @@ class FaustInterfaceView {
 
         group.appendChild(button);
 
-	    return button;
+	      return button;
     }
 }

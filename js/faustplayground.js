@@ -487,9 +487,6 @@ class PositionModule {
     This is a historical file from Chris Wilson, modified for Faust ModuleClass needs.
 
     --> Things could probably be easier...
-
-
-
 */
 /// <reference path="Connect.ts"/>
 /// <reference path="Modules/ModuleClass.ts"/>
@@ -853,13 +850,13 @@ class PathIterator {
         this.fStart = 0;
         this.fEnd = 0;
     }
-    // search and select next string :  "...."  
+    // search and select next string :  "...."
     // (not completely safe, but should be OK)
     findNextPathString() {
         var p1 = this.fFaustCode.indexOf('"', this.fEnd + 1);
         var p2 = this.fFaustCode.indexOf('"', p1 + 1);
         //console.log(`Current positions : ${this.fEnd}, ${p1}, ${p2}`);
-        //if ( (this.fEnd < p0) && (p0 < p1) && (p1 < p2) ) 
+        //if ( (this.fEnd < p0) && (p0 < p1) && (p1 < p2) )
         if ((this.fEnd < p1) && (p1 < p2)) {
             this.fStart = p1;
             this.fEnd = p2 + 1;
@@ -894,7 +891,7 @@ function forgeAccMetadata(newAccValue, isEnabled) {
     }
 }
 // Remove all metadatas of a uipath : "foo[...][...]" -> "foo"
-// Used when searching the source code for a uiname. 
+// Used when searching the source code for a uiname.
 function removeMetadata(uipath) {
     var r = ""; // resulting string
     var i = 0;
@@ -1451,8 +1448,8 @@ class FaustInterfaceControler {
     }
 }
 /********************************************************************
- ********************* ADD GRAPHICAL ELEMENTS ***********************
- ********************************************************************/
+********************* ADD GRAPHICAL ELEMENTS ***********************
+********************************************************************/
 class FaustInterfaceView {
     constructor(type) {
         this.type = type;
@@ -1557,7 +1554,7 @@ class ModuleFaust {
 }
 /*				MODULEVIEW.JS
     HAND-MADE JAVASCRIPT CLASS CONTAINING A FAUST MODULE  INTERFACE
-    
+
     Interface structure
     ===================
     DIV --> this.fModuleContainer
@@ -3583,7 +3580,7 @@ class Library {
         var event = new CustomEvent("dbltouchlib", { 'detail': url });
         document.dispatchEvent(event);
     }
-    // init scroll to show scroll from perfectScroll.js 
+    // init scroll to show scroll from perfectScroll.js
     initScroll() {
         this.libraryView.effetLibrarySelect.scrollTop += 1;
         this.libraryView.exempleLibrarySelect.scrollTop += 1;
@@ -3639,7 +3636,7 @@ class LoadView {
         loadFileInput.id = "loadFileInput";
         this.loadFileInput = loadFileInput;
         loadFileDiv.appendChild(loadFileInput);
-        // 15/04/18 : not working anymore deactivated 
+        // 15/04/18 : not working anymore deactivated
         //var aLightExemple = document.createElement("a");
         //aLightExemple.id = "aLightExemple";
         //aLightExemple.className = "exempleAnchor"
@@ -3741,8 +3738,8 @@ class LoadView {
         return loadContainer;
     }
 }
-/// <reference path="../DriveAPI.ts"/>   
-/// <reference path="LoadView.ts"/>   
+/// <reference path="../DriveAPI.ts"/>
+/// <reference path="LoadView.ts"/>
 class Load {
     //Set event listener
     setEventListeners() {
@@ -3750,7 +3747,7 @@ class Load {
         this.loadView.buttonLoadLocal.addEventListener("click", () => { this.localLoad(); });
         this.loadView.buttonLoadCloud.addEventListener("click", () => { this.cloudLoad(); });
         this.loadView.buttonConnectDrive.addEventListener("click", (e) => { this.drive.handleAuthClick(e); });
-        // 15/04/18 : not working anymore deactivated 
+        // 15/04/18 : not working anymore deactivated
         //this.loadView.aBigExemple.addEventListener("click", (e) => { this.getEx(e) })
         //this.loadView.aLightExemple.addEventListener("click", (e) => { this.getEx(e) })
         //this.loadView.aBigPreExemple.addEventListener("click", (e) => { this.getEx(e) })
@@ -4109,7 +4106,7 @@ class Save {
         confirmCallback();
     }
     //trash a file in the cloud confirm
-    //could be retreive from the cloud's trash can 
+    //could be retreive from the cloud's trash can
     supprCloud() {
         if (this.saveView.cloudSelectFile.selectedIndex > -1) {
             new Confirm(Utilitary.messageRessource.confirmSuppr, (confirmCallBack) => { this.supprCloudCallback(confirmCallBack); });
@@ -4125,8 +4122,7 @@ class Save {
 }
 /// <reference path="../Utilitary.ts"/>
 class AccelerometerEditView {
-    constructor() {
-    }
+    constructor() { }
     initAccelerometerEdit() {
         var blockLayer = document.createElement("div");
         blockLayer.id = "accBlockLayer";

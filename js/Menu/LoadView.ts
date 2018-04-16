@@ -40,7 +40,7 @@ class LoadView {
 
         var loadFileDiv = document.createElement("div");
         loadFileDiv.id = "loadFileDiv";
-    
+
         var loadFileInput = document.createElement("input");
         loadFileInput.type = "file";
         loadFileInput.id = "loadFileInput";
@@ -48,8 +48,8 @@ class LoadView {
 
         loadFileDiv.appendChild(loadFileInput);
 
-		// 15/04/18 : not working anymore deactivated 
-		
+		// 15/04/18 : not working anymore deactivated
+
         //var aLightExemple = document.createElement("a");
         //aLightExemple.id = "aLightExemple";
         //aLightExemple.className = "exempleAnchor"
@@ -90,7 +90,7 @@ class LoadView {
         this.loadFileButton = loadFileButton;
 
         loadFileContainer.appendChild(loadFileDiv);
-        
+
         //loadFileContainer.appendChild(aLightExemple);
         //loadFileContainer.appendChild(aLightPreExemple);
 	    //loadFileContainer.appendChild(aBigExemple);

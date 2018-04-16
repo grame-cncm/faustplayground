@@ -382,7 +382,4 @@ class App {
     }
 
     errorCallBack(message: string) {}
-
 }
-
-

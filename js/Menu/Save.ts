@@ -5,8 +5,6 @@
     /// <reference path="SaveView.ts"/>
 
 
-
-
 class Save {
     saveView: SaveView;
     sceneCurrent: Scene;
@@ -25,7 +23,6 @@ class Save {
         document.addEventListener("successave", () => { new Message(Utilitary.messageRessource.sucessSave,"messageTransitionOutFast",2000,500) })
     }
 
-
     //create a file jfaust and save it to the device
     downloadApp() {
         if (this.saveView.inputDownload.value != Utilitary.currentScene.sceneName && !Scene.rename(this.saveView.inputDownload, this.saveView.rulesName, this.saveView.dynamicName)) {
@@ -37,8 +34,6 @@ class Save {
             });
             saveAs(blob, Utilitary.currentScene.sceneName + ".jfaust");
         }
-
-
     }
 
     //save scene in local storage
@@ -148,7 +143,7 @@ class Save {
 
                 new Confirm(Utilitary.messageRessource.confirmReplace, (confirmCallback) => { this.replaceCloud(name,confirmCallback) })
                 return;
-                
+
             } else {
                 var jsonScene = this.sceneCurrent.saveScene(true)
                 var blob = new Blob([jsonScene], { type: "application/json;charset=utf-8;" });
@@ -173,7 +168,7 @@ class Save {
     }
 
     //trash a file in the cloud confirm
-    //could be retreive from the cloud's trash can 
+    //could be retreive from the cloud's trash can
     supprCloud() {
         if (this.saveView.cloudSelectFile.selectedIndex > -1) {
             new Confirm(Utilitary.messageRessource.confirmSuppr, (confirmCallBack) => { this.supprCloudCallback(confirmCallBack) })
@@ -186,6 +181,5 @@ class Save {
         var id = option.value
         this.drive.trashFile(id);
         confirmCallBack();
-        
     }
 }

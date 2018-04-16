@@ -106,34 +106,34 @@ class Connector {
 
         // delete connection from src .outputConnections,
         if (source != undefined && source.moduleFaust.getOutputConnections) {
-            source.moduleFaust.removeOutputConnection(connector);
+          source.moduleFaust.removeOutputConnection(connector);
         }
 
         // delete connection from dst .inputConnections,
         if (destination != undefined && destination.moduleFaust.getInputConnections) {
-            destination.moduleFaust.removeInputConnection(connector);
+          destination.moduleFaust.removeInputConnection(connector);
         }
 
-	    // and delete the connectorShape
-	    if(connector.connectorShape)
-		    connector.connectorShape.remove( );
+        // and delete the connectorShape
+        if(connector.connectorShape)
+          connector.connectorShape.remove();
     }
 
     // Disconnect a node from all its connections
     disconnectModule(module: ModuleClass) {
 
-        //for all output nodes
-        if (module.moduleFaust.getOutputConnections && module.moduleFaust.getOutputConnections()) {
+      //for all output nodes
+      if (module.moduleFaust.getOutputConnections && module.moduleFaust.getOutputConnections()) {
 
             while (module.moduleFaust.getOutputConnections().length > 0)
                 this.breakSingleInputConnection(module, module.moduleFaust.getOutputConnections()[0].destination, module.moduleFaust.getOutputConnections()[0]);
 	    }
 
-        //for all input nodes
-        if (module.moduleFaust.getInputConnections && module.moduleFaust.getInputConnections()) {
-            while (module.moduleFaust.getInputConnections().length > 0)
-                this.breakSingleInputConnection(module.moduleFaust.getInputConnections()[0].source, module, module.moduleFaust.getInputConnections()[0]);
-	    }
+      //for all input nodes
+      if (module.moduleFaust.getInputConnections && module.moduleFaust.getInputConnections()) {
+          while (module.moduleFaust.getInputConnections().length > 0)
+              this.breakSingleInputConnection(module.moduleFaust.getInputConnections()[0].source, module, module.moduleFaust.getInputConnections()[0]);
+	     }
     }
 
     static redrawInputConnections(module: ModuleClass, drag: Drag) {
@@ -142,14 +142,12 @@ class Connector {
         var y = module.moduleView.inputOutputNodeDimension / 2// + window.scrollY;
 
         while (offset) {
-
             x += offset.offsetLeft;
             y += offset.offsetTop;
             offset = <HTMLDivElement>offset.offsetParent;
         }
 
         for (var c = 0; c < module.moduleFaust.getInputConnections().length; c++) {
-
             var currentConnectorShape: ConnectorShape = module.moduleFaust.getInputConnections()[c].connectorShape;
             var x1 = x;
             var y1 = y;
@@ -166,25 +164,22 @@ class Connector {
         var y = module.moduleView.inputOutputNodeDimension / 2// + window.scrollY;
 
         while (offset) {
-
             x += offset.offsetLeft;
             y += offset.offsetTop;
             offset = <HTMLDivElement>offset.offsetParent;
         }
 
         for (var c = 0; c < module.moduleFaust.getOutputConnections().length; c++) {
+          if (module.moduleFaust.getOutputConnections()[c].connectorShape) {
+              var currentConnectorShape: ConnectorShape = module.moduleFaust.getOutputConnections()[c].connectorShape;
+              var x1 = currentConnectorShape.x1;
+              var y1 = currentConnectorShape.y1;
+              var x2 = x;
+              var y2 = y;
+              var d = drag.setCurvePath(x1, y1, x2, y2, drag.calculBezier(x1, x2), drag.calculBezier(x1, x2))
 
-                if (module.moduleFaust.getOutputConnections()[c].connectorShape) {
-                    var currentConnectorShape: ConnectorShape = module.moduleFaust.getOutputConnections()[c].connectorShape;
-                    var x1 = currentConnectorShape.x1;
-                    var y1 = currentConnectorShape.y1;
-                    var x2 = x;
-                    var y2 = y;
-                    var d = drag.setCurvePath(x1, y1, x2, y2, drag.calculBezier(x1, x2), drag.calculBezier(x1, x2))
-
-                    currentConnectorShape.setAttributeNS(null, "d", d);
-                    drag.updateConnectorShapePath(currentConnectorShape,x1, x2, y1, y2);
-
+              currentConnectorShape.setAttributeNS(null, "d", d);
+              drag.updateConnectorShapePath(currentConnectorShape,x1, x2, y1, y2);
 			    }
 		    }
     }

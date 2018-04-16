@@ -1,6 +1,6 @@
-﻿    /// <reference path="../DriveAPI.ts"/>   
-    /// <reference path="LoadView.ts"/>   
-    
+﻿    /// <reference path="../DriveAPI.ts"/>
+    /// <reference path="LoadView.ts"/>
+
 class Load {
     loadView: LoadView;
     sceneCurrent: Scene;
@@ -12,13 +12,13 @@ class Load {
         this.loadView.buttonLoadLocal.addEventListener("click", () => { this.localLoad() })
         this.loadView.buttonLoadCloud.addEventListener("click", () => { this.cloudLoad() })
         this.loadView.buttonConnectDrive.addEventListener("click", (e) => { this.drive.handleAuthClick(e) })
-        
-        // 15/04/18 : not working anymore deactivated 
+
+        // 15/04/18 : not working anymore deactivated
         //this.loadView.aBigExemple.addEventListener("click", (e) => { this.getEx(e) })
         //this.loadView.aLightExemple.addEventListener("click", (e) => { this.getEx(e) })
         //this.loadView.aBigPreExemple.addEventListener("click", (e) => { this.getEx(e) })
         //this.loadView.aLightPreExemple.addEventListener("click", (e) => { this.getEx(e) })
-        
+
         this.loadView.buttonChangeAccount.addEventListener("click", (e) => { this.logOut()})
     }
 
@@ -49,7 +49,6 @@ class Load {
     }
     loadEx(json) {
         Utilitary.showFullPageLoading();
-
         this.sceneCurrent.recallScene(json);
     }
 

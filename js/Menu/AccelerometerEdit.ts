@@ -2,8 +2,6 @@
    /// <reference path="../Accelerometer.ts"/>
    /// <reference path="AccelerometerEditView.ts"/>
 
-
-
 class AccelerometerEdit {
     accelerometerEditView: AccelerometerEditView;
     isOn: boolean = false
@@ -28,7 +26,6 @@ class AccelerometerEdit {
     //event handler function for placing element in edit mode
     windowResizeEvent: any;
     eventEditHandler: (event: Event, faustIControler: FaustInterfaceControler) => void;
-
 
     constructor(accelerometerEditView: AccelerometerEditView) {
         this.accelerometerEditView = accelerometerEditView
@@ -64,8 +61,6 @@ class AccelerometerEdit {
                     currentIFControler.faustInterfaceView.slider.classList.remove('edit');
                 }
                 this.setSliderDisableValue(currentIFControler);
-
-
             }
             this.isOn = false;
             Utilitary.isAccelerometerEditOn = false;
@@ -176,10 +171,8 @@ class AccelerometerEdit {
         //hide editing interface
         this.accelerometerEditView.blockLayer.style.display = "none";
         window.removeEventListener("resize", this.windowResizeEvent)
-
-
-
     }
+
     applyAccelerometerEdit() {
         this.removeCloneSlider(this.faustIControler);
         //applying new axis style to slider
@@ -206,9 +199,6 @@ class AccelerometerEdit {
             this.faustIControler.updateFaustCodeCallback(detail);
         }
         this.applyDisableEnableAcc();
-
-
-
     }
 
     //disable or enable slider according to isActive and isEnable
@@ -230,9 +220,7 @@ class AccelerometerEdit {
             this.faustView.slider.classList.remove("not-allowed");
             this.faustView.slider.classList.add("allowed");
             this.faustView.slider.disabled = false
-
         }
-
     }
     //Place graphical element of the editing view
     placeElement() {
@@ -247,7 +235,6 @@ class AccelerometerEdit {
     //store original values of the controller being edited
     storeAccelerometerSliderInfos(faustIControler: FaustInterfaceControler) {
         var acc = faustIControler.accelerometerSlider;
-
         this.originalAxis = Axis[acc.axis];
         this.originalAccValue = acc.acc;
         this.originalActive = acc.isActive;
@@ -282,7 +269,6 @@ class AccelerometerEdit {
             this.accelerometerEditView.cloneContainer.getElementsByTagName("div")[0].classList.remove("disabledAcc");
             this.faustView.group.classList.remove("disabledAcc");
             this.accelerometerEditView.rangeContainer.classList.remove("disabledAcc");
-
         }
     }
     //set curve to the good radio button curve
@@ -483,7 +469,6 @@ class AccelerometerEdit {
         this.accSlid.amax = parseFloat(this.accelerometerEditView.rangeMax.value)
         this.accSlid.converter.setMappingValues(this.accSlid.amin, this.accSlid.amid, this.accSlid.amax, this.accSlid.min, this.accSlid.init, this.accSlid.max)
         this.applyValuetoFaust();
-
     }
 
     //apply values changes to the AccelerometerSlider

@@ -78,7 +78,7 @@ class Library{
     //fill submenu and attach events
     fillSubMenu(options: string[], subMenuId: string, stringStructureRemoved: string) {
         var subMenu: HTMLUListElement = <HTMLUListElement>document.getElementById(subMenuId);
-        
+
         for (var i = 0; i < options.length; i++) {
 
             var li: HTMLLIElement = document.createElement("li");
@@ -89,16 +89,14 @@ class Library{
             a.title = Utilitary.messageRessource.hoverLibraryElement;
             a.addEventListener("click", (e) => { e.preventDefault() });
 
-            var dblckickHandler = this.dispatchEventLibrary.bind(this,a.href) 
+            var dblckickHandler = this.dispatchEventLibrary.bind(this,a.href)
             a.ondblclick =  dblckickHandler;
             a.ontouchstart = (e) => { this.dbleTouchMenu(e) }
 
             a.text = this.cleanNameElement(options[i], stringStructureRemoved);
             subMenu.appendChild(li)
-
         }
     }
-
 
     //custom doube touch event handler
     dbleTouchMenu(touchEvent: TouchEvent) {
@@ -120,7 +118,7 @@ class Library{
         var event: CustomEvent = new CustomEvent("dbltouchlib", { 'detail': url })
         document.dispatchEvent(event);
     }
-    // init scroll to show scroll from perfectScroll.js 
+    // init scroll to show scroll from perfectScroll.js
     initScroll() {
         this.libraryView.effetLibrarySelect.scrollTop += 1;
         this.libraryView.exempleLibrarySelect.scrollTop += 1;
