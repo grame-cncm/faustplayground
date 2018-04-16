@@ -3081,7 +3081,7 @@ class Scene {
                         jsonOutputs.destination.push(outputs[j].destination.patchID.toString());
                     }
                 }
-                var params = this.fModuleList[i].moduleFaust.getDSP().controls();
+                var params = this.fModuleList[i].moduleFaust.getDSP().getParams();
                 var jsonParams = new JsonParamsSave();
                 jsonParams.sliders = [];
                 if (params) {
@@ -3116,6 +3116,12 @@ class Scene {
                     jsonObject.factory = new JsonFactorySave();
                     jsonObject.factory.name = factorySave.name;
                     jsonObject.factory.code = factorySave.code;
+                    jsonObject.factory.code_source = factorySave.code_source;
+                    jsonObject.factory.helpers = factorySave.helpers;
+                    jsonObject.factory.name_effect = factorySave.name_effect;
+                    jsonObject.factory.code_effect = factorySave.code_effect;
+                    jsonObject.factory.code_source_effect = factorySave.code_source_effect;
+                    jsonObject.factory.helpers_effect = factorySave.helpers_effect;
                 }
             }
         }
@@ -3137,7 +3143,7 @@ class Scene {
                 var jsonObject = jsonObjectCollection[index];
                 this.arrayRecalScene.push(jsonObject);
             }
-            this.lunchModuleCreation();
+            this.launchModuleCreation();
         }
         else {
             Utilitary.hideFullPageLoading();
@@ -3149,15 +3155,16 @@ class Scene {
     // or compile the faust code
     //
     // When arrayRecalScene empty, connect the modules in the scene
-    lunchModuleCreation() {
+    launchModuleCreation() {
         if (this.arrayRecalScene.length != 0) {
             var jsonObject = this.arrayRecalScene[0];
             if (jsonObject.factory != undefined) {
                 this.tempPatchId = jsonObject.patchId;
-                var factory = faust.readDSPFactoryFromMachine(jsonObject.factory);
-                this.updateAppTempModuleInfo(jsonObject);
-                this.sceneName = jsonObject.sceneName;
-                this.createModule(factory);
+                faust.readDSPFactoryFromMachine(jsonObject.factory, (factory) => {
+                    this.updateAppTempModuleInfo(jsonObject);
+                    this.sceneName = jsonObject.sceneName;
+                    this.createModule(factory);
+                });
             }
             else if (jsonObject.patchId != "output" && jsonObject.patchId != "input") {
                 this.tempPatchId = jsonObject.patchId;
@@ -3167,7 +3174,7 @@ class Scene {
             }
             else {
                 this.arrayRecalScene.shift();
-                this.lunchModuleCreation();
+                this.launchModuleCreation();
             }
         }
         else {
@@ -3221,13 +3228,13 @@ class Scene {
                 this.addModule(module);
                 this.recallAccValues(this.arrayRecalScene[0].acc, module);
                 this.arrayRecalScene.shift();
-                this.lunchModuleCreation();
+                this.launchModuleCreation();
             });
         }
         catch (e) {
             new Message(Utilitary.messageRessource.errorCreateModuleRecall);
             this.arrayRecalScene.shift();
-            this.lunchModuleCreation();
+            this.launchModuleCreation();
         }
     }
     //recall of the accelerometer mapping parameters for each FaustInterfaceControler of the Module
@@ -3632,34 +3639,35 @@ class LoadView {
         loadFileInput.id = "loadFileInput";
         this.loadFileInput = loadFileInput;
         loadFileDiv.appendChild(loadFileInput);
-        var aLightExemple = document.createElement("a");
-        aLightExemple.id = "aLightExemple";
-        aLightExemple.className = "exempleAnchor";
-        aLightExemple.textContent = "Small exemple";
-        aLightExemple.href = "json/Small_Exemple.json";
-        aLightExemple.draggable = false;
-        this.aLightExemple = aLightExemple;
-        var aBigExemple = document.createElement("a");
-        aBigExemple.id = "aBigExemple";
-        aBigExemple.className = "exempleAnchor";
-        aBigExemple.textContent = "Big exemple";
-        aBigExemple.href = "json/Big_Exemple.json";
-        aBigExemple.draggable = false;
-        this.aBigExemple = aBigExemple;
-        var aLightPreExemple = document.createElement("a");
-        aLightPreExemple.id = "aLightPreExemple";
-        aLightPreExemple.className = "exempleAnchor";
-        aLightPreExemple.textContent = "Small exemple precompile";
-        aLightPreExemple.href = "json/Small_Exemple_Precompile.json";
-        aLightPreExemple.draggable = false;
-        this.aLightPreExemple = aLightPreExemple;
-        var aBigPreExemple = document.createElement("a");
-        aBigPreExemple.id = "aBigPreExemple";
-        aBigPreExemple.className = "exempleAnchor";
-        aBigPreExemple.textContent = "Big exemple precompile";
-        aBigPreExemple.href = "json/Big_Exemple_Precompile.json";
-        aBigPreExemple.draggable = false;
-        this.aBigPreExemple = aBigPreExemple;
+        // 15/04/18 : not working anymore deactivated 
+        //var aLightExemple = document.createElement("a");
+        //aLightExemple.id = "aLightExemple";
+        //aLightExemple.className = "exempleAnchor"
+        //aLightExemple.textContent = "Small exemple";
+        //aLightExemple.href = "json/Small_Exemple.json"
+        //aLightExemple.draggable = false;
+        //this.aLightExemple = aLightExemple;
+        //var aBigExemple = document.createElement("a");
+        //aBigExemple.id = "aBigExemple";
+        //aBigExemple.className = "exempleAnchor"
+        //aBigExemple.textContent = "Big exemple";
+        //aBigExemple.href = "json/Big_Exemple.json"
+        //aBigExemple.draggable = false;
+        //this.aBigExemple = aBigExemple;
+        //var aLightPreExemple = document.createElement("a");
+        //aLightPreExemple.id = "aLightPreExemple";
+        //aLightPreExemple.className = "exempleAnchor"
+        //aLightPreExemple.textContent = "Small exemple precompile";
+        //aLightPreExemple.href = "json/Small_Exemple_Precompile.json"
+        //aLightPreExemple.draggable = false;
+        //this.aLightPreExemple = aLightPreExemple;
+        //var aBigPreExemple = document.createElement("a");
+        //aBigPreExemple.id = "aBigPreExemple";
+        //aBigPreExemple.className = "exempleAnchor"
+        //aBigPreExemple.textContent = "Big exemple precompile";
+        //aBigPreExemple.href = "json/Big_Exemple_Precompile.json"
+        //aBigPreExemple.draggable = false;
+        //this.aBigPreExemple = aBigPreExemple;
         var loadFileButton = document.createElement("button");
         loadFileButton.type = "button";
         loadFileButton.id = "loadFileButton";
@@ -3667,10 +3675,10 @@ class LoadView {
         loadFileButton.textContent = Utilitary.messageRessource.buttonLoadFile;
         this.loadFileButton = loadFileButton;
         loadFileContainer.appendChild(loadFileDiv);
-        loadFileContainer.appendChild(aLightExemple);
-        loadFileContainer.appendChild(aLightPreExemple);
-        loadFileContainer.appendChild(aBigExemple);
-        loadFileContainer.appendChild(aBigPreExemple);
+        //loadFileContainer.appendChild(aLightExemple);
+        //loadFileContainer.appendChild(aLightPreExemple);
+        //loadFileContainer.appendChild(aBigExemple);
+        //loadFileContainer.appendChild(aBigPreExemple);
         loadFileBottomButtonContainer.appendChild(loadFileButton);
         loadFileContainer.appendChild(loadFileBottomButtonContainer);
         ////////////////////////////////////////local load
@@ -3742,10 +3750,11 @@ class Load {
         this.loadView.buttonLoadLocal.addEventListener("click", () => { this.localLoad(); });
         this.loadView.buttonLoadCloud.addEventListener("click", () => { this.cloudLoad(); });
         this.loadView.buttonConnectDrive.addEventListener("click", (e) => { this.drive.handleAuthClick(e); });
-        this.loadView.aBigExemple.addEventListener("click", (e) => { this.getEx(e); });
-        this.loadView.aLightExemple.addEventListener("click", (e) => { this.getEx(e); });
-        this.loadView.aBigPreExemple.addEventListener("click", (e) => { this.getEx(e); });
-        this.loadView.aLightPreExemple.addEventListener("click", (e) => { this.getEx(e); });
+        // 15/04/18 : not working anymore deactivated 
+        //this.loadView.aBigExemple.addEventListener("click", (e) => { this.getEx(e) })
+        //this.loadView.aLightExemple.addEventListener("click", (e) => { this.getEx(e) })
+        //this.loadView.aBigPreExemple.addEventListener("click", (e) => { this.getEx(e) })
+        //this.loadView.aLightPreExemple.addEventListener("click", (e) => { this.getEx(e) })
         this.loadView.buttonChangeAccount.addEventListener("click", (e) => { this.logOut(); });
     }
     //open file from browser dialogue open window
@@ -4854,7 +4863,7 @@ class Menu {
     //manage the library display
     libraryMenu() {
         switch (this.currentMenuChoices) {
-            case MenuChoices.null:// case MenuChoices.edit:
+            case MenuChoices.null:
                 this.menuView.contentsMenu.style.display = "block";
                 this.menuView.libraryContent.style.display = "block";
                 this.currentMenuChoices = MenuChoices.library;
@@ -4881,7 +4890,7 @@ class Menu {
     //manage the load display
     loadMenu() {
         switch (this.currentMenuChoices) {
-            case MenuChoices.null:// case MenuChoices.edit:
+            case MenuChoices.null:
                 this.menuView.contentsMenu.style.display = "block";
                 this.menuView.loadContent.style.display = "inline-table";
                 this.currentMenuChoices = MenuChoices.load;
@@ -4907,7 +4916,7 @@ class Menu {
     //manage the export display
     exportMenu() {
         switch (this.currentMenuChoices) {
-            case MenuChoices.null:// case MenuChoices.edit:
+            case MenuChoices.null:
                 this.menuView.contentsMenu.style.display = "block";
                 this.menuView.exportContent.style.display = "inline-table";
                 this.currentMenuChoices = MenuChoices.export;
@@ -4933,7 +4942,7 @@ class Menu {
     //manage the save display
     saveMenu() {
         switch (this.currentMenuChoices) {
-            case MenuChoices.null:// case MenuChoices.edit:
+            case MenuChoices.null:
                 this.menuView.contentsMenu.style.display = "block";
                 this.menuView.saveContent.style.display = "inline-table";
                 this.currentMenuChoices = MenuChoices.save;
@@ -4959,7 +4968,7 @@ class Menu {
     //manage the help display
     helpMenu() {
         switch (this.currentMenuChoices) {
-            case MenuChoices.null://case MenuChoices.edit:
+            case MenuChoices.null:
                 this.menuView.contentsMenu.style.display = "block";
                 this.menuView.helpContent.style.display = "block";
                 this.menuView.helpButtonMenu.style.backgroundColor = this.menuView.menuColorSelected;

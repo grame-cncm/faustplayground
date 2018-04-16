@@ -132,7 +132,7 @@ interface IfDSP extends AudioNode {
     setParamValue: (text: string, val: string) => void;
     getNumInputs: () => number;
     getNumOutputs: () => number;
-    controls: () => any;
+    getParams: () => any;
 }
 
 interface CompileFaust {

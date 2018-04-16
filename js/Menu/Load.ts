@@ -12,10 +12,13 @@ class Load {
         this.loadView.buttonLoadLocal.addEventListener("click", () => { this.localLoad() })
         this.loadView.buttonLoadCloud.addEventListener("click", () => { this.cloudLoad() })
         this.loadView.buttonConnectDrive.addEventListener("click", (e) => { this.drive.handleAuthClick(e) })
-        this.loadView.aBigExemple.addEventListener("click", (e) => { this.getEx(e) })
-        this.loadView.aLightExemple.addEventListener("click", (e) => { this.getEx(e) })
-        this.loadView.aBigPreExemple.addEventListener("click", (e) => { this.getEx(e) })
-        this.loadView.aLightPreExemple.addEventListener("click", (e) => { this.getEx(e) })
+        
+        // 15/04/18 : not working anymore deactivated 
+        //this.loadView.aBigExemple.addEventListener("click", (e) => { this.getEx(e) })
+        //this.loadView.aLightExemple.addEventListener("click", (e) => { this.getEx(e) })
+        //this.loadView.aBigPreExemple.addEventListener("click", (e) => { this.getEx(e) })
+        //this.loadView.aLightPreExemple.addEventListener("click", (e) => { this.getEx(e) })
+        
         this.loadView.buttonChangeAccount.addEventListener("click", (e) => { this.logOut()})
     }
 

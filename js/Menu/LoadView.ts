@@ -1,6 +1,5 @@
 ﻿   /// <reference path="../Utilitary.ts"/>
 
-
 class LoadView {
 
     loadFileButton: HTMLButtonElement;
@@ -16,8 +15,6 @@ class LoadView {
     aLightPreExemple: HTMLAnchorElement;
     cloudSelectFile: HTMLSelectElement;
     driveContainer: HTMLElement;
-
-
 
     initLoadView():HTMLElement {
         var loadContainer: HTMLElement = document.createElement("div");
@@ -43,8 +40,7 @@ class LoadView {
 
         var loadFileDiv = document.createElement("div");
         loadFileDiv.id = "loadFileDiv";
-
-        
+    
         var loadFileInput = document.createElement("input");
         loadFileInput.type = "file";
         loadFileInput.id = "loadFileInput";
@@ -52,38 +48,39 @@ class LoadView {
 
         loadFileDiv.appendChild(loadFileInput);
 
-        var aLightExemple = document.createElement("a");
-        aLightExemple.id = "aLightExemple";
-        aLightExemple.className = "exempleAnchor"
-        aLightExemple.textContent = "Small exemple";
-        aLightExemple.href = "json/Small_Exemple.json"
-        aLightExemple.draggable = false;
-        this.aLightExemple = aLightExemple;
+		// 15/04/18 : not working anymore deactivated 
+		
+        //var aLightExemple = document.createElement("a");
+        //aLightExemple.id = "aLightExemple";
+        //aLightExemple.className = "exempleAnchor"
+        //aLightExemple.textContent = "Small exemple";
+        //aLightExemple.href = "json/Small_Exemple.json"
+        //aLightExemple.draggable = false;
+        //this.aLightExemple = aLightExemple;
 
-        var aBigExemple = document.createElement("a");
-        aBigExemple.id = "aBigExemple";
-        aBigExemple.className = "exempleAnchor"
-        aBigExemple.textContent = "Big exemple";
-        aBigExemple.href = "json/Big_Exemple.json"
-        aBigExemple.draggable = false;
-        this.aBigExemple = aBigExemple;
+        //var aBigExemple = document.createElement("a");
+        //aBigExemple.id = "aBigExemple";
+        //aBigExemple.className = "exempleAnchor"
+        //aBigExemple.textContent = "Big exemple";
+        //aBigExemple.href = "json/Big_Exemple.json"
+        //aBigExemple.draggable = false;
+        //this.aBigExemple = aBigExemple;
 
-        var aLightPreExemple = document.createElement("a");
-        aLightPreExemple.id = "aLightPreExemple";
-        aLightPreExemple.className = "exempleAnchor"
-        aLightPreExemple.textContent = "Small exemple precompile";
-        aLightPreExemple.href = "json/Small_Exemple_Precompile.json"
-        aLightPreExemple.draggable = false;
-        this.aLightPreExemple = aLightPreExemple;
+        //var aLightPreExemple = document.createElement("a");
+        //aLightPreExemple.id = "aLightPreExemple";
+        //aLightPreExemple.className = "exempleAnchor"
+        //aLightPreExemple.textContent = "Small exemple precompile";
+        //aLightPreExemple.href = "json/Small_Exemple_Precompile.json"
+        //aLightPreExemple.draggable = false;
+        //this.aLightPreExemple = aLightPreExemple;
 
-        var aBigPreExemple = document.createElement("a");
-        aBigPreExemple.id = "aBigPreExemple";
-        aBigPreExemple.className = "exempleAnchor"
-        aBigPreExemple.textContent = "Big exemple precompile";
-        aBigPreExemple.href = "json/Big_Exemple_Precompile.json"
-        aBigPreExemple.draggable = false;
-        this.aBigPreExemple = aBigPreExemple;
-
+        //var aBigPreExemple = document.createElement("a");
+        //aBigPreExemple.id = "aBigPreExemple";
+        //aBigPreExemple.className = "exempleAnchor"
+        //aBigPreExemple.textContent = "Big exemple precompile";
+        //aBigPreExemple.href = "json/Big_Exemple_Precompile.json"
+        //aBigPreExemple.draggable = false;
+        //this.aBigPreExemple = aBigPreExemple;
 
         var loadFileButton: HTMLButtonElement = document.createElement("button");
         loadFileButton.type = "button";
@@ -93,11 +90,11 @@ class LoadView {
         this.loadFileButton = loadFileButton;
 
         loadFileContainer.appendChild(loadFileDiv);
-        loadFileContainer.appendChild(aLightExemple);
-        loadFileContainer.appendChild(aLightPreExemple);
-
-        loadFileContainer.appendChild(aBigExemple);
-        loadFileContainer.appendChild(aBigPreExemple);
+        
+        //loadFileContainer.appendChild(aLightExemple);
+        //loadFileContainer.appendChild(aLightPreExemple);
+	    //loadFileContainer.appendChild(aBigExemple);
+        //loadFileContainer.appendChild(aBigPreExemple);
 
         loadFileBottomButtonContainer.appendChild(loadFileButton)
 
@@ -177,7 +174,5 @@ class LoadView {
         loadContainer.appendChild(loadCloudContainer);
 
         return loadContainer;
-
-
-    }
+	}
 }

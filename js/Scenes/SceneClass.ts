@@ -249,7 +249,7 @@ class Scene {
                     }
                 }
 
-                var params = this.fModuleList[i].moduleFaust.getDSP().controls();
+                var params = this.fModuleList[i].moduleFaust.getDSP().getParams();
                 var jsonParams: JsonParamsSave = new JsonParamsSave();
                 jsonParams.sliders = []
                 if (params) {
@@ -288,7 +288,13 @@ class Scene {
                     jsonObject.factory = new JsonFactorySave();
                     jsonObject.factory.name = factorySave.name;
                     jsonObject.factory.code = factorySave.code;
-                }
+                    jsonObject.factory.code_source = factorySave.code_source;
+                    jsonObject.factory.helpers = factorySave.helpers;
+                    jsonObject.factory.name_effect = factorySave.name_effect;
+                    jsonObject.factory.code_effect = factorySave.code_effect;
+                    jsonObject.factory.code_source_effect = factorySave.code_source_effect;
+                    jsonObject.factory.helpers_effect = factorySave.helpers_effect;
+    	         }
             }
         }
 
@@ -310,7 +316,7 @@ class Scene {
                 var jsonObject = jsonObjectCollection[index];
                 this.arrayRecalScene.push(jsonObject);
             }
-            this.lunchModuleCreation();
+            this.launchModuleCreation();
         } else {
             Utilitary.hideFullPageLoading();
             new Message(Utilitary.messageRessource.errorLoading)
@@ -323,15 +329,15 @@ class Scene {
     //
     // When arrayRecalScene empty, connect the modules in the scene
 
-    lunchModuleCreation() {
+    launchModuleCreation() {
         if (this.arrayRecalScene.length != 0) {
             var jsonObject = this.arrayRecalScene[0]
             if (jsonObject.factory != undefined) {
                 this.tempPatchId = jsonObject.patchId;
-                var factory: Factory = faust.readDSPFactoryFromMachine(jsonObject.factory);
-                this.updateAppTempModuleInfo(jsonObject);
-                this.sceneName = jsonObject.sceneName;
-                this.createModule(factory)
+                faust.readDSPFactoryFromMachine(jsonObject.factory, (factory) => {
+                	 this.updateAppTempModuleInfo(jsonObject);
+               		 this.sceneName = jsonObject.sceneName;
+               		 this.createModule(factory)});
             } else if (jsonObject.patchId != "output" && jsonObject.patchId != "input") {
                 this.tempPatchId = jsonObject.patchId;
                 this.sceneName = jsonObject.sceneName;
@@ -339,7 +345,7 @@ class Scene {
                 this.compileFaust(argumentCompile);
             } else {
                 this.arrayRecalScene.shift();
-                this.lunchModuleCreation();
+                this.launchModuleCreation();
             }
         } else {
             for (var i = 0; i < this.arrayRecalledModule.length; i++){
@@ -395,12 +401,12 @@ class Scene {
             	this.addModule(module);
             	this.recallAccValues(this.arrayRecalScene[0].acc, module);
             	this.arrayRecalScene.shift();
-            	this.lunchModuleCreation();
+            	this.launchModuleCreation();
             });
         } catch (e) {
             new Message(Utilitary.messageRessource.errorCreateModuleRecall);
             this.arrayRecalScene.shift();
-            this.lunchModuleCreation()
+            this.launchModuleCreation()
         }
     }
 
@@ -602,6 +608,7 @@ interface IJsonSaveModule {
     acc: IJsonAccSaves;
     factory: IJsonFactorySave;
 }
+
 class JsonSaveModule implements IJsonSaveModule {
     patchId: string;
     sceneName: string;
@@ -673,10 +680,22 @@ class JsonSliderSave implements IJsonSliderSave {
 }
 
 interface IJsonFactorySave {
-    code: string;
     name: string;
+    code: object;
+    code_source: string;
+    helpers: string;
+    name_effect: string;
+    code_effect: string;
+    code_source_effect: string;
+    helpers_effect: string;
 }
 class JsonFactorySave implements IJsonFactorySave {
-    code: string;
     name: string;
+    code: object;
+    code_source: string;
+    helpers: string;
+    name_effect: string;
+    code_effect: string;
+    code_source_effect: string;
+    helpers_effect: string;
 }
