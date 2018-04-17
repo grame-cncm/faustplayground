@@ -1842,12 +1842,21 @@ class ModuleClass {
         try {
             if (factory != null) {
                 var moduleFaust = this.moduleFaust;
-                faust.createDSPInstance(factory, Utilitary.audioContext, 1024, function (dsp) { moduleFaust.fDSP = dsp; callback(); });
+                faust.createDSPInstance(factory, Utilitary.audioContext, 1024, function (dsp) {
+                    if (dsp != null) {
+                        moduleFaust.fDSP = dsp;
+                        callback();
+                    }
+                    else {
+                        new Message(Utilitary.messageRessource.errorCreateDSP);
+                        Utilitary.hideFullPageLoading();
+                    }
+                });
                 // To activate the AudioWorklet mode
                 //faust.createDSPWorkletInstance(factory, Utilitary.audioContext, function(dsp) { moduleFaust.fDSP = dsp; callback(); });
             }
             else {
-                throw new Error("create DSP Error factory null");
+                throw new Error("create DSP Error : null factory");
             }
         }
         catch (e) {
