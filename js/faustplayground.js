@@ -3636,35 +3636,34 @@ class LoadView {
         loadFileInput.id = "loadFileInput";
         this.loadFileInput = loadFileInput;
         loadFileDiv.appendChild(loadFileInput);
-        // 15/04/18 : not working anymore deactivated
-        //var aLightExemple = document.createElement("a");
-        //aLightExemple.id = "aLightExemple";
-        //aLightExemple.className = "exempleAnchor"
-        //aLightExemple.textContent = "Small exemple";
-        //aLightExemple.href = "json/Small_Exemple.json"
-        //aLightExemple.draggable = false;
-        //this.aLightExemple = aLightExemple;
-        //var aBigExemple = document.createElement("a");
-        //aBigExemple.id = "aBigExemple";
-        //aBigExemple.className = "exempleAnchor"
-        //aBigExemple.textContent = "Big exemple";
-        //aBigExemple.href = "json/Big_Exemple.json"
-        //aBigExemple.draggable = false;
-        //this.aBigExemple = aBigExemple;
-        //var aLightPreExemple = document.createElement("a");
-        //aLightPreExemple.id = "aLightPreExemple";
-        //aLightPreExemple.className = "exempleAnchor"
-        //aLightPreExemple.textContent = "Small exemple precompile";
-        //aLightPreExemple.href = "json/Small_Exemple_Precompile.json"
-        //aLightPreExemple.draggable = false;
-        //this.aLightPreExemple = aLightPreExemple;
-        //var aBigPreExemple = document.createElement("a");
-        //aBigPreExemple.id = "aBigPreExemple";
-        //aBigPreExemple.className = "exempleAnchor"
-        //aBigPreExemple.textContent = "Big exemple precompile";
-        //aBigPreExemple.href = "json/Big_Exemple_Precompile.json"
-        //aBigPreExemple.draggable = false;
-        //this.aBigPreExemple = aBigPreExemple;
+        var aLightExemple = document.createElement("a");
+        aLightExemple.id = "aLightExemple";
+        aLightExemple.className = "exempleAnchor";
+        aLightExemple.textContent = "Small exemple";
+        aLightExemple.href = "json/Small_Exemple.json";
+        aLightExemple.draggable = false;
+        this.aLightExemple = aLightExemple;
+        var aBigExemple = document.createElement("a");
+        aBigExemple.id = "aBigExemple";
+        aBigExemple.className = "exempleAnchor";
+        aBigExemple.textContent = "Big exemple";
+        aBigExemple.href = "json/Big_Exemple.json";
+        aBigExemple.draggable = false;
+        this.aBigExemple = aBigExemple;
+        var aLightPreExemple = document.createElement("a");
+        aLightPreExemple.id = "aLightPreExemple";
+        aLightPreExemple.className = "exempleAnchor";
+        aLightPreExemple.textContent = "Small exemple precompile";
+        aLightPreExemple.href = "json/Small_Exemple_Precompile.json";
+        aLightPreExemple.draggable = false;
+        this.aLightPreExemple = aLightPreExemple;
+        var aBigPreExemple = document.createElement("a");
+        aBigPreExemple.id = "aBigPreExemple";
+        aBigPreExemple.className = "exempleAnchor";
+        aBigPreExemple.textContent = "Big exemple precompile";
+        aBigPreExemple.href = "json/Big_Exemple_Precompile.json";
+        aBigPreExemple.draggable = false;
+        this.aBigPreExemple = aBigPreExemple;
         var loadFileButton = document.createElement("button");
         loadFileButton.type = "button";
         loadFileButton.id = "loadFileButton";
@@ -3672,10 +3671,10 @@ class LoadView {
         loadFileButton.textContent = Utilitary.messageRessource.buttonLoadFile;
         this.loadFileButton = loadFileButton;
         loadFileContainer.appendChild(loadFileDiv);
-        //loadFileContainer.appendChild(aLightExemple);
-        //loadFileContainer.appendChild(aLightPreExemple);
-        //loadFileContainer.appendChild(aBigExemple);
-        //loadFileContainer.appendChild(aBigPreExemple);
+        loadFileContainer.appendChild(aLightExemple);
+        loadFileContainer.appendChild(aLightPreExemple);
+        loadFileContainer.appendChild(aBigExemple);
+        loadFileContainer.appendChild(aBigPreExemple);
         loadFileBottomButtonContainer.appendChild(loadFileButton);
         loadFileContainer.appendChild(loadFileBottomButtonContainer);
         ////////////////////////////////////////local load
@@ -3747,11 +3746,10 @@ class Load {
         this.loadView.buttonLoadLocal.addEventListener("click", () => { this.localLoad(); });
         this.loadView.buttonLoadCloud.addEventListener("click", () => { this.cloudLoad(); });
         this.loadView.buttonConnectDrive.addEventListener("click", (e) => { this.drive.handleAuthClick(e); });
-        // 15/04/18 : not working anymore deactivated
-        //this.loadView.aBigExemple.addEventListener("click", (e) => { this.getEx(e) })
-        //this.loadView.aLightExemple.addEventListener("click", (e) => { this.getEx(e) })
-        //this.loadView.aBigPreExemple.addEventListener("click", (e) => { this.getEx(e) })
-        //this.loadView.aLightPreExemple.addEventListener("click", (e) => { this.getEx(e) })
+        this.loadView.aBigExemple.addEventListener("click", (e) => { this.getEx(e); });
+        this.loadView.aLightExemple.addEventListener("click", (e) => { this.getEx(e); });
+        this.loadView.aBigPreExemple.addEventListener("click", (e) => { this.getEx(e); });
+        this.loadView.aLightPreExemple.addEventListener("click", (e) => { this.getEx(e); });
         this.loadView.buttonChangeAccount.addEventListener("click", (e) => { this.logOut(); });
     }
     //open file from browser dialogue open window
