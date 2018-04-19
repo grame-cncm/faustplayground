@@ -34,7 +34,6 @@ class MenuView {
     menuColorDefault: string = "rgba(227, 64, 80, 0.73)";
     menuColorSelected: string = "rgb(209, 64, 80)";
 
-
     init(htmlContainer: HTMLElement): void {
         var menuContainer: HTMLElement = document.createElement('div');
         menuContainer.id = "menuContainer";

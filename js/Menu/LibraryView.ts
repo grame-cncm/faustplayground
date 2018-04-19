@@ -10,7 +10,6 @@ class LibraryView  {
     effetLibrary: HTMLElement
     exempleLibrary: HTMLElement
 
-
     initLibraryView(): HTMLElement {
 
         var libraryContent: HTMLElement = document.createElement("div");
@@ -28,7 +27,6 @@ class LibraryView  {
         instrumentLibraryTitle.id = "instrumentLibraryTitle";
         instrumentLibraryTitle.className = "libraryTitles";
         instrumentLibraryTitle.appendChild(document.createTextNode(Utilitary.messageRessource.titleInstruments));
-
 
         var intrumentLibrarySelect: HTMLUListElement = document.createElement("ul");
         intrumentLibrarySelect.id = "instrumentLibrarySelect";
@@ -72,13 +70,11 @@ class LibraryView  {
         exempleLibraryTitle.className = "libraryTitles";
         exempleLibraryTitle.appendChild(document.createTextNode(Utilitary.messageRessource.titleExemples));
 
-
         var exempleLibrarySelect: HTMLUListElement = document.createElement("ul");
         exempleLibrarySelect.id = "exempleLibrarySelect";
         exempleLibrarySelect.className = "librarySelects";
         Ps.initialize(exempleLibrarySelect, { suppressScrollX: true, theme: 'my-theme-name' });
         this.exempleLibrarySelect = exempleLibrarySelect;
-
 
         exempleLibraryContent.appendChild(exempleLibraryTitle);
         exempleLibraryContent.appendChild(exempleLibrarySelect);
@@ -87,9 +83,6 @@ class LibraryView  {
         libraryContent.appendChild(effetLibraryContent)
         libraryContent.appendChild(exempleLibraryContent)
 
-
         return libraryContent;
-
     }
-
 }

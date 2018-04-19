@@ -1,6 +1,5 @@
 ﻿   /// <reference path="../Utilitary.ts"/>
 
-
 class AccelerometerEditView {
     blockLayer: HTMLDivElement;
     container: HTMLDivElement;

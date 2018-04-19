@@ -157,14 +157,13 @@ class ModuleView {
     }
 
     isPointInOutput(x: number, y: number): boolean {
-
         if (this.fOutputNode && this.fOutputNode.getBoundingClientRect().left < x && x < this.fOutputNode.getBoundingClientRect().right && this.fOutputNode.getBoundingClientRect().top < y && y < this.fOutputNode.getBoundingClientRect().bottom) {
             return true;
         }
         return false;
     }
-    isPointInInput(x: number, y: number): boolean {
 
+    isPointInInput(x: number, y: number): boolean {
         if (this.fInputNode && this.fInputNode.getBoundingClientRect().left <= x && x <= this.fInputNode.getBoundingClientRect().right && this.fInputNode.getBoundingClientRect().top <= y && y <= this.fInputNode.getBoundingClientRect().bottom) {
             return true;
         }
@@ -172,7 +171,6 @@ class ModuleView {
     }
 
     isPointInNode(x: number, y: number): boolean {
-
         if (this.fModuleContainer && this.fModuleContainer.getBoundingClientRect().left < x && x < this.fModuleContainer.getBoundingClientRect().right && this.fModuleContainer.getBoundingClientRect().top < y && y < this.fModuleContainer.getBoundingClientRect().bottom) {
             return true;
         }

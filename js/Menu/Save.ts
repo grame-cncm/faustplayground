@@ -36,6 +36,27 @@ class Save {
         }
     }
 
+    //set [key, value] in local storage item_key key
+    setStorageItemValue(item_key, key, value)  {
+      var item_value;
+      if (localStorage.getItem(item_key)) {
+        item_value = JSON.parse(localStorage.getItem(item_key));
+      } else {
+        item_value = [];
+      }
+
+      // Possibly update an existing 'key'
+      var item_index = item_value.findIndex((obj => obj[0] === key));
+      if (item_index >= 0) {
+        item_value[item_index][1] = value;
+        // Otherwise push a new [key, value]
+      } else {
+        item_value.push([key, value]);
+      }
+
+      localStorage.setItem(item_key, JSON.stringify(item_value));
+    }
+
     //save scene in local storage
     saveLocal() {
         if (this.saveView.inputLocalStorage.value != Utilitary.currentScene.sceneName && !Scene.rename(this.saveView.inputLocalStorage, this.saveView.rulesName, this.saveView.dynamicName)) {
@@ -47,7 +68,7 @@ class Save {
                     new Confirm(Utilitary.messageRessource.confirmReplace, (callback) => { this.replaceSaveLocal(name,jsonScene, callback) });
                     return;
                 }else {
-                    localStorage.setItem(name, jsonScene)
+                    this.setStorageItemValue('FaustPlayground', name, jsonScene);
                 }
                 new Message(Utilitary.messageRessource.sucessSave,"messageTransitionOutFast",2000,500)
                 var event: CustomEvent = new CustomEvent("updatelist")
@@ -61,7 +82,7 @@ class Save {
 
     //replace an existing scene in local Storage
     replaceSaveLocal(name:string,jsonScene: string, confirmCallBack: () => void) {
-        localStorage.setItem(name, jsonScene);
+        this.setStorageItemValue('FaustPlayground', name, jsonScene);
         new Message(Utilitary.messageRessource.sucessSave, "messageTransitionOutFast", 2000, 500)
         var event: CustomEvent = new CustomEvent("updatelist")
         document.dispatchEvent(event);

@@ -28,8 +28,6 @@
 /// <reference path="../Utilitary.ts"/>
 /// <reference path="LibraryView.ts"/>
 
-
-
 interface IImageNode extends HTMLImageElement {
     state: string;
     section: string;
@@ -46,7 +44,6 @@ interface jsonObjectLibrary {
     effets: string[];
     exemples: string[];
 }
-
 
 class Library{
     libraryView: LibraryView;

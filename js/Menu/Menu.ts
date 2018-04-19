@@ -363,9 +363,9 @@ class Menu {
 
             }
         } else if (!this.isAccelerometer) {
-            this.menuView.accButton.style.opacity = "1";
             this.isAccelerometer = true;
             Utilitary.isAccelerometerOn = true;
+            this.menuView.accButton.style.opacity = "1";
             for (var i = 0; i < AccelerometerHandler.faustInterfaceControler.length; i++) {
                 var acc = AccelerometerHandler.faustInterfaceControler[i].accelerometerSlider;
                 var slider = AccelerometerHandler.faustInterfaceControler[i].faustInterfaceView.slider;
@@ -422,17 +422,22 @@ class Menu {
         this.fillSelectLocal(select);
     }
 
+    //get value of 'item_key'
+    getStorageItem(item_key)  {
+      return (localStorage.getItem(item_key)) ? JSON.parse(localStorage.getItem(item_key)): null;
+    }
+
     //fill select box
     fillSelectLocal(select: HTMLSelectElement) {
-        if (typeof sessionStorage != 'undefined') {
-            for (var i = 0; i < localStorage.length; i++) {
-                var option = document.createElement("option");
-                option.value = localStorage.key(i);
-                option.textContent = localStorage.key(i);
-                select.add(option);
-            }
-
+      var fpg = this.getStorageItem('FaustPlayground');
+      if (fpg) {
+        for (var i = 0; i < fpg.length; i++) {
+            var option = document.createElement("option");
+            option.value = fpg[i][0];
+            option.textContent = fpg[i][0];
+            select.add(option);
         }
+      }
     }
     //dispatch the current scene to the menus objects
     setMenuScene(scene: Scene) {
@@ -500,6 +505,7 @@ class Menu {
 
         }
     }
+    
     finishLoadingDrive() {
         if (this.isMenuDriveLoading) {
             this.isMenuDriveLoading = false;

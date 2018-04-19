@@ -172,5 +172,5 @@ class LoadView {
         loadContainer.appendChild(loadCloudContainer);
 
         return loadContainer;
-	}
+	  }
 }

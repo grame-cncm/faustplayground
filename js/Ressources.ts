@@ -1,9 +1,7 @@
 ﻿/// <reference path="App.ts"/>
 /// <reference path="Utilitary.ts"/>
 
-
 //contains all the key of resources json files in folders ressources
-
 
 class Ressources {
   //scene messages
@@ -13,10 +11,10 @@ class Ressources {
     loading: string;
     drop: string;
 
-  //drive Api message
+    //drive Api message
     noFileOnCloud: string;
 
-  //error
+    //error
     errorObjectNotFaustCompatible: string;
     errorLoading: string;
     errorGettingAudioInput: string;
@@ -33,7 +31,7 @@ class Ressources {
     errorLocalStorage: string;
     errorConnectionCloud: string;
 
-  //SaveView messages
+    //SaveView messages
     saveDownload: string;
     rulesSceneName: string;
     precompileOption: string;
@@ -96,7 +94,6 @@ class Ressources {
     axis0: string;
     checkBox: string;
     noDeviceMotion: string;
-
 
     //get ressource depending on the location, default is french
     getRessources(app:App) {

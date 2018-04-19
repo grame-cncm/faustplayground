@@ -32,9 +32,7 @@ class DriveAPI{
      * Check if current user has authorized this application.
     * disable to deactivate pop up window when not connected
      */
-    checkAuth() {
-
-    }
+    checkAuth() {}
 
     updateConnection() {
         gapi.auth.authorize(

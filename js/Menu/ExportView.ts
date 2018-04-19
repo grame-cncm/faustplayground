@@ -166,6 +166,5 @@ class ExportView {
         exportContainer.appendChild(exportResultContainer);
 
         return exportContainer;
-
     }
 }

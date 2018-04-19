@@ -124,7 +124,6 @@ class Connector {
 
       //for all output nodes
       if (module.moduleFaust.getOutputConnections && module.moduleFaust.getOutputConnections()) {
-
             while (module.moduleFaust.getOutputConnections().length > 0)
                 this.breakSingleInputConnection(module, module.moduleFaust.getOutputConnections()[0].destination, module.moduleFaust.getOutputConnections()[0]);
 	    }
@@ -183,5 +182,4 @@ class Connector {
 			    }
 		    }
     }
-
 }

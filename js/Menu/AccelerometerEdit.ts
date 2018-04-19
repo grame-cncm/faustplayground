@@ -45,13 +45,11 @@ class AccelerometerEdit {
         this.accelerometerEditView.rangeMin.addEventListener("input", (event) => { this.accMin() });
         this.accelerometerEditView.rangeMid.addEventListener("input", (event) => { this.accMid() });
         this.accelerometerEditView.rangeMax.addEventListener("input", (event) => { this.accMax() });
-
     }
     //function used when starting or stoping editing mode
     //setting sider with event to edit it
     editAction() {
         if (this.isOn) {
-
             for (var i = 0; i < AccelerometerHandler.faustInterfaceControler.length; i++) {
                 var currentIFControler = AccelerometerHandler.faustInterfaceControler[i]
                 if (currentIFControler.faustInterfaceView.group) {
@@ -75,7 +73,6 @@ class AccelerometerEdit {
                     currentIFControler.faustInterfaceView.slider.classList.add('edit');
                     currentIFControler.faustInterfaceView.slider.disabled = true;
                 }
-
             }
             this.isOn = true;
             Utilitary.isAccelerometerEditOn = true;
@@ -143,7 +140,6 @@ class AccelerometerEdit {
         faustView.slider = this.currentParentElemSliderClone.getElementsByTagName("input")[0];
         faustView.output = <HTMLElement>this.currentParentElemSliderClone.getElementsByClassName("value")[0];
         this.accelerometerSwitch(faustIControler.accelerometerSlider.isActive)
-
     }
     //remove clone/preview slider
     removeCloneSlider(faustIControler: FaustInterfaceControler) {
@@ -423,7 +419,6 @@ class AccelerometerEdit {
     //event handler to switch isActive
     accelerometerEventSwitch(event: Event) {
         this.accelerometerSwitch(this.accelerometerEditView.checkeOnOff.checked);
-
     }
     //change isActive of AccelerometerSlider
     accelerometerSwitch(isSliderActive: boolean) {

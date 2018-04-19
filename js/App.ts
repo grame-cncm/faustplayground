@@ -92,7 +92,7 @@ class App {
     ********************************************************************/
 
     compileFaust(compileFaust: CompileFaust) {
-
+      
         //  Temporarily Saving parameters of compilation
         this.tempModuleName = compileFaust.name;
         this.tempModuleSourceCode = compileFaust.sourceCode;

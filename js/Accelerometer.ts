@@ -80,7 +80,6 @@ class AccelerometerSlider {
     }
 }
 
-
 //object responsible of storing all accelerometerSlider and propagate to them the accelerometer infos.
 class AccelerometerHandler {
     //array containing all the FaustInterfaceControler of the scene

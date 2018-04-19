@@ -183,8 +183,7 @@ class DriveAPI {
      * Check if current user has authorized this application.
     * disable to deactivate pop up window when not connected
      */
-    checkAuth() {
-    }
+    checkAuth() { }
     updateConnection() {
         gapi.auth.authorize({
             'client_id': this.CLIENT_ID,
@@ -588,8 +587,9 @@ class Drag {
     }
     startDraggingConnection(module, target) {
         // if this is the green or red button, use its parent.
-        if (target.classList.contains("node-button"))
+        if (target.classList.contains("node-button")) {
             target = target.parentNode;
+        }
         // Get the position of the originating connector with respect to the page.
         var offset = target;
         var x = module.moduleView.inputOutputNodeDimension / 2;
@@ -2405,24 +2405,29 @@ class EquivalentFaust {
             for (var i = 0; i < moduleInputs.length; i++) {
                 if (moduleInputs[i]) {
                     if (moduleInputs[i].sourceCode && moduleInputs[i].sourceCode.length > 0) {
-                        if (i != 0)
+                        if (i != 0) {
                             inputCode += ",";
+                        }
                         inputCode += this.computeModule(moduleInputs[i]);
                     }
                 }
             }
             if (inputCode != "") {
-                if (module.recursiveFlag)
+                if (module.recursiveFlag) {
                     faustResult += "(" + inputCode + ":> ";
-                else
+                }
+                else {
                     faustResult += inputCode + ":> ";
+                }
             }
         }
         var ModuleCode = module.sourceCode;
-        if (module.recursiveFlag)
+        if (module.recursiveFlag) {
             faustResult += "stereoize(environment{" + ModuleCode + "}.process))~(_,_)";
-        else
+        }
+        else {
             faustResult += "stereoize(environment{" + ModuleCode + "}.process)";
+        }
         return faustResult;
     }
     // Computing the trees unconnected to the output
@@ -2441,8 +2446,9 @@ class EquivalentFaust {
         if (faustModuleList.length > 0) {
             var dest = scene.getAudioOutput();
             var src = scene.getAudioInput();
-            if (src)
+            if (src) {
                 src.patchID = "input";
+            }
             var faustResult = "stereoize(p) = S(inputs(p), outputs(p))\n\
 				    with {\n\
 				      // degenerated processor with no outputs\n\
@@ -2476,8 +2482,9 @@ class EquivalentFaust {
             // 		console.log(faustResult);
             return faustResult;
         }
-        else
+        else {
             return null;
+        }
     }
 }
 //--------Plus Utilisé ---------------Create Faust Equivalent Module of the Scene
@@ -3769,13 +3776,24 @@ class Load {
             document.dispatchEvent(event);
         }
     }
+    //set item from local storage 'item_key' key
+    getStorageItemValue(item_key, key) {
+        if (localStorage.getItem(item_key)) {
+            var item_value = JSON.parse(localStorage.getItem(item_key));
+            var item_index = item_value.findIndex((obj => obj[0] === key));
+            return (item_index >= 0) ? item_value[item_index][1] : null;
+        }
+        else {
+            return null;
+        }
+    }
     //load scene from local storage
     localLoad() {
         if (this.loadView.existingSceneSelect.selectedIndex > -1) {
             Utilitary.showFullPageLoading();
             var option = this.loadView.existingSceneSelect.options[this.loadView.existingSceneSelect.selectedIndex];
             var name = option.value;
-            this.sceneCurrent.recallScene(localStorage.getItem(name));
+            this.sceneCurrent.recallScene(this.getStorageItemValue('FaustPlayground', name));
         }
     }
     //load exemple
@@ -3992,6 +4010,26 @@ class Save {
             saveAs(blob, Utilitary.currentScene.sceneName + ".jfaust");
         }
     }
+    //set [key, value] in local storage item_key key
+    setStorageItemValue(item_key, key, value) {
+        var item_value;
+        if (localStorage.getItem(item_key)) {
+            item_value = JSON.parse(localStorage.getItem(item_key));
+        }
+        else {
+            item_value = [];
+        }
+        // Possibly update an existing 'key'
+        var item_index = item_value.findIndex((obj => obj[0] === key));
+        if (item_index >= 0) {
+            item_value[item_index][1] = value;
+            // Otherwise push a new [key, value]
+        }
+        else {
+            item_value.push([key, value]);
+        }
+        localStorage.setItem(item_key, JSON.stringify(item_value));
+    }
     //save scene in local storage
     saveLocal() {
         if (this.saveView.inputLocalStorage.value != Utilitary.currentScene.sceneName && !Scene.rename(this.saveView.inputLocalStorage, this.saveView.rulesName, this.saveView.dynamicName)) {
@@ -4005,7 +4043,7 @@ class Save {
                     return;
                 }
                 else {
-                    localStorage.setItem(name, jsonScene);
+                    this.setStorageItemValue('FaustPlayground', name, jsonScene);
                 }
                 new Message(Utilitary.messageRessource.sucessSave, "messageTransitionOutFast", 2000, 500);
                 var event = new CustomEvent("updatelist");
@@ -4018,7 +4056,7 @@ class Save {
     }
     //replace an existing scene in local Storage
     replaceSaveLocal(name, jsonScene, confirmCallBack) {
-        localStorage.setItem(name, jsonScene);
+        this.setStorageItemValue('FaustPlayground', name, jsonScene);
         new Message(Utilitary.messageRessource.sucessSave, "messageTransitionOutFast", 2000, 500);
         var event = new CustomEvent("updatelist");
         document.dispatchEvent(event);
@@ -5100,9 +5138,9 @@ class Menu {
             }
         }
         else if (!this.isAccelerometer) {
-            this.menuView.accButton.style.opacity = "1";
             this.isAccelerometer = true;
             Utilitary.isAccelerometerOn = true;
+            this.menuView.accButton.style.opacity = "1";
             for (var i = 0; i < AccelerometerHandler.faustInterfaceControler.length; i++) {
                 var acc = AccelerometerHandler.faustInterfaceControler[i].accelerometerSlider;
                 var slider = AccelerometerHandler.faustInterfaceControler[i].faustInterfaceView.slider;
@@ -5152,13 +5190,18 @@ class Menu {
         this.clearSelect(select);
         this.fillSelectLocal(select);
     }
+    //get value of 'item_key'
+    getStorageItem(item_key) {
+        return (localStorage.getItem(item_key)) ? JSON.parse(localStorage.getItem(item_key)) : null;
+    }
     //fill select box
     fillSelectLocal(select) {
-        if (typeof sessionStorage != 'undefined') {
-            for (var i = 0; i < localStorage.length; i++) {
+        var fpg = this.getStorageItem('FaustPlayground');
+        if (fpg) {
+            for (var i = 0; i < fpg.length; i++) {
                 var option = document.createElement("option");
-                option.value = localStorage.key(i);
-                option.textContent = localStorage.key(i);
+                option.value = fpg[i][0];
+                option.textContent = fpg[i][0];
                 select.add(option);
             }
         }
@@ -5720,6 +5763,7 @@ class App {
 //initialization af the app, create app and ressource to get text with correct localization
 //then resumeInit on callback when text is loaded
 function init() {
+    console.log("FaustPlayground: version 1.0.0");
     var app = new App();
     var ressource = new Ressources;
     ressource.getRessources(app);

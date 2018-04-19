@@ -11,6 +11,7 @@
 //initialization af the app, create app and ressource to get text with correct localization
 //then resumeInit on callback when text is loaded
 function init(): void {
+    console.log("FaustPlayground: version 1.0.0");
     var app: App = new App();
     var ressource = new Ressources
     ressource.getRessources(app);
@@ -75,8 +76,6 @@ function IosInit(){
     window.removeEventListener('touchend', IosInit, false)
 }
 
-
-
 function IosInit2() {
     var buffer = Utilitary.audioContext.createBuffer(1, 1, 22050);
     var source = Utilitary.audioContext.createBufferSource();
@@ -93,5 +92,3 @@ function IosInit2() {
     }
     window.removeEventListener('touchstart', IosInit2, false)
 }
-
-

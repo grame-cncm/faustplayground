@@ -131,35 +131,35 @@ class EquivalentFaust {
 
         // Iterate on input Modules to compute them
         if (moduleInputs && moduleInputs.length != 0) {
-
             var inputCode:string = "";
 
             for (var i = 0; i < moduleInputs.length; i++) {
                 if (moduleInputs[i]) {
-
                     if (moduleInputs[i].sourceCode && moduleInputs[i].sourceCode.length > 0) {
-                        if (i != 0)
+                        if (i != 0) {
                             inputCode += ",";
-
+                        }
                         inputCode += this.computeModule(moduleInputs[i]);
                     }
                 }
             }
 
             if (inputCode != "") {
-                if (module.recursiveFlag)
+                if (module.recursiveFlag) {
                     faustResult += "(" + inputCode + ":> ";
-                else
+                } else {
                     faustResult += inputCode + ":> ";
+                }
             }
         }
 
         var ModuleCode: string = module.sourceCode;
 
-        if (module.recursiveFlag)
+        if (module.recursiveFlag) {
             faustResult += "stereoize(environment{" + ModuleCode + "}.process))~(_,_)";
-        else
+        } else {
             faustResult += "stereoize(environment{" + ModuleCode + "}.process)";
+        }
 
         return faustResult;
     }
@@ -188,8 +188,9 @@ class EquivalentFaust {
             var dest = scene.getAudioOutput();
             var src = scene.getAudioInput();
 
-            if (src)
+            if (src) {
                 src.patchID = "input";
+            }
 
             var faustResult = "stereoize(p) = S(inputs(p), outputs(p))\n\
 				    with {\n\
@@ -230,16 +231,14 @@ class EquivalentFaust {
             // 		console.log(faustResult);
 
             return faustResult;
-        }
-        else
+        } else {
             return null;
+        }
     }
 
 }
 
-
-
-    //--------Plus Utilisé ---------------Create Faust Equivalent Module of the Scene
+//--------Plus Utilisé ---------------Create Faust Equivalent Module of the Scene
 
 //    // To avoid sharing instances of a same factory in the resulting Faust Equivalent
 //    wrapSourceCodesInGroups(){

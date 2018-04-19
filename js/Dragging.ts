@@ -128,8 +128,9 @@ class Drag {
     startDraggingConnection(module: ModuleClass, target: HTMLElement):void {
 
         // if this is the green or red button, use its parent.
-        if (target.classList.contains("node-button"))
+        if (target.classList.contains("node-button")) {
     	    target = <HTMLElement>target.parentNode;
+        }
 
         // Get the position of the originating connector with respect to the page.
         var offset: HTMLElement = target;
@@ -140,7 +141,7 @@ class Drag {
             x += offset.offsetLeft;
             y += offset.offsetTop;
             offset = <HTMLElement> offset.offsetParent;
-	    }
+	      }
 
   	    // Save starting positions of cursor and element.
   	    this.cursorStartX = x;
@@ -172,7 +173,6 @@ class Drag {
     }
 
     stopDraggingConnection(sourceModule: ModuleClass, destination: ModuleClass, target?: HTMLElement): void {
-
 
         if (sourceModule.moduleView.getInterfaceContainer().lastLit) {
             sourceModule.moduleView.getInterfaceContainer().lastLit.className = sourceModule.moduleView.getInterfaceContainer().lastLit.unlitClassname;
@@ -227,23 +227,20 @@ class Drag {
 		    }
 		    else {
 			    if (toElem.classList.contains("node-input")) {
+              // Make sure the connector line points go from src->dest (x1->x2)
+              var d = this.setCurvePath(x2, y2, x1, y1, this.calculBezier(x1, x2), this.calculBezier(x1, x2))
+              this.connector.connectorShape.setAttributeNS(null, "d", d);
+              this.updateConnectorShapePath(this.connector.connectorShape,x2, x1, y2, y1);
 
-            // Make sure the connector line points go from src->dest (x1->x2)
-            var d = this.setCurvePath(x2, y2, x1, y1, this.calculBezier(x1, x2), this.calculBezier(x1, x2))
-            this.connector.connectorShape.setAttributeNS(null, "d", d);
-            this.updateConnectorShapePath(this.connector.connectorShape,x2, x1, y2, y1);
-
-				    // can connect!
-				    // TODO: first: swap the line endpoints so they're consistently x1->x2
-				    // That makes updating them when we drag nodes around easier.
-
-                    src = sourceModule;
-                    dst = destination;
+				      // can connect!
+				      // TODO: first: swap the line endpoints so they're consistently x1->x2
+				      // That makes updating them when we drag nodes around easier.
+              src = sourceModule;
+              dst = destination;
 			      }
 		    }
 
         if (src && dst) {
-
             var connector: Connector = new Connector();
             connector.connectModules(src, dst);
 
@@ -256,9 +253,8 @@ class Drag {
             this.connector.connectorShape.onclick = (event)=> { connector.deleteConnection(event,this) };
 
 	          //this.connectorShape = null;
-
 			      return;
-		    }
+		     }
 	    }
 
         // Otherwise, delete the line

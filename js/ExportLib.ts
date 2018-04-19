@@ -1,7 +1,6 @@
 
 /// <reference path="Lib/qrcode.d.ts"/>
 
-
 /************************************************************
 ***************** Interface to FaustWeb *********************
 ************************************************************/
@@ -92,7 +91,7 @@ class ExportLib{
 	    for (var p in data) {
 		    platforms[index] = p;
 		    index++;
-        }
+      }
 
 	    return platforms;
     }
