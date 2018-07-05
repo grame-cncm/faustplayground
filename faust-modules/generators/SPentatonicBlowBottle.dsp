@@ -45,7 +45,7 @@ vibratoGain = 0.1;
 
 gain = 0.5;
 noiseGain = 0.5;
-pressure = 1;
+pressure = 1.2;
 vibratoBegin = 0.05;
 vibratoAttack = 0.5;
 vibratoRelease = 0.01;
