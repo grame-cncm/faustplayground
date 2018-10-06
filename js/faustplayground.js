@@ -517,7 +517,7 @@ class Drag {
             var y = touch.clientY + window.scrollY;
             draggingFunction(el, x, y, module, event);
         }
-        else if (this.isDragConnector) {
+        else if (this.isDragConnector) { //id drag is a connection one with touch event
             for (var i = 0; i < touchEvent.changedTouches.length; i++) {
                 var touch = touchEvent.changedTouches[i];
                 var x = touch.clientX + window.scrollX;
@@ -556,10 +556,10 @@ class Drag {
         // Move drag element by the same amount the cursor has moved.
         moduleContainer.style.left = (this.elementStartLeft + x - this.cursorStartX) + "px";
         moduleContainer.style.top = (this.elementStartTop + y - this.cursorStartY) + "px";
-        if (module.moduleFaust.getInputConnections() != null) {
+        if (module.moduleFaust.getInputConnections() != null) { // update any lines that point in here.
             Connector.redrawInputConnections(module, this);
         }
-        if (module.moduleFaust.getOutputConnections() != null) {
+        if (module.moduleFaust.getOutputConnections() != null) { // update any lines that point out of here.
             Connector.redrawOutputConnections(module, this);
         }
         event.stopPropagation();
@@ -736,7 +736,7 @@ class Drag {
         }
         // Move connector visual line
         this.connector.connectorShape.setAttributeNS(null, "d", d);
-        if (toElem.classList) {
+        if (toElem.classList) { // if we don't have class, we're not a node.
             // if this is the green or red button, use its parent.
             if (toElem.classList.contains("node-button"))
                 toElem = toElem.parentNode;
@@ -756,7 +756,7 @@ class Drag {
                             this.lastLit = toElem;
                         }
                     }
-                    else {
+                    else { // first node was an output, so we're looking for an input
                         if (toElem.classList.contains("node-input")) {
                             toElem.unlitClassname = toElem.className;
                             //toElem.className += " canConnect";
@@ -1813,9 +1813,13 @@ class ModuleClass {
         connector.disconnectModule(this);
         this.deleteFaustInterface();
         // Then delete the visual element
-        if (this.moduleView)
+        if (this.moduleView) {
             this.moduleView.fModuleContainer.parentNode.removeChild(this.moduleView.fModuleContainer);
+        }
         this.deleteDSP(this.moduleFaust.fDSP);
+        this.moduleFaust.fDSP = null;
+        faust.deleteDSPFactory(this.moduleFaust.factory);
+        this.moduleFaust.factory = null;
         this.deleteCallback(this);
     }
     //make module smaller
@@ -2929,7 +2933,7 @@ class Scene {
     muteScene() {
         var out = document.getElementById("audioOutput");
         if (out != null) {
-            if (out.audioNode.context.suspend != undefined) {
+            if (out.audioNode.context.suspend != undefined) { //because of Edge not supporting audioContext.suspend() yet
                 out.audioNode.context.suspend();
                 this.isMute = true;
                 this.getAudioOutput().moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-speaker-mute.png)";
@@ -2944,7 +2948,7 @@ class Scene {
         console.log("timeout");
         var out = document.getElementById("audioOutput");
         if (out != null) {
-            if (out.audioNode.context.resume != undefined) {
+            if (out.audioNode.context.resume != undefined) { //because of Edge not supporting audioContext.resume() yet
                 out.audioNode.context.resume();
                 this.isMute = false;
                 this.getAudioOutput().moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-speaker.png)";
@@ -3031,6 +3035,7 @@ class Scene {
 ********************************************************************/
     activateAudioInput() {
         navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false } })
+            // 'as any' is needed here because of a typo in lib.d.ts (echoCancellation is written echoCancelation)
             .then((mediaStream) => {
             this.getDevice(mediaStream);
             console.log("audio track has settings:", mediaStream.getAudioTracks()[0].getSettings());
@@ -4904,7 +4909,7 @@ class Menu {
     //manage the library display
     libraryMenu() {
         switch (this.currentMenuChoices) {
-            case MenuChoices.null:
+            case MenuChoices.null: // case MenuChoices.edit:
                 this.menuView.contentsMenu.style.display = "block";
                 this.menuView.libraryContent.style.display = "block";
                 this.currentMenuChoices = MenuChoices.library;
@@ -4931,7 +4936,7 @@ class Menu {
     //manage the load display
     loadMenu() {
         switch (this.currentMenuChoices) {
-            case MenuChoices.null:
+            case MenuChoices.null: // case MenuChoices.edit:
                 this.menuView.contentsMenu.style.display = "block";
                 this.menuView.loadContent.style.display = "inline-table";
                 this.currentMenuChoices = MenuChoices.load;
@@ -4957,7 +4962,7 @@ class Menu {
     //manage the export display
     exportMenu() {
         switch (this.currentMenuChoices) {
-            case MenuChoices.null:
+            case MenuChoices.null: // case MenuChoices.edit:
                 this.menuView.contentsMenu.style.display = "block";
                 this.menuView.exportContent.style.display = "inline-table";
                 this.currentMenuChoices = MenuChoices.export;
@@ -4983,7 +4988,7 @@ class Menu {
     //manage the save display
     saveMenu() {
         switch (this.currentMenuChoices) {
-            case MenuChoices.null:
+            case MenuChoices.null: // case MenuChoices.edit:
                 this.menuView.contentsMenu.style.display = "block";
                 this.menuView.saveContent.style.display = "inline-table";
                 this.currentMenuChoices = MenuChoices.save;
@@ -5009,7 +5014,7 @@ class Menu {
     //manage the help display
     helpMenu() {
         switch (this.currentMenuChoices) {
-            case MenuChoices.null:
+            case MenuChoices.null: //case MenuChoices.edit:
                 this.menuView.contentsMenu.style.display = "block";
                 this.menuView.helpContent.style.display = "block";
                 this.menuView.helpButtonMenu.style.backgroundColor = this.menuView.menuColorSelected;
@@ -5626,7 +5631,7 @@ class App {
                 }
             }
         }
-        else {
+        else { // CASE 4 : any other strange thing
             console.log("DROP: CASE 4 STRANGE ");
             new Message(Utilitary.messageRessource.errorObjectNotFaustCompatible);
             Utilitary.hideFullPageLoading();

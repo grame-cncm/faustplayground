@@ -141,12 +141,15 @@ class ModuleClass  {
         this.deleteFaustInterface();
 
         // Then delete the visual element
-        if (this.moduleView)
+        if (this.moduleView) {
             this.moduleView.fModuleContainer.parentNode.removeChild(this.moduleView.fModuleContainer);
+        }
 
         this.deleteDSP(this.moduleFaust.fDSP);
+        this.moduleFaust.fDSP = null;
+        faust.deleteDSPFactory(this.moduleFaust.factory);
+        this.moduleFaust.factory = null;
         this.deleteCallback(this);
-
     }
 	//make module smaller
     minModule() {
