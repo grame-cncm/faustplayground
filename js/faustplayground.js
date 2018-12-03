@@ -1809,6 +1809,7 @@ class ModuleClass {
     }
     /*******************************  PUBLIC METHODS  **********************************/
     deleteModule() {
+    console.log("deleteModule");
         var connector = new Connector();
         connector.disconnectModule(this);
         this.deleteFaustInterface();
@@ -1904,9 +1905,8 @@ class ModuleClass {
         });
     }
     deleteDSP(todelete) {
-        // 	TO DO SAFELY --> FOR NOW CRASHES SOMETIMES
-        // 		if(todelete)
-        // 		    faust.deleteDSPInstance(todelete);
+        if (todelete)
+            faust.deleteDSPInstance(todelete);
     }
     /******************** EDIT SOURCE & RECOMPILE *************************/
     edit() {

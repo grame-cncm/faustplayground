@@ -241,9 +241,8 @@ class ModuleClass  {
     }
 
     private deleteDSP(todelete: IfDSP): void {
-        // 	TO DO SAFELY --> FOR NOW CRASHES SOMETIMES
-        // 		if(todelete)
-        // 		    faust.deleteDSPInstance(todelete);
+        if (todelete)
+            faust.deleteDSPInstance(todelete);
     }
     /******************** EDIT SOURCE & RECOMPILE *************************/
     edit(): void {
