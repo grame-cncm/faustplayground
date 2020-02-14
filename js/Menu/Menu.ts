@@ -14,11 +14,14 @@
 
 interface Document {
     cancelFullScreen: () => any;
-    mozCancelFullScreen: () => any;
+    webkitCancelFullScreen: () => any;
+    mozCancelFullScreen: () => any; 
 }
 
 interface HTMLElement {
+	requestFullscreen: () => any;
     mozRequestFullScreen: () => any;
+    webkitRequestFullscreen: () => any;
 }
 
 enum MenuChoices { library, export, help, kids, edit, save, load, null }

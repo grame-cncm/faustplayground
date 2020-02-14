@@ -167,7 +167,7 @@ class ConfirmView {
         return messageContainer;
     }
 }
-// class to handel Drive Api request//
+// class to handle Drive API request//
 // using the v2 version
 /// <reference path="Messages.ts"/>
 /// <reference path="Utilitary.ts"/>
@@ -199,18 +199,18 @@ class DriveAPI {
     handleAuthResult(authResult, auto) {
         if (authResult && !authResult.error) {
             // Hide auth UI, then load client library.
-            var event = new CustomEvent("authon");
+            let event = new CustomEvent("authon");
             document.dispatchEvent(event);
             this.loadDriveApi();
         }
         else {
             // Show auth UI, allowing the user to initiate authorization by
             // clicking authorize button.
-            var event = new CustomEvent("authoff");
+            let event = new CustomEvent("authoff");
             document.dispatchEvent(event);
         }
         if (authResult.error) {
-            var event = new CustomEvent("clouderror", { 'detail': authResult.error });
+            let event = new CustomEvent("clouderror", { 'detail': authResult.error });
             document.dispatchEvent(event);
         }
     }
@@ -354,7 +354,7 @@ class DriveAPI {
         reader.onload = function (e) {
             var contentType = fileData.type || 'application/octet-stream';
             // Updating the metadata is optional and you can instead use the value from drive.files.get.
-            var base64Data = btoa(reader.result);
+            var base64Data = btoa(reader.result.toString());
             var multipartRequestBody = delimiter +
                 'Content-Type: application/json\r\n\r\n' +
                 JSON.stringify(fileMetadata) +
@@ -1809,7 +1809,6 @@ class ModuleClass {
     }
     /*******************************  PUBLIC METHODS  **********************************/
     deleteModule() {
-    console.log("deleteModule");
         var connector = new Connector();
         connector.disconnectModule(this);
         this.deleteFaustInterface();
@@ -2933,8 +2932,9 @@ class Scene {
     muteScene() {
         var out = document.getElementById("audioOutput");
         if (out != null) {
-            if (out.audioNode.context.suspend != undefined) { //because of Edge not supporting audioContext.suspend() yet
-                out.audioNode.context.suspend();
+            let context = out.audioNode.context;
+            if (context != undefined) { //because of Edge not supporting audioContext.suspend() yet
+                context.suspend();
                 this.isMute = true;
                 this.getAudioOutput().moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-speaker-mute.png)";
             }
@@ -5495,8 +5495,8 @@ class App {
             currentScene.muteScene();
         }
         ;
-        //locate libraries used in libfaust compiler
-        var libpath = location.origin + location.pathname.substring(0, location.pathname.lastIndexOf('/')) + "/faustlibraries/";
+        // Libraries are now included and loaded from the EMCC locale FS inluded in libfaust
+        var libpath = "libraries";
         var args = ["-I", libpath, "-ftz", "2"];
         //try to create the wasm code/factory with the given Faust code. Then callback to function passing the factory.
         try {
@@ -5694,7 +5694,7 @@ class App {
                 module.update(filename, dsp_code);
             }
             else if (type == "json") {
-                Utilitary.currentScene.recallScene(reader.result);
+                Utilitary.currentScene.recallScene(reader.result.toString());
             }
         };
     }

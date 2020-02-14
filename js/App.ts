@@ -92,7 +92,7 @@ class App {
     ********************************************************************/
 
     compileFaust(compileFaust: CompileFaust) {
-      
+
         //  Temporarily Saving parameters of compilation
         this.tempModuleName = compileFaust.name;
         this.tempModuleSourceCode = compileFaust.sourceCode;
@@ -103,8 +103,8 @@ class App {
 
         if (currentScene) { currentScene.muteScene() };
 
-        //locate libraries used in libfaust compiler
-        var libpath = location.origin + location.pathname.substring(0, location.pathname.lastIndexOf('/')) + "/faustlibraries/";
+        // Libraries are now included and loaded from the EMCC locale FS inluded in libfaust
+        var libpath = "libraries";
         var args: string[] = ["-I", libpath, "-ftz", "2"];
 
         //try to create the wasm code/factory with the given Faust code. Then callback to function passing the factory.
@@ -313,7 +313,7 @@ class App {
             } else if (type == "dsp") {
                 module.update(filename, dsp_code);
             } else if (type == "json") {
-                Utilitary.currentScene.recallScene(reader.result);
+                Utilitary.currentScene.recallScene(reader.result.toString());
             }
         };
     }

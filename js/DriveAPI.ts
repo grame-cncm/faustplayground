@@ -1,6 +1,5 @@
-﻿// class to handel Drive Api request//
+// class to handle Drive API request//
 // using the v2 version
-
 
 /// <reference path="Messages.ts"/>
 /// <reference path="Utilitary.ts"/>
@@ -15,7 +14,7 @@ interface DriveFile {
     webContentLink: string;
 }
 
-class DriveAPI{
+class DriveAPI {
 
     CLIENT_ID: string = '937268536763-j0tfilisap0274toolo0hehndnhgsrva.apps.googleusercontent.com';
 
@@ -51,18 +50,17 @@ class DriveAPI{
     handleAuthResult(authResult,auto?) {
         if (authResult && !authResult.error) {
             // Hide auth UI, then load client library.
-
-            var event = new CustomEvent("authon")
+            let event = new CustomEvent("authon");
             document.dispatchEvent(event);
             this.loadDriveApi();
         } else {
             // Show auth UI, allowing the user to initiate authorization by
             // clicking authorize button.
-            var event = new CustomEvent("authoff")
+            let event = new CustomEvent("authoff");
             document.dispatchEvent(event);
         }
         if (authResult.error) {
-            var event = new CustomEvent("clouderror", { 'detail': authResult.error })
+           	let event  = new CustomEvent("clouderror", { 'detail': authResult.error });
             document.dispatchEvent(event);
          }
     }
@@ -222,7 +220,7 @@ class DriveAPI{
         reader.onload = function (e) {
             var contentType = fileData.type || 'application/octet-stream';
             // Updating the metadata is optional and you can instead use the value from drive.files.get.
-            var base64Data = btoa(reader.result);
+            var base64Data = btoa(reader.result.toString()); 
             var multipartRequestBody =
                 delimiter +
                 'Content-Type: application/json\r\n\r\n' +

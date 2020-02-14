@@ -53,8 +53,9 @@ class Scene {
         var out: IHTMLDivElementOut = <IHTMLDivElementOut>document.getElementById("audioOutput");
 
         if (out != null) {
-            if (out.audioNode.context.suspend != undefined) {//because of Edge not supporting audioContext.suspend() yet
-                out.audioNode.context.suspend();
+        	let context = out.audioNode.context as AudioContext;
+        	if (context != undefined) {//because of Edge not supporting audioContext.suspend() yet
+                context.suspend();
                 this.isMute = true;
                 this.getAudioOutput().moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-speaker-mute.png)"
             }
@@ -74,7 +75,6 @@ class Scene {
                 out.audioNode.context.resume();
                 this.isMute = false;
                 this.getAudioOutput().moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-speaker.png)"
-
             }
         }
     }
