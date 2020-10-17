@@ -1,6 +1,7 @@
 ﻿/*				SCENECLASS.JS
-	HAND-MADE JAVASCRIPT CLASS CONTAINING THE API OF A GENERIC SCENE
+    HAND-MADE JAVASCRIPT CLASS CONTAINING THE API OF A GENERIC SCENE
 */
+
 /// <reference path="../Connect.ts"/>
 /// <reference path="../Modules/ModuleClass.ts"/>
 /// <reference path="../Lib/webaudio-asm-worker-wrapper.d.ts"/>
@@ -52,9 +53,9 @@ class Scene {
     muteScene(): void {
         var out: IHTMLDivElementOut = <IHTMLDivElementOut>document.getElementById("audioOutput");
 
-        if (out != null) {
-        	let context = out.audioNode.context as AudioContext;
-        	if (context != undefined) {//because of Edge not supporting audioContext.suspend() yet
+        if (out !== null) {
+            let context = out.audioNode.context as AudioContext;
+            if (context != undefined) {//because of Edge not supporting audioContext.suspend() yet
                 context.suspend();
                 this.isMute = true;
                 this.getAudioOutput().moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-speaker-mute.png)"
@@ -70,9 +71,10 @@ class Scene {
         console.log("timeout")
         var out: IHTMLDivElementOut = <IHTMLDivElementOut>document.getElementById("audioOutput");
 
-        if (out != null) {
-            if (out.audioNode.context.resume != undefined) {//because of Edge not supporting audioContext.resume() yet
-                out.audioNode.context.resume();
+        if (out !== null) {
+            var context = out.audioNode.context as any; // To avoid: error TS2339: Property 'resume' does not exist on type 'BaseAudioContext'.
+            if (context.resume !== undefined) {
+                context.resume();
                 this.isMute = false;
                 this.getAudioOutput().moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-speaker.png)"
             }
@@ -82,7 +84,7 @@ class Scene {
     //add listner on the output module to give the user the possibility to mute/onmute the scene
     addMuteOutputListner(moduleOutput: ModuleClass) {
         moduleOutput.moduleView.fModuleContainer.ontouchstart = () => { this.dbleTouchOutput() }
-        moduleOutput.moduleView.fModuleContainer.ondblclick = () => { this.dispatchEventMuteUnmute()}
+        moduleOutput.moduleView.fModuleContainer.ondblclick = () => { this.dispatchEventMuteUnmute() }
     }
 
     //custom doubl touch event to mute
@@ -122,7 +124,7 @@ class Scene {
         this.fAudioInput = new ModuleClass(Utilitary.idX++, positionInput.x, positionInput.y, "input", this.sceneView.inputOutputModuleContainer, (module) => { this.removeModule(module) }, this.compileFaust);
         this.fAudioInput.patchID = "input";
         var scene: Scene = this;
-        this.compileFaust({ name:"input", sourceCode:"process=_,_;", x:positionInput.x, y:positionInput.y, callback:(factory)=>{ scene.integrateAudioInput(factory) }});
+        this.compileFaust({ name: "input", sourceCode: "process=_,_;", x: positionInput.x, y: positionInput.y, callback: (factory) => { scene.integrateAudioInput(factory) } });
     }
 
     integrateOutput() {
@@ -138,10 +140,10 @@ class Scene {
         if (this.fAudioOutput) {
             this.fAudioOutput.moduleFaust.setSource("process=_,_;");
             var moduleFaust = this;
-            this.fAudioOutput.createDSP(factory, function() {
-            	moduleFaust.activateAudioOutput(moduleFaust.fAudioOutput);
-            	moduleFaust.fAudioOutput.addInputOutputNodes();
-            	moduleFaust.integrateInput();
+            this.fAudioOutput.createDSP(factory, function () {
+                moduleFaust.activateAudioOutput(moduleFaust.fAudioOutput);
+                moduleFaust.fAudioOutput.addInputOutputNodes();
+                moduleFaust.integrateInput();
             });
         }
     }
@@ -150,12 +152,12 @@ class Scene {
         if (this.fAudioInput) {
             this.fAudioInput.moduleFaust.setSource("process=_,_;");
             var moduleFaust = this;
-            this.fAudioInput.createDSP(factory, function() {
-            	moduleFaust.activateAudioInput();
-            	moduleFaust.fAudioInput.addInputOutputNodes();
-       			Utilitary.hideFullPageLoading();
-        		moduleFaust.isInitLoading = false;
-        	});
+            this.fAudioInput.createDSP(factory, function () {
+                moduleFaust.activateAudioInput();
+                moduleFaust.fAudioInput.addInputOutputNodes();
+                Utilitary.hideFullPageLoading();
+                moduleFaust.isInitLoading = false;
+            });
         }
     }
 
@@ -167,21 +169,21 @@ class Scene {
 ********************************************************************/
 
     activateAudioInput(): void {
-        navigator.mediaDevices.getUserMedia({ audio: {echoCancellation:false} as any})
-        // 'as any' is needed here because of a typo in lib.d.ts (echoCancellation is written echoCancelation)
-        .then (
-            (mediaStream) => {
-                this.getDevice(mediaStream);
-                console.log("audio track has settings:", mediaStream.getAudioTracks()[0].getSettings());
-            }
-        ).catch (
-            (err) => {
-                console.error(err);
-                this.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)"
-                this.fAudioInput.moduleView.fInterfaceContainer.title = Utilitary.messageRessource.errorGettingAudioInput;
-                new Message(Utilitary.messageRessource.errorGettingAudioInput);
-            }
-        );
+        navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false } as any })
+            // 'as any' is needed here because of a typo in lib.d.ts (echoCancellation is written echoCancelation)
+            .then(
+                (mediaStream) => {
+                    this.getDevice(mediaStream);
+                    console.log("audio track has settings:", mediaStream.getAudioTracks()[0].getSettings());
+                }
+            ).catch(
+                (err) => {
+                    console.error(err);
+                    this.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)"
+                    this.fAudioInput.moduleView.fInterfaceContainer.title = Utilitary.messageRessource.errorGettingAudioInput;
+                    new Message(Utilitary.messageRessource.errorGettingAudioInput);
+                }
+            );
     }
 
     private getDevice(device: MediaStream): void {
@@ -294,7 +296,7 @@ class Scene {
                     jsonObject.factory.code_effect = factorySave.code_effect;
                     jsonObject.factory.code_source_effect = factorySave.code_source_effect;
                     jsonObject.factory.helpers_effect = factorySave.helpers_effect;
-    	         }
+                }
             }
         }
 
@@ -303,7 +305,7 @@ class Scene {
     }
 
     //recall scene from json/jfaust fill arrayRecalScene with each JsonSaveModule
-    recallScene(json: string):void {
+    recallScene(json: string): void {
         if (json != null) {
             try {
                 var jsonObjectCollection: JsonSaveCollection = JSON.parse(json);
@@ -335,20 +337,21 @@ class Scene {
             if (jsonObject.factory != undefined) {
                 this.tempPatchId = jsonObject.patchId;
                 faust.readDSPFactoryFromMachine(jsonObject.factory, (factory) => {
-                	 this.updateAppTempModuleInfo(jsonObject);
-               		 this.sceneName = jsonObject.sceneName;
-               		 this.createModule(factory)});
+                    this.updateAppTempModuleInfo(jsonObject);
+                    this.sceneName = jsonObject.sceneName;
+                    this.createModule(factory)
+                });
             } else if (jsonObject.patchId != "output" && jsonObject.patchId != "input") {
                 this.tempPatchId = jsonObject.patchId;
                 this.sceneName = jsonObject.sceneName;
-                var argumentCompile = { name:jsonObject.name,sourceCode: jsonObject.code,x: parseFloat(jsonObject.x),y: parseFloat(jsonObject.y), callback:(factory) => { this.createModule(factory) }}
+                var argumentCompile = { name: jsonObject.name, sourceCode: jsonObject.code, x: parseFloat(jsonObject.x), y: parseFloat(jsonObject.y), callback: (factory) => { this.createModule(factory) } }
                 this.compileFaust(argumentCompile);
             } else {
                 this.arrayRecalScene.shift();
                 this.launchModuleCreation();
             }
         } else {
-            for (var i = 0; i < this.arrayRecalledModule.length; i++){
+            for (var i = 0; i < this.arrayRecalledModule.length; i++) {
                 this.connectModule(this.arrayRecalledModule[i]);
             }
             for (var i = 0; i < this.arrayRecalledModule.length; i++) {
@@ -373,7 +376,7 @@ class Scene {
 
     //create Module then remove corresponding JsonSaveModule from arrayRecalScene at rank 0
     //re-lunch module of following Module/JsonSaveModule
-    private createModule(factory:Factory):void {
+    private createModule(factory: Factory): void {
         try {
             if (!factory) {
                 new Message(faust.getErrorMessage());
@@ -381,27 +384,27 @@ class Scene {
                 return;
             }
 
-            var module: ModuleClass = new ModuleClass(Utilitary.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), (module) => {this.removeModule(module) }, this.compileFaust);
+            var module: ModuleClass = new ModuleClass(Utilitary.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), (module) => { this.removeModule(module) }, this.compileFaust);
             module.moduleFaust.setSource(this.tempModuleSourceCode);
             module.createDSP(factory, () => {
-            	module.patchID = this.tempPatchId;
-            	if (this.tempParams) {
-               		for (var i = 0; i < this.tempParams.sliders.length; i++) {
-                    	var slider = this.tempParams.sliders[i];
-                    	module.addInterfaceParam(slider.path, parseFloat(slider.value));
-			    	}
-            	}
-            	module.moduleFaust.recallInputsSource = this.arrayRecalScene[0].inputs.source;
-            	module.moduleFaust.recallOutputsDestination = this.arrayRecalScene[0].outputs.destination;
-            	this.arrayRecalledModule.push(module);
-            	module.recallInterfaceParams();
-            	module.setFaustInterfaceControles();
-            	module.createFaustInterface();
-            	module.addInputOutputNodes();
-            	this.addModule(module);
-            	this.recallAccValues(this.arrayRecalScene[0].acc, module);
-            	this.arrayRecalScene.shift();
-            	this.launchModuleCreation();
+                module.patchID = this.tempPatchId;
+                if (this.tempParams) {
+                    for (var i = 0; i < this.tempParams.sliders.length; i++) {
+                        var slider = this.tempParams.sliders[i];
+                        module.addInterfaceParam(slider.path, parseFloat(slider.value));
+                    }
+                }
+                module.moduleFaust.recallInputsSource = this.arrayRecalScene[0].inputs.source;
+                module.moduleFaust.recallOutputsDestination = this.arrayRecalScene[0].outputs.destination;
+                this.arrayRecalledModule.push(module);
+                module.recallInterfaceParams();
+                module.setFaustInterfaceControles();
+                module.createFaustInterface();
+                module.addInputOutputNodes();
+                this.addModule(module);
+                this.recallAccValues(this.arrayRecalScene[0].acc, module);
+                this.arrayRecalScene.shift();
+                this.launchModuleCreation();
             });
         } catch (e) {
             new Message(Utilitary.messageRessource.errorCreateModuleRecall);
@@ -498,13 +501,13 @@ class Scene {
     }
 
     //use to replace all éèàù ' from string and replace it with eeau__
-    static cleanName(newName:string): string {
-        newName =Utilitary.replaceAll(newName, "é", "e");
-        newName =Utilitary.replaceAll(newName, "è", "e");
-        newName =Utilitary.replaceAll(newName, "à", "a");
-        newName =Utilitary.replaceAll(newName, "ù", "u");
-        newName =Utilitary.replaceAll(newName, " ", "_");
-        newName =Utilitary.replaceAll(newName, "'", "_");
+    static cleanName(newName: string): string {
+        newName = Utilitary.replaceAll(newName, "é", "e");
+        newName = Utilitary.replaceAll(newName, "è", "e");
+        newName = Utilitary.replaceAll(newName, "à", "a");
+        newName = Utilitary.replaceAll(newName, "ù", "u");
+        newName = Utilitary.replaceAll(newName, " ", "_");
+        newName = Utilitary.replaceAll(newName, "'", "_");
         return newName;
     }
     //check if string start only with letter (no accent)
@@ -519,7 +522,7 @@ class Scene {
     }
 
     //rename scene if format is correct and return true otherwise return false
-    static rename(input: HTMLInputElement, spanRule: HTMLSpanElement, spanDynamic: HTMLSpanElement):boolean {
+    static rename(input: HTMLInputElement, spanRule: HTMLSpanElement, spanDynamic: HTMLSpanElement): boolean {
         var newName = input.value;
         newName = Scene.cleanName(newName);
         if (Scene.isNameValid(newName)) {
@@ -571,7 +574,7 @@ class Scene {
                 modules[i].moduleView.fInputNode.style.left = "-16px";
                 modules[i].moduleView.fInputNode.style.marginTop = "-18px";
             }
-            if (modules[i].moduleView.fOutputNode){
+            if (modules[i].moduleView.fOutputNode) {
                 modules[i].moduleView.fOutputNode.style.border = "none";
                 modules[i].moduleView.fOutputNode.style.right = "-16px";
                 modules[i].moduleView.fOutputNode.style.marginTop = "-18px";

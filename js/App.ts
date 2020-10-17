@@ -1,6 +1,5 @@
 ﻿/*     APP.JS
 
-
 Class App
 
 Create the scenes
@@ -130,31 +129,31 @@ class App {
         module.moduleFaust.setSource(this.tempModuleSourceCode);
 
         module.createDSP(factory, () => {
-        	module.setFaustInterfaceControles();
-        	module.createFaustInterface();
-        	module.addInputOutputNodes();
+            module.setFaustInterfaceControles();
+            module.createFaustInterface();
+            module.addInputOutputNodes();
 
-       	 	//set listener to recompile when dropping faust code on the module
-       	 	if (this.tempModuleName != "input" && this.tempModuleName != "output") {
-           		module.moduleView.fModuleContainer.ondrop = (e) => {
-               		e.stopPropagation();
-                	this.styleOnDragEnd()
-                	this.uploadOn(this, module, 0, 0, e)
-            	};
-        	}
-        	module.moduleView.fModuleContainer.ondragover = () => {
-            	module.moduleView.fModuleContainer.style.opacity = "1";
-            	module.moduleView.fModuleContainer.style.boxShadow = "0 0 40px rgb(255, 0, 0)";
-        	}
-        	module.moduleView.fModuleContainer.ondragleave = () => {
-           		module.moduleView.fModuleContainer.style.opacity = "0.5";
-            	module.moduleView.fModuleContainer.style.boxShadow = "0 5px 10px rgba(0, 0, 0, 0.4)";
-        	}
-        	// the current scene add the module and hide the loading page
-        	Utilitary.currentScene.addModule(module);
-        	if (!Utilitary.currentScene.isInitLoading) {
-            	Utilitary.hideFullPageLoading()
-        	}
+            //set listener to recompile when dropping faust code on the module
+            if (this.tempModuleName != "input" && this.tempModuleName != "output") {
+                module.moduleView.fModuleContainer.ondrop = (e) => {
+                    e.stopPropagation();
+                    this.styleOnDragEnd()
+                    this.uploadOn(this, module, 0, 0, e)
+                };
+            }
+            module.moduleView.fModuleContainer.ondragover = () => {
+                module.moduleView.fModuleContainer.style.opacity = "1";
+                module.moduleView.fModuleContainer.style.boxShadow = "0 0 40px rgb(255, 0, 0)";
+            }
+            module.moduleView.fModuleContainer.ondragleave = () => {
+                module.moduleView.fModuleContainer.style.opacity = "0.5";
+                module.moduleView.fModuleContainer.style.boxShadow = "0 5px 10px rgba(0, 0, 0, 0.4)";
+            }
+            // the current scene add the module and hide the loading page
+            Utilitary.currentScene.addModule(module);
+            if (!Utilitary.currentScene.isInitLoading) {
+                Utilitary.hideFullPageLoading()
+            }
         });
     }
 
@@ -172,7 +171,7 @@ class App {
 
         //All drog and drop events
         window.ondragover = function () { return false; };
-        window.ondragend  = function () { return false; };
+        window.ondragend = function () { return false; };
         document.ondragstart = () => { this.styleOnDragStart() };
         document.ondragenter = (e) => {
             var srcElement = <HTMLElement>e.srcElement
@@ -217,17 +216,17 @@ class App {
         e.preventDefault();
 
         if (e.dataTransfer.files.length > 0) {
-			// we are dropping a file
-			for (var i = 0; i < e.dataTransfer.files.length; i = i + 1) {
-				var f = e.dataTransfer.files[i];
-				console.log("FILES DROP : "+ i + " : " + f.name);
-                this.loadFile(f, module, x+10*i, y+10*i);
-			}
+            // we are dropping a file
+            for (var i = 0; i < e.dataTransfer.files.length; i = i + 1) {
+                var f = e.dataTransfer.files[i];
+                console.log("FILES DROP : " + i + " : " + f.name);
+                this.loadFile(f, module, x + 10 * i, y + 10 * i);
+            }
 
-		} else if (e.dataTransfer.getData('URL') && e.dataTransfer.getData('URL').split(':').shift() != "file") {
+        } else if (e.dataTransfer.getData('URL') && e.dataTransfer.getData('URL').split(':').shift() != "file") {
             // CASE 1 : the dropped object is a url to some faust code
             var url = e.dataTransfer.getData('URL');
-            console.log("URL DROP : "+ url);
+            console.log("URL DROP : " + url);
             this.uploadUrl(app, module, x, y, url);
 
         } else if (e.dataTransfer.getData('URL').split(':').shift() != "file") {
@@ -235,7 +234,7 @@ class App {
             console.log("Text DROP : " + dsp_code);
             // CASE 2 : the dropped object is some faust code
             if (dsp_code) {
-                 console.log("DROP: CASE 2 ");
+                console.log("DROP: CASE 2 ");
                 this.uploadCodeFaust(app, module, x, y, e, dsp_code);
             } else {
                 // CASE 3 : the dropped object is a file containing some faust code or jfaust/json
@@ -259,22 +258,22 @@ class App {
     uploadUrl(app: App, module: ModuleClass, x: number, y: number, url: string) {
         var filename: string = url.toString().split('/').pop();
         filename = filename.toString().split('.').shift();
-        Utilitary.getXHR(url, (codeFaust)=>{
+        Utilitary.getXHR(url, (codeFaust) => {
             var dsp_code: string = "process = vgroup(\"" + filename + "\",environment{" + codeFaust + "}.process);";
 
             if (module == null) {
-                app.compileFaust({ name:filename, sourceCode:dsp_code, x:x, y:y, callback:(factory) => { app.createModule(factory) }});
+                app.compileFaust({ name: filename, sourceCode: dsp_code, x: x, y: y, callback: (factory) => { app.createModule(factory) } });
             } else {
-                 module.update(filename, dsp_code);
+                module.update(filename, dsp_code);
             }
         }, Utilitary.errorCallBack)
     }
 
     // used for dsp code faust
-    uploadCodeFaust(app: App, module: ModuleClass, x: number, y: number, e: DragEvent, dsp_code:string) {
+    uploadCodeFaust(app: App, module: ModuleClass, x: number, y: number, e: DragEvent, dsp_code: string) {
         dsp_code = "process = vgroup(\"" + "TEXT" + "\",environment{" + dsp_code + "}.process);";
         if (!module) {
-            app.compileFaust({ name: "TEXT", sourceCode: dsp_code, x: x, y: y, callback: (factory) => { app.createModule(factory) }});
+            app.compileFaust({ name: "TEXT", sourceCode: dsp_code, x: x, y: y, callback: (factory) => { app.createModule(factory) } });
         } else {
             module.update("TEXT", dsp_code);
         }
@@ -298,18 +297,18 @@ class App {
         if (ext == "dsp") {
             type = "dsp";
             reader.readAsText(file);
-        } else if (ext == "json"||ext=="jfaust") {
+        } else if (ext == "json" || ext == "jfaust") {
             type = "json";
             reader.readAsText(file);
         } else {
             throw new Error(Utilitary.messageRessource.errorObjectNotFaustCompatible);
         }
 
-        reader.onloadend =(e)=>{
+        reader.onloadend = (e) => {
             dsp_code = "process = vgroup(\"" + filename + "\",environment{" + reader.result + "}.process);";
 
             if (!module && type == "dsp") {
-                this.compileFaust({ name:filename, sourceCode:dsp_code, x:x, y:y, callback:(factory) => { this.createModule(factory) }});
+                this.compileFaust({ name: filename, sourceCode: dsp_code, x: x, y: y, callback: (factory) => { this.createModule(factory) } });
             } else if (type == "dsp") {
                 module.update(filename, dsp_code);
             } else if (type == "json") {
@@ -342,7 +341,7 @@ class App {
         Utilitary.currentScene.getSceneContainer().style.boxShadow = "0 0 200px #00f inset";
         var modules: ModuleClass[] = Utilitary.currentScene.getModules();
         for (var i = 0; i < modules.length; i++) {
-            modules[i].moduleView.fModuleContainer.style.opacity="0.5"
+            modules[i].moduleView.fModuleContainer.style.opacity = "0.5"
         }
     }
     styleOnDragEnd() {
@@ -354,7 +353,7 @@ class App {
         var modules: ModuleClass[] = Utilitary.currentScene.getModules();
         for (var i = 0; i < modules.length; i++) {
             modules[i].moduleView.fModuleContainer.style.opacity = "1";
-            modules[i].moduleView.fModuleContainer.style.boxShadow ="0 5px 10px rgba(0, 0, 0, 0.4)"
+            modules[i].moduleView.fModuleContainer.style.boxShadow = "0 5px 10px rgba(0, 0, 0, 0.4)"
         }
     }
 
@@ -381,5 +380,5 @@ class App {
         }
     }
 
-    errorCallBack(message: string) {}
+    errorCallBack(message: string) { }
 }

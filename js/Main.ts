@@ -1,5 +1,5 @@
 /*				MAIN.JS
-	Entry point of the Program
+    Entry point of the Program
     intefaces used through the app
 */
 
@@ -11,7 +11,7 @@
 //initialization af the app, create app and ressource to get text with correct localization
 //then resumeInit on callback when text is loaded
 function init(): void {
-    console.log("FaustPlayground: version 1.0.0");
+    console.log("FaustPlayground: version 1.0.1 (10/17/20)");
     var app: App = new App();
     var ressource = new Ressources
     ressource.getRessources(app);
@@ -57,10 +57,10 @@ function resumeInit(app: App) {
 //event listener to activate web audio on IOS devices, touchstart for iOS 8
 //touchend for iOS 9
 
-window.addEventListener('touchend', IosInit , false);
+window.addEventListener('touchend', IosInit, false);
 window.addEventListener('touchstart', IosInit2, false);
 
-function IosInit(){
+function IosInit() {
     var buffer = Utilitary.audioContext.createBuffer(1, 1, 22050);
     var source = Utilitary.audioContext.createBufferSource();
     source.buffer = buffer;
@@ -72,7 +72,7 @@ function IosInit(){
     if (source.noteOn) {
         source.noteOn(0);
     } else if (source.start) {
-    	source.start();
+        source.start();
     }
     window.removeEventListener('touchend', IosInit, false)
 }
@@ -89,7 +89,7 @@ function IosInit2() {
     if (source.noteOn) {
         source.noteOn(0);
     } else if (source.start) {
-    	source.start();
+        source.start();
     }
     window.removeEventListener('touchstart', IosInit2, false)
 }

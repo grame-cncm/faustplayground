@@ -17,9 +17,7 @@ class Utilitary {
     static accHandler: AccelerometerHandler;
     static driveApi: DriveAPI;
 
-    static errorCallBack(message: string) {
-
-    }
+    static errorCallBack(message: string) { }
     static showFullPageLoading() {
         document.getElementById("loadingPage").style.visibility = "visible";
         //too demanding for mobile firefox...

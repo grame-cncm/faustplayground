@@ -15,7 +15,7 @@ class Message {
     //if one click, it stays, if double click it's removed (also the close button works)
     //fadeOutType can be eather null or "messageTransitionOutFast", to have new animation create new rules css
 
-    constructor(message: string, fadeOutType?: string, duration?:number, delay?: number) {
+    constructor(message: string, fadeOutType?: string, duration?: number, delay?: number) {
         this.messageView = new MessageView();
         this.messageViewContainer = this.messageView.init();
         this.messageView.message.textContent = message;
@@ -90,15 +90,15 @@ class Message {
             clearTimeout(this.timeoutRemove)
         }
 
-        this.displayMessage() 
+        this.displayMessage()
     }
 }
 class MessageView {
     closeButton: HTMLElement
     message: HTMLElement
 
-    constructor() {}
-    
+    constructor() { }
+
     init(): HTMLDivElement {
 
         var messageContainer = document.createElement("div");
@@ -121,7 +121,7 @@ class MessageView {
 
 // take message text and callback as parmater
 //if validate, the callback is used, other with the confirm is removed
-class Confirm{
+class Confirm {
     confirmView: ConfirmView
     confirmViewContainer: HTMLElement;
     constructor(message: string, callback: (confirmCallback) => void) {
@@ -155,8 +155,8 @@ class ConfirmView {
     validButton: HTMLButtonElement;
     cancelButton: HTMLButtonElement;
 
-    constructor() {}
-    
+    constructor() { }
+
     init(): HTMLDivElement {
 
         var messageContainer = document.createElement("div");

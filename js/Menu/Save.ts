@@ -1,9 +1,8 @@
-﻿   /// <reference path="../Lib/fileSaver.min.d.ts"/>
-    /// <reference path="../Messages.ts"/>
-    /// <reference path="../Utilitary.ts"/>
-    /// <reference path="../DriveAPI.ts"/>
-    /// <reference path="SaveView.ts"/>
-
+﻿/// <reference path="../Lib/fileSaver.min.d.ts"/>
+/// <reference path="../Messages.ts"/>
+/// <reference path="../Utilitary.ts"/>
+/// <reference path="../DriveAPI.ts"/>
+/// <reference path="SaveView.ts"/>
 
 class Save {
     saveView: SaveView;
@@ -20,7 +19,7 @@ class Save {
         this.saveView.buttonChangeAccount.addEventListener("click", () => { this.logOut() });
         this.saveView.buttonSaveCloud.addEventListener("click", () => { this.saveCloud() });
         this.saveView.buttonCloudSuppr.addEventListener("click", () => { this.supprCloud() });
-        document.addEventListener("successave", () => { new Message(Utilitary.messageRessource.sucessSave,"messageTransitionOutFast",2000,500) })
+        document.addEventListener("successave", () => { new Message(Utilitary.messageRessource.sucessSave, "messageTransitionOutFast", 2000, 500) })
     }
 
     //create a file jfaust and save it to the device
@@ -37,24 +36,24 @@ class Save {
     }
 
     //set [key, value] in local storage item_key key
-    setStorageItemValue(item_key, key, value)  {
-      var item_value;
-      if (localStorage.getItem(item_key)) {
-        item_value = JSON.parse(localStorage.getItem(item_key));
-      } else {
-        item_value = [];
-      }
+    setStorageItemValue(item_key, key, value) {
+        var item_value;
+        if (localStorage.getItem(item_key)) {
+            item_value = JSON.parse(localStorage.getItem(item_key));
+        } else {
+            item_value = [];
+        }
 
-      // Possibly update an existing 'key'
-      var item_index = item_value.findIndex((obj => obj[0] === key));
-      if (item_index >= 0) {
-        item_value[item_index][1] = value;
-        // Otherwise push a new [key, value]
-      } else {
-        item_value.push([key, value]);
-      }
+        // Possibly update an existing 'key'
+        var item_index = item_value.findIndex((obj => obj[0] === key));
+        if (item_index >= 0) {
+            item_value[item_index][1] = value;
+            // Otherwise push a new [key, value]
+        } else {
+            item_value.push([key, value]);
+        }
 
-      localStorage.setItem(item_key, JSON.stringify(item_value));
+        localStorage.setItem(item_key, JSON.stringify(item_value));
     }
 
     //save scene in local storage
@@ -65,12 +64,12 @@ class Save {
                 var name = this.saveView.inputLocalStorage.value;
                 var jsonScene = this.sceneCurrent.saveScene(true)
                 if (this.isFileExisting(name)) {
-                    new Confirm(Utilitary.messageRessource.confirmReplace, (callback) => { this.replaceSaveLocal(name,jsonScene, callback) });
+                    new Confirm(Utilitary.messageRessource.confirmReplace, (callback) => { this.replaceSaveLocal(name, jsonScene, callback) });
                     return;
-                }else {
+                } else {
                     this.setStorageItemValue('FaustPlayground', name, jsonScene);
                 }
-                new Message(Utilitary.messageRessource.sucessSave,"messageTransitionOutFast",2000,500)
+                new Message(Utilitary.messageRessource.sucessSave, "messageTransitionOutFast", 2000, 500)
                 var event: CustomEvent = new CustomEvent("updatelist")
                 document.dispatchEvent(event);
 
@@ -81,7 +80,7 @@ class Save {
     }
 
     //replace an existing scene in local Storage
-    replaceSaveLocal(name:string,jsonScene: string, confirmCallBack: () => void) {
+    replaceSaveLocal(name: string, jsonScene: string, confirmCallBack: () => void) {
         this.setStorageItemValue('FaustPlayground', name, jsonScene);
         new Message(Utilitary.messageRessource.sucessSave, "messageTransitionOutFast", 2000, 500)
         var event: CustomEvent = new CustomEvent("updatelist")
@@ -121,7 +120,7 @@ class Save {
     }
 
     //get value of select option by its text content, used here to get id of drive file
-    getValueByTextContent(select: HTMLSelectElement, name: string):string {
+    getValueByTextContent(select: HTMLSelectElement, name: string): string {
         for (var i = 0; i < select.options.length; i++) {
             if (select.options[i].textContent == name) {
                 var option = <HTMLOptionElement>select.options[i];
@@ -162,20 +161,20 @@ class Save {
             var name = this.saveView.inputCloudStorage.value;
             if (this.isFileCloudExisting(name)) {
 
-                new Confirm(Utilitary.messageRessource.confirmReplace, (confirmCallback) => { this.replaceCloud(name,confirmCallback) })
+                new Confirm(Utilitary.messageRessource.confirmReplace, (confirmCallback) => { this.replaceCloud(name, confirmCallback) })
                 return;
 
             } else {
                 var jsonScene = this.sceneCurrent.saveScene(true)
                 var blob = new Blob([jsonScene], { type: "application/json;charset=utf-8;" });
                 this.drive.tempBlob = blob;
-                this.drive.createFile(Utilitary.currentScene.sceneName,null);
+                this.drive.createFile(Utilitary.currentScene.sceneName, null);
             }
         }
     }
 
     //update/replace a scene on the cloud
-    replaceCloud(name: string,confirmCallback:()=>void) {
+    replaceCloud(name: string, confirmCallback: () => void) {
         var jsonScene = this.sceneCurrent.saveScene(true)
         var blob = new Blob([jsonScene], { type: "application/json;charset=utf-8;" });
         this.drive.tempBlob = blob;

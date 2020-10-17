@@ -2,7 +2,7 @@
 /// <reference path="../Utilitary.ts"/>
 /// <reference path="../Lib/perfectScrollBar/js/perfect-ScrollBar.min.d.ts"/>
 
-class LibraryView  {
+class LibraryView {
     intrumentLibrarySelect: HTMLUListElement
     effetLibrarySelect: HTMLUListElement
     exempleLibrarySelect: HTMLUListElement
@@ -16,7 +16,7 @@ class LibraryView  {
         libraryContent.id = "libraryContent";
         libraryContent.className = "menuContent";
 
-/////////////////Instruments
+        /////////////////Instruments
 
         var instrumentLibraryContent: HTMLElement = document.createElement("div");
         instrumentLibraryContent.id = "instrumentLibraryContent";
@@ -37,7 +37,7 @@ class LibraryView  {
         instrumentLibraryContent.appendChild(instrumentLibraryTitle);
         instrumentLibraryContent.appendChild(intrumentLibrarySelect);
 
-///////////////Effects
+        ///////////////Effects
 
         var effetLibraryContent: HTMLElement = document.createElement("div");
         effetLibraryContent.id = "effetLibraryContent";
@@ -52,13 +52,13 @@ class LibraryView  {
         var effetLibrarySelect: HTMLUListElement = document.createElement("ul");
         effetLibrarySelect.id = "effetLibrarySelect";
         effetLibrarySelect.className = "librarySelects";
-        Ps.initialize(effetLibrarySelect, { suppressScrollX: true, theme: 'my-theme-name'})
+        Ps.initialize(effetLibrarySelect, { suppressScrollX: true, theme: 'my-theme-name' })
         this.effetLibrarySelect = effetLibrarySelect;
 
         effetLibraryContent.appendChild(effetLibraryTitle);
         effetLibraryContent.appendChild(effetLibrarySelect);
 
-/////////////Exemple
+        /////////////Exemple
 
         var exempleLibraryContent: HTMLElement = document.createElement("div");
         exempleLibraryContent.id = "exempleLibraryContent";

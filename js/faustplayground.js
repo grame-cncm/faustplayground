@@ -402,8 +402,7 @@ class DriveAPI {
 /// <reference path="DriveAPI.ts"/>
 /// <reference path="Main.ts"/>
 class Utilitary {
-    static errorCallBack(message) {
-    }
+    static errorCallBack(message) { }
     static showFullPageLoading() {
         document.getElementById("loadingPage").style.visibility = "visible";
         //too demanding for mobile firefox...
@@ -1692,9 +1691,9 @@ class ModuleView {
         return false;
     }
 }
-/*				MODULECLASS.JS
+/*
+    MODULECLASS.JS
     HAND-MADE JAVASCRIPT CLASS CONTAINING A FAUST MODULE AND ITS INTERFACE
-
 */
 /// <reference path="../Dragging.ts"/>
 /// <reference path="../CodeFaustParser.ts"/>
@@ -2657,7 +2656,6 @@ class ExportView {
 }
 /*				EXPORT.JS
     Handles Graphical elements for the Export Feature of the normal Playground
-
 */
 /// <reference path="../ExportLib.ts"/>
 /// <reference path="../EquivalentFaust.ts"/>
@@ -2931,7 +2929,7 @@ class Scene {
     /*********************** MUTE/UNMUTE SCENE ***************************/
     muteScene() {
         var out = document.getElementById("audioOutput");
-        if (out != null) {
+        if (out !== null) {
             let context = out.audioNode.context;
             if (context != undefined) { //because of Edge not supporting audioContext.suspend() yet
                 context.suspend();
@@ -2947,9 +2945,10 @@ class Scene {
     delayedUnmuteScene() {
         console.log("timeout");
         var out = document.getElementById("audioOutput");
-        if (out != null) {
-            if (out.audioNode.context.resume != undefined) { //because of Edge not supporting audioContext.resume() yet
-                out.audioNode.context.resume();
+        if (out !== null) {
+            var context = out.audioNode.context; // To avoid: error TS2339: Property 'resume' does not exist on type 'BaseAudioContext'.
+            if (context.resume !== undefined) {
+                context.resume();
                 this.isMute = false;
                 this.getAudioOutput().moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-speaker.png)";
             }
@@ -3444,7 +3443,6 @@ class JsonSliderSave {
 class JsonFactorySave {
 }
 /// <reference path="Messages.ts"/>
-//class ErrorFaust
 class ErrorFaust {
     static errorCallBack(errorMessage) {
         new Message(errorMessage);
@@ -5416,7 +5414,6 @@ class MenuView {
 }
 /*     APP.JS
 
-
 Class App
 
 Create the scenes
@@ -5768,7 +5765,7 @@ class App {
 //initialization af the app, create app and ressource to get text with correct localization
 //then resumeInit on callback when text is loaded
 function init() {
-    console.log("FaustPlayground: version 1.0.0");
+    console.log("FaustPlayground: version 1.0.1 (10/17/20)");
     var app = new App();
     var ressource = new Ressources;
     ressource.getRessources(app);

@@ -1,16 +1,17 @@
 ﻿/*				PLAYGROUND.JS
-	Init Normal Scene with all its graphical elements
+    Init Normal Scene with all its graphical elements
 
-	This is the unique scene of the Normal Playground
+    This is the unique scene of the Normal Playground
 */
+
 /// <reference path="../Scenes/SceneClass.ts"/>
 /// <reference path="../Menu/Export.ts"/>
 
 class SceneView {
 
-/********************************************************************
-**************************  INITIALIZATION **************************
-********************************************************************/
+    /********************************************************************
+    **************************  INITIALIZATION **************************
+    ********************************************************************/
     //expor: Export = new Export()
     inputOutputModuleContainer: HTMLDivElement;
     sceneSensor: HTMLDivElement;

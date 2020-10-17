@@ -1,5 +1,5 @@
-﻿    /// <reference path="../DriveAPI.ts"/>
-    /// <reference path="LoadView.ts"/>
+﻿/// <reference path="../DriveAPI.ts"/>
+/// <reference path="LoadView.ts"/>
 
 class Load {
     loadView: LoadView;
@@ -18,7 +18,7 @@ class Load {
         this.loadView.aBigPreExemple.addEventListener("click", (e) => { this.getEx(e) })
         this.loadView.aLightPreExemple.addEventListener("click", (e) => { this.getEx(e) })
 
-        this.loadView.buttonChangeAccount.addEventListener("click", (e) => { this.logOut()})
+        this.loadView.buttonChangeAccount.addEventListener("click", (e) => { this.logOut() })
     }
 
     //open file from browser dialogue open window
@@ -31,14 +31,14 @@ class Load {
     }
 
     //set item from local storage 'item_key' key
-    getStorageItemValue(item_key, key)  {
-      if (localStorage.getItem(item_key)) {
-        var item_value = JSON.parse(localStorage.getItem(item_key));
-        var item_index = item_value.findIndex((obj => obj[0] === key));
-        return (item_index >= 0) ? item_value[item_index][1]: null;
-      } else {
-        return null;
-      }
+    getStorageItemValue(item_key, key) {
+        if (localStorage.getItem(item_key)) {
+            var item_value = JSON.parse(localStorage.getItem(item_key));
+            var item_index = item_value.findIndex((obj => obj[0] === key));
+            return (item_index >= 0) ? item_value[item_index][1] : null;
+        } else {
+            return null;
+        }
     }
 
     //load scene from local storage
@@ -65,18 +65,17 @@ class Load {
     //load file scene from cloud Drive API
     //get id file from Drive API then is able to get content
     cloudLoad() {
-
         if (this.loadView.cloudSelectFile.selectedIndex > -1) {
             Utilitary.showFullPageLoading();
             var option = <HTMLOptionElement>this.loadView.cloudSelectFile.options[this.loadView.cloudSelectFile.selectedIndex]
             var id = option.value
-            var file = this.drive.getFile(id, (resp) => {this.getContent(resp) });
+            var file = this.drive.getFile(id, (resp) => { this.getContent(resp) });
             console.log(file);
         }
     }
     // get content from file loaded from cloud
     getContent(resp: DriveFile) {
-        this.drive.downloadFile(resp, (json) => { this.sceneCurrent.recallScene(json)})
+        this.drive.downloadFile(resp, (json) => { this.sceneCurrent.recallScene(json) })
     }
 
     //logOut from google account

@@ -1,16 +1,16 @@
 ﻿
 /*				MODULEVIEW.JS
-	HAND-MADE JAVASCRIPT CLASS CONTAINING A FAUST MODULE  INTERFACE
+    HAND-MADE JAVASCRIPT CLASS CONTAINING A FAUST MODULE  INTERFACE
 
-	Interface structure
-	===================
-	DIV --> this.fModuleContainer
+    Interface structure
+    ===================
+    DIV --> this.fModuleContainer
     H6 --> fTitle
     DIV --> fInterfaceContainer
     DIV --> fCloseButton
     DIV --> fFooter
     IMG --> fEditImg
-	===================*/
+    ===================*/
 
 /// <reference path="../Utilitary.ts"/>
 
@@ -64,7 +64,7 @@ class ModuleView {
             var textArea: HTMLTextAreaElement = document.createElement("textarea");
             textArea.rows = 15;
             textArea.cols = 60;
-            textArea.className="textArea"
+            textArea.className = "textArea"
             textArea.value = "";
             textArea.style.display = "none";
             textArea.contentEditable = "true";
@@ -134,7 +134,7 @@ class ModuleView {
         this.fInputNode.appendChild(spanNode);
         this.fModuleContainer.appendChild(this.fInputNode);
     }
-    setOutputNode():void{
+    setOutputNode(): void {
         this.fOutputNode = document.createElement("div");
         this.fOutputNode.className = "node node-output";
         this.fOutputNode.draggable = false;

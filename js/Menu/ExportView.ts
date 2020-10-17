@@ -1,7 +1,6 @@
 ﻿//ExportView
 
-   /// <reference path="../Utilitary.ts"/>
-
+/// <reference path="../Utilitary.ts"/>
 
 class ExportView {
     exportButton: HTMLElement;
@@ -34,7 +33,7 @@ class ExportView {
         exportResultContainer.id = "exportResultContainer";
         exportResultContainer.className = "exportSubmenu";
 
-/////////////////////////////////  name App
+        /////////////////////////////////  name App
 
         var nameAppTitle: HTMLSpanElement = document.createElement("span");
         nameAppTitle.id = "nameAppTitle";
@@ -155,7 +154,7 @@ class ExportView {
         exportOptionContainer.appendChild(optionContainer);
         exportOptionContainer.appendChild(exportBottomButtonContainer);
 
-//////////////////////////// export Result
+        //////////////////////////// export Result
         var exportResultTitle: HTMLSpanElement = document.createElement("span");
         exportResultTitle.id = "exportResultTitle";
         exportResultTitle.textContent = Utilitary.messageRessource.titleDownlaodExport;

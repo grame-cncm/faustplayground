@@ -1,9 +1,9 @@
 /*				EQUIVALENTFAUST.JS
 
-	HELPER FUNCTIONS TO CREATE FAUST EQUIVALENT EXPRESSION FROM A PATCH
+    HELPER FUNCTIONS TO CREATE FAUST EQUIVALENT EXPRESSION FROM A PATCH
 
-	FIRST PART --> DERECURSIVIZE THE PATCH
-	SECOND PART --> CREATE THE FAUST EQUIVALENT FROM THE "DERECURSIVIZED" PATCH
+    FIRST PART --> DERECURSIVIZE THE PATCH
+    SECOND PART --> CREATE THE FAUST EQUIVALENT FROM THE "DERECURSIVIZED" PATCH
 */
 /// <reference path="Scenes/SceneClass.ts"/>
 /// <reference path="Modules/ModuleClass.ts"/>
@@ -36,7 +36,7 @@ class EquivalentFaust {
         return false;
     }
 
-    giveIdToModules(scene: Scene):void {
+    giveIdToModules(scene: Scene): void {
 
         var modules: ModuleClass[] = scene.getModules();
 
@@ -45,7 +45,7 @@ class EquivalentFaust {
         }
     }
 
-    treatRecursiveModule(moduleTree: ModuleTree):void {
+    treatRecursiveModule(moduleTree: ModuleTree): void {
 
         // 	Save recursion in map and flag it
         var ModuleToReplace = this.getFirstOccurenceOfModuleInCourse(moduleTree);
@@ -124,14 +124,14 @@ class EquivalentFaust {
     //*** Every Faust Expression is "Stereoized" before composition with other expressions to ensure composability
 
     // Computing a Module is computing its entries and merging them in the Module's own faust code.
-    computeModule(module: ModuleTree) : string {
+    computeModule(module: ModuleTree): string {
 
         var moduleInputs: ModuleTree[] = module.moduleInputs;
         var faustResult: string = "";
 
         // Iterate on input Modules to compute them
         if (moduleInputs && moduleInputs.length != 0) {
-            var inputCode:string = "";
+            var inputCode: string = "";
 
             for (var i = 0; i < moduleInputs.length; i++) {
                 if (moduleInputs[i]) {
@@ -165,13 +165,13 @@ class EquivalentFaust {
     }
 
     // Computing the trees unconnected to the output
-    connectUnconnectedModules(faustModuleList: ModuleClass[], output: ModuleClass):void {
+    connectUnconnectedModules(faustModuleList: ModuleClass[], output: ModuleClass): void {
 
         for (var i in faustModuleList) {
 
             var outputNode = faustModuleList[i].moduleView.getOutputNode();
 
-            if (faustModuleList[i].moduleFaust.fName!="input" && outputNode && (!faustModuleList[i].moduleFaust.getOutputConnections || !faustModuleList[i].moduleFaust.getOutputConnections() || faustModuleList[i].moduleFaust.getOutputConnections().length == 0)) {
+            if (faustModuleList[i].moduleFaust.fName != "input" && outputNode && (!faustModuleList[i].moduleFaust.getOutputConnections || !faustModuleList[i].moduleFaust.getOutputConnections() || faustModuleList[i].moduleFaust.getOutputConnections().length == 0)) {
                 var connector: Connector = new Connector();
                 connector.createConnection(faustModuleList[i], faustModuleList[i].moduleView.getOutputNode(), output, output.moduleView.getInputNode());
             }
@@ -181,7 +181,7 @@ class EquivalentFaust {
     //Calculate Faust Equivalent of the Scene
     getFaustEquivalent(scene: Scene, patchName: string): string {
 
-        var faustModuleList:ModuleClass[]= scene.getModules();
+        var faustModuleList: ModuleClass[] = scene.getModules();
 
         if (faustModuleList.length > 0) {
 

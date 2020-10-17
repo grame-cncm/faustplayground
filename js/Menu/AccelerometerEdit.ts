@@ -1,6 +1,6 @@
 ﻿//AccelerometerEdit
-   /// <reference path="../Accelerometer.ts"/>
-   /// <reference path="AccelerometerEditView.ts"/>
+/// <reference path="../Accelerometer.ts"/>
+/// <reference path="AccelerometerEditView.ts"/>
 
 class AccelerometerEdit {
     accelerometerEditView: AccelerometerEditView;
@@ -64,7 +64,7 @@ class AccelerometerEdit {
             Utilitary.isAccelerometerEditOn = false;
         } else {
             for (var i = 0; i < AccelerometerHandler.faustInterfaceControler.length; i++) {
-               var currentIFControler = AccelerometerHandler.faustInterfaceControler[i]
+                var currentIFControler = AccelerometerHandler.faustInterfaceControler[i]
                 if (currentIFControler.faustInterfaceView.group) {
                     currentIFControler.callbackEdit = this.editEvent.bind(this, currentIFControler);
                     currentIFControler.faustInterfaceView.group.addEventListener("click", currentIFControler.callbackEdit, true);
@@ -206,11 +206,11 @@ class AccelerometerEdit {
                 this.faustView.slider.classList.remove("allowed");
                 this.faustView.slider.disabled = true
 
-                } else {
+            } else {
                 this.faustView.slider.classList.remove("not-allowed");
                 this.faustView.slider.classList.add("allowed");
                 this.faustView.slider.disabled = false
-                }
+            }
         } else {
             this.faustView.group.classList.add("disabledAcc")
             this.faustView.slider.classList.remove("not-allowed");

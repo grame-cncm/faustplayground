@@ -1,12 +1,12 @@
-    /// <reference path="../Accelerometer.ts"/>
-    /// <reference path="../Utilitary.ts"/>
+/// <reference path="../Accelerometer.ts"/>
+/// <reference path="../Utilitary.ts"/>
 
 /*				FAUSTINTERFACE.JS
 
-	HELPER FUNCTIONS TO CREATE FAUST INTERFACES
+    HELPER FUNCTIONS TO CREATE FAUST INTERFACES
 
-	FIRST PART --> DECODE JSON ENCODED INTERFACE
-	SECOND PART --> ADD GRAPHICAL OBJECTS TO INTERFACE
+    FIRST PART --> DECODE JSON ENCODED INTERFACE
+    SECOND PART --> ADD GRAPHICAL OBJECTS TO INTERFACE
 */
 
 /********************************************************************
@@ -19,7 +19,7 @@ interface Iitems extends HTMLDivElement {
     meta: any[];
 }
 
-interface Iitem{
+interface Iitem {
     label: string;
     init: string;
     address: string;
@@ -72,7 +72,7 @@ class FaustInterfaceControler {
 
     interfaceCallback: (faustInterfaceControler: FaustInterfaceControler) => void;
     callbackEdit: () => void;
-    updateFaustCodeCallback: (details: ElementCodeFaustParser)=>void
+    updateFaustCodeCallback: (details: ElementCodeFaustParser) => void
     setDSPValueCallback: (address: string, value: string) => void;
 
     constructor(interfaceCallback: (faustInterfaceControler: FaustInterfaceControler) => void, setDSPValueCallback: (address: string, value: string) => void) {
@@ -108,7 +108,7 @@ class FaustInterfaceControler {
 
             var controler: FaustInterfaceControler = new FaustInterfaceControler(
                 () => { this.interfaceCallback(controler) },
-                (adress, value) => { this.setDSPValueCallback(adress,value) }
+                (adress, value) => { this.setDSPValueCallback(adress, value) }
             );
             controler.name = itemElement.label;
             controler.itemParam = itemElement;
@@ -162,7 +162,7 @@ class FaustInterfaceControler {
             isEnabled: this.isEnabled,
             acc: this.acc,
             address: this.itemParam.address,
-            init: parseFloat( this.itemParam.init),
+            init: parseFloat(this.itemParam.init),
             max: parseFloat(this.itemParam.max),
             min: parseFloat(this.itemParam.min),
             label: this.itemParam.label
@@ -227,7 +227,7 @@ class FaustInterfaceControler {
             for (var i = 0; i < meta.length; i++) {
                 if (meta[i].acc) {
                     this.acc = meta[i].acc;
-                    this.accParams.acc=this.acc
+                    this.accParams.acc = this.acc
                     this.accParams.isEnabled = true;
                     AccelerometerHandler.registerAcceleratedSlider(this.accParams, this)
                     this.accelerometerSlider.callbackValueChange = (address, value) => { this.callbackValueChange(address, value) }
@@ -244,7 +244,7 @@ class FaustInterfaceControler {
                     this.acc = meta[i].noacc;
                     this.accParams.acc = this.acc;
                     this.accParams.isEnabled = false;
-                    AccelerometerHandler.registerAcceleratedSlider(this.accParams,this)
+                    AccelerometerHandler.registerAcceleratedSlider(this.accParams, this)
                     this.accelerometerSlider.callbackValueChange = (address, value) => { this.callbackValueChange(address, value) }
                     this.accelerometerSlider.isEnabled = false;
                     this.faustInterfaceView.slider.parentElement.classList.add("disabledAcc")
@@ -321,15 +321,15 @@ class FaustInterfaceView {
 
         val.appendChild(document.createTextNode("" + myValue + " " + unit));
         val.setAttribute("units", unit);
-	      info.appendChild(val);
+        info.appendChild(val);
 
-	      group.appendChild(info);
+        group.appendChild(info);
 
         var high: number = (parseFloat(itemParam.max) - parseFloat(itemParam.min)) / parseFloat(itemParam.step);
 
         var slider: HTMLInputElement = document.createElement("input");
-	      slider.type="range";
-	      slider.min =  "0";
+        slider.type = "range";
+        slider.min = "0";
         slider.max = String(high);
         slider.value = String((parseFloat(itemParam.init) - parseFloat(itemParam.min)) / parseFloat(itemParam.step));
         slider.step = "1";
@@ -337,7 +337,7 @@ class FaustInterfaceView {
         group.appendChild(slider);
 
         this.group = group
-	      return group;
+        return group;
     }
 
     addFaustCheckBox(ivalue: string): HTMLInputElement {
@@ -359,7 +359,7 @@ class FaustInterfaceView {
         return checkbox;
     }
 
-    addFaustButton(itemParam: Iitem):HTMLElement {
+    addFaustButton(itemParam: Iitem): HTMLElement {
 
         var group = document.createElement("div");
 
@@ -370,6 +370,6 @@ class FaustInterfaceView {
 
         group.appendChild(button);
 
-	      return button;
+        return button;
     }
 }

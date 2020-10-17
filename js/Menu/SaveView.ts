@@ -1,4 +1,4 @@
-﻿    /// <reference path="../Utilitary.ts"/>
+﻿/// <reference path="../Utilitary.ts"/>
 
 class SaveView {
 

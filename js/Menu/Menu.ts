@@ -1,25 +1,25 @@
 ﻿//Menu.ts  Menu class which handles the menu behaviours and contains the MenuView
 
-	/// <reference path="Library.ts"/>
-	/// <reference path="LibraryView.ts"/>
-	/// <reference path="Export.ts"/>
-	/// <reference path="ExportView.ts"/>
-	/// <reference path="Help.ts"/>
-    /// <reference path="HelpView.ts"/>
-    /// <reference path="Load.ts"/>
-    /// <reference path="Save.ts"/>
-    /// <reference path="AccelerometerEdit.ts"/>
-    /// <reference path="../DriveAPI.ts"/>
-    /// <reference path="../Messages.ts"/>
+/// <reference path="Library.ts"/>
+/// <reference path="LibraryView.ts"/>
+/// <reference path="Export.ts"/>
+/// <reference path="ExportView.ts"/>
+/// <reference path="Help.ts"/>
+/// <reference path="HelpView.ts"/>
+/// <reference path="Load.ts"/>
+/// <reference path="Save.ts"/>
+/// <reference path="AccelerometerEdit.ts"/>
+/// <reference path="../DriveAPI.ts"/>
+/// <reference path="../Messages.ts"/>
 
 interface Document {
     cancelFullScreen: () => any;
     webkitCancelFullScreen: () => any;
-    mozCancelFullScreen: () => any; 
+    mozCancelFullScreen: () => any;
 }
 
 interface HTMLElement {
-	requestFullscreen: () => any;
+    requestFullscreen: () => any;
     mozRequestFullScreen: () => any;
     webkitRequestFullscreen: () => any;
 }
@@ -426,21 +426,21 @@ class Menu {
     }
 
     //get value of 'item_key'
-    getStorageItem(item_key)  {
-      return (localStorage.getItem(item_key)) ? JSON.parse(localStorage.getItem(item_key)): null;
+    getStorageItem(item_key) {
+        return (localStorage.getItem(item_key)) ? JSON.parse(localStorage.getItem(item_key)) : null;
     }
 
     //fill select box
     fillSelectLocal(select: HTMLSelectElement) {
-      var fpg = this.getStorageItem('FaustPlayground');
-      if (fpg) {
-        for (var i = 0; i < fpg.length; i++) {
-            var option = document.createElement("option");
-            option.value = fpg[i][0];
-            option.textContent = fpg[i][0];
-            select.add(option);
+        var fpg = this.getStorageItem('FaustPlayground');
+        if (fpg) {
+            for (var i = 0; i < fpg.length; i++) {
+                var option = document.createElement("option");
+                option.value = fpg[i][0];
+                option.textContent = fpg[i][0];
+                select.add(option);
+            }
         }
-      }
     }
     //dispatch the current scene to the menus objects
     setMenuScene(scene: Scene) {
@@ -448,7 +448,7 @@ class Menu {
         this.save.sceneCurrent = scene;
         this.load.sceneCurrent = scene;
     }
-     //dispatch the drive API to the menus objects
+    //dispatch the drive API to the menus objects
     setDriveApi(drive: DriveAPI) {
         this.drive = drive;
         this.save.drive = drive;
@@ -508,14 +508,14 @@ class Menu {
 
         }
     }
-    
+
     finishLoadingDrive() {
         if (this.isMenuDriveLoading) {
             this.isMenuDriveLoading = false;
             this.save.saveView.driveContainer.style.display = "block";
             this.load.loadView.driveContainer.style.display = "block";
-           Utilitary.removeLoadingLogo("loadCloudContainer");
-           Utilitary.removeLoadingLogo("cloudSaveContainer");
+            Utilitary.removeLoadingLogo("loadCloudContainer");
+            Utilitary.removeLoadingLogo("cloudSaveContainer");
 
         }
     }

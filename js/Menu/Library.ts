@@ -1,26 +1,26 @@
 ﻿/*				LIBRARY.JS
-	Creates Graphical Library of Faust Modules
-	Connects with faust.grame.fr to receive the json description of available modules
+    Creates Graphical Library of Faust Modules
+    Connects with faust.grame.fr to receive the json description of available modules
 
-	Interface structure
-	===================
-	DIV --> PARENT
-		DIV --> libraryDiv
-			DIV --> libraryTitle
-			DIV --> imageNode
-			DIV --> fFooter
-			UL --> section 1
-				LI --> subsection 1
-				LI --> subsection 2
-				etc
-			UL --> section 2
-				LI --> subsection 1
-				LI --> subsection 2
-				etc
-	===================
+    Interface structure
+    ===================
+    DIV --> PARENT
+        DIV --> libraryDiv
+            DIV --> libraryTitle
+            DIV --> imageNode
+            DIV --> fFooter
+            UL --> section 1
+                LI --> subsection 1
+                LI --> subsection 2
+                etc
+            UL --> section 2
+                LI --> subsection 1
+                LI --> subsection 2
+                etc
+    ===================
 
-	DEPENDENCIES :
-		- faust.grame.fr/www/pedagogie/index.json
+    DEPENDENCIES :
+        - faust.grame.fr/www/pedagogie/index.json
 */
 
 //--- Init graphical elements of library
@@ -45,7 +45,7 @@ interface jsonObjectLibrary {
     exemples: string[];
 }
 
-class Library{
+class Library {
     libraryView: LibraryView;
     isLibraryTouch: boolean;
     previousTouchUrl: string;
@@ -86,8 +86,8 @@ class Library{
             a.title = Utilitary.messageRessource.hoverLibraryElement;
             a.addEventListener("click", (e) => { e.preventDefault() });
 
-            var dblckickHandler = this.dispatchEventLibrary.bind(this,a.href)
-            a.ondblclick =  dblckickHandler;
+            var dblckickHandler = this.dispatchEventLibrary.bind(this, a.href)
+            a.ondblclick = dblckickHandler;
             a.ontouchstart = (e) => { this.dbleTouchMenu(e) }
 
             a.text = this.cleanNameElement(options[i], stringStructureRemoved);
@@ -101,7 +101,7 @@ class Library{
         if (!this.isLibraryTouch) {
             this.isLibraryTouch = true;
             this.previousTouchUrl = anchor.href;
-            window.setTimeout(()=>{ this.isLibraryTouch = false;this.previousTouchUrl = "" },300)
+            window.setTimeout(() => { this.isLibraryTouch = false; this.previousTouchUrl = "" }, 300)
         } else if (anchor.href == this.previousTouchUrl) {
             Utilitary.showFullPageLoading();
             this.dispatchEventLibrary(anchor.href);

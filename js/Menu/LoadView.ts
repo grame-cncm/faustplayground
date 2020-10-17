@@ -1,4 +1,4 @@
-﻿   /// <reference path="../Utilitary.ts"/>
+﻿/// <reference path="../Utilitary.ts"/>
 
 class LoadView {
 
@@ -16,7 +16,7 @@ class LoadView {
     cloudSelectFile: HTMLSelectElement;
     driveContainer: HTMLElement;
 
-    initLoadView():HTMLElement {
+    initLoadView(): HTMLElement {
         var loadContainer: HTMLElement = document.createElement("div");
         loadContainer.id = "loadContainer";
         loadContainer.className = "menuContent";
@@ -91,7 +91,7 @@ class LoadView {
 
         loadFileContainer.appendChild(aLightExemple);
         loadFileContainer.appendChild(aLightPreExemple);
-	    loadFileContainer.appendChild(aBigExemple);
+        loadFileContainer.appendChild(aBigExemple);
         loadFileContainer.appendChild(aBigPreExemple);
 
         loadFileBottomButtonContainer.appendChild(loadFileButton)
@@ -137,7 +137,7 @@ class LoadView {
         var selectDrive = document.createElement("select");
         selectDrive.size = 6;
         selectDrive.id = "loadSceneSelectDrive";
-        selectDrive.className ="sceneSelect "
+        selectDrive.className = "sceneSelect "
         selectDrive.style.display = "none";
         this.cloudSelectFile = selectDrive;
 
@@ -172,5 +172,5 @@ class LoadView {
         loadContainer.appendChild(loadCloudContainer);
 
         return loadContainer;
-	  }
+    }
 }

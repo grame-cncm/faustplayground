@@ -1,5 +1,4 @@
-﻿    /// <reference path="../Connect.ts"/>
-
+﻿/// <reference path="../Connect.ts"/>
 
 /*MODULEFAUST.JS
 HAND - MADE JAVASCRIPT CLASS CONTAINING A FAUST MODULE */
@@ -13,8 +12,8 @@ class ModuleFaust {
     fTempName: string;
     fOutputConnections: Connector[] = [];
     fInputConnections: Connector[] = [];
-    recallOutputsDestination: string[]=[];
-    recallInputsSource: string[]=[];
+    recallOutputsDestination: string[] = [];
+    recallInputsSource: string[] = [];
     constructor(name: string) {
         this.fName = name;
     }

@@ -31,7 +31,7 @@ class DriveAPI {
      * Check if current user has authorized this application.
     * disable to deactivate pop up window when not connected
      */
-    checkAuth() {}
+    checkAuth() { }
 
     updateConnection() {
         gapi.auth.authorize(
@@ -47,7 +47,7 @@ class DriveAPI {
      *
      * @param {Object} authResult Authorization result.
      */
-    handleAuthResult(authResult,auto?) {
+    handleAuthResult(authResult, auto?) {
         if (authResult && !authResult.error) {
             // Hide auth UI, then load client library.
             let event = new CustomEvent("authon");
@@ -60,9 +60,9 @@ class DriveAPI {
             document.dispatchEvent(event);
         }
         if (authResult.error) {
-           	let event  = new CustomEvent("clouderror", { 'detail': authResult.error });
+            let event = new CustomEvent("clouderror", { 'detail': authResult.error });
             document.dispatchEvent(event);
-         }
+        }
     }
 
     /**
@@ -105,7 +105,7 @@ class DriveAPI {
                 for (var i = 0; i < files.length; i++) {
                     var file = files[i];
                     if (file.fileExtension == "jfaust") {
-                        this.appendPre(file.title,file.id);
+                        this.appendPre(file.title, file.id);
 
                     }
                 }
@@ -131,10 +131,10 @@ class DriveAPI {
      *
      * @param {string} message Text to be placed in pre element.
      */
-    appendPre(name:string,id:string) {
+    appendPre(name: string, id: string) {
         var option = document.createElement("option");
         option.value = id;
-        option.textContent = name.replace(/.jfaust$/,'');
+        option.textContent = name.replace(/.jfaust$/, '');
 
         var event = new CustomEvent("fillselect", { 'detail': option })
         document.dispatchEvent(event);
@@ -167,7 +167,7 @@ class DriveAPI {
  *
  * @param {String} fileId ID of the file to print metadata for.
  */
-    getFile(fileId,callback):any {
+    getFile(fileId, callback): any {
         var request = gapi.client.drive.files.get({
             'fileId': fileId,
         });
@@ -195,7 +195,7 @@ class DriveAPI {
         });
 
         request.execute((resp) => {
-            this.getFile(resp.id, (fileMetada) => { this.updateFile(resp.id, fileMetada, this.tempBlob,null) })
+            this.getFile(resp.id, (fileMetada) => { this.updateFile(resp.id, fileMetada, this.tempBlob, null) })
         });
 
     }
@@ -220,7 +220,7 @@ class DriveAPI {
         reader.onload = function (e) {
             var contentType = fileData.type || 'application/octet-stream';
             // Updating the metadata is optional and you can instead use the value from drive.files.get.
-            var base64Data = btoa(reader.result.toString()); 
+            var base64Data = btoa(reader.result.toString());
             var multipartRequestBody =
                 delimiter +
                 'Content-Type: application/json\r\n\r\n' +

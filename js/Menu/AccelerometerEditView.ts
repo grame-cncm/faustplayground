@@ -1,4 +1,4 @@
-﻿   /// <reference path="../Utilitary.ts"/>
+﻿/// <reference path="../Utilitary.ts"/>
 
 class AccelerometerEditView {
     blockLayer: HTMLDivElement;
@@ -26,7 +26,7 @@ class AccelerometerEditView {
     rangeVirtual: HTMLInputElement;
     rangeCurrent: HTMLInputElement;
 
-    constructor() {}
+    constructor() { }
 
     initAccelerometerEdit(): HTMLElement {
 

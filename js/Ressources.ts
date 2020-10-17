@@ -4,7 +4,7 @@
 //contains all the key of resources json files in folders ressources
 
 class Ressources {
-  //scene messages
+    //scene messages
     defaultSceneName: string;
     reference: string;
     chrisWilson: string;
@@ -43,7 +43,7 @@ class Ressources {
     buttonCloudSave: string;
     buttonLogoutCloud: string;
 
-     //Save message
+    //Save message
     confirmSuppr: string;
     confirmReplace: string;
 
@@ -96,16 +96,16 @@ class Ressources {
     noDeviceMotion: string;
 
     //get ressource depending on the location, default is french
-    getRessources(app:App) {
+    getRessources(app: App) {
         var localization = navigator.language;
         if (localization == "fr" || localization == "fr-FR") {
-            Utilitary.getXHR("ressources/ressources_fr-FR.json", (ressource) => { this.loadMessages(ressource,app) }, Utilitary.errorCallBack)
+            Utilitary.getXHR("ressources/ressources_fr-FR.json", (ressource) => { this.loadMessages(ressource, app) }, Utilitary.errorCallBack)
         } else {
-            Utilitary.getXHR("ressources/ressources_en-EN.json", (ressource) => { this.loadMessages(ressource,app) }, Utilitary.errorCallBack)
+            Utilitary.getXHR("ressources/ressources_en-EN.json", (ressource) => { this.loadMessages(ressource, app) }, Utilitary.errorCallBack)
         }
     }
     // load the json object
-    loadMessages(ressourceJson: string,app:App) {
+    loadMessages(ressourceJson: string, app: App) {
         Utilitary.messageRessource = JSON.parse(ressourceJson);
         resumeInit(app);
     }

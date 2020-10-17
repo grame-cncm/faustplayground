@@ -2,7 +2,7 @@
 
 interface HTMLIFrameYoutubeElement extends HTMLIFrameElement {
     allowScriptAccess: string;
-    stopVideo: ()=>any;
+    stopVideo: () => any;
 }
 
 class HelpView {

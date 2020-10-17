@@ -1,6 +1,5 @@
 ﻿/*				EXPORT.JS
-	Handles Graphical elements for the Export Feature of the normal Playground
-
+    Handles Graphical elements for the Export Feature of the normal Playground
 */
 /// <reference path="../ExportLib.ts"/>
 /// <reference path="../EquivalentFaust.ts"/>
@@ -12,7 +11,7 @@
 *********************  HANDLE FAUST WEB TARGETS *********************
 ********************************************************************/
 
-class Export{
+class Export {
     exportView: ExportView;
     static exportUrl: string = "https://faustservice.grame.fr"
     static targetsUrl: string = "https://faustservice.grame.fr/targets"
@@ -32,16 +31,14 @@ class Export{
         this.exportView.lessOptionDiv.addEventListener("click", () => { this.exportView.moreOptionDiv.style.display = "block"; this.exportView.lessOptionDiv.style.display = this.exportView.optionContainer.style.display = "none" }, false);
     }
     // add options into select boxes
-    addItem(id: string, itemText:string):void
-    {
+    addItem(id: string, itemText: string): void {
         var platformsSelect: HTMLSelectElement = <HTMLSelectElement>document.getElementById(id);
         var option: HTMLOptionElement = document.createElement('option');
-	      option.text = itemText;
+        option.text = itemText;
         platformsSelect.add(option);
     }
     //clear select boxes
-    clearSelectBox(id: string): boolean
-    {
+    clearSelectBox(id: string): boolean {
         if (document.getElementById(id) != undefined) {
             while (document.getElementById(id).childNodes.length > 0) {
                 document.getElementById(id).removeChild(document.getElementById(id).childNodes[0]);
@@ -53,17 +50,16 @@ class Export{
     }
 
     //------ Update Architectures with Plateform change
-    updateArchitectures = () =>
-    {
+    updateArchitectures = () => {
         if (!this.clearSelectBox('architectures')) {
             return
         } else {
 
-            var data:string[] = JSON.parse(this.jsonText);
+            var data: string[] = JSON.parse(this.jsonText);
             var platformsSelect: HTMLSelectElement = <HTMLSelectElement>document.getElementById('platforms');//get the combobox
             var options = <HTMLOptionElement>platformsSelect.options[platformsSelect.selectedIndex]
             var selPlatform: string = options.value;
-            var dataCopy :string[] = data[selPlatform];
+            var dataCopy: string[] = data[selPlatform];
             var iterator = 0;
 
             for (var subData in dataCopy) {
@@ -76,13 +72,12 @@ class Export{
         }
     }
     //callback to get Target on server
-    public uploadTargets=()=>
-    {
+    public uploadTargets = () => {
         this.clearSelectBox('platforms');
         this.clearSelectBox('architectures');
         var input: HTMLInputElement = <HTMLInputElement>document.getElementById("faustweburl");
         Export.exportUrl = input.value;
-        Export.targetsUrl = Export.exportUrl+"/targets";
+        Export.targetsUrl = Export.exportUrl + "/targets";
 
         Utilitary.getXHR(Export.targetsUrl, (json: string) => { this.uploadTargetCallback(json) }, (errorMessage: string) => { Utilitary.errorCallBack(errorMessage) });
     }
@@ -104,7 +99,7 @@ class Export{
     setDefaultSelect() {
         var platefromSelect: HTMLSelectElement = <HTMLSelectElement>document.getElementById("platforms");
         var options = platefromSelect.options
-        for (var i = 0; i < options.length; i++){
+        for (var i = 0; i < options.length; i++) {
             if (options[i].textContent == "android") {
                 platefromSelect.selectedIndex = i;
             }
@@ -115,8 +110,7 @@ class Export{
     *********************  HANDLE POST TO FAUST WEB  ********************
     ********************************************************************/
 
-    exportPatch(event:Event, expor: Export)
-    {
+    exportPatch(event: Event, expor: Export) {
         this.exportView.exportButton.removeEventListener("click", this.eventExport)
         this.exportView.exportButton.style.opacity = "0.3";
         var sceneName: string = Utilitary.currentScene.sceneName;
@@ -134,8 +128,7 @@ class Export{
     **************  CALLBACK ONCE SHA KEY WAS CALCULATED  ***************
     ********************************************************************/
 
-    exportFaustCode=(shaKey: string)=>
-    {
+    exportFaustCode = (shaKey: string) => {
         var platformsSelect: HTMLSelectElement = <HTMLSelectElement>document.getElementById("platforms");//get the combobox
         var optionPlateform = <HTMLOptionElement>platformsSelect.options[platformsSelect.selectedIndex];
         var platforme: string = optionPlateform.value;
@@ -188,7 +181,7 @@ class Export{
         }
         this.exportView.exportButton.addEventListener("click", this.eventExport)
         this.exportView.exportButton.style.opacity = "1";
-       Utilitary.removeLoadingLogo("exportResultContainer");
+        Utilitary.removeLoadingLogo("exportResultContainer");
     }
 
     removeQRCode() {

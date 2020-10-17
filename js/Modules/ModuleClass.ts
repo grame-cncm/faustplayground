@@ -1,6 +1,6 @@
-/*				MODULECLASS.JS
-	HAND-MADE JAVASCRIPT CLASS CONTAINING A FAUST MODULE AND ITS INTERFACE
-
+/*				
+    MODULECLASS.JS
+    HAND-MADE JAVASCRIPT CLASS CONTAINING A FAUST MODULE AND ITS INTERFACE
 */
 
 /// <reference path="../Dragging.ts"/>
@@ -11,9 +11,9 @@
 /// <reference path="ModuleFaust.ts"/>
 /// <reference path="ModuleView.ts"/>
 
-interface DSPCallback 	{ (): void; }
+interface DSPCallback { (): void; }
 
-class ModuleClass  {
+class ModuleClass {
     static isNodesModuleUnstyle: boolean = true;
     //drag object to handle dragging of module and connection
     drag: Drag = new Drag()
@@ -75,7 +75,7 @@ class ModuleClass  {
         }
         if (this.moduleView.fEditImg != undefined) {
             this.moduleView.fEditImg.addEventListener("click", this.eventOpenEditHandler);
-            this.moduleView.fEditImg.addEventListener("touchend",  this.eventOpenEditHandler);
+            this.moduleView.fEditImg.addEventListener("touchend", this.eventOpenEditHandler);
         }
     }
 
@@ -151,7 +151,7 @@ class ModuleClass  {
         this.moduleFaust.factory = null;
         this.deleteCallback(this);
     }
-	//make module smaller
+    //make module smaller
     minModule() {
         this.moduleView.fInterfaceContainer.classList.add("mini");
         this.moduleView.fTitle.classList.add("miniTitle");
@@ -160,7 +160,7 @@ class ModuleClass  {
         Connector.redrawInputConnections(this, this.drag);
         Connector.redrawOutputConnections(this, this.drag);
     }
-	//restore module size
+    //restore module size
     maxModule() {
         this.moduleView.fInterfaceContainer.classList.remove("mini");
         this.moduleView.fTitle.classList.remove("miniTitle");
@@ -175,17 +175,17 @@ class ModuleClass  {
         this.moduleFaust.factory = factory;
         try {
             if (factory != null) {
-            	var moduleFaust = this.moduleFaust;
+                var moduleFaust = this.moduleFaust;
                 faust.createDSPInstance(factory, Utilitary.audioContext, 1024,
-                  function(dsp) {
-                    if (dsp != null) {
-                      moduleFaust.fDSP = dsp;
-                      callback();
-                    } else {
-                      new Message(Utilitary.messageRessource.errorCreateDSP);
-                      Utilitary.hideFullPageLoading();
-                    }
-                  });
+                    function (dsp) {
+                        if (dsp != null) {
+                            moduleFaust.fDSP = dsp;
+                            callback();
+                        } else {
+                            new Message(Utilitary.messageRessource.errorCreateDSP);
+                            Utilitary.hideFullPageLoading();
+                        }
+                    });
                 // To activate the AudioWorklet mode
                 //faust.createDSPWorkletInstance(factory, Utilitary.audioContext, function(dsp) { moduleFaust.fDSP = dsp; callback(); });
             } else {
@@ -214,29 +214,29 @@ class ModuleClass  {
         module.moduleView.deleteInputOutputNodes();
 
         // Create new one
-		module.createDSP(factory, function() {
-        	module.moduleFaust.fName = module.moduleFaust.fTempName;
-        	module.moduleFaust.fSource = module.moduleFaust.fTempSource
-        	module.setFaustInterfaceControles()
-        	module.createFaustInterface();
-        	module.addInputOutputNodes();
+        module.createDSP(factory, function () {
+            module.moduleFaust.fName = module.moduleFaust.fTempName;
+            module.moduleFaust.fSource = module.moduleFaust.fTempSource
+            module.setFaustInterfaceControles()
+            module.createFaustInterface();
+            module.addInputOutputNodes();
 
-        	module.deleteDSP(toDelete);
+            module.deleteDSP(toDelete);
 
-        	// Recall Cnx
-        	if (saveOutCnx && module.moduleView.getOutputNode()) {
-          	  	for (var i = 0; i < saveOutCnx.length; i++) {
-               	 	if (saveOutCnx[i])
-                   		connector.createConnection(module, module.moduleView.getOutputNode(), saveOutCnx[i].destination, saveOutCnx[i].destination.moduleView.getInputNode());
-            	}
-        	}
-        	if (saveInCnx && module.moduleView.getInputNode()) {
-           	 	for (var i = 0; i < saveInCnx.length; i++) {
-                	if (saveInCnx[i])
-                    	connector.createConnection(saveInCnx[i].source, saveInCnx[i].source.moduleView.getOutputNode(), module, module.moduleView.getInputNode());
-            	}
-        	}
-        	Utilitary.hideFullPageLoading();
+            // Recall Cnx
+            if (saveOutCnx && module.moduleView.getOutputNode()) {
+                for (var i = 0; i < saveOutCnx.length; i++) {
+                    if (saveOutCnx[i])
+                        connector.createConnection(module, module.moduleView.getOutputNode(), saveOutCnx[i].destination, saveOutCnx[i].destination.moduleView.getInputNode());
+                }
+            }
+            if (saveInCnx && module.moduleView.getInputNode()) {
+                for (var i = 0; i < saveInCnx.length; i++) {
+                    if (saveInCnx[i])
+                        connector.createConnection(saveInCnx[i].source, saveInCnx[i].source.moduleView.getOutputNode(), module, module.moduleView.getInputNode());
+                }
+            }
+            Utilitary.hideFullPageLoading();
         });
     }
 
@@ -273,7 +273,7 @@ class ModuleClass  {
         this.moduleFaust.fTempName = name;
         this.moduleFaust.fTempSource = code;
         var module: ModuleClass = this;
-        this.compileFaust({ name: name, sourceCode: code, x: this.moduleView.x, y: this.moduleView.y, callback: (factory) => { module.updateDSP(factory, module) }});
+        this.compileFaust({ name: name, sourceCode: code, x: this.moduleView.x, y: this.moduleView.y, callback: (factory) => { module.updateDSP(factory, module) } });
     }
 
     //---- React to recompilation triggered by click on icon
@@ -302,7 +302,7 @@ class ModuleClass  {
         var moduleFaustInterface = new FaustInterfaceControler(
             (faustInterface) => { this.interfaceSliderCallback(faustInterface) },
             (adress, value) => { this.moduleFaust.fDSP.setParamValue(adress, value) }
-            );
+        );
         this.moduleControles = moduleFaustInterface.parseFaustJsonUI(JSON.parse(this.moduleFaust.fDSP.getJSON()).ui, this);
     }
 
@@ -335,7 +335,7 @@ class ModuleClass  {
             if (this.moduleControles[i].accelerometerSlider != null && this.moduleControles[i].accelerometerSlider != undefined) {
                 var index = AccelerometerHandler.faustInterfaceControler.indexOf(this.moduleControles[i]);
                 AccelerometerHandler.faustInterfaceControler.splice(index, 1);
-                delete this.moduleControles[i].accelerometerSlider ;
+                delete this.moduleControles[i].accelerometerSlider;
             }
         }
         this.moduleControles = [];
@@ -343,7 +343,7 @@ class ModuleClass  {
 
     // set DSP value to all FaustInterfaceControlers
     setDSPValue() {
-        for (var i = 0; i < this.moduleControles.length; i++){
+        for (var i = 0; i < this.moduleControles.length; i++) {
             this.moduleFaust.fDSP.setParamValue(this.moduleControles[i].itemParam.address, this.moduleControles[i].value)
         }
     }
@@ -356,7 +356,7 @@ class ModuleClass  {
     // Updates Faust Code with new accelerometer metadata
     updateCodeFaust(details: ElementCodeFaustParser) {
         var m = forgeAccMetadata(details.newAccValue, details.isEnabled);
-        var s = updateAccInFaustCode(this.moduleFaust.fSource, details.sliderName, m );
+        var s = updateAccInFaustCode(this.moduleFaust.fSource, details.sliderName, m);
         this.moduleFaust.fSource = s;
     }
 
@@ -416,7 +416,7 @@ class ModuleClass  {
         for (var key in this.fModuleInterfaceParams)
             this.moduleFaust.fDSP.setParamValue(key, this.fModuleInterfaceParams[key]);
     }
-    getInterfaceParams(): { [label: string]:string }{
+    getInterfaceParams(): { [label: string]: string } {
         return this.fModuleInterfaceParams;
     }
     setInterfaceParams(parameters: { [label: string]: string }): void {
