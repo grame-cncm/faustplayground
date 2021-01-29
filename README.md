@@ -9,7 +9,8 @@ To test the Faust playground, start a python server :
 
 	cd faustplayground
 	cd ..
-	python -m SimpleHTTPServer
+	python -m http.server 8000 (with Python 3)
+	python -m SimpleHTTPServer (with Python 2)
 
 Then open:
 
