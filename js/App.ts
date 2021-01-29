@@ -32,7 +32,7 @@ Create Factories and Modules
 /// <reference path="Lib/qrcode.d.ts"/>
 /// <reference path="Ressources.ts"/>
 /// <reference path="Messages.ts"/>
-/// <reference path="Lib/perfectScrollBar/js/perfect-ScrollBar.min.d.ts"/>
+/// <reference path="Lib/perfectScrollBar/js/perfect-scrollbar.min.d.ts"/>
 
 //object containg info necessary to compile faust code
 

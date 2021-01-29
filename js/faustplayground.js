@@ -3450,7 +3450,7 @@ class ErrorFaust {
 }
 //LibraryView.ts : LibraryView Class which contains all the graphical parts of the library
 /// <reference path="../Utilitary.ts"/>
-/// <reference path="../Lib/perfectScrollBar/js/perfect-ScrollBar.min.d.ts"/>
+/// <reference path="../Lib/perfectScrollBar/js/perfect-scrollbar.min.d.ts"/>
 class LibraryView {
     initLibraryView() {
         var libraryContent = document.createElement("div");
@@ -3983,7 +3983,7 @@ class SaveView {
         return saveContainer;
     }
 }
-/// <reference path="../Lib/fileSaver.min.d.ts"/>
+/// <reference path="../Lib/FileSaver.min.d.ts"/>
 /// <reference path="../Messages.ts"/>
 /// <reference path="../Utilitary.ts"/>
 /// <reference path="../DriveAPI.ts"/>
@@ -5446,7 +5446,7 @@ Create Factories and Modules
 /// <reference path="Lib/qrcode.d.ts"/>
 /// <reference path="Ressources.ts"/>
 /// <reference path="Messages.ts"/>
-/// <reference path="Lib/perfectScrollBar/js/perfect-ScrollBar.min.d.ts"/>
+/// <reference path="Lib/perfectScrollBar/js/perfect-scrollbar.min.d.ts"/>
 //object containg info necessary to compile faust code
 class App {
     createAllScenes() {

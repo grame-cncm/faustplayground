@@ -1,6 +1,6 @@
 ﻿//LibraryView.ts : LibraryView Class which contains all the graphical parts of the library
 /// <reference path="../Utilitary.ts"/>
-/// <reference path="../Lib/perfectScrollBar/js/perfect-ScrollBar.min.d.ts"/>
+/// <reference path="../Lib/perfectScrollBar/js/perfect-scrollbar.min.d.ts"/>
 
 class LibraryView {
     intrumentLibrarySelect: HTMLUListElement

@@ -1,4 +1,4 @@
-﻿/// <reference path="../Lib/fileSaver.min.d.ts"/>
+﻿/// <reference path="../Lib/FileSaver.min.d.ts"/>
 /// <reference path="../Messages.ts"/>
 /// <reference path="../Utilitary.ts"/>
 /// <reference path="../DriveAPI.ts"/>
