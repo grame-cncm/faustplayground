@@ -23,7 +23,11 @@ Then open:
     save it (regular or precompiled version) using the "Save" button
     rename it with a .json file ending
 
-### Useful links
+## To add new Faust modules
+
+In the `faust-modules` folder, add your .dsp files to the `effects` or `generators` folder. Then update `faust-modules/index.json` by hand.
+
+## Useful links
 
 - [https://faustplayground.grame.fr](https://faustplayground.grame.fr): the official link on the FaustPlayground website. 
 - [https://github.com/grame-cncm/faustplayground](https://github.com/grame-cncm/faustplayground): the github repository
