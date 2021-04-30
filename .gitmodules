@@ -1,4 +1,0 @@
-[submodule "faustlibraries"]
-	path = faustlibraries
-	url = https://github.com/grame-cncm/faustlibraries.git
-	branch = master
