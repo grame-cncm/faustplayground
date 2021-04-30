@@ -18,10 +18,10 @@ Then open:
 
 ## To regenerate examples (in json/ folder)
 
-    create a patch in the platform
-    possibly rename it using the the "Edit" button
-    save it (regular or precompiled version) using the "Save" button
-    rename it with a .json file ending
+- create a patch in the platform
+- possibly rename it using the the "Edit" button
+- save it (regular or precompiled version) using the "Save" button
+- rename it with a .json file ending
 
 ## To add new Faust modules
 
