@@ -5507,7 +5507,7 @@ class App {
         }
         ;
     }
-    //create Module, set the source faust code to its moduleFaust, set the faust interface , add the input output connection nodes
+    //create Module, set the source Faust code to its moduleFaust, set the Faust interface, add the input output connection nodes
     //
     createModule(factory) {
         if (!factory) {

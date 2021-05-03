@@ -1,0 +1,27 @@
+{
+  "name": "faustplayground",
+  "version": "1.0.2",
+  "description": "Faust playground is a Web platform designed to enable children to learn basic audio programming in a simple and graphic way",
+  "main": "index.html",
+  "scripts": {
+    "build": "make",
+    "dist": "make"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/grame-cncm/faustplayground.git"
+  },
+  "keywords": [
+    "Faust Playground",
+    "Faust programming"
+  ],
+  "author": "Grame-CNCM",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/grame-cncm/faustplayground/issues"
+  },
+  "homepage": "https://github.com/grame-cncm/faustplayground#readme",
+  "dependencies": {
+    "@grame/libfaust": "^1.0.2",
+  }
+}

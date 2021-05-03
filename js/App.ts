@@ -116,7 +116,7 @@ class App {
         if (currentScene) { currentScene.unmuteScene() };
     }
 
-    //create Module, set the source faust code to its moduleFaust, set the faust interface , add the input output connection nodes
+    //create Module, set the source Faust code to its moduleFaust, set the Faust interface, add the input output connection nodes
     //
     private createModule(factory: Factory): void {
         if (!factory) {
