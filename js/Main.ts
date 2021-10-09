@@ -6,12 +6,12 @@
 /// <reference path="App.ts"/>
 /// <reference path="Messages.ts"/>
 
-// init is call by libfaust-wasm.js load end handler
+//init is call by libfaust-wasm.js load end handler
 
 //initialization af the app, create app and ressource to get text with correct localization
 //then resumeInit on callback when text is loaded
 function init(): void {
-    console.log("FaustPlayground: version 1.0.2 (10/01/21)");
+    console.log("FaustPlayground: version 1.0.3 (10/09/21)");
     var app: App = new App();
     var ressource = new Ressources
     ressource.getRessources(app);
@@ -24,6 +24,7 @@ function resumeInit(app: App) {
     try {
         Utilitary.audioContext = new AudioContext({ latencyHint: 0.00001 });
         Utilitary.audioContext.destination.channelInterpretation = "discrete";
+        Utilitary.audioContext.destination.channelCount = Utilitary.audioContext.destination.maxChannelCount;
     } catch (e) {
         new Message(Utilitary.messageRessource.errorNoWebAudioAPI);
         Utilitary.hideFullPageLoading();
