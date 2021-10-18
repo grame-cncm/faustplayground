@@ -1,2 +1,8 @@
 .DS_Store
-
+*.aux
+*.bbl
+*.blg
+*.log
+*.toc
+Documentation/Implementation.pdf
+node_modules
