@@ -28,15 +28,15 @@ class ModuleClass {
     private deleteCallback: (module: ModuleClass) => void;
     private fModuleInterfaceParams: { [label: string]: string } = {};
 
-    eventDraggingHandler: (event: MouseEvent) => void;
+    eventDraggingHandler: (event: MouseEvent | TouchEvent) => void;
     eventConnectorHandler: (event: Event) => void;
     eventOpenEditHandler: () => void;
     eventCloseEditHandler: (event: Event) => void;
     compileFaust: (conpileFaust: CompileFaust) => void;
 
     constructor(id: number, x: number, y: number, name: string, htmlElementModuleContainer: HTMLElement, removeModuleCallBack: (m: ModuleClass) => void, compileFaust: (compileFaust: CompileFaust) => void) {
-        this.eventConnectorHandler = (event: MouseEvent) => { this.dragCnxCallback(event, this) };
-        this.eventCloseEditHandler = (event: MouseEvent) => { this.recompileSource(event, this) }
+        this.eventConnectorHandler = (event: Event) => { this.dragCnxCallback(event as MouseEvent, this) };
+        this.eventCloseEditHandler = (event: Event) => { this.recompileSource(event as MouseEvent, this) }
         this.eventOpenEditHandler = () => { this.edit() }
         this.compileFaust = compileFaust;
 
@@ -147,7 +147,6 @@ class ModuleClass {
 
         this.deleteDSP(this.moduleFaust.fDSP);
         this.moduleFaust.fDSP = null;
-        faust.deleteDSPFactory(this.moduleFaust.factory);
         this.moduleFaust.factory = null;
         this.deleteCallback(this);
     }
@@ -171,23 +170,22 @@ class ModuleClass {
     }
 
     //--- Create and Update are called once a source code is compiled and the factory exists
-    createDSP(factory: Factory, callback: DSPCallback): void {
+    async createDSP(factory: Factory, callback: DSPCallback): Promise<void> {
         this.moduleFaust.factory = factory;
         try {
             if (factory != null) {
                 var moduleFaust = this.moduleFaust;
-                faust.createDSPInstance(factory, Utilitary.audioContext, 1024,
-                    function (dsp) {
-                        if (dsp != null) {
-                            moduleFaust.fDSP = dsp;
-                            callback();
-                        } else {
-                            new Message(Utilitary.messageRessource.errorCreateDSP);
-                            Utilitary.hideFullPageLoading();
-                        }
-                    });
+                const faustMonoDspGenerator = new faustWasmEnv.FaustMonoDspGenerator();
+                const dsp = await faustMonoDspGenerator.createNode(Utilitary.audioContext, "FaustDSP", factory);
                 // To activate the AudioWorklet mode
                 //faust.createDSPWorkletInstance(factory, Utilitary.audioContext, function(dsp) { moduleFaust.fDSP = dsp; callback(); });
+                if (dsp != null) {
+                    moduleFaust.fDSP = dsp;
+                    callback();
+                } else {
+                    new Message(Utilitary.messageRessource.errorCreateDSP);
+                    Utilitary.hideFullPageLoading();
+                }
             } else {
                 throw new Error("create DSP Error : null factory");
             }
@@ -242,7 +240,8 @@ class ModuleClass {
 
     private deleteDSP(todelete: IfDSP): void {
         if (todelete)
-            faust.deleteDSPInstance(todelete);
+            todelete.destroy();
+            // faust.deleteDSPInstance(todelete);
     }
     /******************** EDIT SOURCE & RECOMPILE *************************/
     edit(): void {
@@ -301,7 +300,7 @@ class ModuleClass {
         this.moduleView.fTitle.textContent = this.moduleFaust.fName;
         var moduleFaustInterface = new FaustInterfaceControler(
             (faustInterface) => { this.interfaceSliderCallback(faustInterface) },
-            (adress, value) => { this.moduleFaust.fDSP.setParamValue(adress, value) }
+            (adress, value) => { this.moduleFaust.fDSP.setParamValue(adress, +value) }
         );
         this.moduleControles = moduleFaustInterface.parseFaustJsonUI(JSON.parse(this.moduleFaust.fDSP.getJSON()).ui, this);
     }
@@ -344,13 +343,13 @@ class ModuleClass {
     // set DSP value to all FaustInterfaceControlers
     setDSPValue() {
         for (var i = 0; i < this.moduleControles.length; i++) {
-            this.moduleFaust.fDSP.setParamValue(this.moduleControles[i].itemParam.address, this.moduleControles[i].value)
+            this.moduleFaust.fDSP.setParamValue(this.moduleControles[i].itemParam.address, +this.moduleControles[i].value)
         }
     }
 
     // set DSP value to specific FaustInterfaceControlers
     setDSPValueCallback(address: string, value: string) {
-        this.moduleFaust.fDSP.setParamValue(address, value)
+        this.moduleFaust.fDSP.setParamValue(address, +value)
     }
 
     // Updates Faust Code with new accelerometer metadata
@@ -385,7 +384,7 @@ class ModuleClass {
             output.textContent = "" + val + " " + faustControler.unit;
 
         // 	Search for DSP then update the value of its parameter.
-        this.moduleFaust.fDSP.setParamValue(text, val);
+        this.moduleFaust.fDSP.setParamValue(text, +val);
     }
     interfaceButtonCallback(faustControler: FaustInterfaceControler, val?: number): any {
 
@@ -399,7 +398,7 @@ class ModuleClass {
             output.textContent = "" + val + " " + faustControler.unit;
 
         // 	Search for DSP then update the value of its parameter.
-        this.moduleFaust.fDSP.setParamValue(text, val.toString());
+        this.moduleFaust.fDSP.setParamValue(text, val);
     }
 
     // Save graphical parameters of a Faust Node
@@ -414,7 +413,7 @@ class ModuleClass {
     recallInterfaceParams(): void {
 
         for (var key in this.fModuleInterfaceParams)
-            this.moduleFaust.fDSP.setParamValue(key, this.fModuleInterfaceParams[key]);
+            this.moduleFaust.fDSP.setParamValue(key, +this.fModuleInterfaceParams[key]);
     }
     getInterfaceParams(): { [label: string]: string } {
         return this.fModuleInterfaceParams;

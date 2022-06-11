@@ -258,7 +258,7 @@ class Scene {
                     for (var j = 0; j < params.length; j++) {
                         var jsonSlider: JsonSliderSave = new JsonSliderSave();
                         jsonSlider.path = params[j];
-                        jsonSlider.value = this.fModuleList[i].moduleFaust.getDSP().getParamValue(params[j]);
+                        jsonSlider.value = this.fModuleList[i].moduleFaust.getDSP().getParamValue(params[j]).toString();
                         jsonParams.sliders.push(jsonSlider);
                     }
 
@@ -284,18 +284,12 @@ class Scene {
                 jsonObject.params = jsonParams;
                 jsonObject.acc = jsonAccs;
 
-                var factorySave: JsonFactorySave = faust.writeDSPFactoryToMachine(this.fModuleList[i].moduleFaust.factory);
+                const { code, json, poly, shaKey } = this.fModuleList[i].moduleFaust.factory;
+                const factorySave = { code: btoa(faustWasmEnv.ab2str(code)), json: JSON.parse(json), poly, shaKey };
+                // var factorySave: JsonFactorySave = faust.writeDSPFactoryToMachine(this.fModuleList[i].moduleFaust.factory);
 
                 if (factorySave && isPrecompiled) {
-                    jsonObject.factory = new JsonFactorySave();
-                    jsonObject.factory.name = factorySave.name;
-                    jsonObject.factory.code = factorySave.code;
-                    jsonObject.factory.code_source = factorySave.code_source;
-                    jsonObject.factory.helpers = factorySave.helpers;
-                    jsonObject.factory.name_effect = factorySave.name_effect;
-                    jsonObject.factory.code_effect = factorySave.code_effect;
-                    jsonObject.factory.code_source_effect = factorySave.code_source_effect;
-                    jsonObject.factory.helpers_effect = factorySave.helpers_effect;
+                    jsonObject.factory = factorySave;
                 }
             }
         }
@@ -331,16 +325,16 @@ class Scene {
     //
     // When arrayRecalScene empty, connect the modules in the scene
 
-    launchModuleCreation() {
+    async launchModuleCreation() {
         if (this.arrayRecalScene.length != 0) {
             var jsonObject = this.arrayRecalScene[0]
             if (jsonObject.factory != undefined) {
                 this.tempPatchId = jsonObject.patchId;
-                faust.readDSPFactoryFromMachine(jsonObject.factory, (factory) => {
-                    this.updateAppTempModuleInfo(jsonObject);
-                    this.sceneName = jsonObject.sceneName;
-                    this.createModule(factory)
-                });
+                const { code, json, poly, shaKey } = jsonObject.factory;
+                const [factories] = await faustWasmEnv.faustwasm.FaustCompiler.importDSPFactories(JSON.stringify({ [shaKey]: { code, json, poly } }));
+                this.updateAppTempModuleInfo(jsonObject);
+                this.sceneName = jsonObject.sceneName;
+                this.createModule(factories.get(shaKey));
             } else if (jsonObject.patchId != "output" && jsonObject.patchId != "input") {
                 this.tempPatchId = jsonObject.patchId;
                 this.sceneName = jsonObject.sceneName;
@@ -379,7 +373,7 @@ class Scene {
     private createModule(factory: Factory): void {
         try {
             if (!factory) {
-                new Message(faust.getErrorMessage());
+                new Message("Error"/*faust.getErrorMessage()*/);
                 Utilitary.hideFullPageLoading();
                 return;
             }
@@ -682,22 +676,30 @@ class JsonSliderSave implements IJsonSliderSave {
 }
 
 interface IJsonFactorySave {
-    name: string;
-    code: object;
-    code_source: string;
-    helpers: string;
-    name_effect: string;
-    code_effect: string;
-    code_source_effect: string;
-    helpers_effect: string;
+    code: string;
+    json: any;
+    poly: boolean;
+    shaKey: string;
+    // name: string;
+    // code: object;
+    // code_source: string;
+    // helpers: string;
+    // name_effect: string;
+    // code_effect: string;
+    // code_source_effect: string;
+    // helpers_effect: string;
 }
 class JsonFactorySave implements IJsonFactorySave {
-    name: string;
-    code: object;
-    code_source: string;
-    helpers: string;
-    name_effect: string;
-    code_effect: string;
-    code_source_effect: string;
-    helpers_effect: string;
+    code: string;
+    json: any;
+    poly: boolean;
+    shaKey: string;
+    // name: string;
+    // code: object;
+    // code_source: string;
+    // helpers: string;
+    // name_effect: string;
+    // code_effect: string;
+    // code_source_effect: string;
+    // helpers_effect: string;
 }

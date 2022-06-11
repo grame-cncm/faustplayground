@@ -90,7 +90,7 @@ class App {
     ****************  CREATE FAUST FACTORIES AND MODULES ****************
     ********************************************************************/
 
-    compileFaust(compileFaust: CompileFaust) {
+    async compileFaust(compileFaust: CompileFaust) {
 
         //  Temporarily Saving parameters of compilation
         this.tempModuleName = compileFaust.name;
@@ -108,7 +108,10 @@ class App {
 
         //try to create the wasm code/factory with the given Faust code. Then callback to function passing the factory.
         try {
-            this.factory = faust.createDSPFactory(compileFaust.sourceCode, args, (factory) => { compileFaust.callback(factory) });
+            const faustMonoDspGenerator = new faustWasmEnv.FaustMonoDspGenerator();
+            const generator = await faustMonoDspGenerator.compile(faustWasmEnv.faustCompiler, "FaustDSP", compileFaust.sourceCode, "-ftz 2");
+            this.factory = generator.factory;
+            compileFaust.callback(this.factory);
         } catch (error) {
             new Message(error)
         }
@@ -120,7 +123,7 @@ class App {
     //
     private createModule(factory: Factory): void {
         if (!factory) {
-            new Message(Utilitary.messageRessource.errorFactory + faust.getErrorMessage());
+            new Message(Utilitary.messageRessource.errorFactory /*+ faust.getErrorMessage() */);
             Utilitary.hideFullPageLoading();
             return;
         }
@@ -167,7 +170,7 @@ class App {
     setGeneralAppListener(app: App): void {
 
         //custom event to load file from the load menu with the file explorer
-        document.addEventListener("fileload", (e: CustomEvent) => { this.loadFileEvent(e) })
+        document.addEventListener("fileload", (e: Event) => { this.loadFileEvent(e as CustomEvent<File>) })
 
         //All drog and drop events
         window.ondragover = function () { return false; };
@@ -207,7 +210,7 @@ class App {
         };
 
         //custom double touch from library menu to load an effect or an intrument.
-        document.addEventListener("dbltouchlib", (e: CustomEvent) => { this.dblTouchUpload(e) });
+        document.addEventListener("dbltouchlib", (e: Event) => { this.dblTouchUpload(e as CustomEvent<string>) });
     }
 
     //-- Upload content dropped on the page and allocate the content to the right function
@@ -317,15 +320,15 @@ class App {
         };
     }
     //used when a custom event from loading file with the browser dialogue
-    loadFileEvent(e: CustomEvent) {
+    loadFileEvent(e: CustomEvent<File>) {
         Utilitary.showFullPageLoading();
-        var file: File = <File>e.detail;
+        var file = e.detail;
         var position: PositionModule = Utilitary.currentScene.positionDblTapModule();
         this.loadFile(file, null, position.x, position.y)
 
     }
     //used with the library double touch custom event
-    dblTouchUpload(e: CustomEvent) {
+    dblTouchUpload(e: CustomEvent<string>) {
         Utilitary.showFullPageLoading();
         var position: PositionModule = Utilitary.currentScene.positionDblTapModule();
         this.uploadUrl(this, null, position.x, position.y, e.detail);
