@@ -6,14 +6,40 @@
 /// <reference path="App.ts"/>
 /// <reference path="Messages.ts"/>
 
+declare const faustWasmEnv: {
+    faustwasm: typeof import("./Lib/faustwasm/index.js");
+    faustCompiler: import("./Lib/faustwasm/index.js").FaustCompiler;
+    FaustMonoDspGenerator: typeof import("./Lib/faustwasm/index.js").FaustMonoDspGenerator;
+    FaustPolyDspGenerator: typeof import("./Lib/faustwasm/index.js").FaustPolyDspGenerator;
+    ab2str: typeof import("./Lib/faustwasm/index.js").ab2str;
+    str2ab: typeof import("./Lib/faustwasm/index.js").str2ab;
+};
+//@ts-ignore
+declare const faust: never;
+
 //init is call by libfaust-wasm.js load end handler
 
 //initialization af the app, create app and ressource to get text with correct localization
 //then resumeInit on callback when text is loaded
-function init(): void {
-    console.log("FaustPlayground: version 1.0.4 (06/16/23)");
+async function init(): Promise<void> {
+    console.log("FaustPlayground: version 1.1.0 (2023-07-04)");
+    const faustwasm = await import("./Lib/faustwasm/index.js");
+    console.log(faustwasm);
+    const { instantiateFaustModuleFromFile, FaustCompiler, LibFaust, FaustMonoDspGenerator, FaustPolyDspGenerator, ab2str, str2ab } = faustwasm;
+    const faustModule = await instantiateFaustModuleFromFile("./js/Lib/libfaust-wasm.js");
+    const libFaust = new LibFaust(faustModule);
+    const faustCompiler = new FaustCompiler(libFaust);
+    (globalThis as any).faustWasmEnv = {
+        faustwasm,
+        faustCompiler,
+        FaustMonoDspGenerator,
+        FaustPolyDspGenerator,
+        ab2str,
+        str2ab
+    };
+
     var app: App = new App();
-    var ressource = new Ressources
+    var ressource = new Ressources();
     ressource.getRessources(app);
 }
 //callback when text is loaded. resume the initialization

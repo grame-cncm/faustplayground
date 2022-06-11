@@ -1,3 +1,12 @@
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 /// <reference path="App.ts"/>
 /// <reference path="Utilitary.ts"/>
 //contains all the key of resources json files in folders ressources
@@ -1817,7 +1826,6 @@ class ModuleClass {
         }
         this.deleteDSP(this.moduleFaust.fDSP);
         this.moduleFaust.fDSP = null;
-        faust.deleteDSPFactory(this.moduleFaust.factory);
         this.moduleFaust.factory = null;
         this.deleteCallback(this);
     }
@@ -1841,11 +1849,15 @@ class ModuleClass {
     }
     //--- Create and Update are called once a source code is compiled and the factory exists
     createDSP(factory, callback) {
-        this.moduleFaust.factory = factory;
-        try {
-            if (factory != null) {
-                var moduleFaust = this.moduleFaust;
-                faust.createDSPInstance(factory, Utilitary.audioContext, 1024, function (dsp) {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.moduleFaust.factory = factory;
+            try {
+                if (factory != null) {
+                    var moduleFaust = this.moduleFaust;
+                    const faustMonoDspGenerator = new faustWasmEnv.FaustMonoDspGenerator();
+                    const dsp = yield faustMonoDspGenerator.createNode(Utilitary.audioContext, "FaustDSP", factory);
+                    // To activate the AudioWorklet mode
+                    //faust.createDSPWorkletInstance(factory, Utilitary.audioContext, function(dsp) { moduleFaust.fDSP = dsp; callback(); });
                     if (dsp != null) {
                         moduleFaust.fDSP = dsp;
                         callback();
@@ -1854,18 +1866,16 @@ class ModuleClass {
                         new Message(Utilitary.messageRessource.errorCreateDSP);
                         Utilitary.hideFullPageLoading();
                     }
-                });
-                // To activate the AudioWorklet mode
-                //faust.createDSPWorkletInstance(factory, Utilitary.audioContext, function(dsp) { moduleFaust.fDSP = dsp; callback(); });
+                }
+                else {
+                    throw new Error("create DSP Error : null factory");
+                }
             }
-            else {
-                throw new Error("create DSP Error : null factory");
+            catch (e) {
+                new Message(Utilitary.messageRessource.errorCreateDSP + " : " + e);
+                Utilitary.hideFullPageLoading();
             }
-        }
-        catch (e) {
-            new Message(Utilitary.messageRessource.errorCreateDSP + " : " + e);
-            Utilitary.hideFullPageLoading();
-        }
+        });
     }
     //--- Update DSP in module
     updateDSP(factory, module) {
@@ -1904,7 +1914,8 @@ class ModuleClass {
     }
     deleteDSP(todelete) {
         if (todelete)
-            faust.deleteDSPInstance(todelete);
+            todelete.destroy();
+        // faust.deleteDSPInstance(todelete);
     }
     /******************** EDIT SOURCE & RECOMPILE *************************/
     edit() {
@@ -1950,7 +1961,7 @@ class ModuleClass {
     // Fill fInterfaceContainer with the DSP's Interface (--> see FaustInterface.js)
     setFaustInterfaceControles() {
         this.moduleView.fTitle.textContent = this.moduleFaust.fName;
-        var moduleFaustInterface = new FaustInterfaceControler((faustInterface) => { this.interfaceSliderCallback(faustInterface); }, (adress, value) => { this.moduleFaust.fDSP.setParamValue(adress, value); });
+        var moduleFaustInterface = new FaustInterfaceControler((faustInterface) => { this.interfaceSliderCallback(faustInterface); }, (adress, value) => { this.moduleFaust.fDSP.setParamValue(adress, +value); });
         this.moduleControles = moduleFaustInterface.parseFaustJsonUI(JSON.parse(this.moduleFaust.fDSP.getJSON()).ui, this);
     }
     // Create FaustInterfaceControler, set its callback and add its AccelerometerSlider
@@ -1987,12 +1998,12 @@ class ModuleClass {
     // set DSP value to all FaustInterfaceControlers
     setDSPValue() {
         for (var i = 0; i < this.moduleControles.length; i++) {
-            this.moduleFaust.fDSP.setParamValue(this.moduleControles[i].itemParam.address, this.moduleControles[i].value);
+            this.moduleFaust.fDSP.setParamValue(this.moduleControles[i].itemParam.address, +this.moduleControles[i].value);
         }
     }
     // set DSP value to specific FaustInterfaceControlers
     setDSPValueCallback(address, value) {
-        this.moduleFaust.fDSP.setParamValue(address, value);
+        this.moduleFaust.fDSP.setParamValue(address, +value);
     }
     // Updates Faust Code with new accelerometer metadata
     updateCodeFaust(details) {
@@ -2024,7 +2035,7 @@ class ModuleClass {
         if (output)
             output.textContent = "" + val + " " + faustControler.unit;
         // 	Search for DSP then update the value of its parameter.
-        this.moduleFaust.fDSP.setParamValue(text, val);
+        this.moduleFaust.fDSP.setParamValue(text, +val);
     }
     interfaceButtonCallback(faustControler, val) {
         var text = faustControler.itemParam.address;
@@ -2034,7 +2045,7 @@ class ModuleClass {
         if (output)
             output.textContent = "" + val + " " + faustControler.unit;
         // 	Search for DSP then update the value of its parameter.
-        this.moduleFaust.fDSP.setParamValue(text, val.toString());
+        this.moduleFaust.fDSP.setParamValue(text, val);
     }
     // Save graphical parameters of a Faust Node
     saveInterfaceParams() {
@@ -2046,7 +2057,7 @@ class ModuleClass {
     }
     recallInterfaceParams() {
         for (var key in this.fModuleInterfaceParams)
-            this.moduleFaust.fDSP.setParamValue(key, this.fModuleInterfaceParams[key]);
+            this.moduleFaust.fDSP.setParamValue(key, +this.fModuleInterfaceParams[key]);
     }
     getInterfaceParams() {
         return this.fModuleInterfaceParams;
@@ -3105,7 +3116,7 @@ class Scene {
                     for (var j = 0; j < params.length; j++) {
                         var jsonSlider = new JsonSliderSave();
                         jsonSlider.path = params[j];
-                        jsonSlider.value = this.fModuleList[i].moduleFaust.getDSP().getParamValue(params[j]);
+                        jsonSlider.value = this.fModuleList[i].moduleFaust.getDSP().getParamValue(params[j]).toString();
                         jsonParams.sliders.push(jsonSlider);
                     }
                 }
@@ -3128,17 +3139,11 @@ class Scene {
                 jsonObject.outputs = jsonOutputs;
                 jsonObject.params = jsonParams;
                 jsonObject.acc = jsonAccs;
-                var factorySave = faust.writeDSPFactoryToMachine(this.fModuleList[i].moduleFaust.factory);
+                const { code, json, poly, shaKey } = this.fModuleList[i].moduleFaust.factory;
+                const factorySave = { code: btoa(faustWasmEnv.ab2str(code)), json: JSON.parse(json), poly, shaKey };
+                // var factorySave: JsonFactorySave = faust.writeDSPFactoryToMachine(this.fModuleList[i].moduleFaust.factory);
                 if (factorySave && isPrecompiled) {
-                    jsonObject.factory = new JsonFactorySave();
-                    jsonObject.factory.name = factorySave.name;
-                    jsonObject.factory.code = factorySave.code;
-                    jsonObject.factory.code_source = factorySave.code_source;
-                    jsonObject.factory.helpers = factorySave.helpers;
-                    jsonObject.factory.name_effect = factorySave.name_effect;
-                    jsonObject.factory.code_effect = factorySave.code_effect;
-                    jsonObject.factory.code_source_effect = factorySave.code_source_effect;
-                    jsonObject.factory.helpers_effect = factorySave.helpers_effect;
+                    jsonObject.factory = factorySave;
                 }
             }
         }
@@ -3173,39 +3178,41 @@ class Scene {
     //
     // When arrayRecalScene empty, connect the modules in the scene
     launchModuleCreation() {
-        if (this.arrayRecalScene.length != 0) {
-            var jsonObject = this.arrayRecalScene[0];
-            if (jsonObject.factory != undefined) {
-                this.tempPatchId = jsonObject.patchId;
-                faust.readDSPFactoryFromMachine(jsonObject.factory, (factory) => {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (this.arrayRecalScene.length != 0) {
+                var jsonObject = this.arrayRecalScene[0];
+                if (jsonObject.factory != undefined) {
+                    this.tempPatchId = jsonObject.patchId;
+                    const { code, json, poly, shaKey } = jsonObject.factory;
+                    const [factories] = yield faustWasmEnv.faustwasm.FaustCompiler.importDSPFactories(JSON.stringify({ [shaKey]: { code, json, poly } }));
                     this.updateAppTempModuleInfo(jsonObject);
                     this.sceneName = jsonObject.sceneName;
-                    this.createModule(factory);
-                });
-            }
-            else if (jsonObject.patchId != "output" && jsonObject.patchId != "input") {
-                this.tempPatchId = jsonObject.patchId;
-                this.sceneName = jsonObject.sceneName;
-                var argumentCompile = { name: jsonObject.name, sourceCode: jsonObject.code, x: parseFloat(jsonObject.x), y: parseFloat(jsonObject.y), callback: (factory) => { this.createModule(factory); } };
-                this.compileFaust(argumentCompile);
+                    this.createModule(factories.get(shaKey));
+                }
+                else if (jsonObject.patchId != "output" && jsonObject.patchId != "input") {
+                    this.tempPatchId = jsonObject.patchId;
+                    this.sceneName = jsonObject.sceneName;
+                    var argumentCompile = { name: jsonObject.name, sourceCode: jsonObject.code, x: parseFloat(jsonObject.x), y: parseFloat(jsonObject.y), callback: (factory) => { this.createModule(factory); } };
+                    this.compileFaust(argumentCompile);
+                }
+                else {
+                    this.arrayRecalScene.shift();
+                    this.launchModuleCreation();
+                }
             }
             else {
-                this.arrayRecalScene.shift();
-                this.launchModuleCreation();
+                for (var i = 0; i < this.arrayRecalledModule.length; i++) {
+                    this.connectModule(this.arrayRecalledModule[i]);
+                }
+                for (var i = 0; i < this.arrayRecalledModule.length; i++) {
+                    delete this.arrayRecalledModule[i].patchID;
+                }
+                this.arrayRecalledModule = [];
+                var event = new CustomEvent("updatename");
+                document.dispatchEvent(event);
+                Utilitary.hideFullPageLoading();
             }
-        }
-        else {
-            for (var i = 0; i < this.arrayRecalledModule.length; i++) {
-                this.connectModule(this.arrayRecalledModule[i]);
-            }
-            for (var i = 0; i < this.arrayRecalledModule.length; i++) {
-                delete this.arrayRecalledModule[i].patchID;
-            }
-            this.arrayRecalledModule = [];
-            var event = new CustomEvent("updatename");
-            document.dispatchEvent(event);
-            Utilitary.hideFullPageLoading();
-        }
+        });
     }
     //update temporary info for the module being created
     updateAppTempModuleInfo(jsonSaveObject) {
@@ -3221,7 +3228,7 @@ class Scene {
     createModule(factory) {
         try {
             if (!factory) {
-                new Message(faust.getErrorMessage());
+                new Message("Error" /*faust.getErrorMessage()*/);
                 Utilitary.hideFullPageLoading();
                 return;
             }
@@ -3610,6 +3617,26 @@ class Library {
         return elementComplete.replace(stringStructureRemoved, "").replace(".dsp", "");
     }
 }
+//HelpView.ts: HelpView class contains the graphical structure of the help menu.
+class HelpView {
+    initHelpView() {
+        var helpContainer = document.createElement("div");
+        helpContainer.id = "helpContent";
+        helpContainer.className = "helpContent";
+        var videoContainer = document.createElement("div");
+        videoContainer.id = "videoContainer";
+        this.videoContainer = videoContainer;
+        helpContainer.appendChild(videoContainer);
+        return helpContainer;
+    }
+}
+//Help.ts : Help class, that controle behaviour of the help panel.
+/// <reference path="HelpView.ts"/>
+class Help {
+    stopVideo() {
+        //this.helpView.videoIframe.contentWindow.postMessage('{"event":"command","func":"' + 'stopVideo' + '","args":""}', '*');
+    }
+}
 /// <reference path="../Utilitary.ts"/>
 class LoadView {
     initLoadView() {
@@ -3638,7 +3665,7 @@ class LoadView {
         var aLightExemple = document.createElement("a");
         aLightExemple.id = "aLightExemple";
         aLightExemple.className = "exempleAnchor";
-        aLightExemple.textContent = "Small example";
+        aLightExemple.textContent = "Small exemple";
         aLightExemple.href = "json/Small_Exemple.json";
         aLightExemple.draggable = false;
         this.aLightExemple = aLightExemple;
@@ -3652,7 +3679,7 @@ class LoadView {
         var aLightPreExemple = document.createElement("a");
         aLightPreExemple.id = "aLightPreExemple";
         aLightPreExemple.className = "exempleAnchor";
-        aLightPreExemple.textContent = "Small example precompile";
+        aLightPreExemple.textContent = "Small exemple precompile";
         aLightPreExemple.href = "json/Small_Exemple_Precompile.json";
         aLightPreExemple.draggable = false;
         this.aLightPreExemple = aLightPreExemple;
@@ -4785,6 +4812,8 @@ class AccelerometerEdit {
 /// <reference path="LibraryView.ts"/>
 /// <reference path="Export.ts"/>
 /// <reference path="ExportView.ts"/>
+/// <reference path="Help.ts"/>
+/// <reference path="HelpView.ts"/>
 /// <reference path="Load.ts"/>
 /// <reference path="Save.ts"/>
 /// <reference path="AccelerometerEdit.ts"/>
@@ -4794,11 +4823,12 @@ var MenuChoices;
 (function (MenuChoices) {
     MenuChoices[MenuChoices["library"] = 0] = "library";
     MenuChoices[MenuChoices["export"] = 1] = "export";
-    MenuChoices[MenuChoices["kids"] = 2] = "kids";
-    MenuChoices[MenuChoices["edit"] = 3] = "edit";
-    MenuChoices[MenuChoices["save"] = 4] = "save";
-    MenuChoices[MenuChoices["load"] = 5] = "load";
-    MenuChoices[MenuChoices["null"] = 6] = "null";
+    MenuChoices[MenuChoices["help"] = 2] = "help";
+    MenuChoices[MenuChoices["kids"] = 3] = "kids";
+    MenuChoices[MenuChoices["edit"] = 4] = "edit";
+    MenuChoices[MenuChoices["save"] = 5] = "save";
+    MenuChoices[MenuChoices["load"] = 6] = "load";
+    MenuChoices[MenuChoices["null"] = 7] = "null";
 })(MenuChoices || (MenuChoices = {}));
 class Menu {
     constructor(htmlContainer) {
@@ -4812,6 +4842,7 @@ class Menu {
         //add Event Listeners
         this.menuView.libraryButtonMenu.onclick = () => { this.menuHandler(this.newMenuChoices = MenuChoices.library); };
         this.menuView.exportButtonMenu.onclick = () => { this.menuHandler(this.newMenuChoices = MenuChoices.export); };
+        this.menuView.helpButtonMenu.onclick = () => { this.menuHandler(this.newMenuChoices = MenuChoices.help); };
         this.menuView.editButtonMenu.addEventListener("click", () => { this.menuHandler(this.newMenuChoices = MenuChoices.edit); });
         this.menuView.closeButton.onclick = () => { this.menuHandler(this.newMenuChoices = MenuChoices.null); };
         this.menuView.saveButton.addEventListener("click", () => { this.menuHandler(this.newMenuChoices = MenuChoices.save); });
@@ -4848,16 +4879,22 @@ class Menu {
         this.expor.exportView = this.menuView.exportView;
         this.expor.uploadTargets();
         this.expor.setEventListeners();
+        this.help = new Help();
+        this.help.helpView = this.menuView.helpView;
         this.accEdit = new AccelerometerEdit(this.menuView.accEditView);
     }
     // dispatch the action of the menu buttons to the right submenu handler
     menuHandler(newMenuChoices) {
+        this.help.stopVideo();
         switch (newMenuChoices) {
             case MenuChoices.library:
                 this.libraryMenu();
                 break;
             case MenuChoices.export:
                 this.exportMenu();
+                break;
+            case MenuChoices.help:
+                this.helpMenu();
                 break;
             case MenuChoices.edit:
                 this.editMenu();
@@ -4976,6 +5013,32 @@ class Menu {
                 this.menuView.saveButton.style.zIndex = "1";
                 this.menuView.saveContent.style.display = "inline-table";
                 this.currentMenuChoices = MenuChoices.save;
+                break;
+        }
+    }
+    //manage the help display
+    helpMenu() {
+        switch (this.currentMenuChoices) {
+            case MenuChoices.null: //case MenuChoices.edit:
+                this.menuView.contentsMenu.style.display = "block";
+                this.menuView.helpContent.style.display = "block";
+                this.menuView.helpButtonMenu.style.backgroundColor = this.menuView.menuColorSelected;
+                this.menuView.helpButtonMenu.style.zIndex = "1";
+                this.currentMenuChoices = MenuChoices.help;
+                break;
+            case MenuChoices.help:
+                this.menuView.contentsMenu.style.display = "none";
+                this.menuView.helpContent.style.display = "none";
+                this.currentMenuChoices = MenuChoices.null;
+                this.menuView.helpButtonMenu.style.backgroundColor = this.menuView.menuColorDefault;
+                this.menuView.helpButtonMenu.style.zIndex = "0";
+                break;
+            default:
+                this.cleanMenu();
+                this.menuView.helpButtonMenu.style.backgroundColor = this.menuView.menuColorSelected;
+                this.menuView.helpButtonMenu.style.zIndex = "1";
+                this.menuView.helpContent.style.display = "block";
+                this.currentMenuChoices = MenuChoices.help;
                 break;
         }
     }
@@ -5252,6 +5315,11 @@ class MenuView {
         exportButtonMenu.className = "buttonsMenu";
         exportButtonMenu.appendChild(document.createTextNode(Utilitary.messageRessource.buttonExport));
         this.exportButtonMenu = exportButtonMenu;
+        var helpButtonMenu = document.createElement("div");
+        helpButtonMenu.id = "helpButtonMenu";
+        helpButtonMenu.className = "buttonsMenu";
+        helpButtonMenu.appendChild(document.createTextNode(Utilitary.messageRessource.buttonHelp));
+        this.helpButtonMenu = helpButtonMenu;
         var editButtonMenu = document.createElement("div");
         editButtonMenu.id = "EditButtonMenu";
         editButtonMenu.className = "buttonsMenu";
@@ -5287,10 +5355,11 @@ class MenuView {
         buttonsMenu.appendChild(editButtonMenu);
         buttonsMenu.appendChild(saveButtonMenu);
         buttonsMenu.appendChild(exportButtonMenu);
+        buttonsMenu.appendChild(helpButtonMenu);
         buttonsMenu.appendChild(fullScreenButton);
         buttonsMenu.appendChild(accButton);
         buttonsMenu.appendChild(cleanButton);
-        this.HTMLButtonsMenu.push(libraryButtonMenu, loadButtonMenu, saveButtonMenu, exportButtonMenu);
+        this.HTMLButtonsMenu.push(libraryButtonMenu, loadButtonMenu, saveButtonMenu, exportButtonMenu, helpButtonMenu);
         var myScene = document.createElement("div");
         myScene.id = "PatchName";
         myScene.className = "sceneTitle";
@@ -5323,6 +5392,10 @@ class MenuView {
         var exportContent = exportView.initExportView();
         exportContent.style.display = "none";
         this.exportView = exportView;
+        var helpView = new HelpView();
+        var helpContent = helpView.initHelpView();
+        helpContent.style.display = "none";
+        this.helpView = helpView;
         var accEditView = new AccelerometerEditView();
         var accEditContent = accEditView.initAccelerometerEdit();
         accEditContent.style.display = "none";
@@ -5332,15 +5405,17 @@ class MenuView {
         contentsMenu.appendChild(loadContent);
         contentsMenu.appendChild(saveContent);
         contentsMenu.appendChild(exportContent);
+        contentsMenu.appendChild(helpContent);
         menuContainer.appendChild(buttonsMenu);
         menuContainer.appendChild(contentsMenu);
         menuContainer.appendChild(accEditContent);
         htmlContainer.appendChild(menuContainer);
-        this.HTMLElementsMenu.push(libraryContent, loadContent, saveContent, exportContent);
+        this.HTMLElementsMenu.push(libraryContent, loadContent, saveContent, exportContent, helpContent);
         this.libraryContent = libraryContent;
         this.loadContent = loadContent;
         this.saveContent = saveContent;
         this.exportContent = exportContent;
+        this.helpContent = helpContent;
         this.contentsMenu = contentsMenu;
     }
 }
@@ -5371,6 +5446,8 @@ Create Factories and Modules
 /// <reference path="Menu/LibraryView.ts"/>
 /// <reference path="Menu/Menu.ts"/>
 /// <reference path="Menu/MenuView.ts"/>
+/// <reference path="Menu/Help.ts"/>
+/// <reference path="Menu/HelpView.ts"/>
 /// <reference path="ExportLib.ts"/>
 /// <reference path="EquivalentFaust.ts"/>
 /// <reference path="Lib/qrcode.d.ts"/>
@@ -5412,36 +5489,41 @@ class App {
     ****************  CREATE FAUST FACTORIES AND MODULES ****************
     ********************************************************************/
     compileFaust(compileFaust) {
-        //  Temporarily Saving parameters of compilation
-        this.tempModuleName = compileFaust.name;
-        this.tempModuleSourceCode = compileFaust.sourceCode;
-        this.tempModuleX = compileFaust.x;
-        this.tempModuleY = compileFaust.y;
-        var currentScene = Utilitary.currentScene;
-        if (currentScene) {
-            currentScene.muteScene();
-        }
-        ;
-        // Libraries are now included and loaded from the EMCC locale FS inluded in libfaust
-        var libpath = "libraries";
-        var args = ["-I", libpath, "-ftz", "2"];
-        //try to create the wasm code/factory with the given Faust code. Then callback to function passing the factory.
-        try {
-            this.factory = faust.createDSPFactory(compileFaust.sourceCode, args, (factory) => { compileFaust.callback(factory); });
-        }
-        catch (error) {
-            new Message(error);
-        }
-        if (currentScene) {
-            currentScene.unmuteScene();
-        }
-        ;
+        return __awaiter(this, void 0, void 0, function* () {
+            //  Temporarily Saving parameters of compilation
+            this.tempModuleName = compileFaust.name;
+            this.tempModuleSourceCode = compileFaust.sourceCode;
+            this.tempModuleX = compileFaust.x;
+            this.tempModuleY = compileFaust.y;
+            var currentScene = Utilitary.currentScene;
+            if (currentScene) {
+                currentScene.muteScene();
+            }
+            ;
+            // Libraries are now included and loaded from the EMCC locale FS inluded in libfaust
+            var libpath = "libraries";
+            var args = ["-I", libpath, "-ftz", "2"];
+            //try to create the wasm code/factory with the given Faust code. Then callback to function passing the factory.
+            try {
+                const faustMonoDspGenerator = new faustWasmEnv.FaustMonoDspGenerator();
+                const generator = yield faustMonoDspGenerator.compile(faustWasmEnv.faustCompiler, "FaustDSP", compileFaust.sourceCode, "-ftz 2");
+                this.factory = generator.factory;
+                compileFaust.callback(this.factory);
+            }
+            catch (error) {
+                new Message(error);
+            }
+            if (currentScene) {
+                currentScene.unmuteScene();
+            }
+            ;
+        });
     }
     //create Module, set the source faust code to its moduleFaust, set the faust interface , add the input output connection nodes
     //
     createModule(factory) {
         if (!factory) {
-            new Message(Utilitary.messageRessource.errorFactory + faust.getErrorMessage());
+            new Message(Utilitary.messageRessource.errorFactory /*+ faust.getErrorMessage() */);
             Utilitary.hideFullPageLoading();
             return;
         }
@@ -5695,10 +5777,26 @@ class App {
 //initialization af the app, create app and ressource to get text with correct localization
 //then resumeInit on callback when text is loaded
 function init() {
-    console.log("FaustPlayground: version 1.0.4 (06/16/23)");
-    var app = new App();
-    var ressource = new Ressources;
-    ressource.getRessources(app);
+    return __awaiter(this, void 0, void 0, function* () {
+        console.log("FaustPlayground: version 1.1.0 (11/06/22)");
+        const faustwasm = yield import("./Lib/faustwasm/index.js");
+        console.log(faustwasm);
+        const { instantiateFaustModuleFromFile, FaustCompiler, LibFaust, FaustMonoDspGenerator, FaustPolyDspGenerator, ab2str, str2ab } = faustwasm;
+        const faustModule = yield instantiateFaustModuleFromFile("./js/Lib/libfaust-wasm.js");
+        const libFaust = new LibFaust(faustModule);
+        const faustCompiler = new FaustCompiler(libFaust);
+        globalThis.faustWasmEnv = {
+            faustwasm,
+            faustCompiler,
+            FaustMonoDspGenerator,
+            FaustPolyDspGenerator,
+            ab2str,
+            str2ab
+        };
+        var app = new App();
+        var ressource = new Ressources();
+        ressource.getRessources(app);
+    });
 }
 //callback when text is loaded. resume the initialization
 function resumeInit(app) {

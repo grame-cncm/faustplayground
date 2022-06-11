@@ -115,22 +115,19 @@ interface IHTMLDivElementSrc extends HTMLDivElement {
 interface IHTMLDivElementOut extends HTMLDivElement {
     audioNode: AudioDestinationNode;
 }
-interface Factory {
-    name: string;
-    sha_key: string;
-    code: string;
-}
+type Factory = import("./Lib/faustwasm/index.js").FaustDspFactory;
 interface HTMLInterfaceContainer extends HTMLDivElement {
     unlitClassname: string;
     lastLit: any;
 }
 interface IfDSP extends AudioNode {
     getJSON: () => string;
-    getParamValue: (text: string) => string;
-    setParamValue: (text: string, val: string) => void;
+    getParamValue: (text: string) => number;
+    setParamValue: (text: string, val: number) => void;
     getNumInputs: () => number;
     getNumOutputs: () => number;
     getParams: () => any;
+    destroy: () => any;
 }
 
 interface CompileFaust {
