@@ -23,6 +23,7 @@ declare const faust: never;
 //then resumeInit on callback when text is loaded
 async function init(): Promise<void> {
     console.log("FaustPlayground: version 1.1.0 (11/06/22)");
+    //@ts-ignore
     const faustwasm = await import("./Lib/faustwasm/index.js");
     console.log(faustwasm);
     const { instantiateFaustModuleFromFile, FaustCompiler, LibFaust, FaustMonoDspGenerator, FaustPolyDspGenerator, ab2str, str2ab } = faustwasm;

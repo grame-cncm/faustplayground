@@ -2913,7 +2913,6 @@ class SceneView {
 */
 /// <reference path="../Connect.ts"/>
 /// <reference path="../Modules/ModuleClass.ts"/>
-/// <reference path="../Lib/webaudio-asm-worker-wrapper.d.ts"/>
 /// <reference path="../Utilitary.ts"/>
 /// <reference path="../Messages.ts"/>
 /// <reference path="SceneView.ts"/>
@@ -3153,8 +3152,9 @@ class Scene {
     //recall scene from json/jfaust fill arrayRecalScene with each JsonSaveModule
     recallScene(json) {
         if (json != null) {
+            let jsonObjectCollection = {};
             try {
-                var jsonObjectCollection = JSON.parse(json);
+                jsonObjectCollection = JSON.parse(json);
             }
             catch (e) {
                 new Message(Utilitary.messageRessource.errorJsonCorrupted);
@@ -5437,7 +5437,6 @@ Create Factories and Modules
 /// <reference path="Error.ts"/>
 /// <reference path="Dragging.ts"/>
 /// <reference path="Utilitary.ts"/>
-/// <reference path="Lib/webaudio-asm-worker-wrapper.d.ts"/>
 /// <reference path="Modules/FaustInterface.ts"/>
 /// <reference path="Scenes/SceneView.ts"/>
 /// <reference path="Menu/Export.ts"/>
@@ -5501,13 +5500,15 @@ class App {
             }
             ;
             // Libraries are now included and loaded from the EMCC locale FS inluded in libfaust
-            var libpath = "libraries";
-            var args = ["-I", libpath, "-ftz", "2"];
+            // var libpath = "libraries";
+            // var args: string[] = ["-I", libpath, "-ftz", "2"];
             //try to create the wasm code/factory with the given Faust code. Then callback to function passing the factory.
             try {
                 const faustMonoDspGenerator = new faustWasmEnv.FaustMonoDspGenerator();
-                const generator = yield faustMonoDspGenerator.compile(faustWasmEnv.faustCompiler, "FaustDSP", compileFaust.sourceCode, "-ftz 2");
-                this.factory = generator.factory;
+                yield faustMonoDspGenerator.compile(faustWasmEnv.faustCompiler, "FaustDSP", compileFaust.sourceCode, "-ftz 2");
+                if (!faustMonoDspGenerator.factory)
+                    throw new Error("Faust DSP is not compiled");
+                this.factory = faustMonoDspGenerator.factory;
                 compileFaust.callback(this.factory);
             }
             catch (error) {
@@ -5779,6 +5780,7 @@ class App {
 function init() {
     return __awaiter(this, void 0, void 0, function* () {
         console.log("FaustPlayground: version 1.1.0 (11/06/22)");
+        //@ts-ignore
         const faustwasm = yield import("./Lib/faustwasm/index.js");
         console.log(faustwasm);
         const { instantiateFaustModuleFromFile, FaustCompiler, LibFaust, FaustMonoDspGenerator, FaustPolyDspGenerator, ab2str, str2ab } = faustwasm;

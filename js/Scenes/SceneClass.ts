@@ -4,7 +4,6 @@
 
 /// <reference path="../Connect.ts"/>
 /// <reference path="../Modules/ModuleClass.ts"/>
-/// <reference path="../Lib/webaudio-asm-worker-wrapper.d.ts"/>
 /// <reference path="../Utilitary.ts"/>
 /// <reference path="../Messages.ts"/>
 /// <reference path="SceneView.ts"/>
@@ -301,8 +300,9 @@ class Scene {
     //recall scene from json/jfaust fill arrayRecalScene with each JsonSaveModule
     recallScene(json: string): void {
         if (json != null) {
+            let jsonObjectCollection: JsonSaveCollection = {};
             try {
-                var jsonObjectCollection: JsonSaveCollection = JSON.parse(json);
+                jsonObjectCollection = JSON.parse(json);
             } catch (e) {
                 new Message(Utilitary.messageRessource.errorJsonCorrupted)
                 Utilitary.hideFullPageLoading();
