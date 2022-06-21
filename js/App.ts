@@ -16,7 +16,6 @@ Create Factories and Modules
 /// <reference path="Error.ts"/>
 /// <reference path="Dragging.ts"/>
 /// <reference path="Utilitary.ts"/>
-/// <reference path="Lib/webaudio-asm-worker-wrapper.d.ts"/>
 /// <reference path="Modules/FaustInterface.ts"/>
 /// <reference path="Scenes/SceneView.ts"/>
 /// <reference path="Menu/Export.ts"/>
@@ -101,14 +100,15 @@ class App {
         if (currentScene) { currentScene.muteScene() };
 
         // Libraries are now included and loaded from the EMCC locale FS inluded in libfaust
-        var libpath = "libraries";
-        var args: string[] = ["-I", libpath, "-ftz", "2"];
+        // var libpath = "libraries";
+        // var args: string[] = ["-I", libpath, "-ftz", "2"];
 
         //try to create the wasm code/factory with the given Faust code. Then callback to function passing the factory.
         try {
             const faustMonoDspGenerator = new faustWasmEnv.FaustMonoDspGenerator();
-            const generator = await faustMonoDspGenerator.compile(faustWasmEnv.faustCompiler, "FaustDSP", compileFaust.sourceCode, "-ftz 2");
-            this.factory = generator.factory;
+            await faustMonoDspGenerator.compile(faustWasmEnv.faustCompiler, "FaustDSP", compileFaust.sourceCode, "-ftz 2");
+            if (!faustMonoDspGenerator.factory) throw new Error("Faust DSP is not compiled");
+            this.factory = faustMonoDspGenerator.factory;
             compileFaust.callback(this.factory);
         } catch (error) {
             new Message(error)
