@@ -176,7 +176,9 @@ class ModuleClass {
             if (factory != null) {
                 var moduleFaust = this.moduleFaust;
                 const faustMonoDspGenerator = new faustWasmEnv.FaustMonoDspGenerator();
-                const dsp = await faustMonoDspGenerator.createNode(Utilitary.audioContext, "FaustDSP", factory);
+                const dsp = typeof AudioWorklet !== "undefined"
+                        ? await faustMonoDspGenerator.createNode(Utilitary.audioContext, "FaustDSP", factory)
+                        : await faustMonoDspGenerator.createNode(Utilitary.audioContext, "FaustDSP", factory, true, 1024);
                 // To activate the AudioWorklet mode
                 //faust.createDSPWorkletInstance(factory, Utilitary.audioContext, function(dsp) { moduleFaust.fDSP = dsp; callback(); });
                 if (dsp != null) {

@@ -1855,7 +1855,9 @@ class ModuleClass {
                 if (factory != null) {
                     var moduleFaust = this.moduleFaust;
                     const faustMonoDspGenerator = new faustWasmEnv.FaustMonoDspGenerator();
-                    const dsp = yield faustMonoDspGenerator.createNode(Utilitary.audioContext, "FaustDSP", factory);
+                    const dsp = typeof AudioWorklet !== "undefined"
+                        ? yield faustMonoDspGenerator.createNode(Utilitary.audioContext, "FaustDSP", factory)
+                        : yield faustMonoDspGenerator.createNode(Utilitary.audioContext, "FaustDSP", factory, true, 1024);
                     // To activate the AudioWorklet mode
                     //faust.createDSPWorkletInstance(factory, Utilitary.audioContext, function(dsp) { moduleFaust.fDSP = dsp; callback(); });
                     if (dsp != null) {
@@ -5869,3 +5871,4 @@ function IosInit2() {
     }
     window.removeEventListener('touchstart', IosInit2, false);
 }
+//# sourceMappingURL=faustplayground.js.map
