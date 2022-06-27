@@ -5808,6 +5808,7 @@ function resumeInit(app) {
     app.createDialogue();
     //create audiocontext if available, otherwise app can't work
     try {
+        const AudioContext = globalThis.AudioContext || globalThis.webkitAudioContext;
         Utilitary.audioContext = new AudioContext({ latencyHint: 0.00001 });
         Utilitary.audioContext.destination.channelInterpretation = "discrete";
         Utilitary.audioContext.destination.channelCount = Utilitary.audioContext.destination.maxChannelCount;
