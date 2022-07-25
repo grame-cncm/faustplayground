@@ -82,7 +82,7 @@ div#contentsMenu {
 }
 .buttonsMenu:hover {
     color:white;
-    background-color: rgba(209, 64, 80, 0.9)!important;   
+    background-color: rgba(209, 64, 80, 0.9)!important;
 }
 
 /*layout menu library*/
@@ -115,7 +115,7 @@ ul.librarySelects {
     box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.29);
     list-style: none;
     height:calc(100% - 4em);
-    
+
 }
 .librarySelects.ps-container > .ps-scrollbar-x-rail,
 .librarySelects.ps-container > .ps-scrollbar-y-rail
@@ -223,7 +223,7 @@ input#inputNameApp {
     opacity: 0.8;
     color: white;
     min-height:40px;
-    
+
 }
 
 .changeAccountButton {
@@ -274,7 +274,7 @@ div#exportOptionContainer{
 }
 
 #selectDiv{
-	position:relative; 
+	position:relative;
     width: 100%;
     float:left;
 }
@@ -336,20 +336,13 @@ a#linkDownload:hover{
 }
 
 #qrcodeDiv{
-	position: relative; 
+	position: relative;
     margin-top: 2em;
     margin-bottom: 2em;
 }
 
 #qrcodeDiv>div {
     box-shadow: 0 0 5px black;
-}
-
-/*help menu*/
-
-div#videoContainer {
-    margin: 0 auto;
-    width: 600px;
 }
 
 /*fullscreen button*/
@@ -417,7 +410,7 @@ select::selection {
 select:focus {
     border:none;
     background: rgba(255, 255, 255, 0.53)!important;
-    
+
 }
 
 #dialogGoodNews {

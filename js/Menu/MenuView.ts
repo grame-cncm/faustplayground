@@ -8,7 +8,6 @@ class MenuView {
     menuContainer: HTMLElement;
     libraryButtonMenu: HTMLElement;
     exportButtonMenu: HTMLElement;
-    helpButtonMenu: HTMLElement;
     editButtonMenu: HTMLElement;
     fullScreenButton: HTMLElement;
     cleanButton: HTMLElement;
@@ -19,7 +18,6 @@ class MenuView {
     loadContent: HTMLElement;
     exportContent: HTMLElement;
     saveContent: HTMLElement;
-    helpContent: HTMLElement;
     contentsMenu: HTMLElement;
     closeButton: HTMLElement;
     HTMLElementsMenu: HTMLElement[] = [];
@@ -29,7 +27,6 @@ class MenuView {
     loadView: LoadView;
     saveView: SaveView;
     exportView: ExportView;
-    helpView: HelpView;
     accEditView: AccelerometerEditView;
     menuColorDefault: string = "rgba(227, 64, 80, 0.73)";
     menuColorSelected: string = "rgb(209, 64, 80)";
@@ -55,12 +52,6 @@ class MenuView {
         exportButtonMenu.className = "buttonsMenu";
         exportButtonMenu.appendChild(document.createTextNode(Utilitary.messageRessource.buttonExport));
         this.exportButtonMenu = exportButtonMenu;
-
-        var helpButtonMenu: HTMLElement = document.createElement("div");
-        helpButtonMenu.id = "helpButtonMenu";
-        helpButtonMenu.className = "buttonsMenu";
-        helpButtonMenu.appendChild(document.createTextNode(Utilitary.messageRessource.buttonHelp));
-        this.helpButtonMenu = helpButtonMenu;
 
         var editButtonMenu: HTMLElement = document.createElement("div");
         editButtonMenu.id = "EditButtonMenu";
@@ -104,12 +95,11 @@ class MenuView {
         buttonsMenu.appendChild(editButtonMenu);
         buttonsMenu.appendChild(saveButtonMenu);
         buttonsMenu.appendChild(exportButtonMenu);
-        buttonsMenu.appendChild(helpButtonMenu);
         buttonsMenu.appendChild(fullScreenButton);
         buttonsMenu.appendChild(accButton);
         buttonsMenu.appendChild(cleanButton);
 
-        this.HTMLButtonsMenu.push(libraryButtonMenu, loadButtonMenu, saveButtonMenu, exportButtonMenu, helpButtonMenu);
+        this.HTMLButtonsMenu.push(libraryButtonMenu, loadButtonMenu, saveButtonMenu, exportButtonMenu);
 
         var myScene: HTMLDivElement = document.createElement("div");
         myScene.id = "PatchName";
@@ -152,11 +142,6 @@ class MenuView {
         exportContent.style.display = "none";
         this.exportView = exportView;
 
-        var helpView: HelpView = new HelpView();
-        var helpContent: HTMLElement = helpView.initHelpView();
-        helpContent.style.display = "none";
-        this.helpView = helpView;
-
         var accEditView: AccelerometerEditView = new AccelerometerEditView();
         var accEditContent = accEditView.initAccelerometerEdit();
         accEditContent.style.display = "none";
@@ -167,20 +152,18 @@ class MenuView {
         contentsMenu.appendChild(loadContent);
         contentsMenu.appendChild(saveContent);
         contentsMenu.appendChild(exportContent);
-        contentsMenu.appendChild(helpContent);
 
         menuContainer.appendChild(buttonsMenu);
         menuContainer.appendChild(contentsMenu);
         menuContainer.appendChild(accEditContent);
 
         htmlContainer.appendChild(menuContainer);
-        this.HTMLElementsMenu.push(libraryContent, loadContent, saveContent, exportContent, helpContent)
+        this.HTMLElementsMenu.push(libraryContent, loadContent, saveContent, exportContent)
 
         this.libraryContent = libraryContent;
         this.loadContent = loadContent;
         this.saveContent = saveContent;
         this.exportContent = exportContent;
-        this.helpContent = helpContent;
         this.contentsMenu = contentsMenu;
     }
 }

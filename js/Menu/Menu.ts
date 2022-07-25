@@ -4,8 +4,6 @@
 /// <reference path="LibraryView.ts"/>
 /// <reference path="Export.ts"/>
 /// <reference path="ExportView.ts"/>
-/// <reference path="Help.ts"/>
-/// <reference path="HelpView.ts"/>
 /// <reference path="Load.ts"/>
 /// <reference path="Save.ts"/>
 /// <reference path="AccelerometerEdit.ts"/>
@@ -24,7 +22,7 @@ interface HTMLElement {
     webkitRequestFullscreen: () => any;
 }
 
-enum MenuChoices { library, export, help, kids, edit, save, load, null }
+enum MenuChoices { library, export, kids, edit, save, load, null }
 
 class Menu {
     isMenuDriveLoading: boolean = false;
@@ -37,7 +35,6 @@ class Menu {
     save: Save;
     expor: Export;
     accEdit: AccelerometerEdit;
-    help: Help;
     isFullScreen: boolean = false;
     isAccelerometer: boolean = Utilitary.isAccelerometerOn;
     drive: DriveAPI;
@@ -50,7 +47,6 @@ class Menu {
         //add Event Listeners
         this.menuView.libraryButtonMenu.onclick = () => { this.menuHandler(this.newMenuChoices = MenuChoices.library) };
         this.menuView.exportButtonMenu.onclick = () => { this.menuHandler(this.newMenuChoices = MenuChoices.export) };
-        this.menuView.helpButtonMenu.onclick = () => { this.menuHandler(this.newMenuChoices = MenuChoices.help) };
         this.menuView.editButtonMenu.addEventListener("click", () => { this.menuHandler(this.newMenuChoices = MenuChoices.edit) });
         this.menuView.closeButton.onclick = () => { this.menuHandler(this.newMenuChoices = MenuChoices.null) };
         this.menuView.saveButton.addEventListener("click", () => { this.menuHandler(this.newMenuChoices = MenuChoices.save) });
@@ -89,24 +85,17 @@ class Menu {
         this.expor.exportView = this.menuView.exportView;
         this.expor.uploadTargets();
         this.expor.setEventListeners();
-        this.help = new Help();
-        this.help.helpView = this.menuView.helpView;
         this.accEdit = new AccelerometerEdit(this.menuView.accEditView);
     }
 
     // dispatch the action of the menu buttons to the right submenu handler
     menuHandler(newMenuChoices: MenuChoices): any {
-        this.help.stopVideo();
-
         switch (newMenuChoices) {
             case MenuChoices.library:
                 this.libraryMenu();
                 break;
             case MenuChoices.export:
                 this.exportMenu();
-                break;
-            case MenuChoices.help:
-                this.helpMenu();
                 break;
             case MenuChoices.edit:
                 this.editMenu();
@@ -229,33 +218,6 @@ class Menu {
                 this.menuView.saveButton.style.zIndex = "1";
                 this.menuView.saveContent.style.display = "inline-table";
                 this.currentMenuChoices = MenuChoices.save;
-                break;
-        }
-    }
-
-    //manage the help display
-    helpMenu() {
-        switch (this.currentMenuChoices) {
-            case MenuChoices.null: //case MenuChoices.edit:
-                this.menuView.contentsMenu.style.display = "block";
-                this.menuView.helpContent.style.display = "block";
-                this.menuView.helpButtonMenu.style.backgroundColor = this.menuView.menuColorSelected;
-                this.menuView.helpButtonMenu.style.zIndex = "1";
-                this.currentMenuChoices = MenuChoices.help;
-                break;
-            case MenuChoices.help:
-                this.menuView.contentsMenu.style.display = "none";
-                this.menuView.helpContent.style.display = "none";
-                this.currentMenuChoices = MenuChoices.null;
-                this.menuView.helpButtonMenu.style.backgroundColor = this.menuView.menuColorDefault;
-                this.menuView.helpButtonMenu.style.zIndex = "0";
-                break;
-            default:
-                this.cleanMenu();
-                this.menuView.helpButtonMenu.style.backgroundColor = this.menuView.menuColorSelected;
-                this.menuView.helpButtonMenu.style.zIndex = "1";
-                this.menuView.helpContent.style.display = "block";
-                this.currentMenuChoices = MenuChoices.help;
                 break;
         }
     }

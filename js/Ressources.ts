@@ -53,7 +53,6 @@ class Ressources {
     buttonEdit: string;
     buttonSave: string;
     buttonExport: string;
-    buttonHelp: string;
 
     //Menu
     confirmEmptyScene: string;

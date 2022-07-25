@@ -51,7 +51,7 @@ class LoadView {
         var aLightExemple = document.createElement("a");
         aLightExemple.id = "aLightExemple";
         aLightExemple.className = "exempleAnchor"
-        aLightExemple.textContent = "Small exemple";
+        aLightExemple.textContent = "Small example";
         aLightExemple.href = "json/Small_Exemple.json"
         aLightExemple.draggable = false;
         this.aLightExemple = aLightExemple;
@@ -67,7 +67,7 @@ class LoadView {
         var aLightPreExemple = document.createElement("a");
         aLightPreExemple.id = "aLightPreExemple";
         aLightPreExemple.className = "exempleAnchor"
-        aLightPreExemple.textContent = "Small exemple precompile";
+        aLightPreExemple.textContent = "Small example precompile";
         aLightPreExemple.href = "json/Small_Exemple_Precompile.json"
         aLightPreExemple.draggable = false;
         this.aLightPreExemple = aLightPreExemple;

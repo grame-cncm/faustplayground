@@ -25,8 +25,6 @@ Create Factories and Modules
 /// <reference path="Menu/LibraryView.ts"/>
 /// <reference path="Menu/Menu.ts"/>
 /// <reference path="Menu/MenuView.ts"/>
-/// <reference path="Menu/Help.ts"/>
-/// <reference path="Menu/HelpView.ts"/>
 /// <reference path="ExportLib.ts"/>
 /// <reference path="EquivalentFaust.ts"/>
 /// <reference path="Lib/qrcode.d.ts"/>
