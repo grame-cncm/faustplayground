@@ -27,7 +27,12 @@ Then open:
 
 In the `faust-modules` folder, add your .dsp files to the `effects` or `generators` folder. Then update `faust-modules/index.json` by hand.
 
+## To rebuild the JavaScript
+
+- install `tsc`: `npm i -g typescript`
+- run `make compile`
+
 ## Useful links
 
-- [https://faustplayground.grame.fr](https://faustplayground.grame.fr): the official link on the FaustPlayground website. 
+- [https://faustplayground.grame.fr](https://faustplayground.grame.fr): the official link on the FaustPlayground website.
 - [https://github.com/grame-cncm/faustplayground](https://github.com/grame-cncm/faustplayground): the github repository
