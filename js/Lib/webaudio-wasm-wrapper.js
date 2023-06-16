@@ -1,3 +1,28 @@
+/************************************************************************
+ FAUST Architecture File
+ Copyright (C) 2003-2019 GRAME, Centre National de Creation Musicale
+ ---------------------------------------------------------------------
+ This Architecture section is free software; you can redistribute it
+ and/or modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation; either version 3 of
+ the License, or (at your option) any later version.
+ 
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ 
+ You should have received a copy of the GNU General Public License
+ along with this program; If not, see <http://www.gnu.org/licenses/>.
+ 
+ EXCEPTION : As a special exception, you may create a larger work
+ that contains this FAUST architecture section and distribute
+ that work under terms of your choice, so long as this FAUST
+ architecture section is not modified.
+ 
+ ************************************************************************
+ ************************************************************************/
+
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 /*  SHA-1 implementation in JavaScript | (c) Chris Veness 2002-2013 | www.movable-type.co.uk      */
 /*   - see http://csrc.nist.gov/groups/ST/toolkit/secure_hashing.html                             */
@@ -184,7 +209,8 @@ Utf8.decode = function (strUtf) {
 
 'use strict';
 
-var faust_module = FaustModule(); // Emscripten generated module
+//var faust_module = FaustModule(); // Emscripten generated module
+var faust_module = Module; // Emscripten generated module
 
 faust_module.lengthBytesUTF8 = function (str) {
     var len = 0;
@@ -3309,7 +3335,7 @@ var mydspPolyProcessorString = `
             {
                 for (var i = 0; i < this.fPitchwheelLabel.length; i++) {
                     var pw = this.fPitchwheelLabel[i];
-                    this.setParamValue(path, mydspPolyProcessor.remap(wheel, 0, 16383, pw.min, pw.max));
+                    this.setParamValue(pw.path, mydspPolyProcessor.remap(wheel, 0, 16383, pw.min, pw.max));
                     if (this.output_handler) {
                         this.output_handler(pw.path, this.getParamValue(pw.path));
                     }

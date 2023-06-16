@@ -5695,7 +5695,7 @@ class App {
 //initialization af the app, create app and ressource to get text with correct localization
 //then resumeInit on callback when text is loaded
 function init() {
-    console.log("FaustPlayground: version 1.0.3 (10/09/21)");
+    console.log("FaustPlayground: version 1.0.4 (06/16/23)");
     var app = new App();
     var ressource = new Ressources;
     ressource.getRessources(app);
