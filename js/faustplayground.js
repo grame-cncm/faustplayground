@@ -3619,26 +3619,6 @@ class Library {
         return elementComplete.replace(stringStructureRemoved, "").replace(".dsp", "");
     }
 }
-//HelpView.ts: HelpView class contains the graphical structure of the help menu.
-class HelpView {
-    initHelpView() {
-        var helpContainer = document.createElement("div");
-        helpContainer.id = "helpContent";
-        helpContainer.className = "helpContent";
-        var videoContainer = document.createElement("div");
-        videoContainer.id = "videoContainer";
-        this.videoContainer = videoContainer;
-        helpContainer.appendChild(videoContainer);
-        return helpContainer;
-    }
-}
-//Help.ts : Help class, that controle behaviour of the help panel.
-/// <reference path="HelpView.ts"/>
-class Help {
-    stopVideo() {
-        //this.helpView.videoIframe.contentWindow.postMessage('{"event":"command","func":"' + 'stopVideo' + '","args":""}', '*');
-    }
-}
 /// <reference path="../Utilitary.ts"/>
 class LoadView {
     initLoadView() {
@@ -3667,7 +3647,7 @@ class LoadView {
         var aLightExemple = document.createElement("a");
         aLightExemple.id = "aLightExemple";
         aLightExemple.className = "exempleAnchor";
-        aLightExemple.textContent = "Small exemple";
+        aLightExemple.textContent = "Small example";
         aLightExemple.href = "json/Small_Exemple.json";
         aLightExemple.draggable = false;
         this.aLightExemple = aLightExemple;
@@ -3681,7 +3661,7 @@ class LoadView {
         var aLightPreExemple = document.createElement("a");
         aLightPreExemple.id = "aLightPreExemple";
         aLightPreExemple.className = "exempleAnchor";
-        aLightPreExemple.textContent = "Small exemple precompile";
+        aLightPreExemple.textContent = "Small example precompile";
         aLightPreExemple.href = "json/Small_Exemple_Precompile.json";
         aLightPreExemple.draggable = false;
         this.aLightPreExemple = aLightPreExemple;
@@ -4814,8 +4794,6 @@ class AccelerometerEdit {
 /// <reference path="LibraryView.ts"/>
 /// <reference path="Export.ts"/>
 /// <reference path="ExportView.ts"/>
-/// <reference path="Help.ts"/>
-/// <reference path="HelpView.ts"/>
 /// <reference path="Load.ts"/>
 /// <reference path="Save.ts"/>
 /// <reference path="AccelerometerEdit.ts"/>
@@ -4825,12 +4803,11 @@ var MenuChoices;
 (function (MenuChoices) {
     MenuChoices[MenuChoices["library"] = 0] = "library";
     MenuChoices[MenuChoices["export"] = 1] = "export";
-    MenuChoices[MenuChoices["help"] = 2] = "help";
-    MenuChoices[MenuChoices["kids"] = 3] = "kids";
-    MenuChoices[MenuChoices["edit"] = 4] = "edit";
-    MenuChoices[MenuChoices["save"] = 5] = "save";
-    MenuChoices[MenuChoices["load"] = 6] = "load";
-    MenuChoices[MenuChoices["null"] = 7] = "null";
+    MenuChoices[MenuChoices["kids"] = 2] = "kids";
+    MenuChoices[MenuChoices["edit"] = 3] = "edit";
+    MenuChoices[MenuChoices["save"] = 4] = "save";
+    MenuChoices[MenuChoices["load"] = 5] = "load";
+    MenuChoices[MenuChoices["null"] = 6] = "null";
 })(MenuChoices || (MenuChoices = {}));
 class Menu {
     constructor(htmlContainer) {
@@ -4844,7 +4821,6 @@ class Menu {
         //add Event Listeners
         this.menuView.libraryButtonMenu.onclick = () => { this.menuHandler(this.newMenuChoices = MenuChoices.library); };
         this.menuView.exportButtonMenu.onclick = () => { this.menuHandler(this.newMenuChoices = MenuChoices.export); };
-        this.menuView.helpButtonMenu.onclick = () => { this.menuHandler(this.newMenuChoices = MenuChoices.help); };
         this.menuView.editButtonMenu.addEventListener("click", () => { this.menuHandler(this.newMenuChoices = MenuChoices.edit); });
         this.menuView.closeButton.onclick = () => { this.menuHandler(this.newMenuChoices = MenuChoices.null); };
         this.menuView.saveButton.addEventListener("click", () => { this.menuHandler(this.newMenuChoices = MenuChoices.save); });
@@ -4881,22 +4857,16 @@ class Menu {
         this.expor.exportView = this.menuView.exportView;
         this.expor.uploadTargets();
         this.expor.setEventListeners();
-        this.help = new Help();
-        this.help.helpView = this.menuView.helpView;
         this.accEdit = new AccelerometerEdit(this.menuView.accEditView);
     }
     // dispatch the action of the menu buttons to the right submenu handler
     menuHandler(newMenuChoices) {
-        this.help.stopVideo();
         switch (newMenuChoices) {
             case MenuChoices.library:
                 this.libraryMenu();
                 break;
             case MenuChoices.export:
                 this.exportMenu();
-                break;
-            case MenuChoices.help:
-                this.helpMenu();
                 break;
             case MenuChoices.edit:
                 this.editMenu();
@@ -5015,32 +4985,6 @@ class Menu {
                 this.menuView.saveButton.style.zIndex = "1";
                 this.menuView.saveContent.style.display = "inline-table";
                 this.currentMenuChoices = MenuChoices.save;
-                break;
-        }
-    }
-    //manage the help display
-    helpMenu() {
-        switch (this.currentMenuChoices) {
-            case MenuChoices.null: //case MenuChoices.edit:
-                this.menuView.contentsMenu.style.display = "block";
-                this.menuView.helpContent.style.display = "block";
-                this.menuView.helpButtonMenu.style.backgroundColor = this.menuView.menuColorSelected;
-                this.menuView.helpButtonMenu.style.zIndex = "1";
-                this.currentMenuChoices = MenuChoices.help;
-                break;
-            case MenuChoices.help:
-                this.menuView.contentsMenu.style.display = "none";
-                this.menuView.helpContent.style.display = "none";
-                this.currentMenuChoices = MenuChoices.null;
-                this.menuView.helpButtonMenu.style.backgroundColor = this.menuView.menuColorDefault;
-                this.menuView.helpButtonMenu.style.zIndex = "0";
-                break;
-            default:
-                this.cleanMenu();
-                this.menuView.helpButtonMenu.style.backgroundColor = this.menuView.menuColorSelected;
-                this.menuView.helpButtonMenu.style.zIndex = "1";
-                this.menuView.helpContent.style.display = "block";
-                this.currentMenuChoices = MenuChoices.help;
                 break;
         }
     }
@@ -5317,11 +5261,6 @@ class MenuView {
         exportButtonMenu.className = "buttonsMenu";
         exportButtonMenu.appendChild(document.createTextNode(Utilitary.messageRessource.buttonExport));
         this.exportButtonMenu = exportButtonMenu;
-        var helpButtonMenu = document.createElement("div");
-        helpButtonMenu.id = "helpButtonMenu";
-        helpButtonMenu.className = "buttonsMenu";
-        helpButtonMenu.appendChild(document.createTextNode(Utilitary.messageRessource.buttonHelp));
-        this.helpButtonMenu = helpButtonMenu;
         var editButtonMenu = document.createElement("div");
         editButtonMenu.id = "EditButtonMenu";
         editButtonMenu.className = "buttonsMenu";
@@ -5357,11 +5296,10 @@ class MenuView {
         buttonsMenu.appendChild(editButtonMenu);
         buttonsMenu.appendChild(saveButtonMenu);
         buttonsMenu.appendChild(exportButtonMenu);
-        buttonsMenu.appendChild(helpButtonMenu);
         buttonsMenu.appendChild(fullScreenButton);
         buttonsMenu.appendChild(accButton);
         buttonsMenu.appendChild(cleanButton);
-        this.HTMLButtonsMenu.push(libraryButtonMenu, loadButtonMenu, saveButtonMenu, exportButtonMenu, helpButtonMenu);
+        this.HTMLButtonsMenu.push(libraryButtonMenu, loadButtonMenu, saveButtonMenu, exportButtonMenu);
         var myScene = document.createElement("div");
         myScene.id = "PatchName";
         myScene.className = "sceneTitle";
@@ -5394,10 +5332,6 @@ class MenuView {
         var exportContent = exportView.initExportView();
         exportContent.style.display = "none";
         this.exportView = exportView;
-        var helpView = new HelpView();
-        var helpContent = helpView.initHelpView();
-        helpContent.style.display = "none";
-        this.helpView = helpView;
         var accEditView = new AccelerometerEditView();
         var accEditContent = accEditView.initAccelerometerEdit();
         accEditContent.style.display = "none";
@@ -5407,17 +5341,15 @@ class MenuView {
         contentsMenu.appendChild(loadContent);
         contentsMenu.appendChild(saveContent);
         contentsMenu.appendChild(exportContent);
-        contentsMenu.appendChild(helpContent);
         menuContainer.appendChild(buttonsMenu);
         menuContainer.appendChild(contentsMenu);
         menuContainer.appendChild(accEditContent);
         htmlContainer.appendChild(menuContainer);
-        this.HTMLElementsMenu.push(libraryContent, loadContent, saveContent, exportContent, helpContent);
+        this.HTMLElementsMenu.push(libraryContent, loadContent, saveContent, exportContent);
         this.libraryContent = libraryContent;
         this.loadContent = loadContent;
         this.saveContent = saveContent;
         this.exportContent = exportContent;
-        this.helpContent = helpContent;
         this.contentsMenu = contentsMenu;
     }
 }
@@ -5447,8 +5379,6 @@ Create Factories and Modules
 /// <reference path="Menu/LibraryView.ts"/>
 /// <reference path="Menu/Menu.ts"/>
 /// <reference path="Menu/MenuView.ts"/>
-/// <reference path="Menu/Help.ts"/>
-/// <reference path="Menu/HelpView.ts"/>
 /// <reference path="ExportLib.ts"/>
 /// <reference path="EquivalentFaust.ts"/>
 /// <reference path="Lib/qrcode.d.ts"/>
@@ -5781,7 +5711,7 @@ class App {
 //then resumeInit on callback when text is loaded
 function init() {
     return __awaiter(this, void 0, void 0, function* () {
-        console.log("FaustPlayground: version 1.1.0 (11/06/22)");
+        console.log("FaustPlayground: version 1.1.0 (2023-07-04)");
         //@ts-ignore
         const faustwasm = yield import("./Lib/faustwasm/index.js");
         console.log(faustwasm);
