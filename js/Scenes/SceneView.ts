@@ -3,11 +3,10 @@
 
     This is the unique scene of the Normal Playground
 */
+import { Utilitary } from "../Utilitary";
+import { Scene } from "./SceneClass";
 
-/// <reference path="../Scenes/SceneClass.ts"/>
-/// <reference path="../Menu/Export.ts"/>
-
-class SceneView {
+export class SceneView {
 
     /********************************************************************
     **************************  INITIALIZATION **************************
@@ -53,12 +52,12 @@ class SceneView {
         var linkWilson: HTMLDivElement = document.createElement("div");
         linkWilson.id = "ChrisLine"
         linkWilson.className = "link";
-        linkWilson.textContent = Utilitary.messageRessource.reference;
+        linkWilson.textContent = Utilitary.messageResource.reference;
         container.appendChild(linkWilson);
 
         var alink: HTMLAnchorElement = document.createElement("a");
         alink.href = "https://github.com/cwilso/WebAudio";
-        alink.textContent = Utilitary.messageRessource.chrisWilson;
+        alink.textContent = Utilitary.messageResource.chrisWilson;
         linkWilson.appendChild(alink);
 
         var srcDiv: HTMLDivElement = document.createElement("div");
@@ -81,7 +80,7 @@ class SceneView {
         this.dropElementScene = dropElementScene;
 
         var dropElementText = document.createElement("div");
-        dropElementText.textContent = Utilitary.messageRessource.drop;
+        dropElementText.textContent = Utilitary.messageResource.drop;
         dropElementText.className = "dropElementText";
         dropElementScene.appendChild(dropElementText);
 

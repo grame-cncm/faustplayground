@@ -1,9 +1,13 @@
-﻿/// <reference path="App.ts"/>
-/// <reference path="Utilitary.ts"/>
+﻿import frURL from "../resources/resources_fr-FR.json?url";
+import enURL from "../resources/resources_en-EN.json?url";
 
-//contains all the key of resources json files in folders ressources
+import type { App } from "./App";
+import { resumeInit } from "./Main";
+import { Utilitary } from "./Utilitary";
 
-class Ressources {
+//contains all the key of resources json files in folders resources
+
+export class Resources {
     //scene messages
     defaultSceneName: string;
     reference: string;
@@ -78,7 +82,7 @@ class Ressources {
     titleExportOptions: string;
     buttonRefresh: string;
     buttonExportScene: string;
-    titleDownlaodExport: string;
+    titleDownloadExport: string;
     invalidSceneName: string;
     successRenameScene: string;
 
@@ -94,18 +98,18 @@ class Ressources {
     checkBox: string;
     noDeviceMotion: string;
 
-    //get ressource depending on the location, default is french
-    getRessources(app: App) {
+    //get resource depending on the location, default is french
+    static getResources(app: App) {
         var localization = navigator.language;
         if (localization == "fr" || localization == "fr-FR") {
-            Utilitary.getXHR("ressources/ressources_fr-FR.json", (ressource) => { this.loadMessages(ressource, app) }, Utilitary.errorCallBack)
+            Utilitary.getXHR(frURL, (resource) => { Resources.loadMessages(resource, app) }, Utilitary.errorCallBack)
         } else {
-            Utilitary.getXHR("ressources/ressources_en-EN.json", (ressource) => { this.loadMessages(ressource, app) }, Utilitary.errorCallBack)
+            Utilitary.getXHR(enURL, (resource) => { Resources.loadMessages(resource, app) }, Utilitary.errorCallBack)
         }
     }
     // load the json object
-    loadMessages(ressourceJson: string, app: App) {
-        Utilitary.messageRessource = JSON.parse(ressourceJson);
+    static loadMessages(resourceJson: string, app: App) {
+        Utilitary.messageResource = JSON.parse(resourceJson);
         resumeInit(app);
     }
 }

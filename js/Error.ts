@@ -1,4 +1,4 @@
-﻿/// <reference path="Messages.ts"/>
+﻿import { Message } from "./Messages";
 
 class ErrorFaust {
 

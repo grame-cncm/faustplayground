@@ -2,18 +2,22 @@
     MODULECLASS.JS
     HAND-MADE JAVASCRIPT CLASS CONTAINING A FAUST MODULE AND ITS INTERFACE
 */
+import type { FaustDspFactory } from "@grame/faustwasm";
 
-/// <reference path="../Dragging.ts"/>
-/// <reference path="../CodeFaustParser.ts"/>
-/// <reference path="../Connect.ts"/>
-/// <reference path="../Modules/FaustInterface.ts"/>
-/// <reference path="../Messages.ts"/>
-/// <reference path="ModuleFaust.ts"/>
-/// <reference path="ModuleView.ts"/>
+import { Drag } from "../Dragging";
+import { ElementCodeFaustParser, FaustInterfaceControler, FaustInterfaceView } from "./FaustInterface";
+import { Message } from "../Messages";
+import { ModuleFaust } from "./ModuleFaust";
+import { ModuleView } from "./ModuleView";
+import { CompileFaust, IfDSP, Utilitary } from "../Utilitary";
+import { AccelerometerHandler } from "../Accelerometer";
+import { Connector } from "../Connect";
+import { faustWasmEnv } from "../Main";
+import { forgeAccMetadata, updateAccInFaustCode } from "../CodeFaustParser";
 
 interface DSPCallback { (): void; }
 
-class ModuleClass {
+export class ModuleClass {
     static isNodesModuleUnstyle: boolean = true;
     //drag object to handle dragging of module and connection
     drag: Drag = new Drag()
@@ -170,7 +174,7 @@ class ModuleClass {
     }
 
     //--- Create and Update are called once a source code is compiled and the factory exists
-    async createDSP(factory: Factory, callback: DSPCallback): Promise<void> {
+    async createDSP(factory: FaustDspFactory, callback: DSPCallback): Promise<void> {
         this.moduleFaust.factory = factory;
         try {
             if (factory != null) {
@@ -185,20 +189,20 @@ class ModuleClass {
                     moduleFaust.fDSP = dsp;
                     callback();
                 } else {
-                    new Message(Utilitary.messageRessource.errorCreateDSP);
+                    new Message(Utilitary.messageResource.errorCreateDSP);
                     Utilitary.hideFullPageLoading();
                 }
             } else {
                 throw new Error("create DSP Error : null factory");
             }
         } catch (e) {
-            new Message(Utilitary.messageRessource.errorCreateDSP + " : " + e)
+            new Message(Utilitary.messageResource.errorCreateDSP + " : " + e)
             Utilitary.hideFullPageLoading();
         }
     }
 
     //--- Update DSP in module
-    private updateDSP(factory: Factory, module: ModuleClass): void {
+    private updateDSP(factory: FaustDspFactory, module: ModuleClass): void {
 
         var toDelete: IfDSP = module.moduleFaust.fDSP;
 

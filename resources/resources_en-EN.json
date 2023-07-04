@@ -63,7 +63,7 @@
   "titleExportOptions": "Choose export",
   "buttonRefresh": "Refresh server",
   "buttonExportScene": "Export",
-  "titleDownlaodExport": "Download",
+  "titleDownloadExport": "Download",
   "invalidSceneName": "The chosen name is invalid",
   "successRenameScene": "The name has been changed successfully",
   "curve1": "curve 1: ",

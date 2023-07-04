@@ -5,16 +5,23 @@ Faust playground is a Web platform designed to enable children to learn basic au
 
 ## To test it:
 
-To test the Faust playground, start a python server :
+To run in development mode:
+``` shell
+npm install
+npm run dev
+```
 
-	cd faustplayground
-	cd ..
-	python -m http.server 8000 (with Python 3)
-	python -m SimpleHTTPServer (with Python 2)
+To build and test:
+
+``` shell
+npm run build
+cd dist
+python -m http.server
+```
 
 Then open:
 
-	http://127.0.0.1:8000/faustplayground/
+	http://127.0.0.1:8000/
 
 ## To regenerate examples (in json/ folder)
 

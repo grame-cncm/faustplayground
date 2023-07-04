@@ -1,7 +1,9 @@
-﻿/// <reference path="../DriveAPI.ts"/>
-/// <reference path="LoadView.ts"/>
+﻿import { DriveAPI, DriveFile } from "../DriveAPI";
+import { Scene } from "../Scenes/SceneClass";
+import { Utilitary } from "../Utilitary";
+import { LoadView } from "./LoadView";
 
-class Load {
+export class Load {
     loadView: LoadView;
     sceneCurrent: Scene;
     drive: DriveAPI;

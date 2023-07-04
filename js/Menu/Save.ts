@@ -4,7 +4,7 @@
 /// <reference path="../DriveAPI.ts"/>
 /// <reference path="SaveView.ts"/>
 
-class Save {
+export class Save {
     saveView: SaveView;
     sceneCurrent: Scene;
     drive: DriveAPI;
@@ -19,7 +19,7 @@ class Save {
         this.saveView.buttonChangeAccount.addEventListener("click", () => { this.logOut() });
         this.saveView.buttonSaveCloud.addEventListener("click", () => { this.saveCloud() });
         this.saveView.buttonCloudSuppr.addEventListener("click", () => { this.supprCloud() });
-        document.addEventListener("successave", () => { new Message(Utilitary.messageRessource.sucessSave, "messageTransitionOutFast", 2000, 500) })
+        document.addEventListener("successave", () => { new Message(Utilitary.messageResource.sucessSave, "messageTransitionOutFast", 2000, 500) })
     }
 
     //create a file jfaust and save it to the device
@@ -64,17 +64,17 @@ class Save {
                 var name = this.saveView.inputLocalStorage.value;
                 var jsonScene = this.sceneCurrent.saveScene(true)
                 if (this.isFileExisting(name)) {
-                    new Confirm(Utilitary.messageRessource.confirmReplace, (callback) => { this.replaceSaveLocal(name, jsonScene, callback) });
+                    new Confirm(Utilitary.messageResource.confirmReplace, (callback) => { this.replaceSaveLocal(name, jsonScene, callback) });
                     return;
                 } else {
                     this.setStorageItemValue('FaustPlayground', name, jsonScene);
                 }
-                new Message(Utilitary.messageRessource.sucessSave, "messageTransitionOutFast", 2000, 500)
+                new Message(Utilitary.messageResource.sucessSave, "messageTransitionOutFast", 2000, 500)
                 var event: CustomEvent = new CustomEvent("updatelist")
                 document.dispatchEvent(event);
 
             } else {
-                new Message(Utilitary.messageRessource.errorLocalStorage);
+                new Message(Utilitary.messageResource.errorLocalStorage);
             }
         }
     }
@@ -82,7 +82,7 @@ class Save {
     //replace an existing scene in local Storage
     replaceSaveLocal(name: string, jsonScene: string, confirmCallBack: () => void) {
         this.setStorageItemValue('FaustPlayground', name, jsonScene);
-        new Message(Utilitary.messageRessource.sucessSave, "messageTransitionOutFast", 2000, 500)
+        new Message(Utilitary.messageResource.sucessSave, "messageTransitionOutFast", 2000, 500)
         var event: CustomEvent = new CustomEvent("updatelist")
         document.dispatchEvent(event);
         confirmCallBack();
@@ -133,7 +133,7 @@ class Save {
     //suppr scene from local storage confirm
     supprLocal() {
         if (this.saveView.existingSceneSelect.selectedIndex > -1) {
-            new Confirm(Utilitary.messageRessource.confirmSuppr, (callbackConfirm) => { this.supprLocalCallback(callbackConfirm) })
+            new Confirm(Utilitary.messageResource.confirmSuppr, (callbackConfirm) => { this.supprLocalCallback(callbackConfirm) })
         }
     }
 
@@ -161,7 +161,7 @@ class Save {
             var name = this.saveView.inputCloudStorage.value;
             if (this.isFileCloudExisting(name)) {
 
-                new Confirm(Utilitary.messageRessource.confirmReplace, (confirmCallback) => { this.replaceCloud(name, confirmCallback) })
+                new Confirm(Utilitary.messageResource.confirmReplace, (confirmCallback) => { this.replaceCloud(name, confirmCallback) })
                 return;
 
             } else {
@@ -191,7 +191,7 @@ class Save {
     //could be retreive from the cloud's trash can
     supprCloud() {
         if (this.saveView.cloudSelectFile.selectedIndex > -1) {
-            new Confirm(Utilitary.messageRessource.confirmSuppr, (confirmCallBack) => { this.supprCloudCallback(confirmCallBack) })
+            new Confirm(Utilitary.messageResource.confirmSuppr, (confirmCallBack) => { this.supprCloudCallback(confirmCallBack) })
         }
     }
 

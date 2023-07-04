@@ -1,5 +1,5 @@
-﻿/// <reference path="Messages.ts"/>
-/// <reference path="Utilitary.ts"/>
+﻿import { Message } from "./Messages";
+import { Utilitary } from "./Utilitary";
 
 //==============================================================================================
 // updateAccInFaustCode (faustcode : string, name: string, newaccvalue: string) : string;
@@ -51,7 +51,7 @@ class PathIterator {
 }
 
 // Forge accelerometer metadata -> "acc: bla bla bla"" or "noacc: bla bla bla""
-function forgeAccMetadata(newAccValue: string, isEnabled: boolean): string {
+export function forgeAccMetadata(newAccValue: string, isEnabled: boolean): string {
     if (isEnabled) {
         return `acc:${newAccValue}`;
     } else {
@@ -120,7 +120,7 @@ function match(uiname: string, uipath: string): boolean {
 // Update the acc metadata associated to <name> in <faustcode>. Returns the updated faust code
 //==============================================================================================
 
-function updateAccInFaustCode(faustcode: string, name: string, newaccvalue: string): string {
+export function updateAccInFaustCode(faustcode: string, name: string, newaccvalue: string): string {
     // Creates a path iterator to iterate the faust code from ui path to ui path
     var cc = new PathIterator(faustcode);
 
@@ -133,6 +133,6 @@ function updateAccInFaustCode(faustcode: string, name: string, newaccvalue: stri
     }
 
     // WARNING: no suitable uipath was found !
-    new Message(name + Utilitary.messageRessource.errorAccSliderNotFound);
+    new Message(name + Utilitary.messageResource.errorAccSliderNotFound);
     return faustcode;
 }
