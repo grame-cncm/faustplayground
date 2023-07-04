@@ -1,8 +1,8 @@
 ﻿//Contain Message, MessageView, Confirm, Confirm view class
 
-class Message {
+export class Message {
     messageView: MessageView
-    messageViewContainer: HTMLDivElement;
+    messageViewContainer?: HTMLDivElement;
     isTouch: boolean = false;
     timeoutHide: any;
     timeoutRemove: any;
@@ -30,7 +30,7 @@ class Message {
         if (delay != undefined) {
             this.delay = delay;
         }
-        document.getElementById("dialogue").appendChild(this.messageViewContainer);
+        document.getElementById("dialogue")!.appendChild(this.messageViewContainer);
         this.timeoutHide = setTimeout(() => { this.hideMessage() }, this.duration);
         setTimeout(() => { this.displayMessage() }, 500);
         document.addEventListener("messagedbltouch", () => { this.removeEventHandler() });
@@ -40,10 +40,10 @@ class Message {
     }
 
     displayMessage() {
-        this.messageViewContainer.classList.remove("messageHide")
-        this.messageViewContainer.classList.add("messageShow")
-        this.messageViewContainer.classList.add("messageTransitionIn")
-        this.messageViewContainer.classList.remove(this.fadeOutType)
+        this.messageViewContainer!.classList.remove("messageHide")
+        this.messageViewContainer!.classList.add("messageShow")
+        this.messageViewContainer!.classList.add("messageTransitionIn")
+        this.messageViewContainer!.classList.remove(this.fadeOutType)
     }
 
     hideMessage() {
@@ -121,21 +121,21 @@ class MessageView {
 
 // take message text and callback as parmater
 //if validate, the callback is used, other with the confirm is removed
-class Confirm {
+export class Confirm {
     confirmView: ConfirmView
-    confirmViewContainer: HTMLElement;
+    confirmViewContainer?: HTMLElement;
     constructor(message: string, callback: (confirmCallback) => void) {
         this.confirmView = new ConfirmView();
         this.confirmViewContainer = this.confirmView.init();
         this.confirmView.message.textContent = message;
-        document.getElementById("dialogue").appendChild(this.confirmViewContainer);
+        document.getElementById("dialogue")!.appendChild(this.confirmViewContainer);
         this.displayMessage();
         this.confirmView.validButton.addEventListener("click", () => { callback(() => { this.removeMessage() }) });
         this.confirmView.cancelButton.addEventListener("click", () => { this.removeMessage() })
     }
     displayMessage() {
-        this.confirmViewContainer.classList.remove("messageHide")
-        this.confirmViewContainer.classList.add("messageShow")
+        this.confirmViewContainer!.classList.remove("messageHide")
+        this.confirmViewContainer!.classList.add("messageShow")
 
     }
     removeMessage(e?: Event) {

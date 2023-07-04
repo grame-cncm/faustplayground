@@ -4,19 +4,18 @@
 
     --> Things could probably be easier...
 */
-
-/// <reference path="Connect.ts"/>
-/// <reference path="Modules/ModuleClass.ts"/>
-/// <reference path="Utilitary.ts"/>
+import { Connector, ConnectorShape } from "./Connect";
+import { ModuleClass } from "./Modules/ModuleClass";
+import { HTMLInterfaceContainer, Utilitary } from "./Utilitary";
 
 /***********************************************************************************/
 /****** Node Dragging - these are used for dragging the audio modules interface*****/
 /***********************************************************************************/
 
-class Drag {
+export class Drag {
 
     zIndex: number = 0;
-    lastLit: HTMLInterfaceContainer;
+    lastLit: HTMLInterfaceContainer | null;
     cursorStartX: number;
     cursorStartY: number;
     elementStartLeft: number;
@@ -37,7 +36,7 @@ class Drag {
     }
 
     //used to dispatch the element, the location and the event to the callback function with touch event
-    getDraggingTouchEvent(touchEvent: TouchEvent, module: ModuleClass, draggingFunction: (el: HTMLElement, x: number, y: number, module: ModuleClass, event: Event) => void) {
+    getDraggingTouchEvent(touchEvent: TouchEvent, module: ModuleClass, draggingFunction: (el: HTMLElement | null, x: number | null, y: number | null, module: ModuleClass, event: Event) => void) {
         var event = <Event>touchEvent;
         if (touchEvent.targetTouches.length > 0) {
             var touch: Touch = touchEvent.targetTouches[0];
@@ -169,7 +168,7 @@ class Drag {
         this.connector.connectorShape = <ConnectorShape>curve;
         this.connector.connectorShape.onclick = (event) => { this.connector.deleteConnection(event, this) };
 
-        document.getElementById("svgCanvas").appendChild(curve);
+        document.getElementById("svgCanvas")!.appendChild(curve);
     }
 
     stopDraggingConnection(sourceModule: ModuleClass, destination: ModuleClass, target?: HTMLElement): void {
@@ -212,10 +211,10 @@ class Drag {
             var x2 = x;
             var y2 = y;
             var d = this.setCurvePath(x1, y1, x2, y2, this.calculBezier(x1, x2), this.calculBezier(x1, x2))
-            this.connector.connectorShape.setAttributeNS(null, "d", d);
-            this.updateConnectorShapePath(this.connector.connectorShape, x1, x2, y1, y2);
+            this.connector.connectorShape!.setAttributeNS(null, "d", d);
+            this.updateConnectorShapePath(this.connector.connectorShape!, x1, x2, y1, y2);
 
-            var src: ModuleClass, dst: ModuleClass;
+            var src: ModuleClass | undefined = undefined, dst: ModuleClass | undefined = undefined;
 
             // If connecting from output to input
             if (this.isOriginInput) {
@@ -229,8 +228,8 @@ class Drag {
                 if (toElem.classList.contains("node-input")) {
                     // Make sure the connector line points go from src->dest (x1->x2)
                     var d = this.setCurvePath(x2, y2, x1, y1, this.calculBezier(x1, x2), this.calculBezier(x1, x2))
-                    this.connector.connectorShape.setAttributeNS(null, "d", d);
-                    this.updateConnectorShapePath(this.connector.connectorShape, x2, x1, y2, y1);
+                    this.connector.connectorShape!.setAttributeNS(null, "d", d);
+                    this.updateConnectorShapePath(this.connector.connectorShape!, x2, x1, y2, y1);
 
                     // can connect!
                     // TODO: first: swap the line endpoints so they're consistently x1->x2
@@ -249,8 +248,8 @@ class Drag {
 
                 this.connector.destination = dst;
                 this.connector.source = src;
-                connector.saveConnection(src, dst, this.connector.connectorShape);
-                this.connector.connectorShape.onclick = (event) => { connector.deleteConnection(event, this) };
+                connector.saveConnection(src, dst, this.connector.connectorShape!);
+                this.connector.connectorShape!.onclick = (event) => { connector.deleteConnection(event, this) };
 
                 //this.connectorShape = null;
                 return;
@@ -258,7 +257,7 @@ class Drag {
         }
 
         // Otherwise, delete the line
-        this.connector.connectorShape.parentNode.removeChild(this.connector.connectorShape);
+        this.connector.connectorShape!.parentNode!.removeChild(this.connector.connectorShape!);
         this.connector.connectorShape = null;
     }
 
@@ -283,10 +282,10 @@ class Drag {
                 module.styleInputNodeTouchDragOver(currentHoverElement);
             } else if (currentHoverElement.classList.contains("node-output")) {
                 module.styleOutputNodeTouchDragOver(currentHoverElement);
-            } else if (currentHoverElement.parentElement.classList.contains("node-input")) {
-                module.styleInputNodeTouchDragOver(currentHoverElement.parentElement);
-            } else if (currentHoverElement.parentElement.classList.contains("node-output")) {
-                module.styleOutputNodeTouchDragOver(currentHoverElement.parentElement);
+            } else if (currentHoverElement.parentElement!.classList.contains("node-input")) {
+                module.styleInputNodeTouchDragOver(currentHoverElement.parentElement!);
+            } else if (currentHoverElement.parentElement!.classList.contains("node-output")) {
+                module.styleOutputNodeTouchDragOver(currentHoverElement.parentElement!);
             } else if (!ModuleClass.isNodesModuleUnstyle) {
                 var customEvent = new CustomEvent("unstylenode")
                 document.dispatchEvent(customEvent);
@@ -307,7 +306,7 @@ class Drag {
             d = this.setCurvePath(x1, y1, x2, y2, this.calculBezier(x1, x2), this.calculBezier(x1, x2))
         }
         // Move connector visual line
-        this.connector.connectorShape.setAttributeNS(null, "d", d);
+        this.connector.connectorShape!.setAttributeNS(null, "d", d);
 
         if (toElem.classList) {	// if we don't have class, we're not a node.
             // if this is the green or red button, use its parent.
@@ -367,13 +366,13 @@ class Drag {
         if (arrivingHTMLParentNode != undefined && arrivingHTMLParentNode.classList.contains("node")) {
             var outputModule = Utilitary.currentScene.getAudioOutput();
             var inputModule = Utilitary.currentScene.getAudioInput();
-            if ((this.isOriginInput && outputModule.moduleView.isPointInOutput(x, y)) || outputModule.moduleView.isPointInInput(x, y) || arrivingHTMLParentNode.offsetParent.getAttribute("id") == "moduleOutput") {
+            if ((this.isOriginInput && outputModule.moduleView.isPointInOutput(x, y)) || outputModule.moduleView.isPointInInput(x, y) || arrivingHTMLParentNode.offsetParent!.getAttribute("id") == "moduleOutput") {
                 arrivingNode = outputModule;
-            } else if ((!this.isOriginInput && inputModule.moduleView.isPointInInput(x, y)) || inputModule.moduleView.isPointInOutput(x, y) || arrivingHTMLParentNode.offsetParent.getAttribute("id") == "moduleInput") {
+            } else if ((!this.isOriginInput && inputModule.moduleView.isPointInInput(x, y)) || inputModule.moduleView.isPointInOutput(x, y) || arrivingHTMLParentNode.offsetParent!.getAttribute("id") == "moduleInput") {
                 arrivingNode = inputModule;
             }
         }
-        this.stopDraggingConnection(module, arrivingNode, target);
+        this.stopDraggingConnection(module, arrivingNode!, target);
         var index = module.dragList.indexOf(this);
         module.dragList.splice(index, 1);
         this.isDragConnector = false;

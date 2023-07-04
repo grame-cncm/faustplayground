@@ -27,13 +27,23 @@ Create Factories and Modules
 /// <reference path="ExportLib.ts"/>
 /// <reference path="EquivalentFaust.ts"/>
 /// <reference path="Lib/qrcode.d.ts"/>
-/// <reference path="Ressources.ts"/>
+/// <reference path="Resources.ts"/>
 /// <reference path="Messages.ts"/>
 /// <reference path="Lib/perfectScrollBar/js/perfect-scrollbar.min.d.ts"/>
 
+import type { FaustDspFactory } from "@grame/faustwasm";
+
+import { Menu, MenuChoices } from "./Menu/Menu";
+import { CompileFaust, PositionModule, Utilitary } from "./Utilitary";
+import { IJsonParamsSave, Scene } from "./Scenes/SceneClass";
+import { SceneView } from "./Scenes/SceneView";
+import { faustWasmEnv } from "./Main";
+import { Message } from "./Messages";
+import { ModuleClass } from "./Modules/ModuleClass";
+
 //object containg info necessary to compile faust code
 
-class App {
+export class App {
     menu: Menu;
     scenes: Scene[];
 
@@ -48,7 +58,7 @@ class App {
     outputs: any[];
     params: any[];
 
-    factory: Factory;
+    factory: FaustDspFactory;
 
     createAllScenes(): void {
         var sceneView: SceneView = new SceneView();
@@ -119,14 +129,14 @@ class App {
 
     //create Module, set the source faust code to its moduleFaust, set the faust interface , add the input output connection nodes
     //
-    private createModule(factory: Factory): void {
+    private createModule(factory: FaustDspFactory): void {
         if (!factory) {
-            new Message(Utilitary.messageRessource.errorFactory /*+ faust.getErrorMessage() */);
+            new Message(Utilitary.messageResource.errorFactory /*+ faust.getErrorMessage() */);
             Utilitary.hideFullPageLoading();
             return;
         }
 
-        var module: ModuleClass = new ModuleClass(Utilitary.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), (module) => { Utilitary.currentScene.removeModule(module) }, this.compileFaust);
+        var module: ModuleClass = new ModuleClass(Utilitary.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules")!, (module) => { Utilitary.currentScene.removeModule(module) }, this.compileFaust);
         module.moduleFaust.setSource(this.tempModuleSourceCode);
 
         module.createDSP(factory, () => {
@@ -212,9 +222,10 @@ class App {
     }
 
     //-- Upload content dropped on the page and allocate the content to the right function
-    uploadOn(app: App, module: ModuleClass, x: number, y: number, e: DragEvent) {
-        Utilitary.showFullPageLoading();
+    uploadOn(app: App, module: ModuleClass | null, x: number, y: number, e: DragEvent) {
         e.preventDefault();
+        if (!e.dataTransfer) return
+        Utilitary.showFullPageLoading();
 
         if (e.dataTransfer.files.length > 0) {
             // we are dropping a file
@@ -250,15 +261,15 @@ class App {
 
         } else { // CASE 4 : any other strange thing
             console.log("DROP: CASE 4 STRANGE ");
-            new Message(Utilitary.messageRessource.errorObjectNotFaustCompatible);
+            new Message(Utilitary.messageResource.errorObjectNotFaustCompatible);
             Utilitary.hideFullPageLoading();
         }
     }
 
     //used for Url pointing at a dsp file
-    uploadUrl(app: App, module: ModuleClass, x: number, y: number, url: string) {
-        var filename: string = url.toString().split('/').pop();
-        filename = filename.toString().split('.').shift();
+    uploadUrl(app: App, module: ModuleClass | null, x: number, y: number, url: string) {
+        var filename: string = url.toString().split('/').pop()!;
+        filename = filename.toString().split('.').shift()!;
         Utilitary.getXHR(url, (codeFaust) => {
             var dsp_code: string = "process = vgroup(\"" + filename + "\",environment{" + codeFaust + "}.process);";
 
@@ -271,7 +282,7 @@ class App {
     }
 
     // used for dsp code faust
-    uploadCodeFaust(app: App, module: ModuleClass, x: number, y: number, e: DragEvent, dsp_code: string) {
+    uploadCodeFaust(app: App, module: ModuleClass | null, x: number, y: number, e: DragEvent, dsp_code: string) {
         dsp_code = "process = vgroup(\"" + "TEXT" + "\",environment{" + dsp_code + "}.process);";
         if (!module) {
             app.compileFaust({ name: "TEXT", sourceCode: dsp_code, x: x, y: y, callback: (factory) => { app.createModule(factory) } });
@@ -281,18 +292,18 @@ class App {
     }
 
     //used for File containing code faust or jfaust/json scene descriptor get the file then pass it to loadFile()
-    uploadFileFaust(app: App, module: ModuleClass, x: number, y: number, e: DragEvent, dsp_code: string) {
-        var files: FileList = e.dataTransfer.files;
+    uploadFileFaust(app: App, module: ModuleClass | null, x: number, y: number, e: DragEvent, dsp_code: string) {
+        var files: FileList = e.dataTransfer!.files;
         var file: File = files[0];
         this.loadFile(file, module, x, y);
     }
 
     //Load file dsp or jfaust
-    loadFile(file: File, module: ModuleClass, x: number, y: number) {
+    loadFile(file: File, module: ModuleClass | null, x: number, y: number) {
         var dsp_code: string;
         var reader: FileReader = new FileReader();
-        var ext: string = file.name.toString().split('.').pop();
-        var filename: string = file.name.toString().split('.').shift();
+        var ext: string = file.name.toString().split('.').pop()!;
+        var filename: string = file.name.toString().split('.').shift()!;
         var type: string;
 
         if (ext == "dsp") {
@@ -302,7 +313,7 @@ class App {
             type = "json";
             reader.readAsText(file);
         } else {
-            throw new Error(Utilitary.messageRessource.errorObjectNotFaustCompatible);
+            throw new Error(Utilitary.messageResource.errorObjectNotFaustCompatible);
         }
 
         reader.onloadend = (e) => {
@@ -311,9 +322,9 @@ class App {
             if (!module && type == "dsp") {
                 this.compileFaust({ name: filename, sourceCode: dsp_code, x: x, y: y, callback: (factory) => { this.createModule(factory) } });
             } else if (type == "dsp") {
-                module.update(filename, dsp_code);
+                module!.update(filename, dsp_code);
             } else if (type == "json") {
-                Utilitary.currentScene.recallScene(reader.result.toString());
+                Utilitary.currentScene.recallScene(reader.result!.toString());
             }
         };
     }
@@ -364,20 +375,20 @@ class App {
         if (window.scrollX > 0) {
             console.log(document.getElementsByTagName("html")[0]);
             document.getElementsByTagName("html")[0].style.width = window.innerWidth + window.scrollX + "px";
-            document.getElementById("svgCanvas").style.width = window.innerWidth + window.scrollX + "px";
-            document.getElementById("menuContainer").style.width = window.innerWidth + window.scrollX + "px";
+            document.getElementById("svgCanvas")!.style.width = window.innerWidth + window.scrollX + "px";
+            document.getElementById("menuContainer")!.style.width = window.innerWidth + window.scrollX + "px";
         } else {
 
             document.getElementsByTagName("html")[0].style.width = "100%";
-            document.getElementById("svgCanvas").style.width = "100%";
-            document.getElementById("menuContainer").style.width = "100%";
+            document.getElementById("svgCanvas")!.style.width = "100%";
+            document.getElementById("menuContainer")!.style.width = "100%";
         }
         if (window.scrollY > 0) {
             document.getElementsByTagName("html")[0].style.height = window.innerHeight + window.scrollY + "px";
-            document.getElementById("svgCanvas").style.height = window.innerHeight + window.scrollY + "px";
+            document.getElementById("svgCanvas")!.style.height = window.innerHeight + window.scrollY + "px";
         } else {
             document.getElementsByTagName("html")[0].style.height = "100%";
-            document.getElementById("svgCanvas").style.height = "100%";
+            document.getElementById("svgCanvas")!.style.height = "100%";
         }
     }
 

@@ -1,5 +1,6 @@
-/// <reference path="../Accelerometer.ts"/>
-/// <reference path="../Utilitary.ts"/>
+import { AccelerometerHandler, AccelerometerSlider, Axis } from "../Accelerometer";
+import { Utilitary } from "../Utilitary";
+import { ModuleClass } from "./ModuleClass";
 
 /*				FAUSTINTERFACE.JS
 
@@ -36,7 +37,7 @@ interface FaustMeta {
     unit: string;
 }
 
-interface AccParams {
+export interface AccParams {
     isEnabled: boolean;
     acc: string;
     address: string;
@@ -47,13 +48,13 @@ interface AccParams {
 }
 
 // interface describing values needed to use CodeFaustParser
-interface ElementCodeFaustParser {
+export interface ElementCodeFaustParser {
     sliderName: string,
     newAccValue: string,
     isEnabled: boolean
 }
 
-class FaustInterfaceControler {
+export class FaustInterfaceControler {
     //array only used at init to fill all FaustInterfaceControler of a Modules (moduleControlers)
     faustControlers: FaustInterfaceControler[];
     name: string;
@@ -286,7 +287,7 @@ class FaustInterfaceControler {
 /********************************************************************
 ********************* ADD GRAPHICAL ELEMENTS ***********************
 ********************************************************************/
-class FaustInterfaceView {
+export class FaustInterfaceView {
     type: string;
     slider: HTMLInputElement;
     button: HTMLInputElement;

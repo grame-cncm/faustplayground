@@ -1,17 +1,18 @@
 ﻿/*				EXPORT.JS
     Handles Graphical elements for the Export Feature of the normal Playground
 */
-/// <reference path="../ExportLib.ts"/>
-/// <reference path="../EquivalentFaust.ts"/>
-/// <reference path="../Messages.ts"/>
-/// <reference path="ExportView.ts"/>
-/// <reference path="../Utilitary.ts"/>
+
+import { EquivalentFaust } from "../EquivalentFaust";
+import { Message } from "../Messages";
+import { Scene } from "../Scenes/SceneClass";
+import { Utilitary } from "../Utilitary";
+import { ExportView } from "./ExportView";
 
 /********************************************************************
 *********************  HANDLE FAUST WEB TARGETS *********************
 ********************************************************************/
 
-class Export {
+export class Export {
     exportView: ExportView;
     static exportUrl: string = "https://faustservice.grame.fr"
     static targetsUrl: string = "https://faustservice.grame.fr/targets"
@@ -164,7 +165,7 @@ class Export {
             linkDownload.value = serverUrl + "/" + shaKey + "/" + plateforme + "/" + architecture + "/" + appType;
             linkDownload.id = "linkDownload";
             linkDownload.className = "button";
-            linkDownload.textContent = Utilitary.messageRessource.buttonDownloadApp;
+            linkDownload.textContent = Utilitary.messageResource.buttonDownloadApp;
             downloadBottomButtonContainer.appendChild(linkDownload);
             this.exportView.downloadButton = linkDownload;
             this.exportView.downloadButton.onclick = () => { window.location.href = this.exportView.downloadButton.value };

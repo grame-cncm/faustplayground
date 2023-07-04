@@ -1,30 +1,34 @@
 ﻿//Menu.ts  Menu class which handles the menu behaviours and contains the MenuView
 
-/// <reference path="Library.ts"/>
-/// <reference path="LibraryView.ts"/>
-/// <reference path="Export.ts"/>
-/// <reference path="ExportView.ts"/>
-/// <reference path="Load.ts"/>
-/// <reference path="Save.ts"/>
-/// <reference path="AccelerometerEdit.ts"/>
-/// <reference path="../DriveAPI.ts"/>
-/// <reference path="../Messages.ts"/>
+import { AccelerometerEdit } from "./AccelerometerEdit";
+import { DriveAPI } from "../DriveAPI";
+import { Export } from "./Export";
+import { Library } from "./Library";
+import { Load } from "./Load";
+import { Save } from "./Save";
+import { Utilitary } from "../Utilitary";
+import { MenuView } from "./MenuView";
+import { Scene } from "../Scenes/SceneClass";
+import { Confirm, Message } from "../Messages";
+import { AccelerometerHandler } from "../Accelerometer";
 
-interface Document {
-    cancelFullScreen: () => any;
-    webkitCancelFullScreen: () => any;
-    mozCancelFullScreen: () => any;
+declare global {
+    interface Document {
+        cancelFullScreen: () => any;
+        webkitCancelFullScreen: () => any;
+        mozCancelFullScreen: () => any;
+    }
+
+    interface HTMLElement {
+        requestFullscreen: () => any;
+        mozRequestFullScreen: () => any;
+        webkitRequestFullscreen: () => any;
+    }
 }
 
-interface HTMLElement {
-    requestFullscreen: () => any;
-    mozRequestFullScreen: () => any;
-    webkitRequestFullscreen: () => any;
-}
+export enum MenuChoices { library, export, kids, edit, save, load, null }
 
-enum MenuChoices { library, export, kids, edit, save, load, null }
-
-class Menu {
+export class Menu {
     isMenuDriveLoading: boolean = false;
     sceneCurrent: Scene;
     newMenuChoices: MenuChoices;
@@ -53,7 +57,7 @@ class Menu {
         this.menuView.loadButton.addEventListener("click", () => { this.menuHandler(this.newMenuChoices = MenuChoices.load) });
         this.menuView.fullScreenButton.addEventListener("click", () => { this.fullScreen() });
         this.menuView.accButton.addEventListener("click", () => { this.accelerometer() });
-        this.menuView.cleanButton.addEventListener("click", () => { new Confirm(Utilitary.messageRessource.confirmEmptyScene, (callback) => { this.cleanScene(callback) }) });
+        this.menuView.cleanButton.addEventListener("click", () => { new Confirm(Utilitary.messageResource.confirmEmptyScene, (callback) => { this.cleanScene(callback) }) });
 
         //add eventListern customs
         document.addEventListener("updatename", (e) => { this.updatePatchNameToInput(e) })
@@ -61,11 +65,11 @@ class Menu {
         document.addEventListener("updatelist", () => { this.updateSelectLocalEvent() });
         document.addEventListener("authon", () => { this.authOn() });
         document.addEventListener("authoff", () => { this.authOff() });
-        document.addEventListener("fillselect", (optionEvent: CustomEvent) => { this.fillSelectCloud(optionEvent) })
+        document.addEventListener("fillselect", (optionEvent: Event) => { this.fillSelectCloud(optionEvent as CustomEvent) })
         document.addEventListener("updatecloudselect", () => { this.updateSelectCloudEvent() });
         document.addEventListener("startloaddrive", () => { this.startLoadingDrive() })
         document.addEventListener("finishloaddrive", () => { this.finishLoadingDrive() })
-        document.addEventListener("clouderror", (e: CustomEvent) => { this.connectionProblem(e) })
+        document.addEventListener("clouderror", (e: Event) => { this.connectionProblem(e as CustomEvent) })
 
         //create and init all menus objects
         this.library = new Library();
@@ -284,7 +288,7 @@ class Menu {
         this.menuView.saveView.inputDownload.value = Utilitary.currentScene.sceneName;
         this.menuView.saveView.inputLocalStorage.value = Utilitary.currentScene.sceneName;
         this.menuView.saveView.inputCloudStorage.value = Utilitary.currentScene.sceneName;
-        new Message(Utilitary.messageRessource.successRenameScene, "messageTransitionOutFast", 2000, 500)
+        new Message(Utilitary.messageResource.successRenameScene, "messageTransitionOutFast", 2000, 500)
     }
 
     //handle fullscreen mode
@@ -389,7 +393,8 @@ class Menu {
 
     //get value of 'item_key'
     getStorageItem(item_key) {
-        return (localStorage.getItem(item_key)) ? JSON.parse(localStorage.getItem(item_key)) : null;
+        const value = localStorage.getItem(item_key)
+        return value ? JSON.parse(value) : null;
     }
 
     //fill select box
@@ -446,7 +451,7 @@ class Menu {
     }
     //display Drive Connection error
     connectionProblem(event: CustomEvent) {
-        new Message(Utilitary.messageRessource.errorConnectionCloud + " : " + event.detail)
+        new Message(Utilitary.messageResource.errorConnectionCloud + " : " + event.detail)
     }
 
     fillSelectCloud(optionEvent: CustomEvent) {

@@ -5,9 +5,10 @@
     FIRST PART --> DERECURSIVIZE THE PATCH
     SECOND PART --> CREATE THE FAUST EQUIVALENT FROM THE "DERECURSIVIZED" PATCH
 */
-/// <reference path="Scenes/SceneClass.ts"/>
-/// <reference path="Modules/ModuleClass.ts"/>
-/// <reference path="Connect.ts"/>
+import { Connector } from "./Connect";
+import { ModuleClass } from "./Modules/ModuleClass";
+import { Scene } from "./Scenes/SceneClass";
+import { Utilitary } from "./Utilitary";
 
 /********************************************************************
 *************  ALGORITHME DE DÉRECURSIVATION DU PATCH ***************
@@ -20,7 +21,7 @@ interface IModuleTree {
     sourceCode: string;
 }
 
-class ModuleTree implements IModuleTree {
+export class ModuleTree implements IModuleTree {
     patchID: string;
     course: ModuleTree[];
     moduleInputs: ModuleTree[];
@@ -28,7 +29,7 @@ class ModuleTree implements IModuleTree {
     sourceCode: string;
 }
 
-class EquivalentFaust {
+export class EquivalentFaust {
 
     isModuleRecursiveExisting(moduleTree: ModuleTree): boolean {
         if (Utilitary.recursiveMap[moduleTree.patchID])

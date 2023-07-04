@@ -1,11 +1,13 @@
-﻿/// <reference path="../Connect.ts"/>
+﻿import type { FaustDspFactory } from "@grame/faustwasm";
+import { Connector } from "../Connect";
+import { IfDSP } from "../Utilitary";
 
 /*MODULEFAUST.JS
 HAND - MADE JAVASCRIPT CLASS CONTAINING A FAUST MODULE */
 
-class ModuleFaust {
+export class ModuleFaust {
     fDSP: IfDSP;
-    factory: Factory;
+    factory: FaustDspFactory;
     fSource: string;
     fTempSource: string;
     fName: string;

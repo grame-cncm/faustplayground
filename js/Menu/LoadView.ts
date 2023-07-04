@@ -1,6 +1,6 @@
-﻿/// <reference path="../Utilitary.ts"/>
+﻿import { Utilitary } from "../Utilitary";
 
-class LoadView {
+export class LoadView {
 
     loadFileButton: HTMLButtonElement;
     loadFileInput: HTMLInputElement;
@@ -84,7 +84,7 @@ class LoadView {
         loadFileButton.type = "button";
         loadFileButton.id = "loadFileButton";
         loadFileButton.className = "button"
-        loadFileButton.textContent = Utilitary.messageRessource.buttonLoadFile;
+        loadFileButton.textContent = Utilitary.messageResource.buttonLoadFile;
         this.loadFileButton = loadFileButton;
 
         loadFileContainer.appendChild(loadFileDiv);
@@ -112,7 +112,7 @@ class LoadView {
         localButton.type = "button";
         localButton.id = "localLoadButton";
         localButton.className = "button"
-        localButton.textContent = Utilitary.messageRessource.buttonLoadLocal;
+        localButton.textContent = Utilitary.messageResource.buttonLoadLocal;
         this.buttonLoadLocal = localButton;
 
         var localBottomButtonContainer: HTMLElement = document.createElement("div");
@@ -130,7 +130,7 @@ class LoadView {
 
         var buttonConnectDrive = document.createElement("button");
         buttonConnectDrive.id = "buttonConnectLoadDrive";
-        buttonConnectDrive.textContent = Utilitary.messageRessource.buttonConnectCloud;
+        buttonConnectDrive.textContent = Utilitary.messageResource.buttonConnectCloud;
         buttonConnectDrive.className = "button"
         this.buttonConnectDrive = buttonConnectDrive
 
@@ -145,7 +145,7 @@ class LoadView {
         changeAccountButton.type = "button";
         //changeAccountButton.id = "changeAccountButton";
         changeAccountButton.className = "button changeAccountButton"
-        changeAccountButton.textContent = Utilitary.messageRessource.buttonLogoutCloud;
+        changeAccountButton.textContent = Utilitary.messageResource.buttonLogoutCloud;
         changeAccountButton.style.display = "none";
         this.buttonChangeAccount = changeAccountButton;
 
@@ -153,7 +153,7 @@ class LoadView {
         cloudButton.type = "button";
         cloudButton.id = "cloudLoadButton";
         cloudButton.className = "button"
-        cloudButton.textContent = Utilitary.messageRessource.buttonLoadCloud;
+        cloudButton.textContent = Utilitary.messageResource.buttonLoadCloud;
         this.buttonLoadCloud = cloudButton;
 
         var cloudBottomButtonContainer: HTMLElement = document.createElement("div");

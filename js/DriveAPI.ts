@@ -1,20 +1,20 @@
 // class to handle Drive API request//
 // using the v2 version
 
-/// <reference path="Messages.ts"/>
-/// <reference path="Utilitary.ts"/>
+import { Message } from "./Messages";
+import { Utilitary } from "./Utilitary";
 
 //object of the js drive api didn't found tpescript def, but should exist
 declare var gapi
 
-interface DriveFile {
+export interface DriveFile {
     id: string
     name: string;
     downloadUrl: string;
     webContentLink: string;
 }
 
-class DriveAPI {
+export class DriveAPI {
 
     CLIENT_ID: string = '937268536763-j0tfilisap0274toolo0hehndnhgsrva.apps.googleusercontent.com';
 
@@ -111,7 +111,7 @@ class DriveAPI {
                 }
 
             } else {
-                this.appendPre(Utilitary.messageRessource.noFileOnCloud, null);
+                this.appendPre(Utilitary.messageResource.noFileOnCloud, null);
             }
         });
     }

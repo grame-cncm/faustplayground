@@ -1,6 +1,4 @@
-﻿<?xml version="1.0" standalone="no"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" >
+﻿<!doctype html>
 <html class="no-js" lang="en">
 <head>
     <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -45,15 +43,15 @@
 -->
 <script src="js/Lib/FileSaver.min.js"></script>
 <script src="https://apis.google.com/js/client.js?onload=checkAuth"></script>
-<script src="js/faustplayground.js"></script>
 
  <!-- 'init' is defined in faustplayground.js -->
-<script>
-        var isWasm = (typeof (WebAssembly) !== "undefined");
-        if (!isWasm) {
-            alert("WebAssembly is not supported in this browser, the page will not work !")
-        }
-        init();
-    </script>
+<script type="module">
+    import { init } from "./js/Main.ts";
+    var isWasm = (typeof (WebAssembly) !== "undefined");
+    if (!isWasm) {
+        alert("WebAssembly is not supported in this browser, the page will not work !")
+    }
+    init();
+</script>
 
 </html>

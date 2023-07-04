@@ -1,14 +1,18 @@
 ﻿/*				SCENECLASS.JS
     HAND-MADE JAVASCRIPT CLASS CONTAINING THE API OF A GENERIC SCENE
 */
+ 
+import type { FaustDspFactory } from "@grame/faustwasm";
 
-/// <reference path="../Connect.ts"/>
-/// <reference path="../Modules/ModuleClass.ts"/>
-/// <reference path="../Utilitary.ts"/>
-/// <reference path="../Messages.ts"/>
-/// <reference path="SceneView.ts"/>
+import { AccelerometerHandler, Axis } from "../Accelerometer";
+import { Connector } from "../Connect";
+import { faustWasmEnv } from "../Main";
+import { Message } from "../Messages";
+import { ModuleClass } from "../Modules/ModuleClass";
+import { CompileFaust, IHTMLDivElementOut, IHTMLDivElementSrc, PositionModule, Utilitary } from "../Utilitary";
+import { SceneView } from "./SceneView";
 
-class Scene {
+export class Scene {
     //temporary arrays used to recall a scene from a jfaust file
     arrayRecalScene: JsonSaveModule[] = [];
     arrayRecalledModule: ModuleClass[] = [];
@@ -135,7 +139,7 @@ class Scene {
         this.compileFaust({ name: "output", sourceCode: "process=_,_;", x: positionOutput.x, y: positionOutput.y, callback: (factory) => { scene.integrateAudioOutput(factory) } });
     }
 
-    private integrateAudioOutput(factory: Factory): void {
+    private integrateAudioOutput(factory: FaustDspFactory): void {
         if (this.fAudioOutput) {
             this.fAudioOutput.moduleFaust.setSource("process=_,_;");
             var moduleFaust = this;
@@ -147,7 +151,7 @@ class Scene {
         }
     }
 
-    private integrateAudioInput(factory: Factory): void {
+    private integrateAudioInput(factory: FaustDspFactory): void {
         if (this.fAudioInput) {
             this.fAudioInput.moduleFaust.setSource("process=_,_;");
             var moduleFaust = this;
@@ -179,8 +183,8 @@ class Scene {
                 (err) => {
                     console.error(err);
                     this.fAudioInput.moduleView.fInterfaceContainer.style.backgroundImage = "url(img/ico-micro-mute.png)"
-                    this.fAudioInput.moduleView.fInterfaceContainer.title = Utilitary.messageRessource.errorGettingAudioInput;
-                    new Message(Utilitary.messageRessource.errorGettingAudioInput);
+                    this.fAudioInput.moduleView.fInterfaceContainer.title = Utilitary.messageResource.errorGettingAudioInput;
+                    new Message(Utilitary.messageResource.errorGettingAudioInput);
                 }
             );
     }
@@ -304,7 +308,7 @@ class Scene {
             try {
                 jsonObjectCollection = JSON.parse(json);
             } catch (e) {
-                new Message(Utilitary.messageRessource.errorJsonCorrupted)
+                new Message(Utilitary.messageResource.errorJsonCorrupted)
                 Utilitary.hideFullPageLoading();
             }
             //this.parent.currentNumberDSP = this.fModuleList.length;
@@ -315,7 +319,7 @@ class Scene {
             this.launchModuleCreation();
         } else {
             Utilitary.hideFullPageLoading();
-            new Message(Utilitary.messageRessource.errorLoading)
+            new Message(Utilitary.messageResource.errorLoading)
         }
     }
 
@@ -349,7 +353,7 @@ class Scene {
                 this.connectModule(this.arrayRecalledModule[i]);
             }
             for (var i = 0; i < this.arrayRecalledModule.length; i++) {
-                delete this.arrayRecalledModule[i].patchID;
+                delete (this.arrayRecalledModule[i] as any).patchID;
             }
             this.arrayRecalledModule = [];
             var event = new CustomEvent("updatename");
@@ -370,7 +374,7 @@ class Scene {
 
     //create Module then remove corresponding JsonSaveModule from arrayRecalScene at rank 0
     //re-lunch module of following Module/JsonSaveModule
-    private createModule(factory: Factory): void {
+    private createModule(factory: FaustDspFactory): void {
         try {
             if (!factory) {
                 new Message("Error"/*faust.getErrorMessage()*/);
@@ -378,7 +382,7 @@ class Scene {
                 return;
             }
 
-            var module: ModuleClass = new ModuleClass(Utilitary.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules"), (module) => { this.removeModule(module) }, this.compileFaust);
+            var module: ModuleClass = new ModuleClass(Utilitary.idX++, this.tempModuleX, this.tempModuleY, this.tempModuleName, document.getElementById("modules")!, (module) => { this.removeModule(module) }, this.compileFaust);
             module.moduleFaust.setSource(this.tempModuleSourceCode);
             module.createDSP(factory, () => {
                 module.patchID = this.tempPatchId;
@@ -401,7 +405,7 @@ class Scene {
                 this.launchModuleCreation();
             });
         } catch (e) {
-            new Message(Utilitary.messageRessource.errorCreateModuleRecall);
+            new Message(Utilitary.messageResource.errorCreateModuleRecall);
             this.arrayRecalScene.shift();
             this.launchModuleCreation()
         }
@@ -473,12 +477,12 @@ class Scene {
                 }
             }
         } catch (e) {
-            new Message(Utilitary.messageRessource.errorConnectionRecall)
+            new Message(Utilitary.messageResource.errorConnectionRecall)
         }
     }
 
     //use to identify the module to be connected to when recalling connections between modules
-    getModuleByPatchId(patchId: string): ModuleClass {
+    getModuleByPatchId(patchId: string): ModuleClass | null {
         if (patchId == "output") {
             return this.fAudioOutput;
         } else if (patchId == "input") {
@@ -533,7 +537,7 @@ class Scene {
             spanRule.style.opacity = "1";
             input.style.boxShadow = "0 0 6px yellow inset";
             input.style.border = "3px solid red";
-            new Message(Utilitary.messageRessource.invalidSceneName);
+            new Message(Utilitary.messageResource.invalidSceneName);
             return false;
         }
     }
@@ -633,7 +637,7 @@ class JsonInputsSave implements IJsonInputsSave {
     source: string[]
 }
 
-interface IJsonParamsSave {
+export interface IJsonParamsSave {
     sliders: IJsonSliderSave[]
 }
 

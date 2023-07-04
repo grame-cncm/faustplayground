@@ -1,8 +1,9 @@
-﻿//AccelerometerEdit
-/// <reference path="../Accelerometer.ts"/>
-/// <reference path="AccelerometerEditView.ts"/>
+﻿import { AccelerometerSlider, AccelerometerHandler, Axis, Curve } from "../Accelerometer";
+import { FaustInterfaceControler, FaustInterfaceView, AccParams, ElementCodeFaustParser } from "../Modules/FaustInterface";
+import { Utilitary } from "../Utilitary";
+import { AccelerometerEditView } from "./AccelerometerEditView";
 
-class AccelerometerEdit {
+export class AccelerometerEdit {
     accelerometerEditView: AccelerometerEditView;
     isOn: boolean = false
     //faustInterfaceControler, accelerometerSlider,FaustInterfaceView being edited

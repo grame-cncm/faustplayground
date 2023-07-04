@@ -63,7 +63,7 @@
   "titleExportOptions": "Choix de l'export",
   "buttonRefresh": "Rafraîchir le serveur",
   "buttonExportScene": "Exporter",
-  "titleDownlaodExport": "Téléchargement",
+  "titleDownloadExport": "Téléchargement",
   "invalidSceneName": "Le nom choisi est invalide",
   "successRenameScene": "Le nom a bien été changé",
   "curve1": "courbe 1 : ",

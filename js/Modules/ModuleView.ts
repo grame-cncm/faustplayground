@@ -12,7 +12,7 @@
     IMG --> fEditImg
     ===================*/
 
-/// <reference path="../Utilitary.ts"/>
+import { HTMLInterfaceContainer } from "../Utilitary";
 
 interface HTMLfEdit extends HTMLDivElement {
     area: HTMLTextAreaElement;
@@ -21,7 +21,7 @@ interface HTMLinterfaceElement extends HTMLElement {
     label: string;
 }
 
-class ModuleView {
+export class ModuleView {
     inputOutputNodeDimension: number = 32;
     fModuleContainer: HTMLElement;
     fName: string;

@@ -1,14 +1,14 @@
 ﻿//Accelerometer Class
 
-/// <reference path="Utilitary.ts"/>
-/// <reference path="Modules/FaustInterface.ts"/>
+import { AccParams, FaustInterfaceControler } from "./Modules/FaustInterface";
+import { Utilitary } from "./Utilitary";
 
 interface Window {
     DeviceMotionEvent: DeviceMotionEvent
 }
 
-enum Axis { x, y, z };
-enum Curve { Up, Down, UpDown, DownUp };
+export enum Axis { x, y, z };
+export enum Curve { Up, Down, UpDown, DownUp };
 
 //object describing value off accelerometer metadata values.
 class AccMeta {
@@ -19,7 +19,7 @@ class AccMeta {
     amax: number
 }
 //Contains the info regarding the mapping of the FaustInterfaceControler and the accelerometer
-class AccelerometerSlider {
+export class AccelerometerSlider {
 
     name: string;
     axis: Axis;
@@ -81,7 +81,7 @@ class AccelerometerSlider {
 }
 
 //object responsible of storing all accelerometerSlider and propagate to them the accelerometer infos.
-class AccelerometerHandler {
+export class AccelerometerHandler {
     //array containing all the FaustInterfaceControler of the scene
     static faustInterfaceControler: FaustInterfaceControler[] = [];
     //faustInterfaceControler of the AccelerometerEditView
@@ -93,7 +93,7 @@ class AccelerometerHandler {
             window.addEventListener("devicemotion", (event: DeviceMotionEvent) => { this.propagate(event) }, false);
         } else {
             // Browser doesn't support DeviceMotionEvent
-            console.log(Utilitary.messageRessource.noDeviceMotion)
+            console.log(Utilitary.messageResource.noDeviceMotion)
         }
     }
 

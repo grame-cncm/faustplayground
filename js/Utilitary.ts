@@ -1,14 +1,17 @@
-/// <reference path="Modules/ModuleClass.ts"/>
-/// <reference path="Scenes/SceneClass.ts"/>
-/// <reference path="Ressources.ts"/>
-/// <reference path="DriveAPI.ts"/>
-/// <reference path="Main.ts"/>
+import type { FaustDspFactory } from "@grame/faustwasm";
 
-class Utilitary {
+import { AccelerometerHandler } from "./Accelerometer";
+import { DriveAPI } from "./DriveAPI";
+import { ModuleTree } from "./EquivalentFaust";
+import { ModuleClass } from "./Modules/ModuleClass";
+import { Resources } from "./Resources";
+import { Scene } from "./Scenes/SceneClass";
+
+export class Utilitary {
     static audioContext: AudioContext;
     static moduleList: ModuleClass[];
     static currentScene: Scene;
-    static messageRessource: Ressources = new Ressources();
+    static messageResource: Resources;
     static idX: number = 0;
     static baseImg: string = "img/";
     static recursiveMap: ModuleTree[];//used for EquivalentFaust
@@ -19,7 +22,7 @@ class Utilitary {
 
     static errorCallBack(message: string) { }
     static showFullPageLoading() {
-        document.getElementById("loadingPage").style.visibility = "visible";
+        document.getElementById("loadingPage")!.style.visibility = "visible";
         //too demanding for mobile firefox...
         //document.getElementById("Normal").style.filter = "blur(2px)"
         //document.getElementById("Normal").style.webkitFilter = "blur(2px)"
@@ -27,7 +30,7 @@ class Utilitary {
         //document.getElementById("menuContainer").style.webkitFilter = "blur(2px)"
     }
     static hideFullPageLoading() {
-        document.getElementById("loadingPage").style.visibility = "hidden";
+        document.getElementById("loadingPage")!.style.visibility = "hidden";
         //document.getElementById("Normal").style.filter = "none"
         //document.getElementById("Normal").style.webkitFilter = "none"
         //document.getElementById("menuContainer").style.filter = "none"
@@ -65,12 +68,12 @@ class Utilitary {
         loadingImg.src = Utilitary.baseImg + "logoAnim.gif"
         loadingImg.id = "loadingImg";
         var loadingText = document.createElement("span");
-        loadingText.textContent = Utilitary.messageRessource.loading;
+        loadingText.textContent = Utilitary.messageResource.loading;
         loadingText.id = "loadingText";
         loadingDiv.appendChild(loadingImg);
         loadingDiv.appendChild(loadingText);
         if (document.getElementById(idTarget) != null) {
-            document.getElementById(idTarget).appendChild(loadingDiv);
+            document.getElementById(idTarget)!.appendChild(loadingDiv);
         }
     }
     static removeLoadingLogo(idTarget: string) {
@@ -83,9 +86,9 @@ class Utilitary {
     }
 
     static addFullPageLoading() {
-        var loadingText = document.getElementById("loadingTextBig");
+        var loadingText = document.getElementById("loadingTextBig")!;
         loadingText.id = "loadingTextBig"
-        loadingText.textContent = Utilitary.messageRessource.loading;
+        loadingText.textContent = Utilitary.messageResource.loading;
     }
     static replaceAll(str: String, find: string, replace: string) {
         return str.replace(new RegExp(find, 'g'), replace);
@@ -95,8 +98,10 @@ class Utilitary {
 **************************  interfaces  *****************************
 ********************************************************************/
 
-interface AudioBufferSourceNode {
-    noteOn: (any: any) => any;
+declare global {
+    interface AudioBufferSourceNode {
+        noteOn: (any: any) => any;
+    }
 }
 
 interface IPositionModule {
@@ -104,23 +109,22 @@ interface IPositionModule {
     y: number;
 }
 
-class PositionModule implements IPositionModule {
+export class PositionModule implements IPositionModule {
     x: number;
     y: number;
 }
 
-interface IHTMLDivElementSrc extends HTMLDivElement {
+export interface IHTMLDivElementSrc extends HTMLDivElement {
     audioNode: MediaStreamAudioSourceNode;
 }
-interface IHTMLDivElementOut extends HTMLDivElement {
+export interface IHTMLDivElementOut extends HTMLDivElement {
     audioNode: AudioDestinationNode;
 }
-type Factory = import("./Lib/faustwasm/index.js").FaustDspFactory;
-interface HTMLInterfaceContainer extends HTMLDivElement {
+export interface HTMLInterfaceContainer extends HTMLDivElement {
     unlitClassname: string;
     lastLit: any;
 }
-interface IfDSP extends AudioNode {
+export interface IfDSP extends AudioNode {
     getJSON: () => string;
     getParamValue: (text: string) => number;
     setParamValue: (text: string, val: number) => void;
@@ -130,10 +134,10 @@ interface IfDSP extends AudioNode {
     destroy: () => any;
 }
 
-interface CompileFaust {
+export interface CompileFaust {
     name: string,
     sourceCode: string,
     x: number,
     y: number,
-    callback: (factory: Factory) => void
+    callback: (factory: FaustDspFactory) => void
 }

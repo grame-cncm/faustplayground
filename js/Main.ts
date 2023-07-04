@@ -2,35 +2,46 @@
     Entry point of the Program
     intefaces used through the app
 */
+import type { ab2str, FaustCompiler, FaustMonoDspGenerator, FaustPolyDspGenerator, str2ab } from "@grame/faustwasm";
+import type * as faustwasm from "@grame/faustwasm";
 
-/// <reference path="App.ts"/>
-/// <reference path="Messages.ts"/>
+import jsURL from "@grame/faustwasm/libfaust-wasm/libfaust-wasm.js?url";
+import dataURL from "@grame/faustwasm/libfaust-wasm/libfaust-wasm.data?url";
+import wasmURL from "@grame/faustwasm/libfaust-wasm/libfaust-wasm.wasm?url";
 
-declare const faustWasmEnv: {
-    faustwasm: typeof import("./Lib/faustwasm/index.js");
-    faustCompiler: import("./Lib/faustwasm/index.js").FaustCompiler;
-    FaustMonoDspGenerator: typeof import("./Lib/faustwasm/index.js").FaustMonoDspGenerator;
-    FaustPolyDspGenerator: typeof import("./Lib/faustwasm/index.js").FaustPolyDspGenerator;
-    ab2str: typeof import("./Lib/faustwasm/index.js").ab2str;
-    str2ab: typeof import("./Lib/faustwasm/index.js").str2ab;
-};
+import { AccelerometerHandler } from "./Accelerometer";
+import { App } from "./App";
+import { DriveAPI } from "./DriveAPI";
+import { Resources } from "./Resources";
+import { Utilitary } from "./Utilitary";
+import { Message } from "./Messages";
+
 //@ts-ignore
 declare const faust: never;
 
+export let faustWasmEnv: {
+    faustwasm: typeof faustwasm;
+    faustCompiler: FaustCompiler;
+    FaustMonoDspGenerator: typeof FaustMonoDspGenerator;
+    FaustPolyDspGenerator: typeof FaustPolyDspGenerator;
+    ab2str: typeof ab2str;
+    str2ab: typeof str2ab;
+};
+
 //init is call by libfaust-wasm.js load end handler
 
-//initialization af the app, create app and ressource to get text with correct localization
+//initialization af the app, create app and resource to get text with correct localization
 //then resumeInit on callback when text is loaded
-async function init(): Promise<void> {
+export async function init(): Promise<void> {
     console.log("FaustPlayground: version 1.1.0 (2023-07-04)");
     //@ts-ignore
-    const faustwasm = await import("./Lib/faustwasm/index.js");
+    const faustwasm = await import("@grame/faustwasm");
     console.log(faustwasm);
     const { instantiateFaustModuleFromFile, FaustCompiler, LibFaust, FaustMonoDspGenerator, FaustPolyDspGenerator, ab2str, str2ab } = faustwasm;
-    const faustModule = await instantiateFaustModuleFromFile("./js/Lib/libfaust-wasm.js");
+    const faustModule = await instantiateFaustModuleFromFile(jsURL, dataURL, wasmURL);
     const libFaust = new LibFaust(faustModule);
     const faustCompiler = new FaustCompiler(libFaust);
-    (globalThis as any).faustWasmEnv = {
+    faustWasmEnv = {
         faustwasm,
         faustCompiler,
         FaustMonoDspGenerator,
@@ -40,11 +51,10 @@ async function init(): Promise<void> {
     };
 
     var app: App = new App();
-    var ressource = new Ressources();
-    ressource.getRessources(app);
+    Resources.getResources(app);
 }
 //callback when text is loaded. resume the initialization
-function resumeInit(app: App) {
+export function resumeInit(app: App) {
     //create div which will contain all Messages and Confirm
     app.createDialogue();
     //create audiocontext if available, otherwise app can't work
@@ -54,7 +64,7 @@ function resumeInit(app: App) {
         Utilitary.audioContext.destination.channelInterpretation = "discrete";
         Utilitary.audioContext.destination.channelCount = Utilitary.audioContext.destination.maxChannelCount;
     } catch (e) {
-        new Message(Utilitary.messageRessource.errorNoWebAudioAPI);
+        new Message(Utilitary.messageResource.errorNoWebAudioAPI);
         Utilitary.hideFullPageLoading();
     }
     Utilitary.addFullPageLoading();
@@ -73,7 +83,7 @@ function resumeInit(app: App) {
     //error catcher
     window.addEventListener("error", (e: ErrorEvent) => {
         if (e.message == "Uncaught Error: workerError" || e.message == "Error: workerError") {
-            new Message(Utilitary.messageRessource.errorOccuredMessage + e.message)
+            new Message(Utilitary.messageResource.errorOccuredMessage + e.message)
             Utilitary.hideFullPageLoading();
         }
         if (e.message == "Uncaught Error: Upload2Error") {

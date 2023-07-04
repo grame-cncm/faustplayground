@@ -3,24 +3,24 @@
     This is a historical file from Chris Wilson, modified for Faust ModuleClass needs.
 */
 
-/// <reference path="Modules/ModuleClass.ts"/>
-/// <reference path="Utilitary.ts"/>
-/// <reference path="Dragging.ts"/>
+import { Drag } from "./Dragging";
+import { ModuleClass } from "./Modules/ModuleClass";
+import { IfDSP, IHTMLDivElementOut, IHTMLDivElementSrc } from "./Utilitary";
 
 /**************************************************/
 /******* WEB AUDIO CONNECTION/DECONNECTION*********/
 /**************************************************/
 
-interface ConnectorShape extends SVGElement {
+export interface ConnectorShape extends SVGElement {
     x1: number;
     y1: number;
     x2: number;
     y2: number;
 }
 
-class Connector {
+export class Connector {
     static connectorId: number = 0;
-    connectorShape: ConnectorShape;
+    connectorShape: ConnectorShape | null;
     source: ModuleClass;
     destination: ModuleClass;
 
@@ -35,8 +35,8 @@ class Connector {
     }
     // Connect Nodes in Web Audio Graph
     connectModules(source: ModuleClass, destination: ModuleClass): void {
-        var sourceDSP: IfDSP;
-        var destinationDSP: IfDSP;
+        var sourceDSP: IfDSP | undefined = undefined;
+        var destinationDSP: IfDSP | undefined = undefined;
         if (destination != null && destination.moduleFaust.getDSP) {
             destinationDSP = destination.moduleFaust.getDSP();
         }
@@ -105,12 +105,12 @@ class Connector {
         this.disconnectModules(source, destination);
 
         // delete connection from src .outputConnections,
-        if (source != undefined && source.moduleFaust.getOutputConnections) {
+        if (source != undefined && source.moduleFaust.getOutputConnections()) {
             source.moduleFaust.removeOutputConnection(connector);
         }
 
         // delete connection from dst .inputConnections,
-        if (destination != undefined && destination.moduleFaust.getInputConnections) {
+        if (destination != undefined && destination.moduleFaust.getInputConnections()) {
             destination.moduleFaust.removeInputConnection(connector);
         }
 
@@ -147,7 +147,7 @@ class Connector {
         }
 
         for (var c = 0; c < module.moduleFaust.getInputConnections().length; c++) {
-            var currentConnectorShape: ConnectorShape = module.moduleFaust.getInputConnections()[c].connectorShape;
+            var currentConnectorShape: ConnectorShape = module.moduleFaust.getInputConnections()[c].connectorShape!;
             var x1 = x;
             var y1 = y;
             var x2 = currentConnectorShape.x2
@@ -170,7 +170,7 @@ class Connector {
 
         for (var c = 0; c < module.moduleFaust.getOutputConnections().length; c++) {
             if (module.moduleFaust.getOutputConnections()[c].connectorShape) {
-                var currentConnectorShape: ConnectorShape = module.moduleFaust.getOutputConnections()[c].connectorShape;
+                var currentConnectorShape: ConnectorShape = module.moduleFaust.getOutputConnections()[c].connectorShape!;
                 var x1 = currentConnectorShape.x1;
                 var y1 = currentConnectorShape.y1;
                 var x2 = x;

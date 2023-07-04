@@ -25,8 +25,8 @@
 
 //--- Init graphical elements of library
 
-/// <reference path="../Utilitary.ts"/>
-/// <reference path="LibraryView.ts"/>
+import { Utilitary } from "../Utilitary";
+import { LibraryView } from "./LibraryView";
 
 interface IImageNode extends HTMLImageElement {
     state: string;
@@ -45,7 +45,7 @@ interface jsonObjectLibrary {
     exemples: string[];
 }
 
-class Library {
+export class Library {
     libraryView: LibraryView;
     isLibraryTouch: boolean;
     previousTouchUrl: string;
@@ -83,7 +83,7 @@ class Library {
             li.appendChild(a);
             a.href = options[i];
             a.draggable = true;
-            a.title = Utilitary.messageRessource.hoverLibraryElement;
+            a.title = Utilitary.messageResource.hoverLibraryElement;
             a.addEventListener("click", (e) => { e.preventDefault() });
 
             var dblckickHandler = this.dispatchEventLibrary.bind(this, a.href)
