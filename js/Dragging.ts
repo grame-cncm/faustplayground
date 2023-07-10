@@ -58,7 +58,7 @@ export class Drag {
         }
     }
 
-    startDraggingModule(el: HTMLElement, x: number, y: number, module: ModuleClass, event: Event): void {
+    startDraggingModule(el: HTMLElement | null, x: number, y: number, module: ModuleClass, event: Event): void {
 
         var moduleContainer: HTMLElement = module.moduleView.getModuleContainer();
 
@@ -80,7 +80,7 @@ export class Drag {
         event.preventDefault();
     }
 
-    whileDraggingModule(el: HTMLElement, x: number, y: number, module: ModuleClass, event: Event): void {
+    whileDraggingModule(el: HTMLElement | null, x: number, y: number, module: ModuleClass, event: Event): void {
 
         var moduleContainer = module.moduleView.getModuleContainer();
 
@@ -99,7 +99,7 @@ export class Drag {
         event.stopPropagation();
     }
 
-    stopDraggingModule(el: HTMLElement, x: number, y: number, module: ModuleClass, event: Event): void {
+    stopDraggingModule(el: HTMLElement | null, x: number, y: number, module: ModuleClass, event: Event): void {
         // Stop capturing mousemove and mouseup events.
         document.removeEventListener("mouseup", module.eventDraggingHandler, false)
         document.removeEventListener("mousemove", module.eventDraggingHandler, false)

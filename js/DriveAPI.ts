@@ -111,7 +111,7 @@ export class DriveAPI {
                 }
 
             } else {
-                this.appendPre(Utilitary.messageResource.noFileOnCloud, null);
+                this.appendPre(Utilitary.messageResource.noFileOnCloud, null as any);
             }
         });
     }
@@ -220,7 +220,7 @@ export class DriveAPI {
         reader.onload = function (e) {
             var contentType = fileData.type || 'application/octet-stream';
             // Updating the metadata is optional and you can instead use the value from drive.files.get.
-            var base64Data = btoa(reader.result.toString());
+            var base64Data = btoa(reader.result!.toString());
             var multipartRequestBody =
                 delimiter +
                 'Content-Type: application/json\r\n\r\n' +

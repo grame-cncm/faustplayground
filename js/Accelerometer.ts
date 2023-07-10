@@ -99,17 +99,17 @@ export class AccelerometerHandler {
 
     // propagate the new x, y, z value of the accelerometer to the registred object
     propagate(event: DeviceMotionEvent) {
-        var x = event.accelerationIncludingGravity.x;
-        var y = event.accelerationIncludingGravity.y;
-        var z = event.accelerationIncludingGravity.z;
+        var x = event.accelerationIncludingGravity!.x;
+        var y = event.accelerationIncludingGravity!.y;
+        var z = event.accelerationIncludingGravity!.z;
         for (var i = 0; i < AccelerometerHandler.faustInterfaceControler.length; i++) {
             if (AccelerometerHandler.faustInterfaceControler[i].accelerometerSlider.isActive && AccelerometerHandler.faustInterfaceControler[i].accelerometerSlider.isEnabled) {
-                this.axisSplitter(AccelerometerHandler.faustInterfaceControler[i].accelerometerSlider, x, y, z, this.applyNewValueToModule)
+                this.axisSplitter(AccelerometerHandler.faustInterfaceControler[i].accelerometerSlider, x!, y!, z!, this.applyNewValueToModule)
             }
         }
         // update the faustInterfaceControler of the AccelerometerEditView
         if (AccelerometerHandler.faustInterfaceControlerEdit != null) {
-            this.axisSplitter(AccelerometerHandler.faustInterfaceControlerEdit.accelerometerSlider, x, y, z, this.applyValueToEdit)
+            this.axisSplitter(AccelerometerHandler.faustInterfaceControlerEdit.accelerometerSlider, x!, y!, z!, this.applyValueToEdit)
         }
     }
 
@@ -149,7 +149,7 @@ export class AccelerometerHandler {
     }
     //update value of the edit range in AccelerometerEditView
     applyValueToEdit(accSlid: AccelerometerSlider, newVal: number, axeValue: number) {
-        AccelerometerHandler.faustInterfaceControlerEdit.faustInterfaceView.slider.value = axeValue.toString();
+        AccelerometerHandler.faustInterfaceControlerEdit!.faustInterfaceView.slider.value = axeValue.toString();
     }
 
     //Apply the right converter with the right curve to an accelerometerSlider

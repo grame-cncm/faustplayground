@@ -26,7 +26,6 @@ Create Factories and Modules
 /// <reference path="Menu/MenuView.ts"/>
 /// <reference path="ExportLib.ts"/>
 /// <reference path="EquivalentFaust.ts"/>
-/// <reference path="Lib/qrcode.d.ts"/>
 /// <reference path="Resources.ts"/>
 /// <reference path="Messages.ts"/>
 /// <reference path="Lib/perfectScrollBar/js/perfect-scrollbar.min.d.ts"/>

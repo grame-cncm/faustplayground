@@ -25,8 +25,8 @@ export class Load {
 
     //open file from browser dialogue open window
     openFile() {
-        if (this.loadView.loadFileInput.files.length > 0) {
-            var file = this.loadView.loadFileInput.files.item(0);
+        if (this.loadView.loadFileInput.files!.length > 0) {
+            var file = this.loadView.loadFileInput.files!.item(0);
             var event: CustomEvent = new CustomEvent("fileload", { 'detail': file })
             document.dispatchEvent(event);
         }
@@ -35,7 +35,7 @@ export class Load {
     //set item from local storage 'item_key' key
     getStorageItemValue(item_key, key) {
         if (localStorage.getItem(item_key)) {
-            var item_value = JSON.parse(localStorage.getItem(item_key));
+            var item_value = JSON.parse(localStorage.getItem(item_key)!);
             var item_index = item_value.findIndex((obj => obj[0] === key));
             return (item_index >= 0) ? item_value[item_index][1] : null;
         } else {
@@ -57,7 +57,7 @@ export class Load {
     getEx(e: Event) {
         e.preventDefault();
         var anchorTarget = <HTMLAnchorElement>e.target;
-        Utilitary.getXHR(anchorTarget.href, (json: string) => { this.loadEx(json) }, null)
+        Utilitary.getXHR(anchorTarget.href, (json: string) => { this.loadEx(json) }, null as any)
     }
     loadEx(json) {
         Utilitary.showFullPageLoading();

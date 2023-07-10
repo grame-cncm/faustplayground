@@ -156,7 +156,7 @@ export class FaustInterfaceControler {
         }
 
         if (this.itemParam.step != undefined) {
-            var precision = this.itemParam.step.toString().split('.').pop().length;
+            var precision = this.itemParam.step.toString().split('.').pop()!.length;
             this.precision = String(precision);
         }
         this.accParams = {
@@ -171,7 +171,7 @@ export class FaustInterfaceControler {
     }
 
     // create and allocate right faustInterfaceView
-    createFaustInterfaceElement(): HTMLElement {
+    createFaustInterfaceElement(): HTMLElement | undefined {
         if (this.faustInterfaceView && this.faustInterfaceView.type) {
             if (this.faustInterfaceView.type === "vslider" || this.faustInterfaceView.type === "hslider") {
                 return this.faustInterfaceView.addFaustModuleSlider(this.itemParam, parseFloat(this.precision), this.unit)
@@ -248,18 +248,18 @@ export class FaustInterfaceControler {
                     AccelerometerHandler.registerAcceleratedSlider(this.accParams, this)
                     this.accelerometerSlider.callbackValueChange = (address, value) => { this.callbackValueChange(address, value) }
                     this.accelerometerSlider.isEnabled = false;
-                    this.faustInterfaceView.slider.parentElement.classList.add("disabledAcc")
+                    this.faustInterfaceView.slider.parentElement!.classList.add("disabledAcc")
                 }
             }
             if (this.accelerometerSlider == undefined) {
                 this.acc = this.accDefault;
                 this.accParams.acc = this.acc;
                 this.accParams.isEnabled = false;
-                AccelerometerHandler.registerAcceleratedSlider(this.accParams, this)
-                this.accelerometerSlider.callbackValueChange = (address, value) => { this.callbackValueChange(address, value) }
-                this.accelerometerSlider.isEnabled = false;
+                AccelerometerHandler.registerAcceleratedSlider(this.accParams, this);
+                (this.accelerometerSlider as any).callbackValueChange = (address, value) => { this.callbackValueChange(address, value) }
+                (this.accelerometerSlider as any).isEnabled = false;
                 if (this.faustInterfaceView.slider != undefined) {
-                    this.faustInterfaceView.slider.parentElement.classList.add("disabledAcc")
+                    this.faustInterfaceView.slider.parentElement!.classList.add("disabledAcc")
                 }
             }
         } else {
@@ -270,7 +270,7 @@ export class FaustInterfaceControler {
             this.accelerometerSlider.callbackValueChange = (address, value) => { this.callbackValueChange(address, value) }
             this.accelerometerSlider.isEnabled = false;
             if (this.faustInterfaceView.slider != undefined) {
-                this.faustInterfaceView.slider.parentElement.classList.add("disabledAcc")
+                this.faustInterfaceView.slider.parentElement!.classList.add("disabledAcc")
             }
         }
     }

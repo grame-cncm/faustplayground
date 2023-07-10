@@ -1,8 +1,10 @@
-﻿/// <reference path="../Lib/FileSaver.min.d.ts"/>
-/// <reference path="../Messages.ts"/>
-/// <reference path="../Utilitary.ts"/>
-/// <reference path="../DriveAPI.ts"/>
-/// <reference path="SaveView.ts"/>
+﻿import "../Lib/FileSaver.min"
+
+import { DriveAPI } from "../DriveAPI";
+import { Message, Confirm } from "../Messages";
+import { Scene } from "../Scenes/SceneClass";
+import { Utilitary } from "../Utilitary";
+import { SaveView } from "./SaveView";
 
 export class Save {
     saveView: SaveView;
@@ -39,7 +41,7 @@ export class Save {
     setStorageItemValue(item_key, key, value) {
         var item_value;
         if (localStorage.getItem(item_key)) {
-            item_value = JSON.parse(localStorage.getItem(item_key));
+            item_value = JSON.parse(localStorage.getItem(item_key)!);
         } else {
             item_value = [];
         }
@@ -116,11 +118,11 @@ export class Save {
 
     // get scene name selected in select cloud and set it to the input text clou
     getNameSelectedCloud() {
-        this.saveView.inputCloudStorage.value = this.saveView.cloudSelectFile.options[this.saveView.cloudSelectFile.selectedIndex].textContent;
+        this.saveView.inputCloudStorage.value = this.saveView.cloudSelectFile.options[this.saveView.cloudSelectFile.selectedIndex].textContent!;
     }
 
     //get value of select option by its text content, used here to get id of drive file
-    getValueByTextContent(select: HTMLSelectElement, name: string): string {
+    getValueByTextContent(select: HTMLSelectElement, name: string): string | null {
         for (var i = 0; i < select.options.length; i++) {
             if (select.options[i].textContent == name) {
                 var option = <HTMLOptionElement>select.options[i];

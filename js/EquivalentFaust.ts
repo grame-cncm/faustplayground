@@ -49,12 +49,12 @@ export class EquivalentFaust {
     treatRecursiveModule(moduleTree: ModuleTree): void {
 
         // 	Save recursion in map and flag it
-        var ModuleToReplace = this.getFirstOccurenceOfModuleInCourse(moduleTree);
+        var ModuleToReplace = this.getFirstOccurenceOfModuleInCourse(moduleTree)!;
         Utilitary.recursiveMap[moduleTree.patchID] = ModuleToReplace;
         ModuleToReplace.recursiveFlag = true;
     }
 
-    getFirstOccurenceOfModuleInCourse(moduleTree: ModuleTree): ModuleTree {
+    getFirstOccurenceOfModuleInCourse(moduleTree: ModuleTree): ModuleTree | null {
 
         for (var i = 0; i < moduleTree.course.length; i++) {
             if (moduleTree.patchID == moduleTree.course[i].patchID) {
@@ -65,8 +65,8 @@ export class EquivalentFaust {
         return null;
     }
 
-    createTree(module: ModuleClass, parent): ModuleTree {
-        var moduleTree: ModuleTree = new ModuleTree();
+    createTree(module: ModuleClass, parent): ModuleTree | null {
+        var moduleTree: ModuleTree | null = new ModuleTree();
         moduleTree.patchID = module.patchID;
         moduleTree.course = [];
 
@@ -106,7 +106,7 @@ export class EquivalentFaust {
 
             if (module.moduleFaust.getInputConnections()) {
                 for (var j = 0; j < module.moduleFaust.getInputConnections().length; j++)
-                    moduleTree.moduleInputs[j] = this.createTree(module.moduleFaust.getInputConnections()[j].source, moduleTree);
+                    moduleTree.moduleInputs[j] = this.createTree(module.moduleFaust.getInputConnections()[j].source, moduleTree)!;
             }
         }
 
@@ -180,7 +180,7 @@ export class EquivalentFaust {
     }
 
     //Calculate Faust Equivalent of the Scene
-    getFaustEquivalent(scene: Scene, patchName: string): string {
+    getFaustEquivalent(scene: Scene, patchName: string): string | null {
 
         var faustModuleList: ModuleClass[] = scene.getModules();
 
@@ -227,7 +227,7 @@ export class EquivalentFaust {
             var destinationDIVVV = this.createTree(dest, null);
 
             if (dest.moduleFaust.getInputConnections())
-                faustResult += "process = vgroup(\"" + patchName + "\",(" + this.computeModule(destinationDIVVV) + "));";
+                faustResult += "process = vgroup(\"" + patchName + "\",(" + this.computeModule(destinationDIVVV!) + "));";
 
             // 		console.log(faustResult);
 
