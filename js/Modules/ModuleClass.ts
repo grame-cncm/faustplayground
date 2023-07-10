@@ -94,11 +94,11 @@ export class ModuleClass {
         } else if (event.type == "mousemove") {
             module.drag.getDraggingMouseEvent(<MouseEvent>event, module, (el, x, y, module, e) => { module.drag.whileDraggingModule(el, x, y, module, e) });
         } else if (event.type == "touchstart") {
-            module.drag.getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module, e) => { module.drag.startDraggingModule(el, x, y, module, e) });
+            module.drag.getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module, e) => { module.drag.startDraggingModule(el, x!, y!, module, e) });
         } else if (event.type == "touchmove") {
-            module.drag.getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module, e) => { module.drag.whileDraggingModule(el, x, y, module, e) });
+            module.drag.getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module, e) => { module.drag.whileDraggingModule(el, x!, y!, module, e) });
         } else if (event.type == "touchend") {
-            module.drag.getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module, e) => { module.drag.stopDraggingModule(el, x, y, module, e) });
+            module.drag.getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module, e) => { module.drag.stopDraggingModule(el, x!, y!, module, e) });
         }
     }
 
@@ -115,13 +115,13 @@ export class ModuleClass {
             newdrag.originTarget = <HTMLElement>event.target;
             module.dragList.push(newdrag);
             var index = module.dragList.length - 1
-            module.dragList[index].getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module, e) => { module.dragList[index].startDraggingConnector(el, x, y, module, e) });
+            module.dragList[index].getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module, e) => { module.dragList[index].startDraggingConnector(el!, x!, y!, module, e) });
 
         } else if (event.type == "touchmove") {
 
             for (var i = 0; i < module.dragList.length; i++) {
                 if (module.dragList[i].originTarget == event.target) {
-                    module.dragList[i].getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module, e) => { module.dragList[i].whileDraggingConnector(el, x, y, module, e) })
+                    module.dragList[i].getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module, e) => { module.dragList[i].whileDraggingConnector(el!, x!, y!, module, e) })
                 }
             }
         } else if (event.type == "touchend") {
@@ -129,7 +129,7 @@ export class ModuleClass {
             document.dispatchEvent(customEvent);
             for (var i = 0; i < module.dragList.length; i++) {
                 if (module.dragList[i].originTarget == event.target) {
-                    module.dragList[i].getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module) => { module.dragList[i].stopDraggingConnector(el, x, y, module) });
+                    module.dragList[i].getDraggingTouchEvent(<TouchEvent>event, module, (el, x, y, module) => { module.dragList[i].stopDraggingConnector(el!, x!, y!, module) });
                 }
             }
             document.dispatchEvent(customEvent);
@@ -146,12 +146,12 @@ export class ModuleClass {
 
         // Then delete the visual element
         if (this.moduleView) {
-            this.moduleView.fModuleContainer.parentNode.removeChild(this.moduleView.fModuleContainer);
+            this.moduleView.fModuleContainer.parentNode!.removeChild(this.moduleView.fModuleContainer);
         }
 
         this.deleteDSP(this.moduleFaust.fDSP);
-        this.moduleFaust.fDSP = null;
-        this.moduleFaust.factory = null;
+        (this.moduleFaust.fDSP as any) = null;
+        (this.moduleFaust.factory as any) = null;
         this.deleteCallback(this);
     }
     //make module smaller
@@ -288,7 +288,7 @@ export class ModuleClass {
         this.moduleView.textArea.style.display = "none";
         Connector.redrawOutputConnections(this, this.drag);
         Connector.redrawInputConnections(this, this.drag)
-        module.update(this.moduleView.fTitle.textContent, dsp_code);
+        module.update(this.moduleView.fTitle.textContent!, dsp_code);
         module.recallInterfaceParams();
 
         module.moduleView.fEditImg.style.backgroundImage = "url(" + Utilitary.baseImg + "edit.png)";
@@ -317,7 +317,7 @@ export class ModuleClass {
             var faustInterfaceControler = this.moduleControles[i];
             faustInterfaceControler.setParams();
             faustInterfaceControler.faustInterfaceView = new FaustInterfaceView(faustInterfaceControler.itemParam.type)
-            this.moduleView.getInterfaceContainer().appendChild(faustInterfaceControler.createFaustInterfaceElement());
+            this.moduleView.getInterfaceContainer().appendChild(faustInterfaceControler.createFaustInterfaceElement()!);
             faustInterfaceControler.interfaceCallback = this.interfaceSliderCallback.bind(this);
             faustInterfaceControler.updateFaustCodeCallback = this.updateCodeFaust.bind(this);
             faustInterfaceControler.setEventListener();
@@ -340,7 +340,7 @@ export class ModuleClass {
             if (this.moduleControles[i].accelerometerSlider != null && this.moduleControles[i].accelerometerSlider != undefined) {
                 var index = AccelerometerHandler.faustInterfaceControler.indexOf(this.moduleControles[i]);
                 AccelerometerHandler.faustInterfaceControler.splice(index, 1);
-                delete this.moduleControles[i].accelerometerSlider;
+                delete (this.moduleControles[i] as any).accelerometerSlider;
             }
         }
         this.moduleControles = [];
@@ -381,21 +381,21 @@ export class ModuleClass {
             }
         }
         var text: string = faustControler.itemParam.address;
-        faustControler.value = val;
+        faustControler.value = val!;
 
         var output: HTMLElement = faustControler.faustInterfaceView.output;
 
         //---- update the value text
         if (output)
-            output.textContent = "" + val + " " + faustControler.unit;
+            output.textContent = "" + val! + " " + faustControler.unit;
 
         // 	Search for DSP then update the value of its parameter.
-        this.moduleFaust.fDSP.setParamValue(text, +val);
+        this.moduleFaust.fDSP.setParamValue(text, +val!);
     }
     interfaceButtonCallback(faustControler: FaustInterfaceControler, val?: number): any {
 
         var text: string = faustControler.itemParam.address;
-        faustControler.value = val.toString();
+        faustControler.value = val!.toString();
 
         var output: HTMLElement = faustControler.faustInterfaceView.output;
 
@@ -404,7 +404,7 @@ export class ModuleClass {
             output.textContent = "" + val + " " + faustControler.unit;
 
         // 	Search for DSP then update the value of its parameter.
-        this.moduleFaust.fDSP.setParamValue(text, val);
+        this.moduleFaust.fDSP.setParamValue(text, val!);
     }
 
     // Save graphical parameters of a Faust Node

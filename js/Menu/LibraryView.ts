@@ -1,6 +1,5 @@
 ﻿//LibraryView.ts : LibraryView Class which contains all the graphical parts of the library
-/// <reference path="../Utilitary.ts"/>
-/// <reference path="../Lib/perfectScrollBar/js/perfect-scrollbar.min.d.ts"/>
+import "../Lib/perfectScrollBar/js/perfect-scrollbar.min"
 
 import { Utilitary } from "../Utilitary";
 

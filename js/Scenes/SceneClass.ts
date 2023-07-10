@@ -338,7 +338,7 @@ export class Scene {
                 const [factories] = await faustWasmEnv.faustwasm.FaustCompiler.importDSPFactories(JSON.stringify({ [shaKey]: { code, json, poly } }));
                 this.updateAppTempModuleInfo(jsonObject);
                 this.sceneName = jsonObject.sceneName;
-                this.createModule(factories.get(shaKey));
+                this.createModule(factories.get(shaKey)!);
             } else if (jsonObject.patchId != "output" && jsonObject.patchId != "input") {
                 this.tempPatchId = jsonObject.patchId;
                 this.sceneName = jsonObject.sceneName;

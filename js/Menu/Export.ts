@@ -3,6 +3,7 @@
 */
 
 import { EquivalentFaust } from "../EquivalentFaust";
+import { ExportLib } from "../ExportLib";
 import { Message } from "../Messages";
 import { Scene } from "../Scenes/SceneClass";
 import { Utilitary } from "../Utilitary";
@@ -41,8 +42,8 @@ export class Export {
     //clear select boxes
     clearSelectBox(id: string): boolean {
         if (document.getElementById(id) != undefined) {
-            while (document.getElementById(id).childNodes.length > 0) {
-                document.getElementById(id).removeChild(document.getElementById(id).childNodes[0]);
+            while (document.getElementById(id)!.childNodes.length > 0) {
+                document.getElementById(id)!.removeChild(document.getElementById(id)!.childNodes[0]);
             }
             return true
         } else {
@@ -121,7 +122,7 @@ export class Export {
         this.removeQRCode();
         Utilitary.addLoadingLogo("exportResultContainer");
         var equivalentFaust: EquivalentFaust = new EquivalentFaust();
-        var faustCode: string = equivalentFaust.getFaustEquivalent(Utilitary.currentScene, Utilitary.currentScene.sceneName);
+        var faustCode: string = equivalentFaust.getFaustEquivalent(Utilitary.currentScene, Utilitary.currentScene.sceneName)!;
         ExportLib.getSHAKey((<HTMLInputElement>document.getElementById("faustweburl")).value, Utilitary.currentScene.sceneName, faustCode, expor.exportFaustCode);
     }
 
@@ -149,13 +150,13 @@ export class Export {
     }
 
     //set download QR Code and Button
-    setDownloadOptions = (serverUrl: string, shaKey: string, plateforme: string, architecture: string, appType: string) => {
+    setDownloadOptions = async (serverUrl: string, shaKey: string, plateforme: string, architecture: string, appType: string) => {
         if (shaKey.indexOf("ERROR") == -1) {
             var disposableExportDiv: HTMLDivElement = document.createElement("div");
             disposableExportDiv.id = "disposableExportDiv"
             var qrDiv: HTMLElement = document.createElement('div');
             qrDiv.id = "qrcodeDiv";
-            var myWhiteDiv: HTMLElement = ExportLib.getQrCode(serverUrl, shaKey, plateforme, architecture, appType, 120);
+            var myWhiteDiv: HTMLElement = await ExportLib.getQrCode(serverUrl, shaKey, plateforme, architecture, appType, 120);
             qrDiv.appendChild(myWhiteDiv);
 
             var downloadBottomButtonContainer: HTMLElement = document.createElement("div");
@@ -170,7 +171,7 @@ export class Export {
             this.exportView.downloadButton = linkDownload;
             this.exportView.downloadButton.onclick = () => { window.location.href = this.exportView.downloadButton.value };
 
-            document.getElementById("exportResultContainer").appendChild(disposableExportDiv);
+            document.getElementById("exportResultContainer")!.appendChild(disposableExportDiv);
             disposableExportDiv.appendChild(qrDiv);
             disposableExportDiv.appendChild(downloadBottomButtonContainer);
 
@@ -186,7 +187,7 @@ export class Export {
     }
 
     removeQRCode() {
-        var disposableExportDiv: HTMLElement = document.getElementById('disposableExportDiv');
+        var disposableExportDiv: HTMLElement = document.getElementById('disposableExportDiv')!;
         if (disposableExportDiv) {
             disposableExportDiv.remove();
         }

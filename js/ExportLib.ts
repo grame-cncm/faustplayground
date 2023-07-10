@@ -1,10 +1,10 @@
 
-/// <reference path="Lib/qrcode.d.ts"/>
+import QRCode from "qrcode"
 
 /************************************************************
 ***************** Interface to FaustWeb *********************
 ************************************************************/
-class ExportLib {
+export class ExportLib {
 
     //--- Send asynchronous POST request to FaustWeb to compile a faust DSP
     // @exportUrl : url of FaustWeb service to target
@@ -59,22 +59,21 @@ class ExportLib {
     // @sha : sha key of DSP
     // @platform/architecture/target : platform/architecture/target compiled
     // @cote : width and height of the returned QrCode
-    static getQrCode(url: string, sha: string, plateform: string, architecture: string, target: string, size: number): HTMLDivElement {
+    static async getQrCode(url, sha, plateform, architecture, target, size) {
         var downloadString = url + "/" + sha + "/" + plateform + "/" + architecture + "/" + target;
         var whiteContainer = document.createElement('div');
-        whiteContainer.style.cssText = "width:" + size.toString() + "px; height:" + size.toString() + "px; background-color:white; position:relative; margin-left:auto; margin-right:auto; padding:3px;";
-
-        var qqDiv = document.createElement('qrcode');
-        new QRCode(qqDiv, {
-            text: downloadString,
-            width: size,
-            height: size,
-            colorDark: "#000000",
-            colorLight: "#ffffff",
-            correctLevel: QRCode.CorrectLevel.H
-        });
-
-        whiteContainer.appendChild(qqDiv);
+        whiteContainer.style.cssText = "width:" + size.toString() + "px; height:" +
+            size.toString() +
+            "px; background-color:white; position:relative; margin-left:auto; margin-right:auto; padding:3px;";
+        whiteContainer.title = downloadString;
+    
+        var qq = document.createElement('img');
+        qq.width = qq.height = size;
+        qq.style.cssText = "display: block";
+        qq.alt = "Scan me!"
+        qq.src = await QRCode.toDataURL(downloadString, { errorCorrectionLevel: "H" });
+    
+        whiteContainer.appendChild(qq);
         return whiteContainer;
     }
 

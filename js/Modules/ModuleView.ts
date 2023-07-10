@@ -108,7 +108,7 @@ export class ModuleView {
         this.fName = name;
         this.fModuleContainer = fModuleContainer;
         this.fInterfaceContainer = fInterfaceContainer;
-        this.fEditImg = fEditImg;
+        this.fEditImg = fEditImg!;
         this.fTitle = fTitle;
         this.x = x;
         this.y = y;
@@ -147,12 +147,12 @@ export class ModuleView {
     deleteInputOutputNodes(): void {
         if (this.fInputNode) {
             this.fModuleContainer.removeChild(this.fInputNode);
-            this.fInputNode = null;
+            (this.fInputNode as any) = null;
         }
 
         if (this.fOutputNode) {
             this.fModuleContainer.removeChild(this.fOutputNode);
-            this.fOutputNode = null;
+            (this.fOutputNode as any) = null;
         }
     }
 

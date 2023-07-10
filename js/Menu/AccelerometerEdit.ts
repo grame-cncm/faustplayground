@@ -345,12 +345,12 @@ export class AccelerometerEdit {
         this.accelerometerEditView.rangeCurrent.step = "0.1";
 
         this.accParams.isEnabled = accSlider.isEnabled;
-        var faustInterfaceControlerEdit = new FaustInterfaceControler(null, null)
+        var faustInterfaceControlerEdit = new FaustInterfaceControler(null as any, null as any)
         faustInterfaceControlerEdit.faustInterfaceView = new FaustInterfaceView("edit");
         AccelerometerHandler.registerAcceleratedSlider(this.accParams, faustInterfaceControlerEdit, true);
         var acc = faustInterfaceControlerEdit.accelerometerSlider;
         faustInterfaceControlerEdit.faustInterfaceView.slider = this.accelerometerEditView.rangeCurrent;
-        faustInterfaceControlerEdit.faustInterfaceView.slider.parentElement.classList.add(Axis[acc.axis])
+        faustInterfaceControlerEdit.faustInterfaceView.slider.parentElement!.classList.add(Axis[acc.axis])
         acc.isActive = true;
 
     }
@@ -401,17 +401,17 @@ export class AccelerometerEdit {
         this.accelerometerEditView.cloneContainer.getElementsByTagName("div")[0].classList.add(Axis[axe]);
         var oldAxis = this.accSlid.axis;
         this.accSlid.axis = axe;
-        var editAcc = AccelerometerHandler.faustInterfaceControlerEdit.accelerometerSlider;
-        var faustView = AccelerometerHandler.faustInterfaceControlerEdit.faustInterfaceView;
+        var editAcc = AccelerometerHandler.faustInterfaceControlerEdit!.accelerometerSlider;
+        var faustView = AccelerometerHandler.faustInterfaceControlerEdit!.faustInterfaceView;
         editAcc.axis = axe;
-        faustView.slider.parentElement.classList.remove(Axis[oldAxis]);
-        faustView.slider.parentElement.classList.add(Axis[editAcc.axis]);
+        faustView.slider.parentElement!.classList.remove(Axis[oldAxis]);
+        faustView.slider.parentElement!.classList.add(Axis[editAcc.axis]);
     }
 
     //apply new curve value the the AccelerometerSlider
     editCurve(curve: Curve) {
         this.accSlid.curve = curve;
-        var editAcc = AccelerometerHandler.faustInterfaceControlerEdit.accelerometerSlider;
+        var editAcc = AccelerometerHandler.faustInterfaceControlerEdit!.accelerometerSlider;
         editAcc.curve = curve;
         AccelerometerHandler.curveSplitter(this.accSlid);
         this.applyValuetoFaust();
