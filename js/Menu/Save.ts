@@ -1,4 +1,4 @@
-﻿import "../Lib/FileSaver.min"
+﻿import { saveAs } from "file-saver";
 
 import { DriveAPI } from "../DriveAPI";
 import { Message, Confirm } from "../Messages";
