@@ -9,10 +9,12 @@
     "preview": "vite preview"
   },
   "devDependencies": {
+    "@types/file-saver": "^2.0.5",
     "vite": "^4.3.9"
   },
   "dependencies": {
     "@grame/faustwasm": "^0.0.29",
+    "file-saver": "^2.0.5",
     "qrcode": "^1.5.3"
   }
 }
