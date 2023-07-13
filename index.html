@@ -33,8 +33,8 @@
 <script src="https://apis.google.com/js/client.js?onload=checkAuth"></script>
 
 <script type="module">
-	import "./js/Lib/AudioContextMonkeyPatch.js"
-    import { init } from "./js/Main.ts";
+	import "./src/Lib/AudioContextMonkeyPatch.js"
+    import { init } from "./src/Main.ts";
     var isWasm = (typeof (WebAssembly) !== "undefined");
     if (!isWasm) {
         alert("WebAssembly is not supported in this browser, the page will not work !")
