@@ -10,7 +10,7 @@ Faust playground is a Web platform designed to enable children to learn basic au
 ## Development
 
 ### Notes
-This project uses [Vite](https://vitejs.dev/) for development mode and builds and [FaustWasm](https://github.com/Fr0stbyteR/faustwasm) for compiling Faust in the browser.
+This project uses [Vite](https://vitejs.dev/) for development mode and builds and [FaustWasm](https://github.com/grame-cncm/faustwasm) for compiling Faust in the browser.
 
 ### Setup
 Clone and enter the repository, then run:
