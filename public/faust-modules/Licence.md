@@ -1,10 +1,8 @@
-************************************************************************
-FAUST library file, GRAME section
+## Licence
 
-Except where noted otherwise, Copyright (C) 2003-2023 by GRAME,
-Centre National de Creation Musicale.
-----------------------------------------------------------------------
 GRAME LICENSE
+Copyright (C) 2003-2023 by GRAME,
+Centre National de Creation Musicale.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -30,4 +28,3 @@ grants you the right to freely choose the license for the resulting
 compiled code. In particular the resulting compiled code has no obligation
 to be LGPL or GPL. For example you are free to choose a commercial or
 closed source license or any other license if you decide so.
-************************************************************************
