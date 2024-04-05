@@ -1,7 +1,7 @@
 ﻿/*				SCENECLASS.JS
     HAND-MADE JAVASCRIPT CLASS CONTAINING THE API OF A GENERIC SCENE
 */
- 
+
 import type { FaustDspFactory } from "@grame/faustwasm";
 
 import { AccelerometerHandler, Axis } from "../Accelerometer";
@@ -172,7 +172,7 @@ export class Scene {
 ********************************************************************/
 
     activateAudioInput(): void {
-        navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false } as any })
+        navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, autoGainControl: false, noiseSuppression: false } as any })
             // 'as any' is needed here because of a typo in lib.d.ts (echoCancellation is written echoCancelation)
             .then(
                 (mediaStream) => {
