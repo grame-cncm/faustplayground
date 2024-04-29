@@ -62,7 +62,7 @@ export class AccelerometerSlider {
     }
 
     setAttributes(fMetaAcc: string) {
-        if (fMetaAcc!=null) {
+        if (fMetaAcc != null) {
             var arrayMeta = fMetaAcc.split(" ");
             this.axis = <Axis>parseInt(arrayMeta[0])
             this.curve = <Curve>parseInt(arrayMeta[1]);
@@ -85,7 +85,7 @@ export class AccelerometerHandler {
     //array containing all the FaustInterfaceControler of the scene
     static faustInterfaceControler: FaustInterfaceControler[] = [];
     //faustInterfaceControler of the AccelerometerEditView
-    static faustInterfaceControlerEdit: FaustInterfaceControler|null = null;
+    static faustInterfaceControlerEdit: FaustInterfaceControler | null = null;
 
     // get Accelerometer value
     getAccelerometerValue() {
@@ -117,12 +117,12 @@ export class AccelerometerHandler {
     static registerAcceleratedSlider(accParams: AccParams, faustInterfaceControler: FaustInterfaceControler, sliderEdit?: boolean) {
         var accelerometerSlide: AccelerometerSlider = new AccelerometerSlider(accParams);
         faustInterfaceControler.accelerometerSlider = accelerometerSlide;
-            AccelerometerHandler.curveSplitter(accelerometerSlide)
-            if (sliderEdit) {
-                AccelerometerHandler.faustInterfaceControlerEdit = faustInterfaceControler
-            } else {
-                AccelerometerHandler.faustInterfaceControler.push(faustInterfaceControler);
-            }
+        AccelerometerHandler.curveSplitter(accelerometerSlide)
+        if (sliderEdit) {
+            AccelerometerHandler.faustInterfaceControlerEdit = faustInterfaceControler
+        } else {
+            AccelerometerHandler.faustInterfaceControler.push(faustInterfaceControler);
+        }
     }
 
     //give the good axis value to the accelerometerslider, convert it to the faust value before
@@ -131,15 +131,15 @@ export class AccelerometerHandler {
         switch (accelerometerSlide.axis) {
             case Axis.x:
                 var newVal = accelerometerSlide.converter.uiToFaust(x);
-                callBack(accelerometerSlide, newVal,x)
+                callBack(accelerometerSlide, newVal, x)
                 break;
             case Axis.y:
                 var newVal = accelerometerSlide.converter.uiToFaust(y);
-                callBack(accelerometerSlide, newVal,y)
+                callBack(accelerometerSlide, newVal, y)
                 break;
             case Axis.z:
                 var newVal = accelerometerSlide.converter.uiToFaust(z);
-                callBack(accelerometerSlide, newVal,z)
+                callBack(accelerometerSlide, newVal, z)
                 break;
         }
     }
@@ -217,12 +217,12 @@ class Interpolator {
             this.fOffset = (v1 + v2) / 2;
         }
     }
-    returnMappedValue(v: number):number {
+    returnMappedValue(v: number): number {
         var x = this.range.clip(v);
-        return this.fOffset+x*this.fCoef
+        return this.fOffset + x * this.fCoef
     }
     getLowHigh(amin: number, amax: number): InterpolateObject {
-        return { amin: this.range.fLo, amax: this.range.fHi}
+        return { amin: this.range.fLo, amax: this.range.fHi }
     }
 }
 interface InterpolateObject3pt {
@@ -280,7 +280,7 @@ class AccUpConverter implements UpdatableValueConverter {
         return this.accToFaust.getMappingValues(amin, amid, amax);
     };
     setActive(onOff: boolean): void { this.fActive = onOff };
-    getActive(): boolean{ return this.fActive };
+    getActive(): boolean { return this.fActive };
 }
 
 class AccDownConverter implements UpdatableValueConverter {
