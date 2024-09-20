@@ -1,7 +1,7 @@
 {
   "name": "faustplayground",
   "private": true,
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Online platform to combine and run Faust DSP modules",
   "scripts": {
     "dev": "vite",
@@ -13,7 +13,7 @@
     "vite": ">=4.5.2"
   },
   "dependencies": {
-    "@grame/faustwasm": "^0.4.5",
+    "@grame/faustwasm": "^0.6.4",
     "file-saver": "^2.0.5",
     "qrcode": "^1.5.3"
   }
