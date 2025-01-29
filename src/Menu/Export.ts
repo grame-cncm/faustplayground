@@ -150,20 +150,31 @@ export class Export {
     }
 
     //set download QR Code and Button
-    setDownloadOptions = async (serverUrl: string, shaKey: string, plateforme: string, architecture: string, appType: string) => {
+    setDownloadOptions = async (serverUrl: string, shaKey: string, plateforme: string, architecture: string, target_aux: string) => {
         if (shaKey.indexOf("ERROR") == -1) {
             var disposableExportDiv: HTMLDivElement = document.createElement("div");
             disposableExportDiv.id = "disposableExportDiv"
             var qrDiv: HTMLElement = document.createElement('div');
             qrDiv.id = "qrcodeDiv";
-            var myWhiteDiv: HTMLElement = await ExportLib.getQrCode(serverUrl, shaKey, plateforme, architecture, appType, 120);
+            let target;
+            // Check the different possible targets
+            if (architecture === "pwa" || architecture === "pwa-poly") {
+                target = "index.html";
+            } else if (plateforme === "chaos-stratus") {
+                target = "installer.sh"
+            } else if (plateforme === "android") {
+                target = "binary.apk";
+            } else {
+                target = "binary.zip";
+            }
+            var myWhiteDiv: HTMLElement = await ExportLib.getQrCode(serverUrl, shaKey, plateforme, architecture, target, 120);
             qrDiv.appendChild(myWhiteDiv);
 
             var downloadBottomButtonContainer: HTMLElement = document.createElement("div");
             downloadBottomButtonContainer.className = "bottomButtonContainer";
 
             var linkDownload: HTMLButtonElement = document.createElement('button');
-            linkDownload.value = serverUrl + "/" + shaKey + "/" + plateforme + "/" + architecture + "/" + appType;
+            linkDownload.value = serverUrl + "/" + shaKey + "/" + plateforme + "/" + architecture + "/" + target;
             linkDownload.id = "linkDownload";
             linkDownload.className = "button";
             linkDownload.textContent = Utilitary.messageResource.buttonDownloadApp;
