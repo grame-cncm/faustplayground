@@ -160,7 +160,7 @@ export class Export {
             // Check the different possible targets
             if (architecture === "pwa" || architecture === "pwa-poly") {
                 target = "index.html";
-            } else if (plateforme === "chaos-stratus") {
+            } else if (plateforme === "chaos-stratus" && architecture === "effect-installer") {
                 target = "installer.sh"
             } else if (plateforme === "android") {
                 target = "binary.apk";
