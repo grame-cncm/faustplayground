@@ -102,7 +102,8 @@ export class ExportView {
         var fwurl: HTMLInputElement = document.createElement("input");
         fwurl.id = "faustweburl";
         fwurl.className = "inputExport";
-        fwurl.value = "https://faustservice.grame.fr";
+        //fwurl.value = "https://faustservice.grame.fr";
+        fwurl.value = "https://faustservice.inria.fr";
         this.inputServerUrl = fwurl;
 
         urlDiv.appendChild(fwurl);

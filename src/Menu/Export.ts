@@ -15,8 +15,12 @@ import { ExportView } from "./ExportView";
 
 export class Export {
     exportView: ExportView;
-    static exportUrl: string = "https://faustservice.grame.fr"
-    static targetsUrl: string = "https://faustservice.grame.fr/targets"
+    // static exportUrl: string = "https://faustservice.grame.fr"
+    // static targetsUrl: string = "https://faustservice.grame.fr/targets"
+
+    static exportUrl: string = "https://faustservice.inria.fr"
+    static targetsUrl: string = "https://faustservice.inria.fr/targets"
+
     jsonText: string;
     eventExport: (event: Event) => void;
 
