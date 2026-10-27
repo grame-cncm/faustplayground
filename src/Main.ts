@@ -33,7 +33,7 @@ export let faustWasmEnv: {
 //initialization af the app, create app and resource to get text with correct localization
 //then resumeInit on callback when text is loaded
 export async function init(): Promise<void> {
-    console.log("FaustPlayground: version 1.7.0 (2026-10-02)");
+    console.log("FaustPlayground: version 1.7.1 (2026-10-27)");
     //@ts-ignore
     const faustwasm = await import("@grame/faustwasm");
     console.log(faustwasm);
